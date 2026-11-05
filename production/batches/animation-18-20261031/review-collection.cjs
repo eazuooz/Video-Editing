@@ -66,6 +66,7 @@ function writeFinalIndex() {
     'function select(i,play){if(i<0||i>=rows.length)return; if(current!==undefined)rows[current].removeAttribute("aria-current");'+
     'current=i;const row=rows[i],link=row.querySelector(".play");row.setAttribute("aria-current","true");heading.textContent=row.id+" · "+link.textContent;'+
     'player.src=link.href;if(play)player.play().catch(()=>{});}'+
+    'if(location.protocol==="http:"||location.protocol==="https:")for(const row of rows){row.querySelector(".play").href="/"+row.id+"/captioned.mp4";row.lastElementChild.firstElementChild.href="/"+row.id+"/";}'+
     'rows.forEach((r,i)=>r.querySelector(".play").onclick=e=>{e.preventDefault();select(i,true);});'+
     'player.addEventListener("ended",()=>select(current+1,true));select(rows.findIndex(r=>r.id==="A08"),false);</script></html>';
   fs.mkdirSync(output, {recursive:true});
@@ -90,6 +91,12 @@ const server=http.createServer((req,res)=>{
   if(!['127.0.0.1:'+port,'localhost:'+port].includes(req.headers.host))return res.writeHead(403).end();
   let name;try{name=new URL(req.url,'http://localhost').pathname;}catch{return res.writeHead(400).end();}
   if(name==='/'){
+    const finalIndex=path.join(root,'output','animation-series-review','index.html');
+    if(fs.existsSync(finalIndex) && episodes.every(e=>delivery(e))) {
+      res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});
+      if(req.method==='HEAD')return res.end();
+      return fs.createReadStream(finalIndex).on('error',()=>res.destroy()).pipe(res);
+    }
     let ready=0;
     const rows=episodes.map(e=>{
       const hit=delivery(e);
