@@ -17,6 +17,8 @@ def pose(key,side,t):
         face(p,'C_lip_lower_mid',-.12*e)
     return p
 if __name__=='__main__':
-    settings={s:dict(cameraWidth=96,actorSpacing=23,cameraHeight=172,yaw=-3) for s in ('expression','eyes','mouth')}
-    settings['distance']=dict(cameraDistance=76,fov=74,cameraHeight=173,yaw=-3,actorLocations=[[-28,0,0],[105,-210,0]])
+    settings={s:dict(cameraWidth=96,actorSpacing=23,cameraHeight=172,yaw=-3,exposeEyes=True) for s in ('expression','eyes','mouth')}
+    # Both faces stay in front of the grid backdrop. Keep the camera fixed and show the same expression from two distances.
+    settings['distance']=dict(cameraDistance=372,fov=74,cameraHeight=168,yaw=-3,exposeEyes=True,
+                              actorLocations=[[-28,296,0],[132,25,36]])
     author('A12',P,settings,pose)
