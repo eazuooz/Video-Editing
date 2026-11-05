@@ -1,3 +1,11 @@
+<!-- ARCHITECTURAL-111-20261106-START -->
+## 레벨 디자인 111편 제작 착수
+
+2026-11-06 사용자 요청 “111개 전체 제작 들어가줘”의 정확한 111편만 로컬 최종 검수본까지 제작한다. [전체 제작·대본 현황](../production/batches/architectural-111-20261106/worklist.html) · [제작 상태 JSON](../production/batches/architectural-111-20261106/worklist.json).
+
+111편 한영 대본 초안·원문 연결·장면 계획을 준비했다. 첫 편은 TF2 수레/터널이며 독립 FHD 영상 선택과 Unity 코드 준비를 마쳤다. 첫 네이티브 캡처는 다른 작업의 GPU 반환을 기다리는 유한 작업이다. 음성·완성 영상·사용자 최종 검수는 아직이며, YouTube/Drive 업로드·공개·예약·삭제는 실행하지 않는다.
+<!-- ARCHITECTURAL-111-20261106-END -->
+
 <!-- MATH-PUBLISHING-20261026-START -->
 # 게임수학 YouTube 업로드·예약 결과
 

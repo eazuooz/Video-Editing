@@ -1,0 +1,148 @@
+{
+  "topicId": "11.05",
+  "chapter": 11,
+  "titleKo": "무작위 던전은 출구부터 정하고 적을 놓을까?",
+  "catalogSourceSpan": "485-487",
+  "scriptStatus": "source-aligned-production-draft; independent-footage-inspection-and-primary-source-verification-pending",
+  "narrationKo": [
+    "랜덤 던전에서 출구는 보이는데 갈 길이 없다면 곤란하겠죠. 그래서 만드는 순서가 중요해집니다. 스펠렁키의 생성 방식으로 소개된 한 구조는 먼저 출구로 이어지는 길을 만들고, 그다음 곁방과 위험물을 더하는 것입니다.",
+    "여기서는 빈 방 격자에서 출발 방과 출구 방을 정합니다. 생성기가 둘을 잇는 필수 경로를 먼저 고르죠. 이 선은 실제 게임 안에 보이는 안내선이 아니라, 조립 과정에서 연결을 확인하기 위한 내부 표시입니다.",
+    "그다음 남은 칸에 막다른 방과 다른 탐색 구역을 붙입니다. 필수 경로가 전체 지도를 차지할 필요는 없습니다. 보상을 찾아 곁길을 살필 여지를 만들되, 출구까지의 연결은 유지하는 거죠. 같은 필수 길에서 곁방의 배치만 바꿔 보겠습니다.",
+    "마지막에는 적과 위험물을 더합니다. 뼈대는 연결되어 있어도 위협이 놓이면 실제 통과 난도가 달라집니다. 그래서 지형 연결 확인과 플레이 가능성 확인은 같은 검사가 아닙니다. 적 위치만 바꿔도 안전하게 움직일 순간을 다시 판단해야 합니다.",
+    "이 순서는 모든 랜덤 게임의 정답 알고리즘이 아닙니다. 다만 문제를 분리하는 좋은 방법입니다. 먼저 갈 수 있는 구조를 만들고, 탐색할 가지를 붙인 뒤, 그 구조에서 어떤 도전을 하게 할지 정합니다. 랜덤처럼 보이는 던전 안에도 제작 순서가 숨어 있습니다."
+  ],
+  "paragraphsEn": [
+    "A visible exit is useless if no route reaches it. Generation order matters. One structure described for Spelunky creates a solution path first, then adds side rooms and hazards.",
+    "Begin with a grid of empty rooms and define the entrance and exit. Select a required route connecting them. The line is a generation debug guide, not an in-game path shown to players.",
+    "Next, attach dead ends and other exploration spaces. The solution route need not occupy the entire map. Side rooms offer reasons to explore while the exit connection remains. Change only their placement while retaining the main route.",
+    "Finally, add enemies and hazards. Connected geometry can still be difficult or impractical to traverse. Connectivity and playability are different checks. Changing only enemy positions can alter when moving is safe.",
+    "This is not a universal algorithm for every generated game. It is a useful separation of tasks: build a traversable structure, add exploration, then shape challenges within it. A seemingly random dungeon can have a deliberate construction order."
+  ],
+  "glossary": [
+    {
+      "english": "Solution Path",
+      "korean": "필수 연결 경로"
+    },
+    {
+      "english": "Dead-End Room",
+      "korean": "막다른 방"
+    },
+    {
+      "english": "Connectivity",
+      "korean": "연결성"
+    }
+  ],
+  "sourceMapping": [
+    {
+      "printedPages": "485–487",
+      "paragraphIndexes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "retainedLearningLogic": "Spelunky에 대한 인용 분석의 필수 길→막다른 방→적·위험물 배치 순서"
+    }
+  ],
+  "sceneBeats": [
+    {
+      "paragraphIndex": 1,
+      "renderer": "Motion Canvas overlay on retained Unity/gameplay picture; no duplicate 3D scene",
+      "focus": "출구와 길",
+      "before": "연결 안 된 예시 격자",
+      "action": "출구 강조 후 끊긴 통로 표시",
+      "result": "연결성 문제 소개",
+      "oneChangedVariable": "통로 한 칸",
+      "assetNeed": "방 격자",
+      "illustrationVsImplementation": "planned-editorial-illustration; not-commercial-internals-or-measurement",
+      "speechVisualCue": "대상 소개 때 표식을 붙이고 행동·결과를 해당 문장과 동시에 표시한다. 장면 전환 때 표식을 지우며 고정 자막과 오른쪽 하단 고양이 영역을 비운다.",
+      "savedSceneExists": false,
+      "valueProvenance": "No runtime values measured at planning stage. Future displayed measurements must come from this own implementation."
+    },
+    {
+      "paragraphIndex": 2,
+      "renderer": "Unity own simulation + Motion Canvas labels/compositing",
+      "focus": "필수 길 생성",
+      "before": "빈 격자·입출구",
+      "action": "인접 방을 단계 연결",
+      "result": "입구에서 출구까지 연결 확보",
+      "oneChangedVariable": "필수 경로 선택",
+      "assetNeed": "실제 조합 생성기",
+      "illustrationVsImplementation": "planned-own-implementation; not-created-or-validated",
+      "speechVisualCue": "대상 소개 때 표식을 붙이고 행동·결과를 해당 문장과 동시에 표시한다. 장면 전환 때 표식을 지우며 고정 자막과 오른쪽 하단 고양이 영역을 비운다.",
+      "savedSceneExists": false,
+      "valueProvenance": "No runtime values measured at planning stage. Future displayed measurements must come from this own implementation."
+    },
+    {
+      "paragraphIndex": 3,
+      "renderer": "Unity own simulation + Motion Canvas labels/compositing",
+      "focus": "곁방 추가",
+      "before": "필수 길 고정",
+      "action": "남은 칸에 가지 방 추가",
+      "result": "탐색 범위 확장",
+      "oneChangedVariable": "곁방 배치",
+      "assetNeed": "곁방 조각·보상",
+      "illustrationVsImplementation": "planned-own-implementation; not-created-or-validated",
+      "speechVisualCue": "대상 소개 때 표식을 붙이고 행동·결과를 해당 문장과 동시에 표시한다. 장면 전환 때 표식을 지우며 고정 자막과 오른쪽 하단 고양이 영역을 비운다.",
+      "savedSceneExists": false,
+      "valueProvenance": "No runtime values measured at planning stage. Future displayed measurements must come from this own implementation."
+    },
+    {
+      "paragraphIndex": 4,
+      "renderer": "Unity own simulation + Motion Canvas labels/compositing",
+      "focus": "내용물 패스",
+      "before": "지형·목표 고정",
+      "action": "적 위치만 두 안으로 비교",
+      "result": "연결되어도 실제 난도 다름",
+      "oneChangedVariable": "적 위치",
+      "assetNeed": "순찰 적·위험 트리거",
+      "illustrationVsImplementation": "planned-own-implementation; not-created-or-validated",
+      "speechVisualCue": "대상 소개 때 표식을 붙이고 행동·결과를 해당 문장과 동시에 표시한다. 장면 전환 때 표식을 지우며 고정 자막과 오른쪽 하단 고양이 영역을 비운다.",
+      "savedSceneExists": false,
+      "valueProvenance": "No runtime values measured at planning stage. Future displayed measurements must come from this own implementation."
+    },
+    {
+      "paragraphIndex": 5,
+      "renderer": "Motion Canvas overlay on retained Unity/gameplay picture; no duplicate 3D scene",
+      "focus": "세 층 합성",
+      "before": "같은 지도 유지",
+      "action": "경로/곁방/위협 레이어 단계 중첩",
+      "result": "제작 순서와 각 책임 정리",
+      "oneChangedVariable": "표시 레이어",
+      "assetNeed": "MC 층 라벨",
+      "illustrationVsImplementation": "planned-editorial-illustration; not-commercial-internals-or-measurement",
+      "speechVisualCue": "대상 소개 때 표식을 붙이고 행동·결과를 해당 문장과 동시에 표시한다. 장면 전환 때 표식을 지우며 고정 자막과 오른쪽 하단 고양이 영역을 비운다.",
+      "savedSceneExists": false,
+      "valueProvenance": "No runtime values measured at planning stage. Future displayed measurements must come from this own implementation."
+    }
+  ],
+  "gameFootageCandidates": [
+    {
+      "game": "Spelunky Classic",
+      "targetScene": "같은 지역 입구에서 출구까지 도달하는 독립 플레이와 자체 생성 해설을 번갈아 사용",
+      "teachingRole": "결과 현상만 확인, 내부 과정은 출처에 근거한 별도 일러스트",
+      "sourceKind": "candidate-independent-gameplay; never-finished-reference-lesson",
+      "secured": false,
+      "rightsChecked": false,
+      "nativeFhdVerified": false,
+      "actualFootageViewed": false
+    }
+  ],
+  "technicalClaimLimits": [
+    "필수 길은 안전 보증이 아니라 지형상 연결을 위한 설계 개념이다. 장애물 조합·적·플레이 능력 검사가 추가로 필요하다.",
+    "책이 인용한 분석을 모든 Spelunky 버전의 현재 구현으로 확대하지 않는다. 단계 그림은 자체 모델임을 표시한다."
+  ],
+  "productionBoundary": "대본·씬 설계만 작성. 실제 장면 확보·권리/FHD 확인·직접 관찰 전에는 대본 확정/비싼 제작을 진행하지 않는다. 출처는 설명란에 기록하며 영상 내 출처 줄은 넣지 않는다.",
+  "openingRequirement": "현상이 명확한 독립 실제 게임 장면을 먼저 확보·직접 검분한 뒤 도입을 확정한다. 아래 자체 시연은 설명이며 실제 게임을 대신했다고 표시하지 않는다.",
+  "transitionPlan": "5문단을 제목 카드 없이 연결한다. 앞 문단의 같은 객체/상태를 다음 문단이 이어받고, 같은 Unity 테스트 공간을 유지하며 달라지는 조건을 말과 함께 바꾼다.",
+  "productionStatus": {
+    "scriptDraft": true,
+    "sourceParagraphRead": true,
+    "independentGameplaySecured": false,
+    "ttsGenerated": false,
+    "unityScenesSaved": false,
+    "rendered": false,
+    "humanListeningDone": false
+  }
+}
