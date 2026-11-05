@@ -14,7 +14,7 @@ def author(ep,project,settings,evaluate):
         for side in range(2):
             samples=[evaluate(key,side,t) for t in range(121)]
             evidence[key].append(samples)
-            names=set(bones)
+            names=tuple(bones)
             tracks={}
             for name in names:
                 ref=bones[name];parent=bones.get(ref['parent']);par=Rotation.from_quat(parent['world']['q']) if parent else Rotation.identity()

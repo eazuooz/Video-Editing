@@ -1,0 +1,46 @@
+{
+  "scenes": [
+    {
+      "id": "01",
+      "title": "공격 다음에 걷기를 시작하면",
+      "lines": [
+        "In Hades II the heroine attacks, then moves past the enemy. Her feet start moving while her torso finishes the attack. A good transition lets the controls respond and the body move naturally. We'll blend two motions, change their weights and timing, combine directions, and see how movement responds to terrain. Animation blending combines two or more animations into a pose. A set of poses recorded over time is an animation clip. During the transition, both the attack clip and the walk clip can contribute to the result. The game can accept another input while the attack still has visible follow-through. The great sword in Monster Hunter stays low after the swing. Follow the arm holding that pose and the feet recovering their stance. Dropping that pose instantly for the first walking pose can make the body pop. We'll keep the attack and input identical, then compare an instant switch with a short overlap."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "같은 걷기도 출발 모습이 다르다",
+      "lines": [
+        "Keep the walk clip and change only the action before it. One walk begins from standing, the other just after an attack. Early in the blend, the previous pose gives the same walking file different arm and torso positions. Link lowers his hands and moves away from the device. Holding an object changes the starting pose of the hands. The value determining each clip's contribution is its blend weight. In our example, a walk weight of zero gives the previous pose. One gives the walk. At 0.5 each contributes equally. A hand position can lie midway between two points, but joint rotations need rotation-aware interpolation. The weight controls how much each motion influences the result. The timeline has one row for the attack and one for the walk. Their overlap is the transition. Playhead position and blend weight are distinct values. Track both to understand why the same walk starts differently."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "오래 섞는다고 항상 좋은 것은 아니다",
+      "lines": [
+        "Would a longer overlap always look more natural? Lingering in-between can soften a strong attack pose or slacken the rhythm of the next action. Blending limbs in different positions can also create unintended shapes. Set transition duration separately from blend weight. Keep both clips and the input instant fixed; change only how long the transition takes. Compare which version preserves the meaning of the motion. A short transition that suits fast action may feel wrong in a slow performance. Match the rhythm of the game."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "방향을 만드는 데도 섞기를 쓴다",
+      "lines": [
+        "Blending is useful beyond transitions between consecutive actions. It can tilt a single stance in different directions. Place a central guard pose inside a circle of directional poses. The angle around the circle sets the direction of lean. Distance from the center sets its strength. Blend the center with a directional pose to get states between them. A slight lean reads differently from a whole-body turn. The guard can point away from the direction of the stance. Watch the character's guard change as our input point moves."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "몸과 지형의 상태가 함께 바뀔 때",
+      "lines": [
+        "More movement directions and environments bring more combinations. The upper body might carry an object while the lower body walks. Feet must meet the ground, and a turn can change on an incline. On the stairs in Breath of the Wild, one foot is on a higher tread than the other. A single shared foot height cannot describe that stance. Imagine stepping up a gentle slope from level ground. The legs adjust to the surface while the upper body keeps its action. Add a change of direction and those states must work together. A single natural-looking action can require coordination across body parts and terrain. We add a slope to the same stage while keeping the upper-body pose separate from leg movement. Compare foot placement at the same instant with ground correction off and on. The visible test lets us connect what we see to the method we implemented."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "좋은 원본 동작과 좋은 연결이 만나야 한다",
+      "lines": [
+        "Even clever blending inherits the expressive limits of the source clips. A great single move can still feel wrong in play if every transition pops. Refine both the individual performances and the way states connect. In Hades II the heroine turns quickly toward another enemy. Watch whether the attack direction reads while the next motion begins. From attack to walk, decide which pose to preserve, how long to connect them and how to weight the overlap. A good blend carries the energy of one action into the next."
+      ]
+    }
+  ]
+}

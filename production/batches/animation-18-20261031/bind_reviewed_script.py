@@ -36,7 +36,7 @@ for i,(s,en,design) in enumerate(zip(draft['scenes'],english,cfg['chapters']),1)
 selection={'episode':ep,'reference':draft['sourceMap'],'referenceRole':'research only','teachingOrder':[s['title'] for s in draft['scenes']], 'editorialNotes':cfg['editorialNotes'],'examples':{k:catalog[k] for k in sorted(seen)},'renderer':cfg['renderer'],'nintendoExamples':cfg['nintendo'],'previousEpisode':cfg['previousEpisode'],'platform':'local review only'}
 (H/'source-selection.json').write_text(json.dumps(selection,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 plan={'rigs':list(cfg['studies']),'gameFiles':{key:catalog[key]['file'] for key in sorted(seen)},'gameTitles':{key:catalog[key]['title'] for key in sorted(seen)},'shots':shots,'studyLabels':cfg['studies'],'studyObservationFrames':cfg['observationFrames'],'sources':[catalog[k]['credit'] for k in sorted(seen)]+cfg['sourceCredits']+['Nimbus — Eveningland · YouTube Audio Library — https://www.youtube.com/audiolibrary']}
-for key in ['flexibleCuts','pronunciationAliases','studyBasePlayback','gameCallouts','originalAspect1440p','rendererLabel']:
+for key in ['flexibleCuts','pronunciationAliases','studyBasePlayback','gameCallouts','originalAspect1440p','rendererLabel','gameMagnifiers']:
  if key in cfg:plan[key]=cfg[key]
 if 'flexibleCuts' in plan:
  plan['flexibleCuts']=[dict(x,cue=cue_map[x['cue']]) for x in plan['flexibleCuts']]

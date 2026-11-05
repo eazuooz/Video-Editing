@@ -79,16 +79,24 @@ def timing():
   ix=next(i for i,s in enumerate(rows) if s['cue']==candidate['cue'])
   s=rows[ix];is_game=s['key'] in sources
   if is_game==(remaining>0):continue
-  switch=min(abs(remaining),max(0,s['frames']-64))
-  if switch<60:continue
   new_key=candidate['game'] if remaining>0 else candidate['study']
   at=candidate.get('at',0) if remaining>0 else 0
+  if EP not in ('A04','A05','A06') and abs(remaining)>=s['frames']:
+   if remaining>0:assert at+s['frames']/60<=sources[new_key]['seconds']
+   s['key']=new_key;s['sourcePoint']=at
+   plan['gameFrames']+=s['frames'] if remaining>0 else -s['frames']
+   continue
+  switch=min(abs(remaining),max(0,s['frames']-64))
+  if switch<60:continue
   if remaining>0:assert at+switch/60<=sources[new_key]['seconds']
   next_shot=dict(s,frames=switch,start=s['start']+s['frames']-switch,key=new_key,sourcePoint=at)
   s['frames']-=switch;rows.insert(ix+1,next_shot)
   plan['gameFrames']+=switch if remaining>0 else -switch
  if EP=='A04':
   rows[0]['mark']="drawbox=x=357:y=262:w=520:h=370:color=0x4AB6FA@0.9:t=8:enable='between(t,0.1,1.10)'"
+ if int(EP[1:])>=7:
+  from native.check_footage import inspect
+  plan['fadeAudit']=inspect(rows,read(BATCH/'footage-catalog.json'),R)
  save(L/'cue-review.json',cues);save(L/'timeline.json',plan);print('Timeline',total,'game',round(game/plan['bodyFrames'],3),'cues',len(cues),flush=True)
 def mix():
  t=read(L/'timeline.json');sr=48000;n=t['totalFrames']*800
@@ -127,27 +135,40 @@ def overlay(s,native):
  f=typeface(35,True);width=math.ceil(d.textlength(focus,font=f))+42
  d.rounded_rectangle((46,804,46+width,870),radius=9,fill=(15,26,22,235));d.text((65,815),focus,font=f,fill='#f5d983')
  file=V/f"label-{s['index']:03}.png";im.save(file);return file
+def encode_shot(job,t):
+ ix,s=job;s['index']=ix;key=s['key'];n=s['frames'];own=key not in t['sourceEvidence'];file=(L/(key+'.mp4')) if own else (R/t['sourceEvidence'][key]['file']);mark=overlay(s,own);dst=V/f'cut-{ix:03}.mp4'
+ if own:
+  # A native-rate run first, followed by frame-by-frame inspection of the same authored action.
+  # Build a 6-second study sequence: 2 seconds original + 2 seconds at 1/4 + two held poses.
+  # Animation is explicitly identified as an illustration; actual game shots always retain native rate.
+  src=L/(key+'.mp4')
+  if not src.exists():raise FileNotFoundError(src)
+  raw=['-stream_loop','-1','-i',V/(key+'-study.mp4')]
+ else:raw=['-ss',s['sourcePoint'],'-i',file]
+ resize='scale=1920:1080:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,'
+ if key in visual.get('originalAspect1440p',[]):
+  resize='scale=1920:900:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:0,'
+ g='[0:v]'+resize+'fps=60,setsar=1[v];[v][1:v]overlay=0:0,format=yuv420p[out]'
+ mag=next((q for q in visual.get('gameMagnifiers',[]) if q['source']==key and q['end']>s['sourcePoint'] and q['start']<s['sourcePoint']+n/60),None)
+ if mag:
+  x,y,w,h=mag['crop'];a=max(0.,mag['start']-s['sourcePoint']);b=min(n/60,mag['end']-s['sourcePoint'])
+  labels=f"drawbox=x=0:y=0:w=iw:h=ih:t=6:color=0x76CDB4,drawtext=fontfile='C\\:/Windows/Fonts/malgunbd.ttf':text='부분 확대':fontsize=32:fontcolor=white:box=1:boxcolor=0x1C3329:boxborderw=6:x=15:y=14"
+  g=g.replace('[0:v]'+resize,'[0:v]split=2[base][region];[region]crop='+f'{w}:{h}:{x}:{y},scale=624:351:flags=neighbor,'+labels+'[inset];[base]'+resize)
+  g=g.replace('setsar=1[v];','setsar=1[baseF];[baseF][inset]overlay=1250:141:enable='+f"'between(t,{a:.4f},{b:.4f})'[v];")
+ extra_inputs=[]
+ if not own and visual.get('gameCallouts'):
+  from native.footage_guides import render as render_focus
+  guide=render_focus(s,visual['gameCallouts'],V/f'guide-{ix:03}.mov',key in visual.get('originalAspect1440p',[]))
+  if guide:
+   extra_inputs=['-i',guide]
+   g=g.replace('[v][1:v]','[2:v]scale=1920:1080[m];[v][m]overlay=0:0[vmarked];[vmarked][1:v]')
+ if not own and s.get('mark'):
+  g=g.replace('fps=60,setsar=1','fps=60,setsar=1,'+s['mark'])
+ ff(['-filter_complex_threads','2','-threads','3',*raw,'-i',mark,*extra_inputs,'-filter_complex',g,'-map','[out]','-an','-frames:v',n,*enc,dst],f'encode-{ix:03}')
+ count=int(next(z for z in probe(dst)['streams'] if z['codec_type']=='video')['nb_frames']);assert count==n,(ix,n,count)
+ return dst
 def picture():
  timeline_hash=sha(L/'timeline.json');t=read(L/'timeline.json');pieces=t['cuts'];files=[]
- def cut(job):
-  ix,s=job;s['index']=ix;key=s['key'];n=s['frames'];own=key not in t['sourceEvidence'];file=(L/(key+'.mp4')) if own else (R/t['sourceEvidence'][key]['file']);mark=overlay(s,own);dst=V/f'cut-{ix:03}.mp4'
-  if own:
-   # A native-rate run first, followed by frame-by-frame inspection of the same authored action.
-   # Build a 6-second study sequence: 2 seconds original + 2 seconds at 1/4 + two held poses.
-   # Animation is explicitly identified as an illustration; actual game shots always retain native rate.
-   src=L/(key+'.mp4')
-   if not src.exists():raise FileNotFoundError(src)
-   raw=['-stream_loop','-1','-i',V/(key+'-study.mp4')]
-  else:raw=['-ss',s['sourcePoint'],'-i',file]
-  resize='scale=1920:1080:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,'
-  if key in visual.get('originalAspect1440p',[]):
-   resize='scale=1920:900:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:0,'
-  g='[0:v]'+resize+'fps=60,setsar=1[v];[v][1:v]overlay=0:0,format=yuv420p[out]'
-  if not own and s.get('mark'):
-   g=g.replace('fps=60,setsar=1','fps=60,setsar=1,'+s['mark'])
-  ff(['-filter_complex_threads','2','-threads','3',*raw,'-i',mark,'-filter_complex',g,'-map','[out]','-an','-frames:v',n,*enc,dst],f'encode-{ix:03}')
-  count=int(next(z for z in probe(dst)['streams'] if z['codec_type']=='video')['nb_frames']);assert count==n,(ix,n,count)
-  return dst
  for key in visual['rigs']:
   from native.visual_guides import compose
   src=compose(EP,key,H,L,V,enc)
@@ -193,7 +214,7 @@ def picture():
          f'[d]trim=start_frame={second}:end_frame={second+1},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=0.78[d0];'
          '[a0][b0][c0][d0]concat=n=4:v=1:a=0[out]')
   ff(['-filter_complex_threads','2','-threads','2','-i',src,'-filter_complex',graph,'-map','[out]','-an',*enc,V/(key+'-study.mp4')],'study-'+key)
- with ThreadPoolExecutor(max_workers=2) as pool:files=list(pool.map(cut,enumerate(pieces)))
+ with ThreadPoolExecutor(max_workers=2) as pool:files=list(pool.map(lambda job:encode_shot(job,t),enumerate(pieces)))
  listing=V/'parts.txt';listing.write_text(''.join("file '"+f.name+"'\n" for f in files),encoding='ascii')
  ff(['-f','concat','-safe','0','-i',listing,'-c','copy',L/'body.mp4'],'body')
  args=['-filter_complex_threads','2']

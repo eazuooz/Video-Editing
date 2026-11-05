@@ -30,3 +30,13 @@ if revision=='series-v1' and (P/'production'/revision/'checkpoint.json').is_file
     # Keep the small final-AAC evidence with its master while the raw recording stays local.
     ledger['encodedNarrationReadback']={key:result[key] for key in ('aacSha256','coverage','noPrompt','humanListening')}
     checkpoint.write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n','utf-8')
+    ep=ledger['episode']
+    if ep in {f'A{x:02}' for x in range(7,19)}:
+        assert result['coverage']>=.94, f'{ep}: inspect the encoded speech differences before registering'
+        registered=next(row for row in read(R/'shared/publishing/video-worklist.json')['rows'] if row['id']==ep)
+        if registered.get('captionedMasterSha256')!=ledger['captionedMasterSha256']:
+            registrar=[sys.executable,'-X','utf8',H/'register_local.py']
+            subprocess.run([*registrar,'--prepare',ep],cwd=R,check=True)
+            spec=L/'commit-spec.json'
+            subprocess.run([*registrar,'--spec',spec,'--apply-shared'],cwd=R,check=True)
+            subprocess.run([*registrar,'--spec',spec,'--execute','--push','--message',f'Deliver the reviewed {ep} animation masters for local screening'],cwd=R,check=True)

@@ -1,0 +1,42 @@
+공격 애니메이션은 멋진 자세를 보여 주는 동시에, 어디를 언제 때리는지도 전달해야 합니다. | An attack pose must communicate where and when it hits.
+동작은 그럴듯한데 타격 결과가 예상과 다르면 조작의 감각도 흔들립니다. | If the motion looks right but the result surprises us, the controls can feel wrong.
+오늘은 눈에 보이는 무기와 공격 판정의 차이에서 시작해, 공격이 지나가는 경로와 명중 순간의 포즈를 차례로 맞춰 보겠습니다. | We'll align the weapon's visible path, its collision region and the pose that registers on contact.
+게임에서 공격이 닿았는지 검사하는 영역을 공격 판정 영역, 히트박스라고 합니다. | The region that tests whether an attack reaches its target is a hitbox.
+상대의 몸에서 공격을 받는 영역은 피격 판정 영역, 허트박스입니다. | The part of a character that can receive that attack is a hurtbox.
+두 영역이 어떤 조건에서 겹치는지를 보고 명중을 결정할 수 있습니다. | The game can register a hit when those regions meet the right conditions.
+칼을 그리는 모델과 명중을 검사하는 영역은 목적이 다릅니다. | The visible sword model and the region that tests for contact serve different purposes.
+빠르게 지나가는 칼날 모양에만 지나치게 작은 판정을 맞추면, 플레이어가 맞을 것이라고 기대한 상황에서도 빗나가기 쉬울 수 있습니다. | A tiny region fitted too tightly to a fast blade can miss where the player expects contact.
+그래서 공격 범위를 조절해 납득할 만한 조작감을 만듭니다. | Adjust the attack's reach so the result makes sense in play.
+우리 시연에서는 같은 검과 같은 휘두름을 유지하고 판정 범위만 바꿔 보겠습니다. | We'll keep the sword and swing fixed and change only the collision range.
+다만 넓으면 무조건 좋다는 뜻은 아닙니다. | A larger region isn't automatically better.
+눈에 보이는 공격과 결과 사이의 관계가 이해되어야 합니다. | Players need to understand the relationship between the visible hit and its result.
+
+판정의 크기를 조금 조절하는 것과 공격 위치를 엉뚱한 곳에 두는 것은 다른 문제입니다. | Tuning the size is different from putting the attack in the wrong place.
+옆에서 보는 화면에서는 검과 상대가 겹쳐 보여도, 위에서 내려다보면 검이 상대의 앞이나 뒤를 지나갈 수 있습니다. | From the side, blade and opponent can overlap even if the blade passes in front of or behind the target.
+한 카메라에서 보기 좋은 자세만으로는 이 차이를 찾기 어렵습니다. | One flattering camera angle can hide the difference.
+우리 격자에는 캐릭터와 상대가 놓이는 기준 평면을 표시하겠습니다. | Our grid marks the reference plane for attacker and target.
+플레이 카메라와 위쪽 관찰 카메라는 같은 순간을 보여 줍니다. | The play camera and overhead camera show the same instant.
+먼저 검끝이 기준 경로를 벗어나는 자세를 보고, 몸의 방향과 팔의 궤적을 바꿔 상대가 있는 곳을 지나가게 만들겠습니다. | First the tip misses the path. Turn the body and adjust the arm so the blade crosses the target.
+판정만 상대 쪽으로 옮기면 일단 맞게 만들 수는 있습니다. | Moving only the hitbox could make the attack connect.
+하지만 칼은 다른 곳을 지나가는데 상대가 맞는다면 화면의 설명력이 떨어집니다. | But a reaction to a blade that visibly passes somewhere else is harder to read.
+플레이 감각을 위해 범위를 조금 보완하는 것과 동작 자체의 위치가 어긋난 것은 구분해야 합니다. | Distinguish a little extra reach from correcting a misplaced movement.
+애니메이션의 공격 경로와 판정이 같은 행동을 가리키도록 만드는 것이 우선입니다. | The visible path and collision should describe the same action.
+
+지나가는 위치를 맞췄다면, 이제 어느 순간부터 공격 판정을 켤지 정해야 합니다. | Once the path is right, choose when the attack can hit.
+팔이 움직이는 전체 시간 내내 상대를 때릴 수 있는 것은 아닐 수 있습니다. | It may not deal damage the whole time the arm moves.
+실제로 공격 판정이 켜져 있는 구간을 활성 프레임이라고 합니다. | Frames in which the attack can register are called active frames.
+같은 휘두름에서도 손이 몸 가까이에 있는 순간과 팔이 뻗어 몸의 방향이 드러나는 순간은 다른 인상을 줍니다. | The hand close to the body and the fully extended arm create different impressions.
+명중 순간에 잠깐 움직임을 멈추는 히트 스톱을 넣으면, 그때의 포즈가 특히 눈에 남습니다. | A brief pause on impact, called hit stop, makes that pose especially noticeable.
+그래서 판정을 켜는 시점은 타격 자세의 연출과도 연결됩니다. | Activating the hitbox helps determine the impact pose the player sees.
+우리 시연에서는 같은 검의 움직임에서 활성 구간만 옮겨 보겠습니다. | We'll move only the active window within the same swing.
+어느 포즈가 명중 순간에 남는지 나란히 확인하고, 실제 속도로도 다시 보겠습니다. | Compare the poses at contact, then watch them at normal speed.
+휘두르기 시작하자마자 판정을 켜는 것만이 선택지는 아닙니다. | The attack needn't become active as soon as the swing begins.
+동작 중간의 더 분명한 자세에서 명중하도록 조절할 수도 있습니다. | It can connect later at a clearer pose.
+다만 위치와 타이밍 모두 플레이어가 보는 행동과 납득할 수 있게 이어져야 합니다. | Both position and timing must make sense alongside the visible action.
+
+이 연결을 마지막에 판정 담당자에게만 맡기면, 이미 완성한 동작을 크게 고쳐야 할 수 있습니다. | Leaving collision until the animation is finished can mean substantial rework.
+애니메이터가 공격의 경로와 명중 순간을 생각하고, 게임플레이를 조절하는 사람이 포즈의 인상을 함께 보면 더 일관된 결과를 만들 수 있습니다. | Animators who consider contact and gameplay designers who examine the pose can shape a more coherent hit.
+처음의 공격으로 돌아가 보겠습니다. | Return to the first attack.
+외형보다 조금 보완된 판정 범위, 상대를 지나는 궤적, 강한 자세가 남는 활성 시점은 서로 연결된 선택입니다. | Slightly adjusted reach, a path through the opponent and an active window on a strong pose work together.
+보기 좋은 공격과 납득할 수 있는 타격은 별개의 완성품이 아닙니다. | A beautiful attack and a convincing hit belong to the same action.
+같은 행동이 화면과 규칙 양쪽에서 잘 전달될 때 조작의 감각도 분명해집니다. | The controls feel clear when both the image and the rules communicate that action.

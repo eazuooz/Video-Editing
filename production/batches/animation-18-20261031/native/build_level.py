@@ -31,6 +31,7 @@ def build(key):
  for actor in u.EditorLevelLibrary.get_all_level_actors():
   if isinstance(actor,u.CameraActor):camera=actor
   if isinstance(actor,u.SkeletalMeshActor):u.EditorLevelLibrary.destroy_actor(actor)
+  elif actor.get_actor_label().startswith(('Held handle ','Ground correction slope','Hurt volume')):u.EditorLevelLibrary.destroy_actor(actor)
  assert camera
  if 'cameraDistance' in d:
   camera.set_actor_location(u.Vector(0,d['cameraDistance'],d.get('cameraHeight',85)),False,False)

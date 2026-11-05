@@ -1,0 +1,49 @@
+동키콩이 두 팔을 벌려 휘두르면 몸통보다 먼저 손의 궤적이 눈에 들어옵니다. 팔을 어디까지 굽힐 수 있느냐가 표현의 폭을 바꾸죠. | When Donkey Kong swings his arms wide, his hands catch the eye. The range of a bend changes the expression.
+하지만 평소 움직이기 편한 뼈대가 그런 자세까지 쉽게 만들어 주는 것은 아닙니다. | A skeleton that's easy to animate in ordinary poses might struggle with that shape.
+오늘은 관절을 움직이는 두 방법부터 이해하고, 과장된 자세에서 생기는 제약과 표현을 넓히는 선택을 살펴보겠습니다. | We'll look at two ways to control joints, then explore limitations and ways to extend an exaggerated pose.
+캐릭터를 움직이는 뼈대 구조를 스켈레톤이라고 합니다. | The hierarchy of bones that moves a character is its skeleton.
+이 뼈대와 움직임을 제어하는 장치들을 갖춘 작업 구조가 리그입니다. | The skeleton and its controls form a rig.
+어깨를 돌리면 팔꿈치와 손이 함께 움직이고, 팔꿈치를 굽히면 그 끝의 손 위치가 바뀝니다. | Turn the shoulder and the elbow and hand move with it. Bend the elbow and the hand changes position.
+이렇게 몸 쪽 관절부터 각도를 정해 끝 위치를 만드는 방법을 순운동학, 에프케이라고 합니다. | Setting joint angles from the body outward to find the endpoint is forward kinematics, or FK.
+철권에서 팔을 들고 막는 캐릭터를 보세요. 어깨를 바꾸면 손이 올라가는 경로가 달라집니다. 화면에서 읽히는 것은 그 손의 위치입니다. | Watch a fighter raise an arm to guard. A change at the shoulder changes the path of the hand we see.
+반대로 손을 책상 위의 한 지점에 올리고 싶다고 해 보겠습니다. | Now imagine putting the hand on a specific spot on a desk.
+어깨와 팔꿈치 각도를 계속 고쳐 손을 맞출 수도 있지만, 먼저 손의 목표를 정하고 거기에 닿도록 관절 자세를 구할 수도 있습니다. | You could keep adjusting the joints, or set a hand target and solve for the joints that reach it.
+이것이 역운동학, 아이케이입니다. | The second approach is inverse kinematics, or IK.
+우리 격자에서는 어깨를 돌려 손이 따라오는 경우와 손 목표를 움직여 팔이 따라오는 경우를 나란히 보겠습니다. | Rotate the shoulder on one side of our grid and move a hand target on the other.
+이 방식은 손뿐 아니라 발에도 유용합니다. | The same idea is useful for feet.
+발이 닿아야 할 바닥 위치를 정해 두고 다리의 자세를 맞추면, 지면 높이에 대응하는 동작을 만들 수 있습니다. | Set a foot target on the ground and solve the leg pose to fit the surface.
+편리한 제어 방식이지만, 어떤 자세든 같은 구조로 잘 만들어지는 것은 아닙니다. | Convenient controls still favor some poses over others.
+
+팔을 힘껏 뻗는 장면에서 곧은 팔보다 더 강한 곡선을 원한다고 해 보겠습니다. | Suppose an extended arm needs a stronger curve than a straight line.
+사람의 평범한 팔꿈치 방향을 따라 만든 리그에서는 그 자세가 잘 나오지 않을 수 있습니다. | A rig designed for an ordinary human elbow may resist that shape.
+컵헤드의 인어가 팔을 쫙 펴고 다시 안쪽으로 모을 때는 바깥 윤곽만으로도 동작이 읽힙니다. 이 모양을 관절 두 개로 옮긴다면 어디에 팔꿈치를 둘까요? | Cuphead’s mermaid spreads and gathers her arms. If two segments made that outline, where would the elbow go?
+팔을 곧게 편 선을 넘어 반대쪽으로 휘게 하려면, 기존 제어 방식이 가정한 굽힘 방향부터 살펴봐야 합니다. | To bend past straight, inspect the bend direction the control assumes.
+여기서 두 뼈가 일직선이 된 각도가 백팔십 도입니다. | A straight line between the two bones makes a 180-degree angle.
+이 숫자가 컴퓨터의 모든 관절은 백팔십 도까지만 회전한다는 뜻은 아닙니다. | That doesn't impose a universal 180-degree rotation limit on computer joints.
+뼈에 어떤 회전을 줄 수 있는지, 역운동학이 어떤 방향으로 팔꿈치를 굽히는지, 피부가 그 자세에서 잘 변형되는지는 서로 다른 문제입니다. | Bone rotation, the bend chosen by IK, and skin deformation are separate questions.
+손의 목표 위치가 같아도 팔꿈치를 어느 쪽으로 둘지는 별도의 정보가 필요할 수 있습니다. | A fixed target for the hand may still need a separate hint for the elbow.
+우리 시연에서는 손 목표는 고정하고 굽힘 방향을 알려 주는 힌트를 움직이겠습니다. | We'll keep that target fixed and move the hint that sets bend direction.
+원하는 과장과 제어 방식이 충돌한다면, 회전 제약이나 굽힘 방향을 조정하거나 다른 제어 방식으로 해당 포즈를 만들어야 합니다. | If the controls resist the exaggeration, change the limit or bend direction, or author that pose another way.
+뼈가 원하는 곳에 도달했다고 끝나는 것도 아닙니다. | Reaching the target isn't the end of the test.
+겉의 피부가 찌그러지거나 접히는지 확인해야 합니다. | Check the surface for collapsing or folding skin.
+동키콩처럼 큰 손을 가진 캐릭터는 팔꿈치 주변 피부가 접히더라도 손의 끝 방향이 더 도드라질 수 있습니다. 화면에서 무엇을 남길지 선택할 여지가 있죠. | With Donkey Kong’s large hands, the hand direction can dominate the reading of the arm. Decide what needs to survive in the image.
+움직일 수 있다는 것과 보기 좋은 움직임을 만들 수 있다는 것은 이 지점에서 갈라집니다. | A possible pose and a good-looking pose can differ.
+
+더 많은 지점을 제어할 수 있게 뼈나 관절을 추가하면 팔을 부드러운 곡선으로 만들 여지가 늘어납니다. | More bones or joints give you additional points from which to shape a curved arm.
+기존 구조가 팔을 몇 개의 단단한 구간처럼 다뤘다면, 더 세밀한 제어점이 중간 모양을 바꿔 주는 것입니다. | Compared with a few rigid segments, extra control points let you shape the middle.
+하지만 제어점이 늘었다고 좋은 만화 동작이 자동으로 완성되지는 않습니다. | More controls alone won't create a great cartoon gesture.
+어느 부분을 늘리고 어떤 실루엣을 남길지 결정하는 작업이 필요합니다. | Choose where to stretch and which silhouette to preserve.
+관리할 요소와 계산할 대상도 늘어납니다. | There are also more elements to manage and evaluate.
+그래서 어떤 프로젝트에서는 더 복잡한 구조를 채택하고, 다른 프로젝트에서는 단순한 구조 안에서 표현을 조정할 수 있습니다. | One project may choose a richer rig; another may work creatively within a simpler one.
+리리의 소매와 손을 보세요. 손은 같은 곳에 두어도 팔뚝의 윤곽은 바뀝니다. 제어점을 더하면 그 중간 모양을 조절할 수 있죠. | Notice Lili’s sleeve. The hand can stay fixed while the forearm changes shape. More controls can shape that curve.
+우리 비교에서는 같은 목표 포즈를 단순한 리그와 추가 제어가 있는 리그로 만들어 보겠습니다. | We'll build the same target pose with a simple chain and one with extra controls.
+무엇이 더 잘 표현되는지와 무엇을 더 조절해야 하는지를 함께 확인하겠습니다. | Compare what each can show and what it asks the animator to adjust.
+뼈의 수가 늘어난 정도와 실제 실행 시간이 늘어난 정도는 같지 않을 수 있습니다. | The number of bones doesn't directly predict the increase in running time.
+결과의 표현과 실행 비용을 함께 보고 선택해야 합니다. | Choose with both expression and performance in mind.
+
+이런 선택에서 가장 조심할 것은 익숙한 도구가 쉽게 만드는 자세만 목표로 삼는 것입니다. | It's easy to aim only for poses familiar tools make convenient.
+처음부터 그 범위 안에서만 생각하면, 더 강한 표현이 필요하다는 사실 자체를 놓칠 수 있습니다. | Thinking within those limits from the outset can hide a need for stronger expression.
+먼저 어떤 힘과 감정을 보여 주고 싶은지 정하고, 그 결과에 맞춰 뼈대와 제어를 선택해야 합니다. | Decide on the force and emotion first, then choose a skeleton and controls to suit that result.
+순운동학과 역운동학의 편의는 활용하되, 특정 리그의 제약을 모든 캐릭터 표현의 한계로 받아들이지 않는 것입니다. | Use FK and IK without treating a specific rig's limits as limits on every character.
+뼈대는 움직임을 만드는 도구입니다. | The skeleton is a tool for creating motion.
+무엇을 움직이고 싶은지는 표현의 목적에서 출발해야 합니다. | What we want to move starts with what we want to express.

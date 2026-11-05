@@ -1,0 +1,49 @@
+옆에서 보는 게임에서 두 캐릭터가 서로 마주 보면, 한쪽은 얼굴이 잘 보이고 다른 쪽은 등을 보이기 쉽습니다. | In a side-view game, two characters facing each other can show us one face and one back.
+그런데 방향이 바뀌어도 양쪽 모두 중요한 포즈가 잘 보이는 경우가 있습니다. | Yet some games keep important poses readable in both directions.
+오늘은 좌우 반전으로 이 차이를 만드는 방법을 보고, 손과 장비의 문제를 거쳐 실제 카메라에서 잘 읽히는 동작을 살펴보겠습니다. | We'll examine mirroring, hands and equipment, then see how the pose reads from the play camera.
+킹 오브 파이터즈의 쿨라는 화면 오른쪽에서 상대를 향해 뛰었다가 돌아섭니다. 발끝이 향하는 쪽과 얼굴이 카메라에 남는 쪽을 따로 보세요. | Kula jumps and turns near the right edge of the arena. Follow the direction of her feet separately from the face visible to the camera.
+먼저 회전과 반전을 구별하겠습니다. | First separate rotation from reflection.
+같은 사람을 돌아서게 하면 오른손은 여전히 그 사람의 오른손입니다. | Turn a person around and their right hand is still their right hand.
+거울처럼 좌우를 바꾼 모습에서는 화면에 나타나는 손과 자세의 관계가 뒤집힙니다. | Reflect the pose in a mirror and the visible relationship between the hands and body reverses.
+캐릭터의 진행 방향을 바꾸는 것과 동작 자체를 좌우로 바꾸는 것은 서로 다른 작업입니다. | Turning a character around and mirroring its animation are separate operations.
+우리 시연에서는 같은 캐릭터 둘을 마주 세우겠습니다. | We'll put two copies of the same character on our stage.
+한쪽은 몸의 방향만 돌리고, 다른 비교에서는 포즈도 좌우로 바꾸겠습니다. | Compare rotating the body with rotating it and mirroring the pose.
+배와 얼굴, 주먹이 어느 쪽에서 더 잘 보이는지 같은 카메라로 확인하면, 왜 반전 동작을 따로 고려하는지 이해할 수 있습니다. | From one fixed camera, compare how well you can see the face, chest and fist.
+
+평면 이미지로 캐릭터를 보여 주는 스프라이트에서는 한 방향의 그림을 좌우로 뒤집어 반대 방향에 사용할 수 있습니다. | A sprite can use one drawing reflected horizontally to face the other way.
+양쪽을 모두 새로 그리지 않아도 방향이 바뀌는 것입니다. | That gives us two directions without drawing both from scratch.
+쿨라의 점프를 한 장면으로 보면 뒷다리가 앞다리와 겹치는 순간이 있습니다. 다시 벌어지는 순간에는 어느 쪽으로 향하는지 또렷해집니다. | In Kula’s jump, the far leg briefly overlaps the nearer one. As they separate, her direction becomes clear again.
+삼차원 캐릭터에서도 이런 보이는 느낌을 이어받을 수 있지만, 그림 한 장을 뒤집는 것보다 확인할 것이 많습니다. | A 3D character can preserve that same impression, but there is more to check.
+오른손으로 때리던 포즈를 뒤집으면 반대쪽 손이 그 역할을 맡습니다. | Mirror a right-handed punch and the other hand takes over.
+손에 물건을 들고 있었다면 물건을 붙이는 위치도 함께 옮겨야 합니다. | An attached object needs to change attachment points too.
+몸만 뒤집고 물건은 원래 손에 남겨 두면 동작의 의미가 달라집니다. | Mirror only the body and leave the prop behind, and the action can change meaning.
+우리 시연에서는 한 손과 손잡이에 표시를 붙여, 어느 부분이 함께 바뀌어야 하는지 보겠습니다. | Watch the marked hand and handle to see what must change together.
+양쪽 장비가 다른 캐릭터는 더 어렵습니다. | Different equipment on each side makes it more complicated.
+검과 방패가 정해진 손에 있거나 한쪽 어깨에만 큰 장식이 있다면, 반전 후에도 캐릭터의 설정과 동작이 맞아야 합니다. | A sword, shield or one-sided shoulder piece must still fit the character's design after a flip.
+검과 방패가 있는 링크는 어느 손에 무엇이 붙어 있는지 바로 비교할 수 있습니다. 손만 서로 바꿨을 때 방패가 몸을 가리는지도 봐야 하죠. | Link carries a sword and shield in opposite hands. Check what the shield covers when the pose is mirrored.
+모든 캐릭터에 같은 처리를 일괄 적용하기보다 어떤 포즈를 뒤집고 어떤 경우를 예외로 둘지 정해야 합니다. | Choose which poses can be mirrored and which need an exception.
+
+이런 수고를 들이는 이유는 플레이어가 실제로 보는 화면 때문입니다. | The extra work serves the view the player actually sees.
+한쪽 방향으로 달릴 때마다 뒷모습만 보이면 얼굴과 몸 앞쪽의 정보가 사라집니다. | If running one way always shows the back, we lose information from the face and front.
+양쪽 방향에서도 필요한 부분을 보여 주면 같은 동작을 더 쉽게 읽을 수 있습니다. | Showing the needed features in both directions makes the same action easier to read.
+철권에서 리리가 상대와 자리를 바꾸면 흰 장갑과 옷자락이 몸 바깥으로 드러납니다. 작은 화면에서도 앞을 막는 팔을 찾기 쉬운 이유죠. | When Lili changes sides, the gloves and hem stand out. Even in a small picture her guarding arm reads clearly.
+그래서 실제 몸의 방향이 진행 방향과 정확히 일치하지 않는 선택도 가능합니다. | The body can therefore face at an angle to the direction of travel.
+옆에서 보는 플레이 카메라에서는 자연스럽게 달리지만, 정면의 관찰 카메라로 보면 몸이 조금 비스듬할 수 있습니다. | A run that looks natural from the side may look angled from a front observer camera.
+화면에서 잘 보이도록 조정한 결과입니다. | That adjustment serves the gameplay view.
+우리 격자 시연에서는 같은 움직임을 두 카메라로 동시에 보겠습니다. | Our two synchronized views show the same motion.
+바닥 화살표는 캐릭터가 이동하는 방향, 몸의 선은 실제로 향하는 방향입니다. | The floor arrow shows travel and the body's line shows facing.
+이 둘을 구분하면 단순히 잘못 돌아간 모델인지, 플레이 화면의 가독성을 위한 포즈인지 판단할 수 있습니다. | Separating them helps us tell a misaligned model from a pose chosen for readability.
+얼굴이 절반의 시간 동안 가려지는 버전과 잘 보이는 버전을 실제 속도로 비교하는 것이 중요합니다. | Compare the visible and obscured face at normal speed.
+
+좌우 반전을 고려하는 설계는 동작 밖에서도 나타납니다. | Mirroring also affects details beyond movement.
+옷에 글자가 있다면 그림을 뒤집을 때 글자도 뒤집힙니다. | When an image flips, lettering on the costume flips with it.
+대전 화면에서도 의상과 장비가 한쪽에만 달린 캐릭터는 등과 가슴 쪽 모양이 다릅니다. 뒤집는 순간에 무엇이 달라질지 미리 살피는 이유입니다. | A fighter with asymmetrical equipment has different silhouettes at the chest and back. That gives us a reason to check every flip.
+이때 좌우로 대칭인 모양을 고르면 반전 뒤에도 읽기 쉬운 형태를 유지할 수 있습니다. | A vertically symmetric letter can keep its shape through the reflection.
+예를 들어 대문자 엠과 에이는 좌우를 뒤집어도 기본 모양이 유지됩니다. | Uppercase M and A retain their basic shapes.
+반대로 알은 방향이 달라집니다. | R reverses direction.
+세로로 놓인 글자는 글자 순서를 거꾸로 읽는 문제가 아니라, 각 글자의 좌우 모양이 뒤집히는 문제입니다. | In a vertical stack the order stays put, while each letter flips left to right.
+우리 화면에서는 같은 반전선을 기준으로 대칭 글자와 비대칭 글자를 나란히 확인하겠습니다. | Compare symmetric and asymmetric letters against the same mirror axis.
+이처럼 방향이 바뀌는 게임에서는 포즈, 손과 소품, 카메라, 캐릭터의 무늬가 서로 연결됩니다. | Pose, props, camera and costume design are linked when a character turns.
+반전은 작업의 효율과 화면의 전달력을 함께 고려하는 표현 설계입니다. | Mirroring balances production effort with readability.
+마지막으로 쿨라가 상대 쪽을 향하는 모습을 다시 보세요. 관객에게 남겨야 할 얼굴, 앞손, 발의 윤곽이 판단의 기준입니다. | Watch Kula facing the opponent once more. Face, leading hand and feet are the shapes that need to survive the change of direction.
+어느 쪽을 향해도 플레이어가 중요한 정보를 읽을 수 있도록 만드는 것입니다. | The player should be able to see the important information in either direction.
