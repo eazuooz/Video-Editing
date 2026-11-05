@@ -33,7 +33,6 @@ def main():
    if (q.parent/'final-qa/report.json').exists():reason=G.idle_reason() if a.device=='cuda' else None
    state.update(reason=reason,checkedAt=now());save(statefile,state)
    if reason is None:
-    if a.device=='cpu':break
     candidate=str(uuid.uuid4())
     try:
      with lease.open('x',encoding='utf-8') as f:json.dump(dict(owner=P.name+'-final-mix-review',id=candidate,pid=os.getpid(),createdAt=now()),f)

@@ -102,10 +102,16 @@ def main():
         if a.device=='cpu':os.environ['CUDA_VISIBLE_DEVICES']=''
         if cpu_only:
             import psutil
-            # Match the final-mix CPU review. This read-only recognizer uses two
-            # host cores and has no visible GPU, so it must not take the GPU lease.
-            while psutil.virtual_memory().available<8*1024**3:
+            # Matching cached PCM only reads files. A new model run, even on the
+            # CPU, takes the same exclusive costly-job slot as the video renderer.
+            while not owned:
                 assert read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['productionAllowedNow']
+                if psutil.virtual_memory().available>=8*1024**3:
+                    token=str(uuid.uuid4())
+                    try:
+                        with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':a.project+'-word-review','id':token,'pid':os.getpid(),'createdAt':now(),'device':'cpu'},f)
+                    except FileExistsError:pass
+                    else:owned=token;break
                 time.sleep(20)
         elif not owned:
             owned=str(uuid.uuid4())

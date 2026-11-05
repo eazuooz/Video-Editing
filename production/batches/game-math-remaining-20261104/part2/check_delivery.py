@@ -14,6 +14,13 @@ def inspect(episode):
     assert digest==sha(cap)==mix["masterSha256"] and queue["project"]==p.name
     alignment=read(Path(queue["wordAlignment"]));assert not alignment["flags"]
     assert len(mix["paragraphs"])==len(alignment["scenes"]) and len(qa["samples"])==3*len(alignment["scenes"])
+    assert all(Path(sample["path"]).is_file() for sample in qa["samples"])
+    assert len(list((work/"final-qa").glob("contact-*.png")))==(len(qa["samples"])+11)//12
+    input_pictures=read(p/"production/part2-review/game-picture-inspection.json")
+    source_motion=read(p/"production/part2-review/game-insert-motion.json")
+    assert input_pictures["inspectedBoardSha256"]==source_motion["annotatedSampleBoardSha256"]
+    originals={row["scene"]:row for row in source_motion["sourceMotion"]}
+    observations={row["scene"]:row["observed"] for row in input_pictures["checks"]}
     assert all(x["fullDecodeExitCode"]==0 for x in qa["files"].values())
     assert qa["originalPcmUnchanged"] and qa["truePeakWithinLimit"]
     for lang in ("ko","en"):assert not qa[lang+"Subtitles"]["issues"],(episode,lang,qa[lang+"Subtitles"]["issues"])
@@ -28,8 +35,13 @@ def inspect(episode):
              "-t",str(duration),"-an","-vf","crop=1440:740:240:135,fps=4,scale=96:48,format=gray","-threads","1","-f","rawvideo","pipe:1"])
         px=np.frombuffer(raw,np.uint8).reshape(-1,48,96).astype(np.int16)
         diff=np.abs(np.diff(px,axis=0)).mean(axis=(1,2))
+        native=originals[cut["scene"]]
+        assert native["quarterSecondMovingIntervals"]>0 and duration<=native["nativeSeconds"]+.017
+        assert cut["sourceOut"]+.017>=cut["minimumObservedResultOut"]
         motion.append(dict(scene=cut["scene"],source=cut["sourceId"],sourceWindow=[cut["sourceIn"],cut["sourceOut"]],
                            seconds=duration,nativeSpeed=cut["nativeSpeed"],intervals=len(diff),
+                           sourceSha256=native["sourceSha256"],sourceMotionIntervals=native["quarterSecondMovingIntervals"],
+                           sourcePictureFinding=observations[cut["scene"]],
                            movingIntervals=int((diff>.25).sum()),medianLumaDifference=round(float(np.median(diff)),3)))
     assert len({c["source"] for c in motion})>=3
     anchors=[w for w in mix["paragraphs"] if w["coverage"]<.94 or w["suspectLevelWindows"]]

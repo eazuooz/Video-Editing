@@ -389,13 +389,6 @@ def main():
             LEASE.unlink()
     atexit.register(release_at_exit)
     try:
-        if edition_path.is_file() and psutil.virtual_memory().available>=8*1024**3:
-            # CPU readback stops at the end of this recording. An absent cache
-            # simply runs the ordinary full-PCM review after assembly.
-            reviewer=Path(__file__).parent/'part2/early_readback.py'
-            with (worker.OUTPUT_DIR/'early-cpu.log').open('a',encoding='utf-8') as log:
-                subprocess.Popen([sys.executable,'-u','-X','utf8',str(reviewer),'--project',SLUG,'--lease-token',state['token']],
-                                 stdout=log,stderr=subprocess.STDOUT,creationflags=CREATE_NO_WINDOW)
         import torch
         torch.cuda.set_per_process_memory_fraction(state['allocatorCapMiB'] / total, 0)
         worker.load_tts_dependencies()

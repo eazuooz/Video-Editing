@@ -12,7 +12,7 @@ def finish(episode):
     notes=read(p/"production/part2-review/final-inspection.json")
     h=qa["files"]["captioned"]["sha256"];assert h==d["masterSha256"]==notes["masterSha256"]
     assert notes["inspectedScenes"]==len(read(p/"planning/scene-bindings.json")["scenes"])
-    assert notes["mobileContactSheets"]==len(list((work/"final-qa").glob("contact-*.png")))
+    assert notes["mobileContactSheets"]==len(list((work/"final-qa").glob("contact-*.png")))==(3*notes["inspectedScenes"]+11)//12
     assert not notes["unresolvedProductionDefects"] and notes["actualGameCutsChecked"]==len(d["actualGameCuts"])
     assert notes["formulaFindings"] and notes["speechFindings"] and notes["captionFindings"]
     assert d["fullTranscriptReviewedByMachine"]==notes["inspectedScenes"]

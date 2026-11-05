@@ -49,12 +49,13 @@ def main():
             if not png.exists():
                 code=run([M.FF,'-loglevel','error','-nostdin','-n','-threads','2','-ss',frame/60,'-i',cap,'-frames:v','1','-threads','1',png],W/(s['id']+'-'+phase+'-extract.log'));assert code==0
             samples.append({'scene':s['id'],'frame':frame,'phase':phase,'path':str(png),'viewed':False})
-    report['samples']=samples;report['status']='technical-checks-complete-direct-visual-and-content-review-pending';M.save(W/'report.json',report)
+    report['samples']=samples;report['status']='technical-checks-complete-direct-visual-and-content-review-pending'
     from PIL import Image,ImageDraw
     for page,start in enumerate(range(0,len(samples),12)):
         sheet=Image.new('RGB',(1500,3*236),'#080808');draw=ImageDraw.Draw(sheet)
         for j,entry in enumerate(samples[start:start+12]):
             im=Image.open(entry['path']).convert('RGB');im.thumbnail((375,211),Image.Resampling.LANCZOS);x=j%4*375;y=j//4*236;sheet.paste(im,(x,y));draw.text((x+8,y+214),entry['scene']+' '+entry['phase'],fill='white')
         sheet.save(W/('contact-'+str(page).zfill(2)+'.png'))
+    M.save(W/'report.json',report)
     print(json.dumps({'technicalChecks':'complete','visualSamples':len(samples),'report':str(W/'report.json'),'readyForUserReview':False}))
 if __name__=='__main__':main()
