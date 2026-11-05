@@ -61,7 +61,7 @@ def collect():
         row['recordedReviewEvidence'] = read(ledger_path) if ledger_path.exists() else {}
         if (final / 'delivery.json').exists():
             delivery = read(final / 'delivery.json')
-            if delivery['revision'] in {'feedback-20261105','public-hooks-rope-replay-v3'}:
+            if delivery['revision'] in {'feedback-20261105','public-hooks-rope-replay-v3','rope-simultaneous-paths-v4'}:
                 qa = read(final / 'feedback-check.json')
                 if not (qa['decodedBoth'] and qa['subtitleBounds'] and qa['matchingAudioPair']
                         and qa['master'] == sha(final / 'captioned.mp4')):

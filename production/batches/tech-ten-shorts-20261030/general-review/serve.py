@@ -10,11 +10,17 @@ overview=importlib.util.module_from_spec(loader)
 loader.loader.exec_module(overview)
 names=set(overview.FILES)|{'index.html','mobile-review.mp4','metadata.json','delivery.json','SHA256SUMS.txt'}
 prefixes={r['slug']:Path(r['finalDirectory']).parent/DIRECTORY for n,r in SOURCES.items() if n in EDITS}
+def current_folder(slug):
+    old=prefixes[slug]
+    manifest=editor.read(editor.ROOT/'projects'/slug/'project.json')
+    selected=(editor.ROOT/'projects'/slug/manifest['currentFinalDirectory']).resolve()
+    if selected.parent!=old.parent.resolve():raise RuntimeError('Unexpected media directory')
+    return selected
 def records():
     rows=[]
     for n,e in EDITS.items():
         src=SOURCES[n]
-        folder=prefixes[src['slug']]
+        folder=current_folder(src['slug'])
         complete=(folder/'feedback-check.json').is_file() and (folder/'delivery.json').is_file()
         row=dict(order=n,slug=src['slug'],description=src['description'],title=e['title'],generated=complete)
         if complete:
@@ -42,7 +48,9 @@ async def handle(request):
     slug,local,version,name=pieces
     folder=prefixes.get(slug)
     if local!='local' or not folder or name not in names:raise web.HTTPNotFound()
-    if version!=DIRECTORY:raise web.HTTPFound(f'/{slug}/local/{DIRECTORY}/{name}')
+    active=current_folder(slug)
+    if version==active.name:folder=active
+    elif version!=DIRECTORY:raise web.HTTPFound(f'/{slug}/local/{active.name}/{name}')
     if not (folder/'feedback-check.json').exists() or not (folder/name).is_file():raise web.HTTPNotFound()
     return web.FileResponse(folder/name,headers={'Cache-Control':'no-cache'})
 if __name__=='__main__':
