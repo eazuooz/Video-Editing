@@ -19,7 +19,7 @@ def mark(stage,review=False):
  save(cp,j)
  ledger=P/'production/review-ledger.json';j=read(ledger);j['meaningGuides']=dict(stage=stage,at=stamp,userReviewed=False,localFinalReviewReady=review,source=rel(cp));save(ledger,j)
  w=R/'shared/publishing/video-worklist.json';j=read(w);rows={x['id']:x for x in j['rows']};a,b=rows['M21'],rows['M22']
- a.update(reviewStatus='v7 사용자 승인 · 비공개 업로드 요청',humanApproval='현재 v7 검수본 승인',platformStatus='비공개 · '+r['privateVideoId'] if uploaded else '미업로드 · Studio 파일 전송 대기',notes='승인 SHA256 '+sha21+' · 자막 포함 제작 마스터',localMasterAvailable=True)
+ a.update(productionComplete=True,reviewStatus='v7 사용자 승인 · 비공개 업로드 요청',humanApproval='현재 v7 검수본 승인',platformStatus='비공개 · '+r['privateVideoId'] if uploaded else '미업로드 · Studio 파일 전송 대기',notes='승인 SHA256 '+sha21+' · 자막 포함 제작 마스터',localMasterAvailable=True)
  b.update(productionStatus=stage,reviewStatus='사용자 검수 대기' if review else '내부 제작 중',localMasterAvailable=review,productionComplete=review)
  save(w,j)
  doc=R/'docs/VIDEO_WORKLIST.md';s=doc.read_text('utf-8-sig')
