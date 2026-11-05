@@ -53,7 +53,8 @@ def video_check(path,frames):
     assert (stream['width'],stream['height'],stream['r_frame_rate'],int(stream['nb_frames']))==(1920,1080,'60/1',frames),str(path)
 
 def prepared_insert(cut,source,track):
-    cache=P/'production/local/part2-game-inserts'/cut['scene']
+    name=cut['scene']+('-'+cut['insertVersion'] if cut.get('insertVersion') else '')
+    cache=P/'production/local/part2-game-inserts'/name
     receipt=cache/'receipt.json';picture=cache/'picture.mkv'
     if not receipt.is_file() or not picture.is_file():return None
     inputs=dict(sourceSha256=source['sha256'],start=cut['sourceIn'],end=cut['sourceOut'],frames=cut['frames'],
@@ -120,6 +121,11 @@ def annotation_ass(cut,source,out):
     header_font=C.ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',36)
     C.event(lines,0,dur,'{\\an7\\pos(192,4)\\fs36\\1c&HFFFFFF&}'+game,4)
     C.event(lines,0,dur,'{\\an9\\pos(1728,4)\\fs36\\1c&HFFFFFF&}실제 게임 녹화',4)
+    inset=cut.get('nativeDetailInset')
+    if inset and inset.get('label'):
+        left,top=inset['displayAt']
+        C.event(lines,inset['start']-cut['sourceIn'],inset['end']-cut['sourceIn'],
+                '{\\an1\\fs42\\bord3\\pos('+str(left)+','+str(top-5)+')}'+inset['label'],5)
     proofs=[]
     for window in windows:
         data=read(R/window['trackFile']);assert data['sourceSha256']==source['sha256']

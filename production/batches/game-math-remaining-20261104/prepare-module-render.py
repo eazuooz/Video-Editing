@@ -49,6 +49,9 @@ for row in t['scenes']:
   cuts.append(dict(scene=sid,kind='actual-gameplay',sourceId=game['sourceId'],sourceIn=game['sourceIn'],sourceOut=game['sourceIn']+gameframes/60,originalAudioIn=game.get('fullOriginalAudioIn',game['sourceIn']),frames=gameframes,globalStartFrame=row['startFrame']+game_start,nativeSpeed=True,freeze=False,loop=False,originalSelectedOut=game['sourceOut'],minimumObservedResultOut=required_out,speechStartEvidence=row.get('actualGameStartEvidence'),speechEndEvidence=row.get('actualGameEndEvidence'),review='Confirm observed before/action/result and the source-to-Unity spoken handoff in final encoded output'))
   if 'sourceSoundDecision' in game:cuts[-1]['sourceSoundDecision']=game['sourceSoundDecision']
   if 'nativeDetailInset' in game:cuts[-1]['nativeDetailInset']=game['nativeDetailInset']
+  if 'insertVersion' in game:
+   assert __import__('re').fullmatch(r'[a-z0-9-]+',game['insertVersion'])
+   cuts[-1]['insertVersion']=game['insertVersion']
  if frames==gameframes:continue
  shotfile=out/'shots'/(sid+'.json');pending_files.append((shotfile,shot))
  job=dict(id=episode.lower()+'-body-'+sid,projectSlug=P.name,command='render',expectedFingerprint=marker['fingerprint'],shotFile=str(shotfile),factoryType=factory,output=str(out/'unity'/sid),frames=frames,sampleFrames=[0,frames//2,frames-1],speechTimingVerified=True,sceneId=sid,ffmpeg='C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')

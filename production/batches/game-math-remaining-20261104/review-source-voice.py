@@ -4,7 +4,7 @@ Never counts ASR as human listening, rewrites audio, or creates replacement TTS.
 """
 from pathlib import Path
 from datetime import datetime,timezone
-import argparse,difflib,hashlib,json,os,re,subprocess,uuid
+import argparse,difflib,hashlib,json,os,re,subprocess,uuid,time
 
 ROOT=Path(__file__).resolve().parents[3]
 MODEL=Path('C:/Users/1/.cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots/41f01f3fe87f28c78e2fbf8b568835947dd65ed9')
@@ -22,11 +22,13 @@ def main():
     assert re.fullmatch(r'audio-v\d+',a.audio_revision)
     base=ROOT/'projects'/a.project/'production/local'/a.audio_revision;review=base/'review';review.mkdir(exist_ok=True)
     timing=read(base/'narration.timing.json');voice=base/'narration.wav';voice_hash=sha(voice)
-    assert read(base/'tts-gpu-coordination.json')['state']=='finished','Do not overlap costly voice/ASR jobs'
+    assert read(base/'tts-gpu-coordination.json')['state']=='finished','Only transcribe a finished speech edition'
+    group=ROOT/'projects'/a.project/'planning/part2-delivery-edition.json'
+    cpu_only=(a.device=='cpu' and not a.lease_id and group.is_file() and read(group)['audioRevision']==a.audio_revision)
     if a.lease_id:
         held=read(LEASE);assert held.get('id')==a.lease_id and held.get('owner')==a.project+'-word-review','Only exact parent-owned lease can be inherited'
         owned=a.lease_id
-    else:assert not LEASE.exists(),'Preserve active costly job'
+    elif not cpu_only:assert not LEASE.exists(),'Preserve active costly job'
     import soundfile as sf
     import numpy as np
     from scipy.signal import resample_poly
@@ -44,13 +46,21 @@ def main():
     if pending:
         os.environ.update(OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2',NUMEXPR_NUM_THREADS='2',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
         if a.device=='cpu':os.environ['CUDA_VISIBLE_DEVICES']=''
-        if not owned:
+        if cpu_only:
+            import psutil
+            # Match the final-mix CPU review. This read-only recognizer uses two
+            # host cores and has no visible GPU, so it must not take the GPU lease.
+            while psutil.virtual_memory().available<8*1024**3:
+                assert read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['productionAllowedNow']
+                time.sleep(20)
+        elif not owned:
             owned=str(uuid.uuid4())
             with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':a.project+'-word-review','id':owned,'pid':os.getpid(),'createdAt':now()},f)
         import torch
         from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
         torch.set_num_threads(2);torch.set_num_interop_threads(1)
         assert not torch.cuda.is_initialized() and (MODEL/'model.safetensors').exists()
+        if cpu_only:assert torch.cuda.device_count()==0
         dtype=torch.float32
         if a.device=='cuda':
             free,total=torch.cuda.mem_get_info();assert free>=9*1024**3,'Insufficient idle headroom for word review'
