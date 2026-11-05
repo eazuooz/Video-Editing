@@ -55,6 +55,8 @@ for item in batch['items']:
  if composite.get('status')=='encoded' or qa:stage='1080p60 영상 2개·한영 자막 2개 생성 · 내부 검수 중'
  ready=bool(content.get('localFinalReviewReady'))
  if ready:stage='1080p60 네 파일 · 내부 검수 완료 · 사용자 검수 대기'
+ elif item['id']=='M21' and content.get('annotationRevision')=='sphere-v5' and state(render/'final-qa/browser-playback.json'):
+  stage='1080p60 수정본 · 재질 구·광선·카메라·영문 기호 반영 · 전체 디코딩·브라우저 재생 검사 완료'
  elif content.get('status')=='four-files-available-integrated-listening-pending':stage='1080p60 네 파일 · 전체 디코딩·79문단 ASR·544프레임 검사 완료 · 연속 재생/청취 전'
  detail=finisher.get('results',{}).get(item['id'],{})
  for rp,worker in repairs:
@@ -72,6 +74,9 @@ for item in batch['items']:
  row=rows[item['id']];row.update(productionStatus=stage,productionComplete=ready,reviewStatus='사용자 최종 검수 대기' if ready else ('연속 재생·청취 검수 남음' if four else '완성 영상 대기 · 내부 검수 중'),notes='2026-11-04 승인된 M21–M33 로컬 제작 범위. '+stage+'. 업로드·예약 미승인.')
  item['evidence']={k:str(P/v) for k,v in [('sourceAudit','planning/source-audit.json'),('footageAudit','planning/footage-audit.json'),('sceneBindings','planning/scene-bindings.json'),('bilingualMap','planning/bilingual-caption-map.json')]}
  if render and qa:item['evidence'].update(technicalQa=str(render/'final-qa/report.json'),contentReview=str(render/'content-review.json') if content else None)
+ if item['id']=='M21' and content.get('annotationRevision')=='sphere-v5' and (P/'production/sphere-v5/review-evidence.json').is_file():
+  item['evidence'].update(sphereEvidence=str(P/'production/sphere-v5/review-evidence.json'),sceneCatalog=str(P/'production/sphere-v5/scene-catalog.json'))
+  row.update(localMasterAvailable=four)
  cp=P/'production/checkpoint.json';d=state(cp);d.update(updatedAt=at,stage=stage,batch='production/batches/game-math-remaining-20261104/batch.json',localReviewReady=ready,humanReview=item.get('humanReviewed',False),outputsReady=four,outputCandidates=outputs,evidence=item['evidence'],boundSourceParagraphs=n,voiceWorker=voice,wordReviewWorker=words)
  d['nextAction']='Finish actual speech, source-matched runtime/annotation checks, full edit and internal audiovisual/mobile review. Existing outputs remain candidates until the stated review is complete.'
  running=[]
