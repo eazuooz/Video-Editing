@@ -56,7 +56,9 @@ def timing():
  sources={}
  for k,raw in visual['gameFiles'].items():
   file=R/raw;v=probe(file);stream=next(s for s in v['streams'] if s['codec_type']=='video')
-  assert int(stream['width'])>=1920 and int(stream['height'])>=1080,(k,stream['width'],stream['height'])
+  width,height=int(stream['width']),int(stream['height'])
+  genuine_higher_retro=(k in visual.get('originalAspect1440p',[]) and height>=1440 and width*height>=1920*1080)
+  assert (width>=1920 and height>=1080) or genuine_higher_retro,(k,width,height)
   sources[k]={'file':raw,'sha256':sha(file),'dimensions':[stream['width'],stream['height']],'fps':stream['avg_frame_rate'],'seconds':float(v['format']['duration'])}
  for s in rows:
   if s['key'] in sources:assert s['sourcePoint']+s['frames']/60 <=sources[s['key']]['seconds'],s
@@ -104,7 +106,9 @@ enc=['-r','60','-c:v','h264_nvenc','-preset','p4','-cq','19','-b:v','0','-bf','0
 def typeface(px,bold=False):return ImageFont.truetype('C:/Windows/Fonts/'+('malgunbd.ttf' if bold else 'malgun.ttf'),px)
 def overlay(s,native):
  im=Image.new('RGBA',(1920,1080));d=ImageDraw.Draw(im);key=s['key']
- game=visual['gameTitles'].get(key,'언리얼 · 자체 동작 시연');focus=s['focus']
+ game=visual['gameTitles'].get(key,visual.get('rendererLabel','언리얼 · 자체 동작 시연'));focus=s['focus']
+ if EP=='A13' and key=='letters':game='자체 도해 · 글자 반전'
+ if EP=='A17' and key=='curve':game='자체 도해 · 관절 제어점'
  f=typeface(34,True);width=math.ceil(d.textlength(game,font=f))+48
  d.rounded_rectangle((42,37,42+width,100),radius=11,fill=(12,26,22,238));d.text((65,49),game,font=f,fill='#e7efe7')
  if native:
@@ -124,7 +128,7 @@ def overlay(s,native):
  d.rounded_rectangle((46,804,46+width,870),radius=9,fill=(15,26,22,235));d.text((65,815),focus,font=f,fill='#f5d983')
  file=V/f"label-{s['index']:03}.png";im.save(file);return file
 def picture():
- t=read(L/'timeline.json');pieces=t['cuts'];files=[]
+ timeline_hash=sha(L/'timeline.json');t=read(L/'timeline.json');pieces=t['cuts'];files=[]
  def cut(job):
   ix,s=job;s['index']=ix;key=s['key'];n=s['frames'];own=key not in t['sourceEvidence'];file=(L/(key+'.mp4')) if own else (R/t['sourceEvidence'][key]['file']);mark=overlay(s,own);dst=V/f'cut-{ix:03}.mp4'
   if own:
@@ -135,14 +139,22 @@ def picture():
    if not src.exists():raise FileNotFoundError(src)
    raw=['-stream_loop','-1','-i',V/(key+'-study.mp4')]
   else:raw=['-ss',s['sourcePoint'],'-i',file]
-  g='[0:v]fps=60,setsar=1[v];[v][1:v]overlay=0:0,format=yuv420p[out]'
+  resize='scale=1920:1080:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,'
+  if key in visual.get('originalAspect1440p',[]):
+   resize='scale=1920:900:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:0,'
+  g='[0:v]'+resize+'fps=60,setsar=1[v];[v][1:v]overlay=0:0,format=yuv420p[out]'
   if not own and s.get('mark'):
    g=g.replace('fps=60,setsar=1','fps=60,setsar=1,'+s['mark'])
   ff(['-filter_complex_threads','2','-threads','3',*raw,'-i',mark,'-filter_complex',g,'-map','[out]','-an','-frames:v',n,*enc,dst],f'encode-{ix:03}')
   count=int(next(z for z in probe(dst)['streams'] if z['codec_type']=='video')['nb_frames']);assert count==n,(ix,n,count)
   return dst
  for key in visual['rigs']:
-  src=L/(key+'.mp4')
+  from native.visual_guides import compose
+  src=compose(EP,key,H,L,V,enc)
+  if EP=='A13' and key=='direction':
+   split=V/'direction-two-cameras.mp4'
+   ff(['-i',src,'-i',L/'observer.mp4','-filter_complex','[0:v]crop=960:1080:0:0[a];[1:v]crop=960:1080:960:0[b];[a][b]hstack=inputs=2[out]','-map','[out]','-an',*enc,split],'two-camera-direction')
+   src=split
   if EP=='A06':
    prepared=V/(key+'-clock.mp4')
    with (L/(key+'-clock.log')).open('wb') as log:
@@ -189,10 +201,13 @@ def picture():
  args+=['-i',L/'audio.m4a','-filter_complex',';'.join(f'[{i}:v]setsar=1,settb=1/60,setpts=N[v{i}]' for i in range(3))+';[v0][v1][v2]concat=n=3:v=1:a=0,settb=1/60,setpts=N,split=2[c][r];[r]ass='+rel(L/'captions.ko.ass')+'[b]']
  for tag,name in [('c','clean'),('b','captioned')]:args+=['-map','['+tag+']','-map','3:a','-frames:v',t['totalFrames'],'-t',t['totalFrames']/60,*enc,'-c:a','copy','-movflags','+faststart',L/(name+'.mp4')]
  ff(args,'pair')
+ save(L/'picture-receipt.json',{'timelineHash':timeline_hash,'master':sha(L/'captioned.mp4')})
 def verify_collect():
  import importlib.util
  folder=R/'projects/unreal-engine-6-verse-gameplay/production';sys.path.insert(0,str(folder))
  spec=importlib.util.spec_from_file_location('episode_checks',folder/'finish.py');checker=importlib.util.module_from_spec(spec);spec.loader.exec_module(checker);checker.L=L
+ receipt=L/'picture-receipt.json'
+ if not receipt.is_file() or read(receipt)['timelineHash']!=sha(L/'timeline.json'):picture()
  t=read(L/'timeline.json');checker.verify(t);v=read(L/'encoded-verification.json')
  project=read(P/'project.json');project.update(status='local-delivery-user-review-pending',publishReady=False,platformStatus='local-only')
  project['paths'].update(videoClean=rel(L/'clean.mp4'),videoBurnedCaptions=rel(L/'captioned.mp4'),captionsKo=rel(L/'captions.ko.srt'),captionsEn=rel(L/'captions.en.srt'),audioMix=rel(L/'final-mix.wav'),timeline=rel(H/'edit-plan-final.json'))

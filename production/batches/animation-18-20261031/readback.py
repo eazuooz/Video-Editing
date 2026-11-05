@@ -24,3 +24,9 @@ m=difflib.SequenceMatcher(None,expected,heard,autojunk=False)
 result={'completeAudioSubmitted':True,'noPrompt':True,'humanListening':False,'aacSha256':sha(L/'audio.m4a'),'coverage':sum(b.size for b in m.get_matching_blocks())/len(expected),'differences':[(expected[i:j],heard[k:l]) for code,i,j,k,l in m.get_opcodes() if code!='equal']}
 (L/'encoded-text-review.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 print(slug,result['coverage'],flush=True)
+if revision=='series-v1' and (P/'production'/revision/'checkpoint.json').is_file():
+    checkpoint=P/'production'/revision/'checkpoint.json'
+    ledger=read(checkpoint)
+    # Keep the small final-AAC evidence with its master while the raw recording stays local.
+    ledger['encodedNarrationReadback']={key:result[key] for key in ('aacSha256','coverage','noPrompt','humanListening')}
+    checkpoint.write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n','utf-8')

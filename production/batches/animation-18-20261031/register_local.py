@@ -36,6 +36,7 @@ def prepare(ep):
  owned={rel(f) for f in h.iterdir() if f.is_file() and f.suffix in ('.py','.txt','.json')}
  owned.update(rel(f) for f in (p/'project.json',p/'rebuild.json',p/'production/delivery-output.json',B/'checkpoint.json',B/'review-collection.cjs',B/'prepare_selected_episode.py',B/'assemble_episode.py',B/'render_voice.py',B/'readback.py',B/'register_local.py') if f.is_file())
  owned.update(rel(f) for f in (B/'native').glob('*.py'))
+ owned.update(rel(B/name) for name in ('bind_reviewed_script.py','finish_queue.py','footage-catalog.json','translate_drafts.py') if (B/name).is_file())
  native=R/'GameAnimationSample/Content/YamyamAnimationSeries'/ep
  owned.update(rel(f) for f in native.rglob('*') if f.is_file() and f.suffix in ('.umap','.uasset'))
  dest=local/'commit-spec.json';save(dest,{'episode':ep,'rows':[row],'table':{ep:line},'ownedPaths':sorted(owned)})
