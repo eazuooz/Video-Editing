@@ -65,15 +65,19 @@ def main():
             good=[s for s in records if s.get('selectedForCut') and s.get('decodedDimensionsVerified') and s.get('rightsReviewed') and s.get('visualSequenceInspected')]
             if good:
                 verified_sources+=1;item['footageStatus']='selected-source-reviewed';item['sourceFootageRecord']=footage.relative_to(ROOT).as_posix()
+            elif records:
+                item['footageStatus']='candidate-reviewed-not-adopted';item['sourceFootageRecord']=footage.relative_to(ROOT).as_posix()
         item.setdefault('footageStatus','candidate-search-required')
         item['productionComplete']=False;item['humanApproval']=False;item['platformStatus']='not-uploaded'
         rows.append(item)
         d=read(project);d.update(status=item['status'],narrationDraft=item.get('narrationDraft'),
             scriptSourceVerification='source-mapped-draft; footage-conformance and editorial audit pending' if ident in plans else 'pending-draft',
             footageSelection=item['footageStatus']);save(project,d)
-        cp=read(folder/'checkpoint.json');cp.update(updatedAt=now,stage=item['status'],
-            narrationDraftSHA256=item.get('narrationDraftSHA256'),draftParagraphCount=item['draftParagraphCount'],
-            footageVerified=item['footageStatus']=='selected-source-reviewed');save(folder/'checkpoint.json',cp)
+        cp=read(folder/'checkpoint.json')
+        changes=dict(stage=item['status'],narrationDraftSHA256=item.get('narrationDraftSHA256'),
+                     draftParagraphCount=item['draftParagraphCount'],footageVerified=item['footageStatus']=='selected-source-reviewed')
+        if any(cp.get(k)!=v for k,v in changes.items()):
+            cp.update(updatedAt=now,**changes);save(folder/'checkpoint.json',cp)
     save(HERE/'worklist.json',dict(schemaVersion=1,batchId=batch['batchId'],updatedAt=now,rows=rows))
     batch.update(projects=rows,scriptDraftCount=len(plans),completedLocalReviewCount=0,currentPhase='source-mapped-drafts-and-scene-preparation')
     save(HERE/'batch.json',batch)
@@ -102,7 +106,8 @@ def build_html(batch,rows,plans,cp):
             parts+=f'<p class="terms">{esc(gloss)}</p>'
             body=f'<details><summary>대본 초안 · 한영 {len(e["narrationKo"])}문단</summary>{parts}<p class="note">독립 실제 영상과 대조한 최종 대본·음성·완성 영상 검수는 아직입니다.</p></details>'
         else:body='<p class="note">원문을 대조하며 대본 작성 중</p>'
-        footage='실제 장면 선택·확인' if row['footageStatus']=='selected-source-reviewed' else '실제 장면 확보·검토 예정'
+        footage=('실제 장면 선택·확인' if row['footageStatus']=='selected-source-reviewed' else
+                 '실제 장면 후보 검토 중 · 채택 전' if row['footageStatus']=='candidate-reviewed-not-adopted' else '실제 장면 확보·검토 예정')
         cards.append(f'<article data-ready="{int(bool(e))}"><p class="meta">제작 {row["order"]:03} · {ident} · {esc(row["chapterName"])} · 책 {esc(row["printPages"])}쪽</p><h2>{esc(row["title"])}</h2><p class="status">{footage} · 음성·렌더 전 · 사용자 영상 검수 전</p>{body}</article>')
     out='''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>레벨 디자인 111편 제작 현황 · 얌얌코딩</title><style>
 *{box-sizing:border-box}body{margin:0;background:#101513;color:#f2f5ef;font:16px/1.75 "Malgun Gothic",sans-serif}main{max-width:970px;margin:auto;padding:28px 22px 80px}h1{font-size:32px;line-height:1.3}h2{font-size:21px;line-height:1.5;margin:7px 0}p{margin:9px 0}.summary{border-left:4px solid #ffdb79;padding-left:16px}.meta,.note,.en{color:#b8c5bf}.meta{font-size:14px}.status{font-size:14px;color:#ffdb79}article{padding:18px 0 25px;border-bottom:1px solid #435149}summary{cursor:pointer;color:#8de3c0;font-weight:bold}details>p{margin-top:16px}.en{font-size:15px;border-left:2px solid #42534b;padding-left:12px}.terms{font-size:14px}label{display:block;font-size:14px}input,select{font:inherit;color:white;background:#1b2820;border:1px solid #879a8e;padding:10px;border-radius:3px;max-width:100%}.filters{display:flex;gap:16px;flex-wrap:wrap}a{color:#8de3c0}#shown{font-size:14px;color:#b8c5bf}[hidden]{display:none!important}@media(max-width:500px){main{padding:18px 15px 50px}h1{font-size:27px}h2{font-size:20px}.filters>*{flex:1 1 140px}}

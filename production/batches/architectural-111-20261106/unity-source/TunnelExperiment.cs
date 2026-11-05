@@ -24,6 +24,13 @@ namespace Yamyam.Architectural111 {
         Vector3 start;
         float elapsed;
 
+        void Start() { ResetExperiment(tunnelWidth); }
+        void Update() {
+            if(Application.isPlaying && elapsed<4.5f)Step(Mathf.Min(Time.deltaTime,4.5f-elapsed));
+        }
+        [ContextMenu("Reset original tunnel experiment")]
+        public void Restart() { ResetExperiment(tunnelWidth); }
+
         public void ResetExperiment(float width) {
             tunnelWidth = width;
             leftWall.localPosition = new Vector3(-width*.5f-.17f, 1.15f, 0);

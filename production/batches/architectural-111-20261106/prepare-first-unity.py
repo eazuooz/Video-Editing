@@ -29,7 +29,7 @@ def main():
     (packages/'manifest.json').write_text(json.dumps({'dependencies':{'com.unity.modules.physics':'1.0.0','com.unity.modules.animation':'1.0.0','com.unity.modules.imgui':'1.0.0','com.unity.modules.jsonserialize':'1.0.0','com.unity.modules.imageconversion':'1.0.0'}},indent=2)+'\n')
     settings=DEST/'ProjectSettings';settings.mkdir(exist_ok=True)
     (settings/'ProjectVersion.txt').write_text('m_EditorVersion: 6000.6.0f1\n')
-    evidence=dict(project=DEST.as_posix(),editorVersion='6000.6.0f1',renderPipeline='Built-in Standard; original testbed',
+    evidence=dict(project=DEST.as_posix(),editorVersion='6000.6.0f1',renderPipeline='Built-in capture with self-contained illustrative surface shader; main URP scene import QA pending',
         intendedScenes=['Assets/VideoScenes/architectural-111-20261106/03-02/02-narrow.unity','Assets/VideoScenes/architectural-111-20261106/03-02/04-wide.unity'],
         actualSceneFilesSaved=False,sourceStageComplete=True,unityLaunched=False,artifactKind='implementation-prepared-not-captured',
         claim='Change only tunnel width; same cart, collision capsule, speed and cameras. Dimensions are original illustrative values, not TF2 measurements.',

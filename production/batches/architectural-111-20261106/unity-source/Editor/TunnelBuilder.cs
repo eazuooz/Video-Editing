@@ -13,8 +13,10 @@ namespace Yamyam.Architectural111.Editor {
         static Material Mat(string name,Color col) {
             string path=Folder+"/"+name+".mat";
             var mat=AssetDatabase.LoadAssetAtPath<Material>(path);
-            if(!mat){mat=new Material(Shader.Find("Standard"));AssetDatabase.CreateAsset(mat,path);}
-            mat.color=col;mat.SetFloat("_Glossiness",.15f);return mat;
+            var shader=Shader.Find("Yamyam/ArchitecturalSurface");
+            if(!shader)throw new InvalidOperationException("Missing original portable scene surface shader");
+            if(!mat){mat=new Material(shader);AssetDatabase.CreateAsset(mat,path);}
+            mat.shader=shader;mat.color=col;return mat;
         }
         static GameObject Shape(string name,PrimitiveType type,Vector3 p,Vector3 s,Material m,Transform parent=null,bool solid=true) {
             var go=GameObject.CreatePrimitive(type);go.name=name;go.transform.SetParent(parent,false);
@@ -94,7 +96,7 @@ namespace Yamyam.Architectural111.Editor {
             rig.observer=CameraAt("Observer camera — visible geometry",new Vector3(6,8,-10),Vector3.zero,5.5f);
             rig.playerView=CameraAt("Top camera — same physics state",new Vector3(0,12,-.001f),Vector3.zero,5.7f);
             rig.playerView.transform.rotation=Quaternion.Euler(90,0,0);rig.playerView.enabled=false;
-            rig.ResetExperiment(width);return rig;
+            rig.ResetExperiment(width);rig.Step(0);return rig;
         }
         [MenuItem("Yamyam/Architectural 111/Build tunnel experiment")]
         public static void BuildScenes() {
