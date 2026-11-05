@@ -60,10 +60,16 @@ def collect():
         row['recordedReviewEvidence'] = read(ledger_path) if ledger_path.exists() else {}
         if (final / 'delivery.json').exists():
             delivery = read(final / 'delivery.json')
-            state = read(project / 'production/local/finite-pipeline-v1/state.json')
-            for stage in ('video-pair', 'integrity', 'qa', 'review'):
-                if state.get('stages', {}).get(stage, {}).get('status') != 'pass':
-                    raise RuntimeError(f'{item["slug"]}: missing successful {stage}.')
+            if delivery['revision'] == 'feedback-20261105':
+                qa = read(final / 'feedback-check.json')
+                if not (qa['decodedBoth'] and qa['subtitleBounds'] and qa['matchingAudioPair']
+                        and qa['master'] == sha(final / 'captioned.mp4')):
+                    raise RuntimeError(f'{item["slug"]}: feedback QA refers to the wrong version.')
+            else:
+                state = read(project / 'production/local/finite-pipeline-v1/state.json')
+                for stage in ('video-pair', 'integrity', 'qa', 'review'):
+                    if state.get('stages', {}).get(stage, {}).get('status') != 'pass':
+                        raise RuntimeError(f'{item["slug"]}: missing successful {stage}.')
             if delivery['title'] != row['title'] or delivery['description'] != row['description']:
                 raise RuntimeError('Delivered metadata differs from current publication draft.')
             if (delivery['width'], delivery['height'], delivery['fps']) != (1080, 1920, 60):
