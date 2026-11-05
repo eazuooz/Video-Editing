@@ -29,7 +29,9 @@ def refresh():
             audio=p/"production/local"/doc["audioRevision"]
             wavecount=len(list((audio/"chunks").glob("*-scene.wav")))
             q=p/"production/local/render-v2";rc=snap(q/"progress.json")
-            prog=snap(p/"production/unity-staging/local-preflight-part2-v1/progress.json")
+            picture=read(p/"planning/part2-picture-plan.json")
+            preview=p/"production/unity-staging"/picture["preflightQueue"]
+            prog=snap(preview.parent/"progress.json")
             qa=snap(q/"final-qa/report.json");content=snap(q/"content-review.json")
             dest=ROOT/"output"/(p.name+"-render-v2")
             files={suffix:str(dest/(p.name+"."+suffix+ext)) for suffix,ext in

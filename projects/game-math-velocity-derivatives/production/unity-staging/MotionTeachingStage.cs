@@ -12,6 +12,9 @@ namespace Yamyam.MathMotion {
         public string inputLabel="시간 t",valueLabel="위치",derivativeLabel="속도",secondDerivativeLabel="가속도";
         public bool scalarFunction=false,showGraphs=true;
         public bool showComparison=false;
+        public string subjectKind="";
+        public bool fixedSecant=false;
+        public double secantStartTime;
         public MotionParameters comparisonParameters=new MotionParameters{kind=MotionKind.ConstantVelocity};
         public string comparisonLabel="";
         public string axisConvention="x 오른쪽 / y 위 / +z 화면 밖 (오른손 도식)";
@@ -38,6 +41,7 @@ namespace Yamyam.MathMotion {
         public Font koreanFont; // Load from local OS dynamically; never vendor a font file.
         public Camera stageCamera;
         public Transform subjectAnchor;
+        Transform comparisonAnimal;
         public bool built;
         readonly List<GameObject> generated=new List<GameObject>();
         readonly List<LineRenderer> lines=new List<LineRenderer>();
@@ -47,6 +51,7 @@ namespace Yamyam.MathMotion {
         Text term,kind,values,details,coordinateLabel,positionTitle,velocityTitle,accelerationTitle,velocityCallout,accelerationCallout,radiusCallout;
         Text timeStart,timeEnd,timeAxis;
         Text formulaBoard,formulaMeaning,comparisonLegend;
+        Text hareName,tortoiseName,secantStart,secantFinish;
         readonly List<Text> graphRangeLabels=new List<Text>();
         // All graph sizes derive from the fixed 1080p camera, with room for
         // range values, units and the fixed caption below the three plots.
@@ -69,15 +74,22 @@ namespace Yamyam.MathMotion {
             if(shader==null)throw new InvalidOperationException("No compatible unlit shader; preserve pipeline and supply one explicitly.");
             lineMaterial=new Material(shader){name="YamyamMotionLines"};
             GameObject anchor=Own(new GameObject("TrackedObjectAnchor"));subjectAnchor=anchor.transform;
-            var subject=Instantiate(subjectPrefab,subjectAnchor);subject.name="LicensedSubject_Instance";
-            subject.transform.localPosition=Vector3.zero;
-            // Preserve vendor original materials/rig. Parent renderer must select compatible materials.
-            Bounds bounds=new Bounds(subject.transform.position,Vector3.zero);bool first=true;
-            foreach(var renderer in subject.GetComponentsInChildren<Renderer>()) { if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds); }
-            if(first||bounds.size.magnitude<1e-6f)throw new InvalidOperationException("The selected prefab has no visible renderer bounds.");
-            float scale=1.4f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);subject.transform.localScale*=scale;
-            // Its tracked point is the visible bounds centre; a labelled marker makes this explicit.
-            subject.transform.localPosition-=bounds.center*scale;
+            if(shot.subjectKind=="hare") {
+                var animal=new MotionAnimalSubjects();
+                animal.Hare(subjectAnchor);
+                if(shot.showComparison) {
+                    comparisonAnimal=Own(new GameObject("TortoiseOnParallelTrack")).transform;
+                    animal.Tortoise(comparisonAnimal);
+                }
+            }else {
+                var subject=Instantiate(subjectPrefab,subjectAnchor);subject.name="LicensedSubject_Instance";
+                subject.transform.localPosition=Vector3.zero;
+                Bounds bounds=new Bounds(subject.transform.position,Vector3.zero);bool first=true;
+                foreach(var renderer in subject.GetComponentsInChildren<Renderer>()) { if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds); }
+                if(first||bounds.size.magnitude<1e-6f)throw new InvalidOperationException("The selected prefab has no visible renderer bounds.");
+                float scale=1.4f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);subject.transform.localScale*=scale;
+                subject.transform.localPosition-=bounds.center*scale;
+            }
             var light=Own(new GameObject("MotionLabKey")).AddComponent<Light>();light.type=LightType.Directional;light.intensity=1.3f;light.transform.rotation=Quaternion.Euler(35,-25,0);
             GameObject ui=Own(new GameObject("MotionLabLabels"));canvas=ui.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=stageCamera;canvas.planeDistance=1;
             var scaler=ui.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
@@ -97,6 +109,12 @@ namespace Yamyam.MathMotion {
             velocityCallout=Label("VelocityArrowLabel",new Rect(0,0,430,48),36,Teal);
             accelerationCallout=Label("AccelerationArrowLabel",new Rect(0,0,430,48),36,Red);
             radiusCallout=Label("RadiusArrowLabel",new Rect(0,0,350,48),36,Yellow);
+            if(shot.subjectKind=="hare") {
+                hareName=Label("HareLabel",new Rect(0,0,130,46),36,Yellow);
+                if(comparisonAnimal)tortoiseName=Label("TortoiseLabel",new Rect(0,0,140,46),36,Teal);
+                secantStart=Label("FirstSecantTime",new Rect(0,0,96,44),34,Green);
+                secantFinish=Label("SecondSecantTime",new Rect(0,0,150,44),34,Green);
+            }
             formulaBoard=Label("SpeechBoundCalculation",new Rect(92,290,930,180),38,White);formulaBoard.supportRichText=true;
             formulaMeaning=Label("CalculationMeaning",new Rect(92,475,930,90),34,White);
             comparisonLegend=Label("ComparisonLegend",new Rect(1130,400,720,90),36,White);
@@ -149,6 +167,19 @@ namespace Yamyam.MathMotion {
             label.gameObject.SetActive(safe);if(!safe)return;
             label.rectTransform.anchoredPosition=new Vector2(px+14,-py);label.text=text;
         }
+        void PlaceDiagramText(Text label,Vector3 point,string text,Vector2 offset) {
+            Vector3 v=stageCamera.WorldToViewportPoint(point);
+            label.rectTransform.anchoredPosition=new Vector2(v.x*1920+offset.x,-(1-v.y)*1080+offset.y);
+            label.text=text;
+        }
+        void SecantMarker(Vector3 center) {
+            var ring=new List<Vector3>();
+            for(int i=0;i<=24;i++){
+                float angle=i*Mathf.PI/12;
+                ring.Add(center+new Vector3(.085f*Mathf.Cos(angle),.085f*Mathf.Sin(angle),-.04f));
+            }
+            Poly(ring,Green,.025f);
+        }
         Vector3 Plot(double t,double value,double lo,double hi,float yBase) {
             double u=(t-shot.startTime)/(shot.endTime-shot.startTime);float x=1.8f+(float)u*6.5f;
             float y=yBase+(float)((value-lo)/(hi-lo))*PlotHeight;return new Vector3(x,y,-2);
@@ -181,9 +212,15 @@ namespace Yamyam.MathMotion {
             foreach(var label in new[]{positionTitle,timeStart,timeEnd,timeAxis,values,details})label.gameObject.SetActive(true);
             formulaMeaning.rectTransform.anchoredPosition=new Vector2(92,-475);
             lineCursor=0;double t=shot.startTime+(shot.endTime-shot.startTime)*normalizedCue;var state=MotionMathModel.Sample(shot.parameters,t);Vector3 at=Position(state.position);subjectAnchor.position=at;
+            if(comparisonAnimal) {
+                var other=MotionMathModel.Sample(shot.comparisonParameters,t);
+                comparisonAnimal.position=Position(other.position)+Vector3.down*.95f;
+                PlaceDiagramText(tortoiseName,comparisonAnimal.position,"거북이",new Vector2(-145,10));
+            }
+            if(hareName)PlaceDiagramText(hareName,at,"토끼",new Vector2(-126,12));
             term.fontSize=shot.termExpanded?40:34;
             term.text=shot.termExpanded?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.englishTerm+" · "+shot.koreanTerm+"\n"+shot.meaning;
-            coordinateLabel.text="해설용 운동 모형 · "+shot.axisConvention;
+            coordinateLabel.text=shot.subjectKind=="hare"?"오른쪽으로 갈수록 위치 x가 커집니다":"해설용 운동 모형 · "+shot.axisConvention;
             string component=shot.graphY?"y":"x";
             positionTitle.text=shot.valueLabel+" "+(shot.scalarFunction?"f(x)":component+"(t)")+" ["+shot.positionUnit+"]";velocityTitle.text=shot.derivativeLabel+" "+(shot.scalarFunction?"f′(x)":"v"+component+"(t)")+" ["+shot.positionUnit+"/"+shot.timeUnit+"]";accelerationTitle.text=shot.secondDerivativeLabel+" "+(shot.scalarFunction?"f″(x)":"a"+component+"(t)")+" ["+shot.positionUnit+"/"+shot.timeUnit+"²]";
             velocityTitle.gameObject.SetActive(shot.showVelocityGraph);accelerationTitle.gameObject.SetActive(shot.showAccelerationGraph);
@@ -208,13 +245,23 @@ namespace Yamyam.MathMotion {
             float axisY=shot.showAccelerationGraph?727:shot.showVelocityGraph?552:377;
             foreach(var label in new[]{timeStart,timeEnd,timeAxis}){var pos=label.rectTransform.anchoredPosition;pos.y=-axisY;label.rectTransform.anchoredPosition=pos;}
             timeStart.text=shot.startTime.ToString("0.##");timeEnd.text=shot.endTime.ToString("0.##");timeAxis.text=shot.inputLabel+" ["+shot.timeUnit+"]";
+            if(secantStart){secantStart.gameObject.SetActive(false);secantFinish.gameObject.SetActive(false);}
             if(shot.showSecant||shot.showTangent){
-                double right=shot.showSecant?t+shot.secantH:Math.Min(shot.endTime,t+.3*(shot.endTime-shot.startTime));
-                double left=shot.showSecant?t:Math.Max(shot.startTime,t-.3*(shot.endTime-shot.startTime));
-                double slope=shot.showSecant?(p(MotionMathModel.Sample(shot.parameters,right))-p(state))/shot.secantH:v(state);
+                double referenceTime=shot.showSecant&&shot.fixedSecant?shot.secantStartTime:t;
+                double right=shot.showSecant?referenceTime+shot.secantH:Math.Min(shot.endTime,t+.3*(shot.endTime-shot.startTime));
+                double left=shot.showSecant?referenceTime:Math.Max(shot.startTime,t-.3*(shot.endTime-shot.startTime));
+                double referenceValue=p(MotionMathModel.Sample(shot.parameters,referenceTime));
+                double slope=shot.showSecant?(p(MotionMathModel.Sample(shot.parameters,right))-referenceValue)/shot.secantH:v(state);
                 var tangent=new List<Vector3>();
-                for(int i=0;i<=40;i++){double x=left+(right-left)*i/40.0,y=p(state)+slope*(x-t);if(x>=shot.startTime&&x<=shot.endTime&&y>=shot.positionMin&&y<=shot.positionMax)tangent.Add(Plot(x,y,shot.positionMin,shot.positionMax,PositionBase));}
+                for(int i=0;i<=40;i++){double x=left+(right-left)*i/40.0,y=referenceValue+slope*(x-referenceTime);if(x>=shot.startTime&&x<=shot.endTime&&y>=shot.positionMin&&y<=shot.positionMax)tangent.Add(Plot(x,y,shot.positionMin,shot.positionMax,PositionBase));}
                 if(shot.showSecant||state.velocityDefined)Poly(tangent,shot.showSecant?Green:Teal,.045f);
+                if(secantStart&&shot.showSecant&&left>=shot.startTime&&right<=shot.endTime&&tangent.Count>=2) {
+                    var first=tangent[0];var last=tangent[tangent.Count-1];
+                    secantStart.gameObject.SetActive(true);secantFinish.gameObject.SetActive(true);
+                    SecantMarker(first);SecantMarker(last);
+                    PlaceDiagramText(secantStart,first,"t",new Vector2(4,-10));
+                    PlaceDiagramText(secantFinish,last,"t + h",new Vector2(-55,-10));
+                }
             }
             values.text="t = "+t.ToString("0.000")+" "+shot.timeUnit+"   "+component+" = "+p(state).ToString("0.000")+" "+shot.positionUnit;
             if(shot.showVelocityGraph)values.text+="\n"+(state.velocityDefined?"v"+component+" = "+v(state).ToString("0.000")+" "+shot.positionUnit+"/"+shot.timeUnit:"v = 정의되지 않음 (구간 경계)");

@@ -95,8 +95,8 @@ def bind(episode):
     # revised term chip is bound to the final speech shots, not a new GPU job.
     build(episode,samples)
     stage=p/"production/unity-staging"
-    q=stage/"local-preflight-part2-v1/queue.json"
     file=p/"planning/part2-picture-plan.json"
+    q=stage/(read(file)["preflightQueue"] if file.is_file() else "local-preflight-part2-v1/queue.json")
     save(file,dict(episode=episode,preflightQueue=q.relative_to(stage).as_posix(),fingerprint=read(q)["fingerprint"],
                    sourceBlocks=len(binding["scenes"]),teachingFigures=changes,
                    actualGameScenes=[row["id"] for row in binding["scenes"] if row.get("actualGamePart")],

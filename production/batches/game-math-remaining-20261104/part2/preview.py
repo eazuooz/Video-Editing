@@ -1,16 +1,20 @@
 """Create a short source-matched sample queue for a revised Unity lecture."""
 from edition import BATCH, ROOT, read, save
 from pathlib import Path
-import argparse
+import argparse,re
 
-def build(episode,sample_ids):
+def build(episode,sample_ids,folder_name=None):
     ep=next(x for x in read(BATCH/"batch.json")["items"] if x["id"]==episode)
     project=ROOT/"projects"/ep["slug"]
     stage=project/"production/unity-staging"
     marker=read(stage/"sandbox-preparation.json")
     source=sorted(stage.glob("local-preflight-v*/queue.json"),key=lambda p:int(p.parent.name.split("-v")[-1]))[-1]
     base=read(source)
-    folder=stage/"local-preflight-part2-v1"
+    if not folder_name:
+        picture=project/"planning/part2-picture-plan.json"
+        folder_name=Path(read(picture)["preflightQueue"]).parent.name if picture.is_file() else "local-preflight-part2-v1"
+    assert re.fullmatch(r"local-preflight-part2-v[1-9]\d*",folder_name)
+    folder=stage/folder_name
     if (folder/"queue.json").exists():
         assert read(folder/"queue.json")["fingerprint"]==marker["fingerprint"]
         return
@@ -29,5 +33,5 @@ def build(episode,sample_ids):
          jobs=jobs,scope="Revised purpose-first picture and attached symbols",actualSpeech=False))
     print(folder,len(jobs))
 if __name__=="__main__":
-    ap=argparse.ArgumentParser();ap.add_argument("episode");ap.add_argument("scenes",nargs="+")
-    a=ap.parse_args();build(a.episode,a.scenes)
+    ap=argparse.ArgumentParser();ap.add_argument("episode");ap.add_argument("scenes",nargs="+");ap.add_argument("--folder")
+    a=ap.parse_args();build(a.episode,a.scenes,a.folder)
