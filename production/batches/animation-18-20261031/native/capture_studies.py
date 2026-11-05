@@ -2,6 +2,8 @@
 from pathlib import Path
 import subprocess,json,shutil,sys,os,hashlib
 H=Path(__file__).resolve().parent;R=H.parents[3];batch=H.parent
+sys.path.insert(0,str(batch))
+from gpu_slot import idle_slot
 ep=sys.argv[1];work=json.loads((R/'shared/publishing/video-worklist.json').read_text(encoding='utf-8-sig'));row=next(x for x in work['rows'] if x['id']==ep)
 assert ep in json.loads((batch/'batch.json').read_text('utf-8'))['episodeIds']
 P=R/'projects'/row['slug'];L=P/'production/local/series-v1';W=L/'unreal-worker';src=R/'GameAnimationSample'
@@ -54,7 +56,8 @@ if '--build-only' in sys.argv:sys.exit(0)
 for key in job['keys']:
  meta=json.loads((L/(key+'-build.json')).read_text());folder=L/'frames'/key
  if len(list(folder.glob('*.png')))!=meta['frames']:
-  run([meta['level'],'-game','-LevelSequence='+meta['sequence'],'-MoviePipelineConfig='+meta['config'],'-RenderOffscreen','-NoScreenMessages','-NoLoadingScreen','-notexturestreaming','-resx=1920','-resy=1080'],'render-'+key)
+  with idle_slot(ep+'-animation-capture',wait=True):
+   run([meta['level'],'-game','-LevelSequence='+meta['sequence'],'-MoviePipelineConfig='+meta['config'],'-RenderOffscreen','-NoScreenMessages','-NoLoadingScreen','-notexturestreaming','-resx=1920','-resy=1080'],'render-'+key)
  assert len(list(folder.glob('*.png')))==meta['frames'],key
  subprocess.run(['ffmpeg','-v','error','-y','-framerate','60','-i',str(folder/'%06d.png'),'-frames:v',str(meta['frames']),'-c:v','h264_nvenc','-preset','p4','-cq','17','-b:v','0','-pix_fmt','yuv420p',str(L/(key+'.mp4'))],check=True)
  print('Rendered',key,flush=True)

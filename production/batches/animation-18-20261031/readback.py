@@ -1,4 +1,4 @@
-"""Recognize the complete encoded review audio on CPU without expected words."""
+"""Recognize all encoded review audio without an expected-text prompt."""
 from pathlib import Path
 import json,sys,difflib,re,subprocess,hashlib,os
 H=Path(__file__).resolve().parent;R=H.parents[2]
@@ -10,9 +10,12 @@ sys.path.insert(0,str(R/'projects/animation-assigning/production/grid-v1'))
 import storage_paths as store
 store.LOCAL=L;store.HERE=P/'production'/revision
 import audio_pipeline as ap
-ap.LOCAL=L;os.environ['VIDEO_BATCH_ASR_DEVICE']='cpu'
+ap.LOCAL=L
 file=L/'qa-aac.wav';subprocess.run(['ffmpeg','-v','error','-y','-i',L/'audio.m4a','-ac','1','-ar','16000','-c:a','pcm_s16le',file],check=True)
-record=ap.full_asr(file,L/'full-encoded-asr.json',final=True)
+from gpu_slot import idle_slot
+with idle_slot(slug+'-final-audio-check') as available:
+    os.environ['VIDEO_BATCH_ASR_DEVICE']='cuda' if available else 'cpu'
+    record=ap.full_asr(file,L/'full-encoded-asr.json',final=True)
 assert record['completeAudioSubmitted'] and record['noExpectedPrompt']
 def norm(txt):
  text=re.sub(r'\s+','',txt.lower())

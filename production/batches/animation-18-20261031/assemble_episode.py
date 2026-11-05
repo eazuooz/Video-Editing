@@ -103,11 +103,11 @@ def mix():
  wav=L/'voice/narration.wav';ff(['-i',wav,'-af','acompressor=threshold=0.2:ratio=4:attack=3:release=70:makeup=1,loudnorm=I=-16:TP=-2.8:LRA=8','-ar',sr,'-ac',2,'-c:a','pcm_s24le',L/'vo.wav'],'voice-normalize')
  voice,r=sf.read(L/'vo.wav',dtype='float32');dest=np.zeros((n,2),dtype=np.float32);dest[2*sr:2*sr+len(voice)]=voice
  bed=R/'shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3';assert sha(bed)=='06ddb8d0f2aa82e499ab2cb398b8a241c626d9d3da82bbaf274d1178435f8c08'
- ff(['-stream_loop','-1','-i',bed,'-t',n/sr,'-af','loudnorm=I=-33:TP=-9:LRA=8','-ac',2,'-ar',sr,'-c:a','pcm_s24le',L/'music.wav'],'music')
- music,r=sf.read(L/'music.wav',dtype='float32');assert r==sr and len(music)>=n-100
- padded=np.zeros_like(dest);padded[:min(n,len(music))]=music[:n]
- fade=sr//3;padded[:fade]*=np.linspace(0,1,fade)[:,None];padded[-sr:]*=np.linspace(1,0,sr)[:,None]
- dest+=padded;peak=float(np.max(np.abs(dest)));dest*=min(1.,.77/max(.001,peak))
+ # Cap the looped input after the resampler has enough audio, then trim in output samples.
+ ff(['-stream_loop','-1','-t',n/sr+1,'-i',bed,'-af',f'loudnorm=I=-33:TP=-9:LRA=8,aresample={sr},atrim=end_sample={n},asetpts=N/SR/TB','-ac',2,'-ar',sr,'-c:a','pcm_s24le',L/'music.wav'],'music')
+ music,r=sf.read(L/'music.wav',dtype='float32');assert r==sr and len(music)==n
+ fade=sr//3;music[:fade]*=np.linspace(0,1,fade)[:,None];music[-sr:]*=np.linspace(1,0,sr)[:,None]
+ dest+=music;peak=float(np.max(np.abs(dest)));dest*=min(1.,.77/max(.001,peak))
  sf.write(L/'final-mix.wav',dest,sr,subtype='PCM_24')
  ff(['-i',L/'final-mix.wav','-ac',2,'-ar',48000,'-c:a','aac','-b:a','192k',L/'audio.m4a'],'aac')
 enc=['-r','60','-c:v','h264_nvenc','-preset','p4','-cq','19','-b:v','0','-bf','0','-g','120','-pix_fmt','yuv420p','-video_track_timescale','60000','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709']
