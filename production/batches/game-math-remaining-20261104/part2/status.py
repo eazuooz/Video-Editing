@@ -48,6 +48,8 @@ def refresh():
                 total=len(read(p/"planning/part2-picture-plan.json")["actualGameScenes"])
                 stage+=f" · 게임 장면 {inserts}/{total}개 편집"
             if prog and not rc:stage+=f" · Unity 시험 장면 {len(prog.get('completed',[]))}개"
+            prefix=snap(p/"production/local/preserved-prefix-v1/progress.json") if ep=="M23" else {}
+            if prefix.get("completed") and not rc:stage+=f" · 본편 앞부분 {len(prefix['completed'])}장면 캡처"
             if rc:stage+=f" · 본편 장면 {len(rc.get('completed',[]))}개 렌더"
             item.update(status="local-review-ready" if ready else "active-production",localReviewReady=ready,
                         outputCandidatesAvailable=allfiles,outputs=files,humanReviewed=False)
@@ -61,6 +63,7 @@ def refresh():
                         groupReview={"edition":doc["audioRevision"],"narrationChunks":wavecount,
                                      "reusedTakes":len(doc["copiedTakes"]),"sceneCount":doc["sceneCount"],
                                      "gameInserts":inserts,
+                                     "preservedPrefixScenes":len(prefix.get("completed",[])),
                                      "previewScenes":len(prog.get("completed",[])),"renderScenes":len(rc.get("completed",[])),
                                      "state":state,"localReviewIndex":files.get("index")})
             store(cp,data)
