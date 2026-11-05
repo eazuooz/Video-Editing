@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "updatedAt": "2026-11-04T20:32:55.251542+00:00",
   "status": "complete-design-awaiting-actual-speech-and-visual-QA",
-  "sourceNarrationSha256": "3427ea2dc9d140fc95ba6065ad860647309a8efb31205d9df100ac7f048e3b76",
+  "sourceNarrationSha256": "2a25cabd834e9d7e67e069a906d0ea7e171f20e9f4a9ca069f2b52bd74b95cb7",
   "allBodyParagraphsRetained": true,
   "pendingImplementationBeatCount": 0,
   "actualNativeGameParts": 4,
@@ -1002,7 +1002,7 @@
     {
       "id": "021",
       "sourceBeatId": "M23-022",
-      "speech": "경계가 엑스는 일 이하라고 해 봅시다. 변이 영에서 이로 가면 경계를 절반 지점에서 만나므로 교점은 일입니다. 각 변을 처리해 정점을 차례로 모으면, 마지막 점과 첫 점은 자동으로 이어집니다. 변을 따로 출력하는 게 아니라 정점 목록을 만드는 거예요. 실제 구현은 중복 점과 경계에 딱 닿는 경우도 처리해야 하며, 유효한 면적이 사라진 결과는 그리지 않습니다.",
+      "speech": "화면 밖으로 나간 변을 어디서 잘라야 할까요? 안쪽 끝점에서 바깥쪽 끝점으로 색 점을 움직이면 경계에 닿는 순간이 있습니다. 그때까지 지나온 비율이 소문자 티예요. 같은 비율로 무늬 좌표도 이어 주면 잘린 자리에 무늬가 맞닿습니다. 각 변에서 남은 정점을 순서대로 모아 마지막과 처음을 잇습니다. 중복된 점을 정리하고, 면적이 남았을 때만 그립니다.",
       "sourceParagraphs": [
         "S110-P105",
         "S110-P106",
@@ -1014,16 +1014,37 @@
       "shot": {
         "beatId": "M23-022",
         "beatIndex": 22,
-        "englishTerm": "Edge Intersection",
-        "koreanTerm": "변의 교차점",
-        "meaning": "위치와 속성을 같은 비율로 나눕니다",
+        "englishTerm": "Segment–Plane Intersection",
+        "koreanTerm": "선분과 평면의 교차",
+        "meaning": "경계에서 만나는 점 P",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
         "phaseSeconds": [],
         "phasePositions": []
       },
-      "speechPhaseAnchors": [],
+      "speechPhaseAnchors": [
+        {
+          "phrase": "화면 밖으로 나간 변을 어디서 잘라야 할까요",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "안쪽 끝점에서 바깥쪽 끝점으로 색 점을 움직이면 경계에 닿는 순간이 있습니다",
+          "character": 26,
+          "position": 0.25
+        },
+        {
+          "phrase": "그때까지 지나온 비율이 소문자 티예요",
+          "character": 70,
+          "position": 0.5
+        },
+        {
+          "phrase": "각 변에서 남은 정점을 순서대로 모아 마지막과 처음을 잇습니다",
+          "character": 130,
+          "position": 0.75
+        }
+      ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
@@ -1704,7 +1725,7 @@
     {
       "id": "037",
       "sourceBeatId": "M23-038",
-      "speech": "한 색 채널만 숫자로 확인해 보겠습니다. 감쇠된 빛이 영 점 칠오, 난반사 계수가 영 점 팔, 환경광이 영 점 일, 재질색이 영 점 오라면 난반사 결과는 영 점 삼오입니다. 정반사 계수가 영 점 이, 정반사 재질값이 영 점 사라면 영 점 영육을 더합니다. 합은 영 점 사일입니다. 이렇게 각 항이 무엇을 바꾸는지 알면 화면이 너무 밝거나 어두운 원인도 찾아갈 수 있습니다.",
+      "speech": "방금 식으로 구하려는 것은 표면의 한 점이 화면에 낼 빛의 색이에요. 구의 같은 지점에서 카메라와 빛을 고정하고, 정반사의 세기만 올려 볼게요. 구의 넓은 바탕은 그대로인데 작은 반짝임만 또렷해집니다. 노란 점은 지금 보고 있는 표면점이에요. 식에서 바탕을 만드는 항과 반짝임을 더하는 항을 구분하면, 너무 밝아진 부분을 어디서 고칠지 보입니다.",
       "sourceParagraphs": [
         "S111-P058",
         "S111-P059",
@@ -1716,16 +1737,37 @@
       "shot": {
         "beatId": "M23-038",
         "beatIndex": 38,
-        "englishTerm": "Lighting Sum",
-        "koreanTerm": "조명 성분 합산",
-        "meaning": "각 항에 숫자를 넣어 최종 색을 확인합니다",
+        "englishTerm": "Specular Strength",
+        "koreanTerm": "정반사 세기",
+        "meaning": "같은 구에서 정반사 세기만 바꿉니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
         "phaseSeconds": [],
         "phasePositions": []
       },
-      "speechPhaseAnchors": [],
+      "speechPhaseAnchors": [
+        {
+          "phrase": "방금 식으로 구하려는 것은 표면의 한 점이 화면에 낼 빛의 색이에요",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "구의 같은 지점에서 카메라와 빛을 고정하고, 정반사의 세기만 올려 볼게요",
+          "character": 39,
+          "position": 0.25
+        },
+        {
+          "phrase": "구의 넓은 바탕은 그대로인데 작은 반짝임만 또렷해집니다",
+          "character": 81,
+          "position": 0.5
+        },
+        {
+          "phrase": "식에서 바탕을 만드는 항과 반짝임을 더하는 항을 구분하면, 너무 밝아진 부분을 어디서 고칠지 보입니다",
+          "character": 136,
+          "position": 0.75
+        }
+      ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
@@ -2446,7 +2488,7 @@
     {
       "id": "053",
       "sourceBeatId": "M23-054",
-      "speech": "그 사 대 삼 화면을 좌우 둘로 나누면 한 사람은 삼백이십 곱하기 사백팔십 영역을 봅니다. 이 창의 종횡비는 삼분의 이입니다. 수평 시야각을 육십 도로 고정하면 수평 줌은 삼십 도 탄젠트의 역수, 약 일 점 칠삼이 됩니다. 수직 줌은 여기에 창의 종횡비를 곱한 약 일 점 일오오입니다. 같은 수평 시야를 좁은 창에 넣었으니 세로로 더 많이 보이는 구성이 됩니다.",
+      "speech": "분할 화면에서도 물체가 눌리지 않게 하려면 카메라가 어느 모양의 창으로 그리는지 알아야 합니다. 같은 화면을 좌우로 나누면 한 사람이 보는 창의 폭은 좁아지지만 높이는 그대로예요. 종횡비는 그 창의 폭을 높이로 나눈 값입니다. 수평 시야를 고정한 채 창을 좁히면 위아래로 더 넓은 범위가 들어옵니다.",
       "sourceParagraphs": [
         "S113-P005",
         "S113-P006",
@@ -2457,16 +2499,32 @@
       "shot": {
         "beatId": "M23-054",
         "beatIndex": 54,
-        "englishTerm": "Split-screen Projection",
-        "koreanTerm": "화면 분할 투영",
-        "meaning": "좁아진 창에서도 정해진 시야를 유지합니다",
+        "englishTerm": "Viewport Aspect Ratio",
+        "koreanTerm": "뷰포트 종횡비",
+        "meaning": "창의 폭과 높이를 비교합니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
         "phaseSeconds": [],
         "phasePositions": []
       },
-      "speechPhaseAnchors": [],
+      "speechPhaseAnchors": [
+        {
+          "phrase": "분할 화면에서도 물체가 눌리지 않게 하려면 카메라가 어느 모양의 창으로 그리는지 알아야 합니다",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "같은 화면을 좌우로 나누면 한 사람이 보는 창의 폭은 좁아지지만 높이는 그대로예요",
+          "character": 54,
+          "position": 0.3333333333333333
+        },
+        {
+          "phrase": "종횡비는 그 창의 폭을 높이로 나눈 값입니다",
+          "character": 101,
+          "position": 0.6666666666666666
+        }
+      ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
@@ -2475,7 +2533,7 @@
     {
       "id": "054",
       "sourceBeatId": "M23-055",
-      "speech": "수직 시야각도 구해 보죠. 수직 줌의 역수에 아크탄젠트를 취한 다음 두 배 하면 됩니다. 일 점 일오오를 넣으면 약 팔십일 점 팔 도입니다. 수평 육십 도보다 넓죠. 좁고 긴 화면에 수평 시야를 유지하면서 영상을 넣었기 때문에 세로로 더 넓은 범위를 담게 된 것입니다. 화면 비율, 줌, 시야각이 이렇게 연결됩니다.",
+      "speech": "이제 화면 위아래로 실제 얼마만큼 보이는지 구해 봅니다. 카메라에서 창의 위쪽 끝으로 선을 그으면 펼쳐진 각의 절반이 보여요. 수직 확대율의 역수에 아크탄젠트를 취하면 이 절반 각이 나오고, 두 배 하면 전체 수직 시야각입니다. 창의 폭만 바꿔 보세요. 수평의 두 선은 그대로인데 위아래 선 사이의 각은 달라집니다.",
       "sourceParagraphs": [
         "S113-P007"
       ],
@@ -2486,34 +2544,7 @@
         "beatIndex": 55,
         "englishTerm": "Vertical Field of View",
         "koreanTerm": "수직 시야각",
-        "meaning": "창 비율과 확대값에서 위아래 범위를 구합니다",
-        "expandedTerm": true,
-        "durationSeconds": 0,
-        "stepSeconds": [],
-        "phaseSeconds": [],
-        "phasePositions": []
-      },
-      "speechPhaseAnchors": [],
-      "hold": 0,
-      "independentEditableSceneRequired": true,
-      "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Actual word timestamps pending; no guessed observation pauses"
-    },
-    {
-      "id": "055",
-      "sourceBeatId": "M23-056",
-      "speech": "이번에는 사 대 삼 분할 창으로 돌아와 근평면을 일, 원평면을 이백오십육에 놓겠습니다. 투영 행렬의 가로와 세로 항은 방금 구한 줌 값입니다. 나머지 깊이 항은 어떤 카메라 방향과 깊이 범위를 쓰는지로 정합니다. 기본 오픈지엘 방식의 오른손 카메라는 앞쪽 제트가 음수이고, 깊이를 마이너스 일에서 일로 보냅니다. 전통적인 다이렉트삼디 왼손 예제는 앞쪽 제트가 양수이며 영에서 일로 보냅니다.",
-      "sourceParagraphs": [
-        "S113-P007"
-      ],
-      "renderer": "Unity",
-      "classification": "our-implementation",
-      "shot": {
-        "beatId": "M23-056",
-        "beatIndex": 56,
-        "englishTerm": "Clip-space Projection Matrix",
-        "koreanTerm": "클립 공간 투영행렬",
-        "meaning": "좌표와 깊이의 약속을 행렬에 넣습니다",
+        "meaning": "위아래 경계 사이 펼쳐진 각",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
@@ -2522,14 +2553,72 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "기본 오픈지엘",
-          "position": 0,
-          "character": 119
+          "phrase": "이제 화면 위아래로 실제 얼마만큼 보이는지 구해 봅니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "전통적인 다이렉트삼디",
-          "position": 0.5,
-          "character": 175
+          "phrase": "카메라에서 창의 위쪽 끝으로 선을 그으면 펼쳐진 각의 절반이 보여요",
+          "character": 32,
+          "position": 0.25
+        },
+        {
+          "phrase": "수직 확대율의 역수에 아크탄젠트를 취하면 이 절반 각이 나오고, 두 배 하면 전체 수직 시야각입니다",
+          "character": 71,
+          "position": 0.5
+        },
+        {
+          "phrase": "창의 폭만 바꿔 보세요",
+          "character": 128,
+          "position": 0.75
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M23-056",
+      "speech": "창의 모양을 정했으니 이번에는 어느 깊이까지 보일지 정하겠습니다. 카메라 앞의 가까운 절단면과 먼 절단면이 깊이의 양 끝입니다. 투영 행렬은 이 사이를 정해진 깊이 범위로 보내요. 전통적인 오픈지엘 예에서는 앞쪽 제트가 음수이고 나눈 뒤의 깊이는 마이너스 일부터 일이죠. 여기서 비교하는 다이렉트쓰리디 예는 앞쪽 제트가 양수이고 깊이는 영부터 일입니다.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-056",
+        "beatIndex": 56,
+        "englishTerm": "Depth Range",
+        "koreanTerm": "깊이 범위",
+        "meaning": "가까운 면과 먼 면의 깊이를 표시합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "창의 모양을 정했으니 이번에는 어느 깊이까지 보일지 정하겠습니다",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "카메라 앞의 가까운 절단면과 먼 절단면이 깊이의 양 끝입니다",
+          "character": 37,
+          "position": 0.25
+        },
+        {
+          "phrase": "전통적인 오픈지엘 예에서는 앞쪽 제트가 음수이고 나눈 뒤의 깊이는 마이너스 일부터 일이죠",
+          "character": 101,
+          "position": 0.5
+        },
+        {
+          "phrase": "여기서 비교하는 다이렉트쓰리디 예는 앞쪽 제트가 양수이고 깊이는 영부터 일입니다",
+          "character": 152,
+          "position": 0.75
         }
       ],
       "hold": 0,
@@ -2540,7 +2629,7 @@
     {
       "id": "056",
       "sourceBeatId": "M23-057",
-      "speech": "행렬을 외우기보다 양 끝을 넣어 확인해 봅시다. 오픈지엘 쪽에 제트 마이너스 일을 넣고 더블유로 나누면 깊이는 마이너스 일, 마이너스 이백오십육을 넣으면 일입니다. 다이렉트삼디 쪽은 제트 일이 영, 이백오십육이 일로 갑니다. 여기 화면의 행렬은 열벡터 표기이므로 앞서 행벡터 코드에 쓸 때는 전치해야 합니다. 어느 API든 지원하는 설정에 따라 다른 관례도 쓸 수 있습니다.",
+      "speech": "두 투영 행렬이 의도대로 만들어졌는지는 같은 점을 가까운 면에서 먼 면까지 옮겨 보면 확인할 수 있어요. 점이 가까운 면에 닿으면 해당 방식의 깊이 범위가 시작되고, 먼 면에서는 끝에 도착합니다. 화면의 행렬은 열벡터 표기입니다. 행벡터 코드로 옮길 때는 전치해야 같은 변환이 돼요. 그래픽스 API와 카메라 설정에서 실제로 고른 좌표 관례를 함께 확인해야 합니다.",
       "sourceParagraphs": [
         "S113-P007"
       ],
@@ -2549,9 +2638,9 @@
       "shot": {
         "beatId": "M23-057",
         "beatIndex": 57,
-        "englishTerm": "Near / Far Validation",
-        "koreanTerm": "근평면과 원평면 검산",
-        "meaning": "양 끝을 대입해 깊이 범위를 확인합니다",
+        "englishTerm": "Perspective Divide",
+        "koreanTerm": "원근 나눗셈",
+        "meaning": "같은 점을 가까운 면에서 먼 면으로 옮깁니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
@@ -2560,14 +2649,24 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "오픈지엘 쪽에",
-          "position": 0,
-          "character": 27
+          "phrase": "두 투영 행렬이 의도대로 만들어졌는지는 같은 점을 가까운 면에서 먼 면까지 옮겨 보면 확인할 수 있어요",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "다이렉트삼디 쪽은",
-          "position": 0.5,
-          "character": 92
+          "phrase": "점이 가까운 면에 닿으면 해당 방식의 깊이 범위가 시작되고, 먼 면에서는 끝에 도착합니다",
+          "character": 59,
+          "position": 0.25
+        },
+        {
+          "phrase": "화면의 행렬은 열벡터 표기입니다",
+          "character": 110,
+          "position": 0.5
+        },
+        {
+          "phrase": "그래픽스 API와 카메라 설정에서 실제로 고른 좌표 관례를 함께 확인해야 합니다",
+          "character": 159,
+          "position": 0.75
         }
       ],
       "hold": 0,
@@ -2578,7 +2677,7 @@
     {
       "id": "057",
       "sourceBeatId": "M23-058",
-      "speech": "이제 같은 분할을 십육 대 구 화면에서 다시 해 보죠. 픽셀은 가로로 늘어나므로 각 창의 실제 비율은 단순한 삼백이십 대 사백팔십이 아니라 구분의 팔입니다. 수평 줌은 여전히 루트 삼입니다. 수직 줌은 구분의 팔을 곱한 약 일 점 오사, 수직 시야각은 약 육십육 도가 됩니다. 표본 개수와 표시되는 모양을 함께 고려해야 하는 이유가 드러납니다.",
+      "speech": "같은 분할이라도 원래 화면이 더 넓으면 한 사람이 보는 창의 모양이 달라집니다. 화면의 가로 폭만 늘려 볼게요. 수평 시야각은 고정했으니 좌우 경계는 같은 방향을 보고, 대신 위아래 경계가 모입니다. 그래서 투영을 정할 때는 화면에 찍힌 표본의 개수뿐 아니라 실제로 표시될 창의 모양을 사용합니다.",
       "sourceParagraphs": [
         "S113-P008",
         "S113-P009"
@@ -2588,16 +2687,32 @@
       "shot": {
         "beatId": "M23-058",
         "beatIndex": 58,
-        "englishTerm": "Widescreen Split-screen",
-        "koreanTerm": "와이드 화면 분할",
-        "meaning": "표시 픽셀의 비율도 창 계산에 반영합니다",
+        "englishTerm": "Display Aspect Ratio",
+        "koreanTerm": "표시 종횡비",
+        "meaning": "가로가 넓어지는 동안 위아래 경계가 모입니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
         "phaseSeconds": [],
         "phasePositions": []
       },
-      "speechPhaseAnchors": [],
+      "speechPhaseAnchors": [
+        {
+          "phrase": "같은 분할이라도 원래 화면이 더 넓으면 한 사람이 보는 창의 모양이 달라집니다",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "화면의 가로 폭만 늘려 볼게요",
+          "character": 45,
+          "position": 0.3333333333333333
+        },
+        {
+          "phrase": "그래서 투영을 정할 때는 화면에 찍힌 표본의 개수뿐 아니라 실제로 표시될 창의 모양을 사용합니다",
+          "character": 112,
+          "position": 0.6666666666666666
+        }
+      ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
@@ -2838,7 +2953,7 @@
     {
       "id": "062",
       "sourceBeatId": "M23-063",
-      "speech": "법선도 숫자와 그림을 이어서 확인해 보죠. 각 성분에 일을 더하고 절반으로 만든 뒤 이백오십오를 곱하면 영부터 이백오십오 범위에 들어갑니다. 가장 가까운 정수로 반올림하겠습니다. 마이너스 일, 영, 영은 영, 백이십팔, 백이십팔이 되고, 영, 영, 일은 백이십팔, 백이십팔, 이백오십오가 됩니다. 가운데 값 영을 정확히 저장하는 정수가 없다는 점도 기억해 두세요.",
+      "speech": "법선 방향을 텍스처에 보관하려면 화살표의 세 성분을 색 채널로 옮겨야 합니다. 화살표의 가로 성분은 왼쪽과 오른쪽을 구분하도록 음수와 양수를 쓰고, 빨강 채널은 음수를 담을 수 없죠. 그래서 성분의 범위를 색의 범위로 옮깁니다. 화살표가 오른쪽으로 기울수록 빨강 표본도 밝아져요. 여덟 비트로 저장하면 단계 사이를 반올림하므로 정확한 가운데 방향에도 작은 오차가 생길 수 있습니다.",
       "sourceParagraphs": [
         "S113-P020",
         "S113-P021",
@@ -2851,7 +2966,7 @@
         "beatIndex": 63,
         "englishTerm": "Normal Encoding",
         "koreanTerm": "법선 인코딩",
-        "meaning": "음수 방향을 포함한 값을 채널에 저장합니다",
+        "meaning": "표면 방향을 색 채널에 기록합니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
@@ -2860,14 +2975,24 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "마이너스 일, 영, 영은",
-          "position": 0,
-          "character": 100
+          "phrase": "법선 방향을 텍스처에 보관하려면 화살표의 세 성분을 색 채널로 옮겨야 합니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "영, 영, 일은",
-          "position": 0.5,
-          "character": 133
+          "phrase": "화살표의 가로 성분은 왼쪽과 오른쪽을 구분하도록 음수와 양수를 쓰고, 빨강 채널은 음수를 담을 수 없죠",
+          "character": 44,
+          "position": 0.25
+        },
+        {
+          "phrase": "그래서 성분의 범위를 색의 범위로 옮깁니다",
+          "character": 103,
+          "position": 0.5
+        },
+        {
+          "phrase": "여덟 비트로 저장하면 단계 사이를 반올림하므로 정확한 가운데 방향에도 작은 오차가 생길 수 있습니다",
+          "character": 157,
+          "position": 0.75
         }
       ],
       "hold": 0,
@@ -2878,7 +3003,7 @@
     {
       "id": "063",
       "sourceBeatId": "M23-064",
-      "speech": "나머지 두 방향에도 같은 계산을 합니다. 영 점 이육칠, 마이너스 영 점 오삼오, 영 점 팔공오는 백육십이, 오십구, 이백삼십으로 저장됩니다. 영, 영 점 팔오칠, 영 점 오일사는 백이십팔, 이백삼십칠, 백구십삼입니다. 이 숫자는 색 자체를 감상하려고 만든 값이 아니라 방향을 보관하는 데이터입니다. 그래서 노멀 맵을 색 텍스처처럼 감마 변환하면 안 됩니다.",
+      "speech": "이번에는 화살표를 비스듬히 기울여 보죠. 세 축에 내린 그림자를 따라가면 어느 색 채널이 달라지는지 읽을 수 있어요. 같은 규칙으로 저장하되 세 성분을 각각 따로 옮기는 것입니다. 이 색은 눈에 보일 물감이 아니라 방향을 보관한 데이터예요. 색 텍스처처럼 감마 보정을 적용하면 읽어 낸 화살표까지 엉뚱하게 기웁니다.",
       "sourceParagraphs": [
         "S113-P022"
       ],
@@ -2887,9 +3012,9 @@
       "shot": {
         "beatId": "M23-064",
         "beatIndex": 64,
-        "englishTerm": "8-bit Quantization",
-        "koreanTerm": "8비트 양자화",
-        "meaning": "실수를 정수 채널로 반올림해 저장합니다",
+        "englishTerm": "Normal Data",
+        "koreanTerm": "법선 데이터",
+        "meaning": "화살표와 RGB 표본을 같은 값에서 구합니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
@@ -2898,14 +3023,19 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "영 점 이육칠",
-          "position": 0,
-          "character": 23
+          "phrase": "이번에는 화살표를 비스듬히 기울여 보죠",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "영, 영 점 팔오칠",
-          "position": 0.5,
-          "character": 80
+          "phrase": "같은 규칙으로 저장하되 세 성분을 각각 따로 옮기는 것입니다",
+          "character": 66,
+          "position": 0.3333333333333333
+        },
+        {
+          "phrase": "이 색은 눈에 보일 물감이 아니라 방향을 보관한 데이터예요",
+          "character": 101,
+          "position": 0.6666666666666666
         }
       ],
       "hold": 0,
@@ -2945,7 +3075,7 @@
     {
       "id": "065",
       "sourceBeatId": "M23-066",
-      "speech": "비의 경우를 보죠. 기본 법선이 위쪽이고 접선이 오른쪽이면, 법선 외적 접선은 뒤쪽을 향합니다. 그런데 거울 부호가 마이너스 일이어서 비탄젠트는 다시 앞쪽이 됩니다. 텍셀 백육, 백오십오, 이백오십을 복원하면 대략 마이너스 영 점 일육구, 영 점 이일육, 영 점 구육이입니다. 이 성분을 세 축에 얹으면 모델 방향은 대략 마이너스 영 점 일육구, 영 점 구육이, 영 점 이일육이 됩니다.",
+      "speech": "거울처럼 접힌 무늬에서도 복원한 법선이 어느 쪽을 가리켜야 하는지 보겠습니다. 표면의 바깥쪽 법선과 오른쪽 접선을 그대로 두고, 거울 부호만 뒤집습니다. 두 방향의 외적으로 얻은 세 번째 축은 부호를 따라 반대로 서요. 같은 텍셀을 읽어도 그 축에 실린 몫이 반대로 더해져, 복원된 화살표가 표면에서 다른 쪽으로 기웁니다.",
       "sourceParagraphs": [
         "S113-P025"
       ],
@@ -2954,16 +3084,37 @@
       "shot": {
         "beatId": "M23-066",
         "beatIndex": 66,
-        "englishTerm": "Mirrored Tangent Basis",
-        "koreanTerm": "거울 대칭 접선 기저",
-        "meaning": "부호를 적용해 올바른 세 번째 축을 만듭니다",
+        "englishTerm": "Tangent Handedness",
+        "koreanTerm": "접선 공간의 좌우성",
+        "meaning": "거울 부호만 바꾸면 B가 뒤집힙니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
         "phaseSeconds": [],
         "phasePositions": []
       },
-      "speechPhaseAnchors": [],
+      "speechPhaseAnchors": [
+        {
+          "phrase": "거울처럼 접힌 무늬에서도 복원한 법선이 어느 쪽을 가리켜야 하는지 보겠습니다",
+          "character": 0,
+          "position": 0.0
+        },
+        {
+          "phrase": "표면의 바깥쪽 법선과 오른쪽 접선을 그대로 두고, 거울 부호만 뒤집습니다",
+          "character": 44,
+          "position": 0.25
+        },
+        {
+          "phrase": "두 방향의 외적으로 얻은 세 번째 축은 부호를 따라 반대로 서요",
+          "character": 86,
+          "position": 0.5
+        },
+        {
+          "phrase": "같은 텍셀을 읽어도 그 축에 실린 몫이 반대로 더해져, 복원된 화살표가 표면에서 다른 쪽으로 기웁니다",
+          "character": 123,
+          "position": 0.75
+        }
+      ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
@@ -2972,7 +3123,7 @@
     {
       "id": "066",
       "sourceBeatId": "M23-067",
-      "speech": "나머지 에이, 씨, 디도 순서는 같습니다. 색을 방향으로 풀고, 그 정점의 기저를 만들고, 세 축의 가중합을 구합니다. 화면의 네 화살표를 비교해 보세요. 같은 계열의 보라색 텍셀이라도 정점의 기저가 다르면 물체 위에서는 다른 방향이 됩니다. 입력 법선과 접선이 소수 셋째 자리까지 주어졌으므로, 결과도 근삿값으로 비교합니다.",
+      "speech": "여러 면에 같은 과정을 적용할 때 확인할 기준은 하나입니다. 먼저 각 면 위에서 접선, 비탄젠트, 법선을 찾고, 텍셀에서 꺼낸 세 성분을 그 축에 나누어 실어요. 면이 돌아가면 축도 따라갑니다. 방향 화살표가 무늬와 함께 돌아가는지 보면 좌표 변환이 맞았는지 짐작할 수 있어요. 저장 단계에서 생긴 반올림 오차는 복원한 방향을 정규화해 다루고, 마지막에는 빛과 같은 공간에서 비교합니다.",
       "sourceParagraphs": [
         "S113-P025"
       ],
@@ -2981,9 +3132,9 @@
       "shot": {
         "beatId": "M23-067",
         "beatIndex": 67,
-        "englishTerm": "Normal Reconstruction Exercises",
-        "koreanTerm": "법선 복원 예제",
-        "meaning": "각 기저에서 같은 절차를 수치로 확인합니다",
+        "englishTerm": "Tangent-to-Model Transform",
+        "koreanTerm": "접선 공간에서 모델 공간으로",
+        "meaning": "면이 돌 때 함께 도는 세 축을 봅니다",
         "expandedTerm": true,
         "durationSeconds": 0,
         "stepSeconds": [],
@@ -2997,19 +3148,24 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "나머지 에이",
-          "position": 0,
-          "character": 0
+          "phrase": "여러 면에 같은 과정을 적용할 때 확인할 기준은 하나입니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "씨, 디도",
-          "position": 0.3333333333333333,
-          "character": 8
+          "phrase": "먼저 각 면 위에서 접선, 비탄젠트, 법선을 찾고, 텍셀에서 꺼낸 세 성분을 그 축에 나누어 실어요",
+          "character": 34,
+          "position": 0.25
         },
         {
-          "phrase": "화면의 네 화살표를",
-          "position": 0.6666666666666666,
-          "character": 67
+          "phrase": "면이 돌아가면 축도 따라갑니다",
+          "character": 91,
+          "position": 0.5
+        },
+        {
+          "phrase": "저장 단계에서 생긴 반올림 오차는 복원한 방향을 정규화해 다루고, 마지막에는 빛과 같은 공간에서 비교합니다",
+          "character": 156,
+          "position": 0.75
         }
       ],
       "hold": 0,

@@ -40,7 +40,7 @@ Before perspective division, clipping removes parts outside the viewing volume. 
 
 Sutherland–Hodgman clipping handles one boundary plane at a time. In the start-vertex output convention, an inside-to-inside edge emits its start; outside-to-outside emits nothing; outside-to-inside emits the intersection; inside-to-outside emits the start and intersection. One circuit produces the clipped polygon's vertices.
 
-For a boundary x at most one, an edge from zero to two crosses halfway, at x equals one. Collect the emitted vertices in order, then close the polygon by connecting the last to the first. The algorithm outputs a vertex list. Robust implementations also handle duplicate points and boundary contact, rejecting results with no drawable area.
+Where should an edge that leaves the visible region be cut? A point travelling from the inner endpoint to the outer one eventually touches the boundary. Lowercase t is the fraction travelled. Interpolating the texture coordinates by that fraction keeps the pattern continuous at the cut. Collect the surviving vertices in order and close the polygon. Remove duplicate points and draw it only if it still has area.
 
 Not every off-screen portion has to be clipped geometrically in the same way. Scissoring rejects samples outside a screen rectangle. A guard band extends the permitted region to reduce some geometric clipping. This optimization does not remove the need to handle the near plane or valid homogeneous coordinates.
 
@@ -72,7 +72,7 @@ Normalize the surface normal. Light position minus surface position gives the ve
 
 Diffuse uses the nonnegative normal–light dot product. Specular raises the nonnegative normal–halfway dot product to an exponent. Ambient joins the diffuse illumination before multiplying by diffuse material color; specular material color scales the separate highlight. For an opaque one-sided surface, suppress the highlight when the light is behind it. Perform these color calculations in linear space.
 
-Check one color channel. With attenuated light 0.75, diffuse factor 0.8, ambient 0.1, and diffuse material 0.5, the diffuse result is 0.35. A specular factor of 0.2 and material value 0.4 add 0.06, giving 0.41. Following each contribution helps explain an unexpectedly bright or dark result.
+We want the colour that one point on the surface sends to the screen. Keep the camera and light fixed and raise only the specular strength at the same point on the sphere. The broad base stays the same while the small highlight grows clearer. The yellow dot marks the surface point we are reading. Separating the base and highlight terms shows where to look when the surface gets too bright.
 
 Repeating all work per pixel can be costly. An alternative computes light directions, halfway vectors, or falloff at vertices and interpolates them. Pixel work decreases, but interpolated data grows and nonlinear calculations are approximated. The tradeoff depends on vertex count, screen coverage, and data transfer as well as arithmetic.
 
@@ -104,15 +104,15 @@ Study both the theory behind the calculation and the code that runs it. Fundamen
 
 Consider a 640-by-480 sample image. Filling a 4:3 display gives square pixels. Filling a 16:9 display with the same sample count gives a pixel aspect ratio equal to display aspect divided by sample aspect: four thirds. Each displayed pixel is wider than it is tall.
 
-Split that 4:3 image vertically into two 320-by-480 viewports. Each has aspect ratio two thirds. A horizontal field of view of 60 degrees gives horizontal scale cotangent 30 degrees, about 1.732. Vertical scale is aspect times that value, about 1.155. The narrow viewport therefore shows more vertically while retaining the horizontal field of view.
+To keep objects from stretching in split screen, the camera needs the shape of its viewport. Splitting the screen side by side narrows each player's viewport while its height stays the same. Aspect ratio is viewport width divided by height. Narrow the viewport at fixed horizontal field of view and it admits more of the world vertically.
 
-Vertical field of view is twice the arctangent of the reciprocal vertical scale. With 1.155 it is about 81.8 degrees, wider than the 60-degree horizontal view. Preserving that horizontal field in a tall, narrow viewport requires showing a larger vertical range. This connects aspect ratio, scale, and field of view.
+Now we want the angle between the top and bottom of the visible region. A ray from the camera to the top edge shows half of that angle. The arctangent of the reciprocal vertical zoom gives that half angle. Double it for the full vertical field of view. Change only the viewport width. The horizontal rays stay put while the angle between the vertical rays changes.
 
-Return to the 4:3 split viewport, with near distance one and far distance 256. The horizontal and vertical matrix terms are our scales. Depth terms depend on the camera convention and target range. Default OpenGL-style right-handed viewing uses negative forward z and a minus-one-to-one depth range; the traditional Direct3D left-handed example uses positive forward z and zero-to-one depth.
+With the viewport shape fixed, we can decide which depths it admits. The near and far clipping planes bound that depth. The projection matrix maps the interval into the specified depth range. In the traditional OpenGL example, forward z is negative and depth after division runs from minus one to one. In the Direct3D example here, forward z is positive and depth runs from zero to one.
 
-Verify the matrices by substituting their endpoints. In the OpenGL-style example, z of minus one becomes depth minus one, and minus 256 becomes one. The Direct3D-style example maps z of one to zero and 256 to one. The displayed matrices use column vectors, so transpose them for our earlier row-vector code. These are selected conventions, not immutable API restrictions.
+Move one point from the near plane to the far plane to check the two projection matrices. At the near plane the point reaches the start of that convention's depth range. At the far plane it reaches the end. The displayed matrix uses column vectors. Transpose it when moving to row-vector code to keep the same transformation. Check the coordinate conventions actually selected by the graphics API and camera configuration.
 
-Repeat the split on a 16:9 display. Because the pixels are wider, each viewport's displayed aspect is eight ninths, not merely 320 divided by 480. Horizontal scale stays square root three; vertical scale becomes about 1.540 and vertical field of view about 66 degrees. Sample count and displayed shape both matter.
+The same split produces a different viewport shape on a wider display. Widen only the display. With horizontal field of view fixed, the side rays keep their directions while the vertical rays draw closer. Projection therefore uses the shape in which the viewport is displayed as well as the number of samples.
 
 Next, predict texture placement from UVs. Under repeat addressing, adding an integer preserves the repeated sample location. A rectangle from five to six and minus one to zero covers one repeat. Wider ranges add repetitions, while changing the directions of UV edges rotates or shears the pattern.
 
@@ -122,14 +122,14 @@ Keep the shape and white light fixed, then vary only material. Diffuse color con
 
 A and F have zero specular color, leaving red and blue diffuse bodies. H adds a tight pale highlight to red; I adds a broad white highlight; J uses a blue highlight. On a blue body, B has a tighter red highlight than C or E. D uses a darker body, while G removes diffuse reflection entirely. Changing individual terms creates distinct appearances.
 
-Add one to each normal component, halve that result, multiply by 255, then round to the nearest integer. Minus one, zero, zero becomes (0, 128, 128); zero, zero, one becomes (128, 128, 255). An eight-bit channel has no exact integer representation for the midpoint corresponding to zero.
+Storing a normal in a texture means mapping the three components of its arrow into colour channels. Its horizontal component uses negative and positive values for left and right, but the red channel cannot store negative values. We remap the component range into the colour range. As the arrow leans right, the red swatch brightens. An eight-bit channel rounds to discrete steps, so even the central direction can pick up a small error.
 
-Applying the same rounding gives (162, 59, 230) for (0.267, -0.535, 0.805), and (128, 237, 193) for (0, 0.857, 0.514). These colors store direction data rather than visible surface color, so normal maps must not receive ordinary color-texture gamma conversion.
+Now tilt the arrow obliquely. Its projections onto the three axes tell us which colour channels change. The same rule is applied independently to each component. The colour stores a direction. Applying a display gamma conversion as if it were paint would tilt the decoded arrow incorrectly.
 
 Finally, recover a model-space direction. Divide RGB by 255, double it, and subtract one to decode the tangent-space normal. Prepare an orthonormal vertex basis, then reconstruct the bitangent using the cross product and handedness sign. Multiply the decoded components by tangent, bitangent, and normal respectively, then add them.
 
-Use case B. Its normal points up and tangent right, so their cross product points backward. The minus-one handedness sign flips the bitangent forward. Decoding RGB (106, 155, 250) and normalizing gives roughly (-0.169, 0.216, 0.962). Applying the basis gives a model direction of roughly (-0.169, 0.962, 0.216).
+Let's see where the reconstructed normal should point across a mirrored texture. Hold the outward normal and rightward tangent fixed and flip only the handedness sign. The third axis obtained from their cross product reverses with the sign. Even with the same texel, the contribution along that axis is now added the other way, tilting the reconstructed arrow on the surface.
 
-Cases A, C, and D follow the same procedure: decode the texel, prepare that vertex's basis, and combine the three axes. The four arrows show why similar normal-map colors can point in different model-space directions. The supplied basis values are rounded, so compare approximate results rather than expecting exact equality.
+There is one common test when the method is applied to different faces. Locate the tangent, bitangent and normal on each face, then distribute the three decoded components along those axes. The axes follow the face as it turns. Seeing the direction arrow turn with the pattern gives a visible check of the transformation. Normalize the reconstructed direction after quantization and compare it with the light in the same space.
 
 The object we began with now connects to vertices, coordinate spaces, textures, normals, and depth. The vertex shader prepares positions and attributes; rasterization fills the surface; pixel shading and output operations determine what remains visible. To diagnose an image, follow the same route: where the surface is, which way it faces, and how its color was computed.

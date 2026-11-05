@@ -37,13 +37,24 @@ def main():
             result=subprocess.run(cmd+['--check-resources'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
             state['checkedAt']=now();state['resourceReturnCode']=result.returncode
             state['resourceResult']=(result.stdout+result.stderr)[-6000:];save(statefile,state)
+            if result.returncode==88:
+                state.update(status='superseded-at-resource-boundary',finishedAt=now())
+                save(statefile,state)
+                return
             if result.returncode==0:
                 state.update(status='synthesizing',newTtsStarted=True);save(statefile,state)
                 with (folder/'finite-synthesis.stdout.log').open('w',encoding='utf-8') as out,(folder/'finite-synthesis.stderr.log').open('w',encoding='utf-8') as err:
                     p=subprocess.Popen(cmd+['--synthesize'],cwd=ROOT,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));state['voicePid']=p.pid;save(statefile,state);code=p.wait()
                 if code==0:break
                 error=(folder/'finite-synthesis.stderr.log').read_text(encoding='utf-8')
-                boundary_race='AssertionError: Existing GPU lease preserved; root must coordinate next boundary.' in error
+                # Another job may win the exclusive file creation or start a renderer
+                # between the read-only preflight and synthesis. These exact guards
+                # run before loading the model; don't retry model/encoding failures.
+                boundary_race=(
+                    'AssertionError: Existing GPU lease preserved; root must coordinate next boundary.' in error
+                    or ('FileExistsError: [Errno 17] File exists:' in error and 'GPU_HANDOFF.json' in error)
+                    or "AssertionError: ('Actual game/editor/render apps remain; preserve and let root finish them'" in error
+                )
                 if not boundary_race:raise RuntimeError('Voice worker failed; preserve logs/raw takes for diagnosis')
                 archive=folder/'worker-attempts';archive.mkdir(exist_ok=True);target=archive/f'attempt-{len(list(archive.iterdir()))+1:02}';target.mkdir()
                 for name in ('finite-worker.json','finite-synthesis.stdout.log','finite-synthesis.stderr.log'):shutil.copy2(folder/name,target/name)

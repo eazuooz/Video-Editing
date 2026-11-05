@@ -29,6 +29,10 @@ ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','
          'n':'엔','l':'엘','r':'알','v':'브이','h':'에이치','x':'엑스','y':'와이','z':'제트','t':'티','s':'에스','p':'피','d':'디','a':'에이','b':'비','c':'씨','e':'이','k':'케이','i':'아이','j':'제이','w':'더블유','u':'유'}
 DIGITS='영일이삼사오육칠팔구'
 ALIASES.update({'f':'에프','g':'지'})
+if args.project == 'game-math-circular-motion':
+    # The recorded Euler's-formula cue was recognized as "oiler 공식".
+    # This maps the actual recognized timestamp; neither caption nor speech changes.
+    ALIASES.update({'oiler':'오일러','euler':'오일러'})
 def integer_ko(n):
     n=int(n)
     if n==0:return '영'
@@ -78,6 +82,11 @@ def normalize_owned(s,owners):
     replace(r'포르자\s*호라이즌\s*5(?!\d)','포르자호라이즌파이브')
     replace(r'슈퍼\s*마리오\s*메이커\s*2(?!\d)','슈퍼마리오메이커투')
     for symbol,pronunciation in [('θ','세타'),('ω','오메가'),('π','파이')]:replace(symbol,pronunciation)
+    if args.project=='game-math-velocity-derivatives':
+        replace(r'(?<![a-z])minus(?![a-z])','마이너스')
+        replace(r'(?<![a-z])([xyz])(?=(?:sin|cos|tan)[xyz](?![a-z]))',lambda m:m.group(1)+' ')
+        replace(r'(?<![a-z])(sin|cos|tan)(?=[xyz](?![a-z]))',lambda m:m.group()+' ')
+        replace(r'(?<![a-z])d([xyt])(?![a-z])',lambda m:'d '+m.group(1))
     replace(r'(?<![a-z])([a-z])(?=(?:cos|sin|tan)(?![a-z]))',lambda m:m.group(1)+' ')
     replace(r'(?<![a-z])(?:ix|it|at|bt|et|nt|rt|vt|xy|xz|yz|zt|xt|yt)(?![a-z])',lambda m:' '.join(m.group()))
     # Adjacent numeric N is a newton unit; standalone N stays the vector name.

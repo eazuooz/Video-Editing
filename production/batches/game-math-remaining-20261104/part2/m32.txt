@@ -1,0 +1,20 @@
+# 009
+같은 곡선의 정확한 가운데 위치가 어디인지 직접 찾아볼게요. | Let's locate the midpoint in parameter space on this same curve.
+진행도를 절반에 놓고, 이웃한 제어점 사이의 중점을 표시합니다. 다시 그 점들을 짝지어 중점을 찍으면 마지막에는 점 하나만 남아요. | Set progress to half and mark the midpoint of each neighbouring pair of controls. Repeat with those midpoints until only one point remains.
+그 점은 위로 솟은 두 손잡이보다 아래에 있습니다. 손잡이는 곡선을 끌어당기지만 지나가야 할 표식은 아니라는 것을 이 그림에서 볼 수 있어요. | The point sits below the two raised handles. The picture shows that handles draw the curve towards them without making it pass through them.
+# 024
+이미 그려진 경로에서 원하는 부분만 꺼내려면 새 진행도가 원래 경로의 어디를 가리킬지 정합니다. | To extract a piece of an existing path, map its new progress parameter onto the original one.
+원래 곡선 위에 시작과 끝 표식을 놓고, 새 진행도를 영에서 일까지 움직여 보세요. 노란 점은 두 표식 사이만 지나갑니다. | Put start and end marks on the original curve and sweep new progress from zero to one. The moving point visits only that interval.
+새 진행도에 구간 폭을 곱한 뒤 원래 시작값을 더한 것이 원래 매개변수입니다. 이 값을 위치 함수에 넣으면 선택한 구간의 모양이 그대로 나옵니다. | Multiply new progress by the interval width and add its original start. Substituting that parameter into the position function preserves the selected shape.
+# 025
+베지에 곡선에서는 그 구간을 드 카스텔조의 중간점으로 얻을 수 있습니다. | For a Bézier curve the de Casteljau construction provides that piece directly.
+원하는 분할점에 표시를 놓고 이웃한 제어점끼리 같은 비율로 좁혀 보죠. 마지막에 남은 점이 곡선 위의 분할점입니다. | Mark the split parameter and interpolate neighbouring control points in that ratio. The last point is the split point on the curve.
+삼각형의 한쪽 가장자리를 따라 모은 점은 왼쪽 조각의 제어점이고, 반대 가장자리의 점은 오른쪽 조각의 제어점이 됩니다. | Collect one edge of the construction triangle for the left control polygon and the opposite edge for the right one.
+# 026
+새 조각의 모양이 같아도 이 조각을 어떻게 재생하느냐에 따라 속도는 달라집니다. | The piece keeps its shape, while its playback rate depends on how it is parameterized.
+원래 전체의 일부를 새 진행도의 영에서 일까지에 펼쳐 놓았기 때문이에요. | Part of the original parameter range now spans zero to one on the new parameter.
+새 진행도에 대한 접선을 그리면 방향은 원래와 같고 길이는 원래 구간 폭만큼 조정됩니다. 실제 재생 시간으로 속도를 비교할 때도 그 시간 비율을 함께 적용해야 합니다. | The new derivative points in the original direction but scales by the original interval width. Comparing physical velocity also requires the chosen duration.
+# 027
+정확히 가운데에서 자르면 과정이 눈에 더 잘 보입니다. | Splitting exactly halfway makes the construction easy to see.
+이웃한 점마다 중점을 찍고, 그 중점들 사이에도 다시 중점을 찍습니다. | Mark the midpoint of each neighbouring pair, then take midpoints between those new points.
+마지막 중점은 두 조각이 함께 쓰는 끝점이에요. 왼쪽 손잡이와 오른쪽 손잡이를 다른 색으로 보아도, 완성된 두 곡선을 이으면 원래의 선과 겹칩니다. | The final midpoint is the endpoint shared by the two pieces. Their differently coloured handles generate pieces that together coincide with the original curve.

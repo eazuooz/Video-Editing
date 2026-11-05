@@ -14,6 +14,7 @@ namespace Yamyam.MathMotion {
     [Serializable] public class MotionLessonShot {
         public string beatId="UNBOUND";
         public string diagramMode="";
+        public string guideCaption="";
         public MotionShot motion=new MotionShot();
         public MotionStep[] steps=Array.Empty<MotionStep>();
         public double durationSeconds;
@@ -72,6 +73,8 @@ namespace Yamyam.MathMotion {
             movement.Evaluate((time-movement.shot.startTime)/(movement.shot.endTime-movement.shot.startTime));
             movement.SetExplanation(step.formula,step.meaning);
             Diagram(index,fraction,time);
+            if(!string.IsNullOrEmpty(shot.guideCaption) && !string.IsNullOrEmpty(shot.diagramMode))
+                diagramLabel.text=shot.guideCaption;
         }
         void Path(Color c,params Vector3[] p){LineRenderer line;if(guideCursor==guides.Count){var go=new GameObject("SourceDiagramGuide"+guideCursor);go.transform.SetParent(transform,false);line=go.AddComponent<LineRenderer>();line.sharedMaterial=guideMaterial;line.useWorldSpace=true;line.numCapVertices=5;guides.Add(line);}else line=guides[guideCursor];guideCursor++;line.gameObject.SetActive(true);line.startWidth=line.endWidth=.045f;line.positionCount=p.Length;line.SetPositions(p);var props=new MaterialPropertyBlock();props.SetColor("_BaseColor",c);line.SetPropertyBlock(props);}
         void DiagramArrow(Color color,Vector3 start,Vector3 end){Path(color,start,end);var direction=(end-start).normalized;var side=Vector3.Cross(direction,Vector3.forward).normalized;Path(color,end-direction*.2f+side*.11f,end,end-direction*.2f-side*.11f);}
@@ -135,6 +138,11 @@ namespace Yamyam.MathMotion {
                     diagramLabel.text="위도="+(latitude*180/Math.PI).ToString("0")+"°\n자전 반지름=R cos(위도)\n지구 중심이 아닌 자전축까지 거리";
                 }else{
                     float orbit=earth*(6711f/6371);Ring(yellow,centre,orbit);double angle=phase*Math.PI*2;var satellite=centre+new Vector3((float)Math.Cos(angle),(float)Math.Sin(angle),0)*orbit;Ring(yellow,satellite,.08f);Path(red,centre,satellite);
+                    if(!string.IsNullOrEmpty(shot.guideCaption)){
+                        Vector3 radial=(satellite-centre).normalized,tangent=new Vector3(-radial.y,radial.x,0);
+                        DiagramArrow(teal,satellite,satellite+tangent*.85f);
+                        DiagramArrow(red,satellite,satellite-radial*.65f);
+                    }
                     diagramLabel.text="R=6371 km, h=340 km\nr=R+h=6711 km\n반지름 비율은 실제 예제대로";
                 }
             }else if(mode=="rotating-frame"){

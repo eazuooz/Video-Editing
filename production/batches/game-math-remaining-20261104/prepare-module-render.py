@@ -10,6 +10,12 @@ c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemaini
 P=R/'projects'/a.project;S=P/'production/unity-staging';sandbox=(S/a.sandbox).resolve();assert sandbox.is_relative_to(S)
 assert __import__('re').fullmatch(r'audio-v\d+',a.audio_revision) and __import__('re').fullmatch(r'render-v\d+',a.revision)
 audio=P/'production/local'/a.audio_revision;edit=P/'production/local'/a.audio_revision.replace('audio-','edit-');timeline=edit/'word-aligned-timeline.json';t=read(timeline)
+edition=P/'planning/part2-delivery-edition.json'
+if edition.is_file():
+    assert read(edition)['audioRevision']==a.audio_revision,'The measured speech belongs to an earlier edition'
+    spoken=read(audio/'narration.timing.json')['entries']
+    current=read(P/'script/narration.ko.json')['scenes']
+    assert [(e['scene_id'],e['text']) for e in spoken]==[(s['id'],line) for s in current for line in s['lines']], 'Do not capture scenes against superseded narration'
 assert not t['flags'],'Resolve actual speech, caption and phase differences first'
 assert t['bindingsSha256']==sha(P/'planning/scene-bindings.json') and t['narrationSha256']==sha(audio/'narration.wav')
 assert t['timingSha256']==sha(audio/'narration.timing.json') and t['captionReadingAdjustmentsSha256']==sha(P/'planning/caption-reading-adjustments.json'),'Caption wording or measured speech changed; align this revision again'

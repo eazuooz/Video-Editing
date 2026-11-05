@@ -233,6 +233,9 @@ def render(queue,work,sources,receipt,dest):
     if P.name=='game-math-skinning-normal-map':
         from runpy import run_path
         run_path(str(P/'production/meaning-guides/player.py'))['review_page'](dest,queue)
+    elif (P/'planning/part2-picture-plan.json').is_file():
+        from runpy import run_path
+        run_path(str(Path(__file__).parent/'part2/player.py'))['render'](dest,queue)
     save(work/'progress.json',{'status':'encoded-internal-QA-pending','output':str(dest),'files':[{'path':str(p),'sha256':sha(p)} for p in dest.glob('*')],'originalPcmUnchanged':sha(voice)==receipt['narrationSha256'],'humanReview':False,'finalReviewReady':False,'finishedAt':now()})
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--render',action='store_true');ap.add_argument('--wait-hours',type=float,default=0);a=ap.parse_args()

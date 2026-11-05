@@ -25,7 +25,12 @@ for s in read(P/'planning/footage-audit.json')['sources']:
  assert s['recordingPermission'] and (s.get('publisherRights') or s.get('rights')) and (R/s['file']).is_file()
 for g in p['nativeGameCueBindings']:
  assert g['playbackRate']==1 and not g['freezePadding'] and not g['loop']
- native=g['nativeDecodeEvidence'];assert native.get('decodeExitCode',native.get('returnCode'))==0
+ native=g['nativeDecodeEvidence']
+ if 'clip' in native and 'file' in native:
+  # The shared curve sources keep an indexed receipt for the precise decoded range.
+  sample=next(x for x in read(R/native['file']) if x['clip']==native['clip'])
+  assert sample['exitCode']==0 and sha(R/sample['sourceFile'])==sample['sourceSha256']
+ assert native.get('decodeExitCode',native.get('returnCode',native.get('exitCode')))==0
 runtime=[x for x in (P/'production/unity-staging').glob('local-preflight-v*/progress.json') if read(x)['status']=='images-ready-for-internal-visual-QA']
 assert runtime,'Obtain actual runtime preview evidence before costly speech'
 compile_check=P/'production/unity-staging/compile-check.json'

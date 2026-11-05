@@ -53,6 +53,33 @@ def verified_cpu_research(arguments):
 def command_output(command):
     return subprocess.check_output(command, text=True, creationflags=CREATE_NO_WINDOW)
 
+def passive_python_host(proc, arguments):
+    """Recognise a waiting coordinator, without granting its child a GPU exemption.
+
+    WDDM process registration, utilization/free-memory sampling, game/render
+    detection and exclusive file acquisition are checked independently below.
+    A program doing CPU work or loading any compute/graphics library stays blocked.
+    """
+    import psutil
+    def evidence():
+        cpu=proc.cpu_times()
+        modules=(Path(m.path).name.lower() for m in proc.memory_maps())
+        gpu_tokens=('cuda','cublas','cudnn','torch','onnxruntime','vulkan','d3d11','d3d12','directml','nvencode')
+        if any(any(t in m for t in gpu_tokens) for m in modules):
+            return None
+        return (cpu.user+cpu.system,proc.num_threads())
+    try:
+        paths=[Path(a).resolve() for a in arguments if a.lower().endswith('.py')]
+        coordinator=ROOT/'production/batches/animation-18-20261031/finish_queue.py'
+        known=(paths==[coordinator] and digest(coordinator).lower()=='f669dceda8b56fe5929367733663b86eab768cfdd7e4e370f0a507ba8720888c')
+        idle_input=(arguments[1:] in (['-X','utf8','-'],['-u','-X','utf8','-']) and time.time()-proc.create_time()>90)
+        if not (known or idle_input):return False
+        before=evidence()
+        if before is None or before[0]>2.5 or before[1]>4:return False
+        time.sleep(.25)
+        return before==evidence()
+    except (OSError,psutil.Error,ValueError):
+        return False
 
 def verified_waiting_math_worker(process, arguments):
     """Admit this finite batch's idle coordinators, never their render children.
@@ -182,6 +209,12 @@ def main():
     assert [(s['id'], len(s['lines'])) for s in script['scenes']] == [(s['id'], len(s['lines'])) for s in english['scenes']]
     authorization = read(ROOT / 'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
     assert authorization['productionAllowedNow'] is True and SLUG in authorization['projectSlugs']
+    edition_path = PROJECT / 'planning/part2-delivery-edition.json'
+    if edition_path.is_file() and (args.synthesize or args.check_resources):
+        selected_output = read(edition_path)['audioRevision']
+        if Path(manifest['tts']['outputDir']).name != selected_output:
+            print('A newer speech edition owns this lecture. Earlier files are preserved.')
+            raise SystemExit(88)
     plan = read(PROJECT / 'planning/production-plan.json')
     if args.synthesize:
         assert all(plan.get(k) is True for k in ['sourceFinal','narrationFinal','sceneBindingsFinal']), 'Finish actual source, narration and inspected gameplay binding before synthesis.'
@@ -232,7 +265,7 @@ def main():
         if (name in epic_gui and exe.endswith(epic_gui[name])) or (name == 'eosoverlayrenderer-win64-shipping.exe' and '/epic games/epic online services/managedartifacts/' in exe):
             gui_allow.add(name)
         process_names[info['pid']] = name
-        if SLUG=='game-math-skinning-normal-map' and exe=='c:/program files/windowsapps/microsoft.zunemusic_11.2609.11.0_x64__8wekyb3d8bbwe/microsoft.media.player.exe':
+        if SLUG in authorization['projectSlugs'] and exe=='c:/program files/windowsapps/microsoft.zunemusic_11.2609.11.0_x64__8wekyb3d8bbwe/microsoft.media.player.exe':
             gui_allow.add(name)  # local playback; capacity samples still required
         arguments = [str(a).lower() for a in (info['cmdline'] or [])]
         joined = ' '.join(arguments)
@@ -268,8 +301,8 @@ def main():
         cpu_research = name.startswith('python') and verified_cpu_research(arguments)
         # These exact read-only HTTP servers serve already-rendered local files.
         # Keep games, other Python workers, the WDDM PID check, load samples
-        # and the exclusive lease unchanged. Limit this selection to M22.
-        if compute and name.startswith('python') and SLUG=='game-math-skinning-normal-map':
+        # and the exclusive lease unchanged. This finite math batch uses the same hosts.
+        if compute and name.startswith('python') and SLUG in authorization['projectSlugs']:
             review_servers={
                 'projects/shorts-doom-noise-alert/serve_review.py':('b0d9bcae8eea8e69106fe579729acacc42e09da91acf50bfa7cb0965f9f3e85b',{'9364'}),
                 'production/batches/tech-ten-shorts-20261030/general-review/serve.py':('8a7fd9b973882c64005fa9228cde51b46b7b4dfff13ddffddebf6b43aca8171f',{'9358','9359'}),
@@ -286,6 +319,9 @@ def main():
         if name.startswith('python') and verified_waiting_math_worker(proc, info.get('cmdline') or []):
             compute=False
             baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-verified-waiting-finite-math-coordinator'})
+        if compute and name.startswith('python') and passive_python_host(proc,info.get('cmdline') or []):
+            compute=False
+            baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-passive-CPU-host-no-GPU-modules'})
         reason = 'actual-game' if actual_game else 'foreign-compute-process' if compute else 'editor-background-render' if editor and batch_flags and not import_worker and not idle_capture_server else 'editor-not-explicitly-allowed' if editor and not args.allow_idle_editors else None
         if reason:
             blocked.append({'pid': info['pid'], 'name': info['name'], 'reason': reason, 'batchFlags': batch_flags})

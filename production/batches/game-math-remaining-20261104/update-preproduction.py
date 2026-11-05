@@ -3,6 +3,12 @@ from pathlib import Path
 from datetime import datetime,timezone
 import json,re,subprocess,psutil,time
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
+part2=B/'part2/status.py'
+if part2.exists():
+    selected=json.loads((B/'batch.json').read_text('utf-8-sig'))['items'][2:]
+    if len(selected)==11 and all((R/'projects'/x['slug']/'planning/part2-picture-plan.json').exists() for x in selected):
+        subprocess.run(['python','-X','utf8',str(part2)],cwd=R,check=True)
+        raise SystemExit(0)
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def latest(base,pattern):

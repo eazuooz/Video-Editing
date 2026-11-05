@@ -58,7 +58,12 @@ namespace Yamyam.PipelineTeaching {
   void Finish(){for(int i=lineN;i<lines.Count;i++)lines[i].enabled=false;for(int i=dotN;i<dots.Count;i++)dots[i].SetActive(false);for(int i=tagN;i<tags.Count;i++)tags[i].gameObject.SetActive(false);}
   public void Evaluate(double seconds){if(shot.durationSeconds<=0)throw new InvalidOperationException("Bind approved narration timing first.");double u=PipelineMath.Clamp01(seconds/shot.durationSeconds);if(shot.phaseSeconds.Length>0){if(shot.phaseSeconds.Length!=shot.phasePositions.Length||shot.phaseSeconds.Length<2)throw new InvalidOperationException("Complete phrase clock required");for(int i=1;i<shot.phaseSeconds.Length;i++){double a=shot.phaseSeconds[i-1],b=shot.phaseSeconds[i];if(b<=a||shot.phasePositions[i]<shot.phasePositions[i-1])throw new InvalidOperationException("Monotonic phrase clock required");if(seconds>=a)u=shot.phasePositions[i-1]+(shot.phasePositions[i]-shot.phasePositions[i-1])*PipelineMath.Clamp01((seconds-a)/(b-a));}}EvaluateNormalized((float)u);}
   public void EvaluateNormalized(float u){Build();if(shot.beatIndex<2||shot.beatIndex>68)throw new InvalidOperationException("M23-001 is actual independent gameplay; supply it in the compositor.");u=Mathf.Clamp01(u);Reset();term.text=shot.expandedTerm?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.koreanTerm+" · "+shot.englishTerm;
-   int b=shot.beatIndex;if(b<=29)ApplyPipeline(b,u);else if(b<=51)ApplyShaders(b,u);else ApplyExercises(b,u);Finish();
+   int b=shot.beatIndex;
+   if (guideSphere) guideSphere.SetActive(false);
+   if (!MeaningGuide(b,u)) {
+    if(b<=29)ApplyPipeline(b,u);else if(b<=51)ApplyShaders(b,u);else ApplyExercises(b,u);
+   }
+   Finish();
   }
   int Step(float u,int count){int n=shot.stepOrder.Length>0?shot.stepOrder.Length:count;int index=Mathf.Min(n-1,(int)(u*n));if(shot.durationSeconds>0&&shot.stepSeconds!=null&&shot.stepSeconds.Length==n-1&&shot.phaseSeconds.Length==0){double sec=u*shot.durationSeconds;index=0;while(index<shot.stepSeconds.Length&&sec>=shot.stepSeconds[index])index++;}return shot.stepOrder.Length>0?shot.stepOrder[index]:index;}
   void Present(PBuffer b,bool depth=false){pixels.gameObject.SetActive(true);kind.text="현재 화면\n우리 래스터라이저";var c=new Color[b.color.Length];for(int i=0;i<c.Length;i++)c[i]=depth?new Color((float)b.depth[i],(float)b.depth[i],(float)b.depth[i],1):ColorOf(b.color[i]);frameTexture.SetPixels(c);frameTexture.Apply(false);}

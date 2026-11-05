@@ -36,7 +36,7 @@ The first method is Aitken interpolation. Start with straight interpolants throu
 
 In the formula, multiply the earlier interpolant by the last parameter minus t, and the later one by t minus the first parameter, then divide by the full parameter interval. Each level fits one additional point. Blending two quadratic interpolants this way produces the cubic through four points.
 
-Apply this process to the heights two, three, two, and three. The curve passes through all four points, but rises a little above three and falls below two. It overshoots our desired S shape. Passing exactly through the data does not guarantee the shape we want between samples.
+Can a curve still overshoot after we make it pass through every marked point? Alternate high and low points and mark each instant when the curve must pass through one. The moving point hits every mark yet travels past the intended height between them before returning. To control the shape between points we need conditions beyond their positions.
 
 A different view helps explain why this happens. Lagrange interpolation gives each sample its own weight function. We could solve a linear system for all polynomial coefficients, but instead we will construct the required weight functions directly.
 
@@ -44,7 +44,7 @@ The first weight must equal one at the first sample time and zero at the other t
 
 To make a weight zero at the other sample times, multiply the factors t minus each of those times. Divide by the same product evaluated at its own sample time, so its value there is one. The sample parameter values must be distinct to keep these denominators nonzero.
 
-Substituting zero, one third, two thirds, and one gives the four cubic basis functions shown. The first starts at one, and the middle functions reach one at their assigned samples. Between those samples, weights can become negative or exceed one.
+The height of each basis function tells us how much its point contributes to the path. Move the time marker from the first knot to the last. At each knot its own weight is one and all other weights are zero. Between knots a basis curve can fall below zero or rise above one. A point can pull the other way or too strongly, allowing an overshoot.
 
 Multiply those four functions by two, three, two, and three. The resulting height is eighteen t cubed minus twenty-seven t squared plus ten t plus two. At one half it equals two point five. It is the same curve produced by Aitken interpolation, with the same overshoot.
 

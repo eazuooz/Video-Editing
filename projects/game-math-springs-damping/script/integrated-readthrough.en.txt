@@ -14,7 +14,7 @@ Stiffer springs or lighter bodies oscillate faster, so change the time scale rat
 
 Amplitude sets the maximum displacement; phase sets where in the cycle motion begins. Release from an extreme or begin in the middle with velocity. Position is A times cosine of omega t plus initial phase. Velocity gains a factor of omega; acceleration gains omega squared.
 
-Initial position and velocity determine amplitude and phase. With angular frequency two, initial position zero, and initial velocity two, amplitude is one and phase minus pi over two. Reversing initial velocity preserves amplitude but reverses starting direction. Amplitude and position alone cannot determine that sign. When both initial position and velocity are zero, phase is irrelevant.
+With the same starting position, the initial direction of motion changes a spring's phase. Start at the centre and send the object right, then left at the same speed. The farthest excursion is the same but the initial graph slope reverses. Both starting position and velocity determine amplitude and phase. If both are zero it stays still and no phase distinguishes any movement.
 
 A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. Quadrupling stiffness doubles frequency; quadrupling mass halves it. Pulling farther changes amplitude, but not frequency in the ideal linear model.
 
@@ -22,7 +22,7 @@ Restoring force alone produces perpetual oscillation. Driving force can start or
 
 The spring pulls toward equilibrium; the damper opposes current velocity. Net force is minus k x minus c velocity; dividing by mass gives acceleration. At equilibrium the spring force is zero, while remaining velocity still produces damping. These forces can reinforce or oppose each other depending on position and velocity.
 
-Call the undamped angular frequency omega zero. Damping ratio zeta is coefficient c divided by two times mass times omega zero. The coefficient and the ratio are different. Acceleration becomes minus omega zero squared times position, minus two zeta omega zero times velocity. Mass one, stiffness sixteen, and damping coefficient four give angular frequency four and ratio one half.
+To compare how long oscillations persist, use damping ratio rather than the damping coefficient alone. Omega zero is the undamped angular frequency. Zeta divides the coefficient c by the critical damping coefficient, twice mass times omega zero. Keep the mass and spring fixed and raise damping. Restoration still points to the centre, while the arrow opposing velocity grows and the next swing becomes smaller.
 
 For a ratio between zero and one, the system is underdamped: it crosses the target with decreasing amplitude. Sine and cosine create oscillation while a decaying exponential forms the envelope. Actual angular frequency is omega zero times square root of one minus zeta squared. Two constants match initial position and velocity. At ratio zero, the envelope is one and motion is undamped.
 
@@ -42,7 +42,7 @@ Expose damping ratio and undamped angular frequency rather than raw coefficients
 
 The update need not branch by damping regime. But continuous stability does not imply stability at arbitrary numerical step sizes. Large steps or excessive stiffness can produce growing numerical oscillations. Compare equal conditions at different steps; integration choices follow later.
 
-Without oscillation or a velocity state, use first-order lag. Error changes at minus positive lambda times error. For a fixed target during the interval, an exponential decay factor gives the next value directly. Target one, current zero, lambda two, and half a second give about zero point six three. This is different from second-order spring motion.
+A value that need not oscillate can follow a target using only the remaining error. Place the current value beside a fixed target and let it approach in proportion to the remaining gap. It moves quickly at first and slows near the target. For a positive decay rate lambda the error decreases exponentially with time. This first-order lag has no independent velocity state to carry as a spring does.
 
 Other approaches chase the target at constant speed or filter weighted previous values. Choose according to whether velocity may jump or motion should retain inertia. Springs and damping separately control response speed and oscillation. The structure can control many game quantities, not only physical positions.
 

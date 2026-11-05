@@ -4,7 +4,7 @@ P=Path(__file__).resolve().parent;ROOT=P.parents[3]
 E=Path('C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data');SDK=E/'DotNetSdk'
 CSC=[str(SDK/'dotnet.exe'),str(SDK/'sdk/8.0.318/Roslyn/bincore/csc.dll')]
 dependency=ROOT/'projects/game-math-skinning-normal-map/production/unity-staging'
-sources=[P/n for n in ['PipelineMath.cs','PipelineTeachingStage.cs','PipelineDiagrams.cs','PipelineExercises.cs','PipelineSceneBuilder.cs']]+[dependency/'KnightRigAdapter.cs']
+sources=[P/n for n in ['PipelineMath.cs','PipelineTeachingStage.cs','PipelineDiagrams.cs','PipelineExercises.cs','PipelineMeaningGuides.cs','PipelineSceneBuilder.cs']]+[dependency/'KnightRigAdapter.cs']
 refs=list((E/'Managed/UnityEngine').glob('*.dll'))+[E/'NetStandard/ref/2.1.0/netstandard.dll',ROOT/'unity/VideoEditing/Library/ScriptAssemblies/UnityEngine.UI.dll']
 compile=subprocess.run(CSC+['-nologo','-define:UNITY_EDITOR','-target:library','-langversion:latest','-out:'+str(P/'local-module.dll')]+['-r:'+str(r) for r in refs]+list(map(str,sources)),capture_output=True,text=True)
 result={'csharpCompilation':{'exitCode':compile.returncode,'stdout':compile.stdout,'stderr':compile.stderr},'files':{str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in sources+[P/'PipelineSurface.shader']},'scope':'CPU C# compile and numeric invariants only. No Unity launch, shader compilation, project copy, scene save, GPU/rendering, typography or mobile review.'}

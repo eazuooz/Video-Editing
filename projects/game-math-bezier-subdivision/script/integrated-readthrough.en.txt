@@ -16,7 +16,7 @@ One more blend yields four cubic coefficients. The constant is b zero. The linea
 
 The conversion also works backward. The first control is c zero; the next is c zero plus one third c one. The second interior control adds two thirds c one and one third c two to c zero. The endpoint sums all coefficients. For a fixed degree representation, these controls are uniquely determined.
 
-Try controls zero zero, one two, three two, and four zero, at t equal to one half. The first row is point five one, two two, and three point five one. The next is one point two five one point five and two point seven five one point five. The final point is two, one point five. The handles are at height two, but the curve midpoint is at one point five.
+Let's locate the midpoint in parameter space on this same curve. Set progress to half and mark the midpoint of each neighbouring pair of controls. Repeat with those midpoints until only one point remains. The point sits below the two raised handles. The picture shows that handles draw the curve towards them without making it pass through them.
 
 Hold t at one half and move only the first interior handle upward. The endpoints remain fixed, while the departure direction and the interior change. To quantify that influence, regroup the polynomial by control point rather than by powers of t.
 
@@ -46,13 +46,13 @@ In Satisfactory, rail sections are previewed and connected one at a time. If we 
 
 Map the original interval a through b to a new parameter s from zero through one. First find the interval width, b minus a. Multiply that width by s, then add a to obtain t. Zero maps to a and one to b. Substitute this expression into the original polynomial and regroup by powers of s to obtain an independent polynomial for that section. This is reparameterization.
 
-For p of t equal to t squared, extract point two through point five. Square the entire sum of point two and point three s: point zero four plus point one two s plus point zero nine s squared. Hermite form can also be obtained directly from the new endpoint values and derivatives scaled by the interval width.
+To extract a piece of an existing path, map its new progress parameter onto the original one. Put start and end marks on the original curve and sweep new progress from zero to one. The moving point visits only that interval. Multiply new progress by the interval width and add its original start. Substituting that parameter into the position function preserves the selected shape.
 
-For Bézier curves, reuse the intermediate points already computed. Extract the portion from the start to t equal to point seven five. During de Casteljau evaluation, collect the first point at each level: original start, first point of the first blend, first point of the second blend, and the final point. Those are the new four controls.
+For a Bézier curve the de Casteljau construction provides that piece directly. Mark the split parameter and interpolate neighbouring control points in that ratio. The last point is the split point on the curve. Collect one edge of the construction triangle for the left control polygon and the opposite edge for the right one.
 
-The geometry is unchanged, but the parameter interval differs. With t equal to point seven five s, the derivative with respect to s is point seven five times the original derivative. Its direction stays the same while its magnitude scales. The opposite portion comes from collecting the other edge of the computation triangle in the proper order.
+The piece keeps its shape, while its playback rate depends on how it is parameterized. Part of the original parameter range now spans zero to one on the new parameter. The new derivative points in the original direction but scales by the original interval width. Comparing physical velocity also requires the chosen duration.
 
-Splitting at one half uses only midpoints. For our controls zero zero, one two, three two, four zero, the left controls are zero zero, point five one, one point two five one point five, and two one point five. The right continues with two point seven five one point five, three point five one, and four zero. Joining the pieces preserves the original shape.
+Splitting exactly halfway makes the construction easy to see. Mark the midpoint of each neighbouring pair, then take midpoints between those new points. The final midpoint is the endpoint shared by the two pieces. Their differently coloured handles generate pieces that together coincide with the original curve.
 
 For a general interval a through b, use the same construction with different fractions at each level. The new cubic controls use a three times; a twice and b once; a once and b twice; then b three times. Their order does not matter in exact arithmetic—only their multiplicities. This symmetric extension is called blossoming.
 

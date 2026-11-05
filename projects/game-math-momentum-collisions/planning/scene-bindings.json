@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "game-math-momentum-collisions",
   "updatedAt": "2026-11-04T20:45:02.945098+00:00",
-  "sourceNarrationSha256": "84af01da4d350e054adc4ba88d82c6d20eef82e0731483fb5a4cb8cf8d8a1c2b",
+  "sourceNarrationSha256": "c26a9bf4eee5d3d94f3d7b1a22f5b10748d81aad11101098109ff52f63b9b58e",
   "sourceModelsSha256": "245fc165127da44e965fb1647ce53bfee7406136fbb7431afd9a66c3eb3e9c15",
   "sourceModels": "projects\\game-math-momentum-collisions\\production\\unity-staging\\dynamics-shots.json",
   "status": "complete-design-awaiting-runtime-and-speech-QA",
@@ -373,7 +373,7 @@
     {
       "id": "004",
       "sourceBeatId": "M29-004-impulse-number",
-      "speech": "이 킬로그램 물체에 십 뉴턴을 영점삼 초 동안 가하면 충격량은 삼 뉴턴 초입니다. 질량으로 나누면 속도 변화는 초속 일점오 미터입니다. 원래 초속 일 미터였다면 최종 속도는 이점오입니다. 힘 십 뉴턴, 충격량 삼 뉴턴 초, 현재 운동량은 서로 다른 값입니다.",
+      "speech": "충격량은 힘 화살표 하나의 길이가 아니라, 그 힘이 얼마나 오래 작용했는지까지 담습니다. 힘을 그대로 둔 채 누르는 시간만 늘려 보세요. 힘과 시간 그래프에서 칠한 넓이가 늘고, 그만큼 운동량 화살표가 더 변합니다. 운동량의 변화를 물체의 질량으로 나누면 속도 변화가 됩니다. 원래 속도 끝에 그 변화를 붙이면 나중 속도까지 볼 수 있어요.",
       "sourceParagraphs": [
         "S123-P067",
         "S123-P068",
@@ -388,14 +388,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "십 뉴턴을",
-            "formula": "J = 10 × 0.3 = 3 N·s\nΔv = J/m = 1.5 m/s\nv′ = 1 + 1.5 = 2.5 m/s",
-            "meaning": "",
+            "anchor": "충격량은 힘 화살표 하나의 길이가 아니라, 그 힘이 얼마나 오래 작용했는지까지 담습니다",
+            "formula": "J = ∫ F dt = Δp",
+            "meaning": "같은 힘을 더 오래 가하면 넓이가 늘어납니다",
             "model": {
               "beatId": "M29-004",
               "englishTerm": "Impulse–Momentum Theorem",
               "koreanTerm": "충격량–운동량 정리",
-              "meaning": "숫자로 구분하기",
+              "meaning": "같은 힘을 더 오래 가하면 넓이가 늘어납니다",
               "picture": 0,
               "duration": 0.6,
               "massA": 2,
@@ -410,9 +410,9 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "십 뉴턴을",
-          "position": 0.0,
-          "character": 11
+          "phrase": "충격량은 힘 화살표 하나의 길이가 아니라, 그 힘이 얼마나 오래 작용했는지까지 담습니다",
+          "character": 0,
+          "position": 0.0
         }
       ],
       "clockFields": [
@@ -756,7 +756,7 @@
     {
       "id": "009",
       "sourceBeatId": "M29-009-weighted",
-      "speech": "계산으로는 각 위치에 그곳의 질량을 곱해 더한 뒤 전체 질량으로 나눕니다. 위치 영에 일 킬로그램, 위치 사에 삼 킬로그램이 있으면 합은 십이, 전체 질량은 사입니다. 질량중심은 삼이 됩니다. 기하학적 가운데인 이가 아니라 무거운 쪽에 가까운 값이죠. 물체를 많은 작은 조각으로 나눠도 같은 평균 원리가 이어집니다.",
+      "speech": "질량중심을 찾을 때는 점들이 놓인 위치뿐 아니라 각 점에 얼마의 질량이 있는지를 봅니다. 막대 양쪽에 추를 놓고 한쪽의 질량만 늘려 보죠. 두 점 사이의 중심 표시가 무거워진 쪽으로 다가갑니다. 각 위치에 질량을 곱한 것을 모두 더해 전체 질량으로 나누는 식은 바로 이 위치를 구합니다.",
       "sourceParagraphs": [
         "S123-P047",
         "S123-P048",
@@ -773,14 +773,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "각 위치에",
-            "formula": "c = Σ(mᵢxᵢ) / Σmᵢ",
-            "meaning": "",
+            "anchor": "질량중심을 찾을 때는 점들이 놓인 위치뿐 아니라 각 점에 얼마의 질량이 있는지를 봅니다",
+            "formula": "한쪽 추의 질량만 바꿉니다",
+            "meaning": "두 물체와 가운데 질량중심",
             "model": {
               "beatId": "M29-009",
               "englishTerm": "Mass-Weighted Position",
               "koreanTerm": "질량 가중 위치",
-              "meaning": "질량 가중 평균",
+              "meaning": "한쪽 추의 질량만 바꿉니다",
               "picture": 1,
               "duration": 4,
               "massA": 1,
@@ -790,14 +790,14 @@
             }
           },
           {
-            "anchor": "질량중심은 삼",
-            "formula": "c = (1×0 + 3×4)/(1+3)\n= 3",
-            "meaning": "",
+            "anchor": "막대 양쪽에 추를 놓고 한쪽의 질량만 늘려 보죠",
+            "formula": "c = Σ(mᵢxᵢ) / Σmᵢ",
+            "meaning": "두 물체와 가운데 질량중심",
             "model": {
               "beatId": "M29-009",
               "englishTerm": "Mass-Weighted Position",
               "koreanTerm": "질량 가중 위치",
-              "meaning": "질량 가중 평균",
+              "meaning": "한쪽 추의 질량만 바꿉니다",
               "picture": 1,
               "duration": 4,
               "massA": 1,
@@ -810,14 +810,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "각 위치에",
-          "position": 0.0,
-          "character": 6
+          "phrase": "질량중심을 찾을 때는 점들이 놓인 위치뿐 아니라 각 점에 얼마의 질량이 있는지를 봅니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "질량중심은 삼",
-          "position": 0.5,
-          "character": 94
+          "phrase": "막대 양쪽에 추를 놓고 한쪽의 질량만 늘려 보죠",
+          "character": 50,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -1244,7 +1244,7 @@
     {
       "id": "015",
       "sourceBeatId": "M29-015-stick",
-      "speech": "두 물체가 붙으면 충돌 뒤 속도가 같다는 조건이 생깁니다. 정지한 이 킬로그램 나무토막에 십 그램 탄환이 초속 삼백오십 미터로 박히는 예를 보죠. 십 그램을 영점영일 킬로그램으로 바꾸면 초기 운동량은 삼점오입니다. 충돌 뒤 합친 질량은 이점영일 킬로그램이므로, 속도는 삼점오를 이점영일로 나눈 약 초속 일점칠사 미터입니다. 충돌 직후 수평 운동을 계산한 값입니다.",
+      "speech": "나무토막에 탄환이 박혀 함께 움직이면 충돌 뒤에는 두 물체의 속도가 같아집니다. 나무토막은 처음 정지해 있으므로 들어오는 운동량은 탄환 쪽에서 옵니다. 짧은 충돌 동안 바깥의 충격량을 무시하면, 이 운동량을 두 질량의 합으로 나눈 속도로 함께 나아갑니다. 가벼운 물체가 빠르게 왔어도 무거운 토막과 붙은 뒤에는 천천히 갈 수 있어요.",
       "sourceParagraphs": [
         "S124-P015",
         "S124-P016",
@@ -1264,14 +1264,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "두 물체가 붙으면",
-            "formula": "vA′ = vB′",
-            "meaning": "",
+            "anchor": "나무토막에 탄환이 박혀 함께 움직이면 충돌 뒤에는 두 물체의 속도가 같아집니다",
+            "formula": "붙은 두 물체가 함께 움직일 속도입니다",
+            "meaning": "박히기 전과 붙은 직후의 속도",
             "model": {
               "beatId": "M29-015",
               "englishTerm": "Perfectly Inelastic Collision",
               "koreanTerm": "완전 비탄성 충돌",
-              "meaning": "붙어 움직이는 경우",
+              "meaning": "붙은 두 물체가 함께 움직일 속도입니다",
               "picture": 19,
               "duration": 4,
               "massA": 2,
@@ -1281,14 +1281,14 @@
             }
           },
           {
-            "anchor": "십 그램을",
-            "formula": "10 g = 0.01 kg\np₀ = 0.01 × 350 = 3.5",
-            "meaning": "",
+            "anchor": "나무토막은 처음 정지해 있으므로 들어오는 운동량은 탄환 쪽에서 옵니다",
+            "formula": "v함께 = (p₁ + p₂) / (m₁ + m₂)",
+            "meaning": "박히기 전과 붙은 직후의 속도",
             "model": {
               "beatId": "M29-015",
               "englishTerm": "Perfectly Inelastic Collision",
               "koreanTerm": "완전 비탄성 충돌",
-              "meaning": "붙어 움직이는 경우",
+              "meaning": "붙은 두 물체가 함께 움직일 속도입니다",
               "picture": 19,
               "duration": 4,
               "massA": 2,
@@ -1298,14 +1298,14 @@
             }
           },
           {
-            "anchor": "합친 질량은",
-            "formula": "v′ = 3.5 / 2.01\n≈ 1.74 m/s",
-            "meaning": "",
+            "anchor": "짧은 충돌 동안 바깥의 충격량을 무시하면, 이 운동량을 두 질량의 합으로 나눈 속도로 함께 나아갑니다",
+            "formula": "v함께 = (p₁ + p₂) / (m₁ + m₂)",
+            "meaning": "박히기 전과 붙은 직후의 속도",
             "model": {
               "beatId": "M29-015",
               "englishTerm": "Perfectly Inelastic Collision",
               "koreanTerm": "완전 비탄성 충돌",
-              "meaning": "붙어 움직이는 경우",
+              "meaning": "붙은 두 물체가 함께 움직일 속도입니다",
               "picture": 19,
               "duration": 4,
               "massA": 2,
@@ -1318,19 +1318,19 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "두 물체가 붙으면",
-          "position": 0.0,
-          "character": 0
+          "phrase": "나무토막에 탄환이 박혀 함께 움직이면 충돌 뒤에는 두 물체의 속도가 같아집니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "십 그램을",
-          "position": 0.3333333333333333,
-          "character": 82
+          "phrase": "나무토막은 처음 정지해 있으므로 들어오는 운동량은 탄환 쪽에서 옵니다",
+          "character": 45,
+          "position": 0.3333333333333333
         },
         {
-          "phrase": "합친 질량은",
-          "position": 0.6666666666666666,
-          "character": 125
+          "phrase": "짧은 충돌 동안 바깥의 충격량을 무시하면, 이 운동량을 두 질량의 합으로 나눈 속도로 함께 나아갑니다",
+          "character": 85,
+          "position": 0.6666666666666666
         }
       ],
       "clockFields": [
@@ -1345,7 +1345,7 @@
     {
       "id": "016",
       "sourceBeatId": "M29-016-cars-setup",
-      "speech": "같은 방법을 이차원으로 넓혀 보겠습니다. 첫 차는 천오백 킬로그램이고 서쪽으로 시속 삼십오 킬로미터입니다. 둘째 차는 이천오백 킬로그램, 북쪽에서 서쪽으로 이십오 도 기울어진 방향으로 시속 육십오 킬로미터입니다. 동쪽을 엑스 양수, 북쪽을 와이 양수로 정하면 둘째 차의 방향각은 동쪽 기준 백십오 도입니다. 두 차가 붙는 조건을 유지합니다.",
+      "speech": "같은 방법을 서로 다른 방향으로 오는 자동차 두 대에 적용해 볼게요. 첫 차는 서쪽으로, 다른 차는 북서쪽으로 옵니다. 화면에서 동쪽과 북쪽을 양의 축으로 정하고 두 속도 화살표를 따라가세요. 충돌 뒤 붙는다면 우리가 찾으려는 것은 두 차가 함께 나아갈 방향과 속력입니다.",
       "sourceParagraphs": [
         "S124-P023",
         "S124-P024",
@@ -1363,14 +1363,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "동쪽을 엑스",
-            "formula": "동쪽 +x · 북쪽 +y\n북쪽에서 서쪽 25°\n→ 동쪽 기준 115°",
-            "meaning": "",
+            "anchor": "같은 방법을 서로 다른 방향으로 오는 자동차 두 대에 적용해 볼게요",
+            "formula": "p = mv",
+            "meaning": "두 차의 속도를 같은 축에서 봅니다",
             "model": {
               "beatId": "M29-016",
               "englishTerm": "Two-Dimensional Collision",
               "koreanTerm": "이차원 충돌",
-              "meaning": "두 방향에서 부딪히면",
+              "meaning": "두 차의 속도를 같은 축에서 봅니다",
               "picture": 20,
               "duration": 4,
               "massA": 2,
@@ -1383,9 +1383,9 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "동쪽을 엑스",
-          "position": 0.0,
-          "character": 119
+          "phrase": "같은 방법을 서로 다른 방향으로 오는 자동차 두 대에 적용해 볼게요",
+          "character": 0,
+          "position": 0.0
         }
       ],
       "clockFields": [
@@ -1400,7 +1400,7 @@
     {
       "id": "017",
       "sourceBeatId": "M29-017-cars-solve",
-      "speech": "첫 차의 운동량은 엑스 방향 마이너스 오만이천오백입니다. 둘째 차는 질량과 속력을 곱한 뒤 코사인 백십오 도와 사인 백십오 도로 나눕니다. 두 벡터를 더하면 약 마이너스 십이만천이백과 십사만칠천삼백입니다. 합계 질량 사천으로 나누면 충돌 뒤 속도는 서쪽으로 시속 삼십점삼, 북쪽으로 삼십육점팔 킬로미터가 됩니다. 방향마다 같은 보존식을 적용한 결과입니다.",
+      "speech": "각 차의 속도에 질량을 곱해 운동량 화살표를 만든 뒤, 끝과 시작을 이어서 더합니다. 가로 성분은 가로끼리, 세로 성분은 세로끼리 합치면 최종 화살표는 두 방향 사이를 가리켜요. 그 합을 전체 질량으로 나누면 붙은 차의 속도가 됩니다. 접근 속력 두 개를 그냥 평균내면 질량과 방향을 모두 놓치게 됩니다.",
       "sourceParagraphs": [
         "S124-P029",
         "S124-P030",
@@ -1415,14 +1415,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "첫 차의 운동량",
-            "formula": "pA = (−52,500, 0)\npB = 162,500(cos115°, sin115°)",
-            "meaning": "",
+            "anchor": "각 차의 속도에 질량을 곱해 운동량 화살표를 만든 뒤, 끝과 시작을 이어서 더합니다",
+            "formula": "운동량을 끝과 시작으로 이어 더합니다",
+            "meaning": "두 화살표와 합벡터",
             "model": {
               "beatId": "M29-017",
               "englishTerm": "Momentum Vector Sum",
               "koreanTerm": "운동량 벡터 합",
-              "meaning": "벡터 합으로 구하기",
+              "meaning": "운동량을 끝과 시작으로 이어 더합니다",
               "picture": 20,
               "duration": 4,
               "massA": 2,
@@ -1432,14 +1432,14 @@
             }
           },
           {
-            "anchor": "합계 질량 사천",
-            "formula": "v′ = (pA+pB)/4,000\n≈ (−30.3, 36.8) km/h",
-            "meaning": "",
+            "anchor": "가로 성분은 가로끼리, 세로 성분은 세로끼리 합치면 최종 화살표는 두 방향 사이를 가리켜요",
+            "formula": "P전체 = p₁ + p₂",
+            "meaning": "두 화살표와 합벡터",
             "model": {
               "beatId": "M29-017",
               "englishTerm": "Momentum Vector Sum",
               "koreanTerm": "운동량 벡터 합",
-              "meaning": "벡터 합으로 구하기",
+              "meaning": "운동량을 끝과 시작으로 이어 더합니다",
               "picture": 20,
               "duration": 4,
               "massA": 2,
@@ -1452,14 +1452,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "첫 차의 운동량",
-          "position": 0.0,
-          "character": 0
+          "phrase": "각 차의 속도에 질량을 곱해 운동량 화살표를 만든 뒤, 끝과 시작을 이어서 더합니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "합계 질량 사천",
-          "position": 0.5,
-          "character": 115
+          "phrase": "가로 성분은 가로끼리, 세로 성분은 세로끼리 합치면 최종 화살표는 두 방향 사이를 가리켜요",
+          "character": 48,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -1983,7 +1983,7 @@
     {
       "id": "024",
       "sourceBeatId": "M29-024-height",
-      "speech": "고정 바닥에 초속 십 미터로 내려오는 공의 반발계수가 영점육이면, 올라가는 속력은 초속 육 미터입니다. 일정한 중력에서 최고 높이는 초기 속력의 제곱에 비례합니다. 따라서 연속 반발 높이의 비는 영점육 자체가 아니라 그 제곱인 영점삼육입니다. 일 미터에서 놓았다면 약 영점삼육 미터까지 오릅니다. 또 반발계수 영은 법선 속도만 없애므로, 경사면에서는 옆으로 미끄러질 수 있습니다.",
+      "speech": "공이 바닥에 부딪힌 뒤 얼마나 되튀는지는 접촉면을 향하던 속도를 보면 알 수 있어요. 같은 높이에서 놓고 반발계수만 올리면, 튀어 오르는 수직 화살표가 길어집니다. 같은 중력에서 최고 높이는 출발 속력의 제곱에 비례하므로, 반발 높이의 비율은 반발계수의 제곱입니다. 경사면에서는 법선 방향 속도가 사라져도 면을 따라 미끄러지는 속도는 남을 수 있어요.",
       "sourceParagraphs": [
         "S124-P101",
         "S124-P102",
@@ -1998,14 +1998,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "반발계수가 영점육",
-            "formula": "e = 0.6\n10 m/s → 6 m/s",
-            "meaning": "",
+            "anchor": "공이 바닥에 부딪힌 뒤 얼마나 되튀는지는 접촉면을 향하던 속도를 보면 알 수 있어요",
+            "formula": "같은 바닥에서 반발 정도만 바꿉니다",
+            "meaning": "바닥의 법선과 연속된 최고점",
             "model": {
               "beatId": "M29-024",
               "englishTerm": "Rebound Height Ratio",
               "koreanTerm": "반발 높이 비",
-              "meaning": "높이 비는 제곱",
+              "meaning": "같은 바닥에서 반발 정도만 바꿉니다",
               "picture": 23,
               "duration": 4,
               "massA": 2,
@@ -2016,14 +2016,14 @@
             }
           },
           {
-            "anchor": "그 제곱인",
-            "formula": "hout / hin = e² = 0.36\n1 m 낙하 → 0.36 m 반발",
-            "meaning": "",
+            "anchor": "같은 중력에서 최고 높이는 출발 속력의 제곱에 비례하므로, 반발 높이의 비율은 반발계수의 제곱입니다",
+            "formula": "h다음 / h이전 = e²",
+            "meaning": "바닥의 법선과 연속된 최고점",
             "model": {
               "beatId": "M29-024",
               "englishTerm": "Rebound Height Ratio",
               "koreanTerm": "반발 높이 비",
-              "meaning": "높이 비는 제곱",
+              "meaning": "같은 바닥에서 반발 정도만 바꿉니다",
               "picture": 23,
               "duration": 4,
               "massA": 2,
@@ -2037,14 +2037,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "반발계수가 영점육",
-          "position": 0.0,
-          "character": 24
+          "phrase": "공이 바닥에 부딪힌 뒤 얼마나 되튀는지는 접촉면을 향하던 속도를 보면 알 수 있어요",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "그 제곱인",
-          "position": 0.5,
-          "character": 121
+          "phrase": "같은 중력에서 최고 높이는 출발 속력의 제곱에 비례하므로, 반발 높이의 비율은 반발계수의 제곱입니다",
+          "character": 92,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -2264,7 +2264,7 @@
     {
       "id": "028",
       "sourceBeatId": "M29-028-slope-setup",
-      "speech": "이제 축에 맞지 않는 경사면으로 검산하겠습니다. 바닥을 첫 물체, 공을 둘째 물체로 둡니다. 공의 질량은 영점영오 킬로그램, 속도는 마이너스 사와 마이너스 사입니다. 법선은 일과 삼으로 두어 일부러 단위벡터가 아니게 하죠. 상대속도는 사와 사, 법선과의 내적은 십육, 법선 길이 제곱은 십입니다. 반발계수 영점구이면 케이는 영점일오이입니다.",
+      "speech": "비스듬한 벽에서는 충격을 어느 방향으로 줘야 할까요? 바닥과 공의 접촉점에 법선 화살표를 붙이고, 두 물체의 상대속도를 그 축에 투영합니다. 여기서는 일부러 단위 길이가 아닌 법선을 씁니다. 그래서 식에 법선 길이의 제곱이 들어가며, 표시용 화살표만 길게 그려도 실제 충격이 커지지는 않습니다.",
       "sourceParagraphs": [
         "S124-P075",
         "S124-P076",
@@ -2282,14 +2282,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "법선은 일과 삼",
-            "formula": "vB = (−4, −4)\nn = (1, 3)\n(vA−vB)·n=16, n·n=10",
-            "meaning": "",
+            "anchor": "비스듬한 벽에서는 충격을 어느 방향으로 줘야 할까요",
+            "formula": "경사면을 향하는 속도만 골라냅니다",
+            "meaning": "접촉점에서 시작하는 n, 접선 성분",
             "model": {
               "beatId": "M29-028",
               "englishTerm": "Oblique Contact",
               "koreanTerm": "경사 접촉",
-              "meaning": "비스듬한 바닥 예제",
+              "meaning": "경사면을 향하는 속도만 골라냅니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2300,14 +2300,14 @@
             }
           },
           {
-            "anchor": "케이는",
-            "formula": "k = 1.9×16 / (20×10)\n= 0.152",
-            "meaning": "",
+            "anchor": "바닥과 공의 접촉점에 법선 화살표를 붙이고, 두 물체의 상대속도를 그 축에 투영합니다",
+            "formula": "v법선 = (v상대·n) n / (n·n)",
+            "meaning": "접촉점에서 시작하는 n, 접선 성분",
             "model": {
               "beatId": "M29-028",
               "englishTerm": "Oblique Contact",
               "koreanTerm": "경사 접촉",
-              "meaning": "비스듬한 바닥 예제",
+              "meaning": "경사면을 향하는 속도만 골라냅니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2321,14 +2321,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "법선은 일과 삼",
-          "position": 0.0,
-          "character": 93
+          "phrase": "비스듬한 벽에서는 충격을 어느 방향으로 줘야 할까요",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "케이는",
-          "position": 0.5,
-          "character": 177
+          "phrase": "바닥과 공의 접촉점에 법선 화살표를 붙이고, 두 물체의 상대속도를 그 축에 투영합니다",
+          "character": 30,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -2343,7 +2343,7 @@
     {
       "id": "029",
       "sourceBeatId": "M29-029-slope-ball",
-      "speech": "케이에 법선을 곱하고 질량으로 나누면 속도 변화는 삼점영사와 구점일이입니다. 원래 속도에 더하면 마이너스 영점구육과 오점일이가 됩니다. 공은 위로 튀어 오르지만 왼쪽 성분은 남습니다. 그림의 반사 방향과 식의 결과가 일치하는지 동시에 확인해 보세요.",
+      "speech": "구한 충격량이 바꾼 것은 속도 화살표의 어느 몫인지 확인해 봅니다. 충격량을 질량으로 나누면 속도의 변화입니다. 원래 속도 끝에 이 변화를 이어 붙인 화살표가 충돌 뒤 속도예요. 접촉면을 향하던 몫은 밖으로 돌아서지만, 마찰이 없는 이 모형에서는 면을 따르는 몫이 그대로라 공은 옆으로도 갑니다.",
       "sourceParagraphs": [
         "S124-P081",
         "S124-P082",
@@ -2358,14 +2358,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "속도 변화는",
-            "formula": "ΔvB = (0.152/0.05)(1,3)\n= (3.04, 9.12)",
-            "meaning": "",
+            "anchor": "구한 충격량이 바꾼 것은 속도 화살표의 어느 몫인지 확인해 봅니다",
+            "formula": "원래 속도 끝에 변화량을 붙입니다",
+            "meaning": "충격량 방향과 출사 화살표",
             "model": {
               "beatId": "M29-029",
               "englishTerm": "Post-Collision Velocity",
               "koreanTerm": "충돌 뒤 속도",
-              "meaning": "잘 튀는 공",
+              "meaning": "원래 속도 끝에 변화량을 붙입니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2376,14 +2376,14 @@
             }
           },
           {
-            "anchor": "원래 속도에",
-            "formula": "vB′ = (−4,−4)+(3.04,9.12)\n= (−0.96,5.12)",
-            "meaning": "",
+            "anchor": "충격량을 질량으로 나누면 속도의 변화입니다",
+            "formula": "v뒤 = v앞 + J/m",
+            "meaning": "충격량 방향과 출사 화살표",
             "model": {
               "beatId": "M29-029",
               "englishTerm": "Post-Collision Velocity",
               "koreanTerm": "충돌 뒤 속도",
-              "meaning": "잘 튀는 공",
+              "meaning": "원래 속도 끝에 변화량을 붙입니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2397,14 +2397,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "속도 변화는",
-          "position": 0.0,
-          "character": 21
+          "phrase": "구한 충격량이 바꾼 것은 속도 화살표의 어느 몫인지 확인해 봅니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "원래 속도에",
-          "position": 0.5,
-          "character": 43
+          "phrase": "충격량을 질량으로 나누면 속도의 변화입니다",
+          "character": 38,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -2419,7 +2419,7 @@
     {
       "id": "030",
       "sourceBeatId": "M29-030-slope-beanbag",
-      "speech": "같은 조건에서 반발계수만 영점영일로 바꾸면 케이는 영점영팔영팔입니다. 충돌 뒤 속도는 약 마이너스 이점삼팔사와 영점팔사팔입니다. 거의 튀지 않지만 옆으로 계속 갑니다. 반발계수 일을 넣은 완전 탄성 결과도 함께 보면, 어느 성분이 바뀌고 어느 성분이 유지되는지 더 분명해집니다.",
+      "speech": "같은 충돌에서 반발계수만 낮춰 봅시다. 계수가 영에 가까워질수록 면을 떠나는 법선 속도가 작아집니다. 계수가 일이면 들어올 때의 법선 속력만큼 되돌아 나와요. 옆으로 남는 화살표를 함께 보면 반발계수가 어느 성분을 바꾸는지 분명해집니다.",
       "sourceParagraphs": [
         "S124-P084",
         "S124-P085",
@@ -2437,14 +2437,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "영점영일로 바꾸면",
-            "formula": "e=0.01 → k=0.0808\nvB′=(−2.384,0.848)",
-            "meaning": "",
+            "anchor": "같은 충돌에서 반발계수만 낮춰 봅시다",
+            "formula": "반발을 낮춰도 접선 방향 속도는 남습니다",
+            "meaning": "표면을 벗어나는 법선 성분",
             "model": {
               "beatId": "M29-030",
               "englishTerm": "Changing Restitution Only",
               "koreanTerm": "반발계수만 비교",
-              "meaning": "콩주머니와 비교",
+              "meaning": "반발을 낮춰도 접선 방향 속도는 남습니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2455,14 +2455,14 @@
             }
           },
           {
-            "anchor": "반발계수 일을",
-            "formula": "e=1: 완전 탄성\n법선 성분만 바뀜",
-            "meaning": "",
+            "anchor": "계수가 영에 가까워질수록 면을 떠나는 법선 속도가 작아집니다",
+            "formula": "v법선,뒤 = −e v법선,앞",
+            "meaning": "표면을 벗어나는 법선 성분",
             "model": {
               "beatId": "M29-030",
               "englishTerm": "Changing Restitution Only",
               "koreanTerm": "반발계수만 비교",
-              "meaning": "콩주머니와 비교",
+              "meaning": "반발을 낮춰도 접선 방향 속도는 남습니다",
               "picture": 3,
               "duration": 4,
               "massA": 2,
@@ -2476,14 +2476,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "영점영일로 바꾸면",
-          "position": 0.0,
-          "character": 14
+          "phrase": "같은 충돌에서 반발계수만 낮춰 봅시다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "반발계수 일을",
-          "position": 0.5,
-          "character": 94
+          "phrase": "계수가 영에 가까워질수록 면을 떠나는 법선 속도가 작아집니다",
+          "character": 22,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -2698,7 +2698,7 @@
     {
       "id": "034",
       "sourceBeatId": "M29-034-api",
-      "speech": "이 킬로그램 상자를 초속 삼 미터 더 빠르게 하려면 충격량은 육 뉴턴 초입니다. 충격량 방식이라면 한 번 적용합니다. 같은 변화를 영점오 초 동안 만들려면 십이 뉴턴을 그 시간 동안 가할 수 있죠. 매 프레임 충격량 육을 계속 넣으면 매번 속도가 삼씩 더해집니다. 힘과 충격량의 단위뿐 아니라, 한 번 적용하는지 시간 동안 누적하는지도 구분해야 합니다.",
+      "speech": "게임 코드에서 상자의 속도를 한 번 바꾸고 싶다면 필요한 충격량은 질량과 속도 변화의 곱입니다. 충격량은 한 번 적용합니다. 같은 효과를 힘으로 만들려면 힘을 일정 시간 가해서 그동안의 넓이가 같은 충격량이 되게 해야 해요. 매 프레임 같은 충격량을 또 넣으면 속도 화살표에 변화가 매번 더해집니다. 한 번의 충격과 시간에 걸쳐 누적하는 힘은 이렇게 화면의 움직임으로 구분할 수 있습니다.",
       "sourceParagraphs": [
         "S124-P099",
         "S124-P100"
@@ -2712,14 +2712,14 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "한 번 적용",
-            "formula": "J=6 N·s 한 번 → Δv=3 m/s",
-            "meaning": "",
+            "anchor": "게임 코드에서 상자의 속도를 한 번 바꾸고 싶다면 필요한 충격량은 질량과 속도 변화의 곱입니다",
+            "formula": "한 번 주는 충격과 누적되는 힘을 구분합니다",
+            "meaning": "상자의 속도와 힘-시간 넓이",
             "model": {
               "beatId": "M29-034",
               "englishTerm": "Force versus Impulse",
               "koreanTerm": "힘과 충격량 적용",
-              "meaning": "힘과 충격량을 코드에 넣기",
+              "meaning": "한 번 주는 충격과 누적되는 힘을 구분합니다",
               "picture": 26,
               "duration": 4,
               "massA": 2,
@@ -2729,14 +2729,14 @@
             }
           },
           {
-            "anchor": "영점오 초 동안",
-            "formula": "F=12 N을 0.5초 → J=6 N·s",
-            "meaning": "",
+            "anchor": "충격량은 한 번 적용합니다",
+            "formula": "J = m Δv",
+            "meaning": "상자의 속도와 힘-시간 넓이",
             "model": {
               "beatId": "M29-034",
               "englishTerm": "Force versus Impulse",
               "koreanTerm": "힘과 충격량 적용",
-              "meaning": "힘과 충격량을 코드에 넣기",
+              "meaning": "한 번 주는 충격과 누적되는 힘을 구분합니다",
               "picture": 26,
               "duration": 4,
               "massA": 2,
@@ -2746,14 +2746,14 @@
             }
           },
           {
-            "anchor": "매 프레임",
-            "formula": "매 프레임 J=6 적용은 오류\n매번 Δv=3 m/s 누적",
-            "meaning": "",
+            "anchor": "매 프레임 같은 충격량을 또 넣으면 속도 화살표에 변화가 매번 더해집니다",
+            "formula": "J = m Δv",
+            "meaning": "상자의 속도와 힘-시간 넓이",
             "model": {
               "beatId": "M29-034",
               "englishTerm": "Force versus Impulse",
               "koreanTerm": "힘과 충격량 적용",
-              "meaning": "힘과 충격량을 코드에 넣기",
+              "meaning": "한 번 주는 충격과 누적되는 힘을 구분합니다",
               "picture": 26,
               "duration": 4,
               "massA": 2,
@@ -2766,19 +2766,19 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "충격량 방식이라면 한 번 적용",
-          "position": 0.0,
-          "character": 45
+          "phrase": "게임 코드에서 상자의 속도를 한 번 바꾸고 싶다면 필요한 충격량은 질량과 속도 변화의 곱입니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "영점오 초 동안",
-          "position": 0.3333333333333333,
-          "character": 73
+          "phrase": "충격량은 한 번 적용합니다",
+          "character": 54,
+          "position": 0.3333333333333333
         },
         {
-          "phrase": "매 프레임",
-          "position": 0.6666666666666666,
-          "character": 111
+          "phrase": "매 프레임 같은 충격량을 또 넣으면 속도 화살표에 변화가 매번 더해집니다",
+          "character": 126,
+          "position": 0.6666666666666666
         }
       ],
       "clockFields": [

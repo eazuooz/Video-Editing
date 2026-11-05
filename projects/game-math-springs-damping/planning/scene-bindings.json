@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "game-math-springs-damping",
   "updatedAt": "2026-11-04T20:44:44.731828+00:00",
-  "sourceNarrationSha256": "8c080256b4a084fefc2b72926241f8f2095c9cb7d407ec77d5bdf9a1a072ea07",
+  "sourceNarrationSha256": "4e32db8958d57709f03f6eb8614ca972aebbec77ca32e5df179b47238ebf54c9",
   "sourceModelsSha256": "35d402462d49cb50dc834870a58a5bcd563b2e775410d6fb4c81c62d6a2f231d",
   "sourceModels": "projects\\game-math-springs-damping\\production\\unity-staging\\spring-shots.json",
   "status": "complete-design-awaiting-runtime-and-speech-QA",
@@ -957,7 +957,7 @@
     {
       "id": "008",
       "sourceBeatId": "M28-008-phase-conditions",
-      "speech": "초기 위치와 속도로 진폭과 위상을 계산합니다. 각진동수 이, 시작 위치 영, 시작 속도 초속 이 미터라면 진폭은 일 미터입니다. 위상은 마이너스 파이의 절반이어서 처음에 오른쪽으로 갑니다. 속도를 반대로 바꾸면 진폭은 같아도 출발 방향이 바뀝니다. 진폭과 위치만으로는 이 방향을 정할 수 없습니다. 위치와 속도가 모두 영이면 정지 상태이므로 위상도 의미가 없습니다.",
+      "speech": "처음 위치가 같아도 어느 쪽으로 움직이기 시작하는지에 따라 용수철의 위상이 달라집니다. 가운데에서 출발하는 물체를 오른쪽으로 보냈다가, 같은 속력으로 왼쪽에 보내 볼게요. 가장 멀리 가는 거리는 같지만 처음 그리는 그래프의 기울기가 반대로 뒤집히죠. 시작 위치와 속도가 함께 있어야 진폭과 위상을 정할 수 있습니다. 두 값이 모두 영이면 그대로 멈춰 있어서 위상으로 구별할 움직임도 없습니다.",
       "sourceParagraphs": [
         "S122-P135",
         "S122-P136",
@@ -974,9 +974,9 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "처음에 오른쪽",
-            "formula": "ω=2, x₀=0, v₀=+2\nA=1, φ₀=−π/2",
-            "meaning": "처음 속도가 출발 방향을 결정",
+            "anchor": "처음 위치가 같아도 어느 쪽으로 움직이기 시작하는지에 따라 용수철의 위상이 달라집니다",
+            "formula": "같은 위치에서 출발 속도 방향을 뒤집습니다",
+            "meaning": "추의 시작점과 v 화살표",
             "model": {
               "mass": 1,
               "k": 4,
@@ -996,15 +996,15 @@
               "id": "008",
               "english": "Initial Conditions",
               "korean": "초기 위치와 속도",
-              "meaning": "처음 속도가 출발 방향을 결정",
+              "meaning": "같은 위치에서 출발 속도 방향을 뒤집습니다",
               "equation": "ω=2, x₀=0, v₀=+2\nA=1, φ₀=−π/2",
               "condition": "처음 속도가 출발 방향을 결정"
             }
           },
           {
-            "anchor": "속도를 반대로",
-            "formula": "ω=2, x₀=0, v₀=−2\nA=1, φ₀=+π/2",
-            "meaning": "같은 진폭 · 반대 출발 방향",
+            "anchor": "가운데에서 출발하는 물체를 오른쪽으로 보냈다가, 같은 속력으로 왼쪽에 보내 볼게요",
+            "formula": "x(t) = A cos(ωt + φ)",
+            "meaning": "추의 시작점과 v 화살표",
             "model": {
               "mass": 1,
               "k": 4,
@@ -1024,15 +1024,15 @@
               "id": "008",
               "english": "Initial Conditions",
               "korean": "초기 위치와 속도",
-              "meaning": "같은 진폭 · 반대 출발 방향",
+              "meaning": "같은 위치에서 출발 속도 방향을 뒤집습니다",
               "equation": "ω=2, x₀=0, v₀=−2\nA=1, φ₀=+π/2",
               "condition": "같은 진폭 · 반대 출발 방향"
             }
           },
           {
-            "anchor": "위치와 속도가 모두 영",
-            "formula": "x₀=0, v₀=0 → 정지",
-            "meaning": "진폭이 0이면 위상 의미 없음",
+            "anchor": "가장 멀리 가는 거리는 같지만 처음 그리는 그래프의 기울기가 반대로 뒤집히죠",
+            "formula": "x(t) = A cos(ωt + φ)",
+            "meaning": "추의 시작점과 v 화살표",
             "model": {
               "mass": 1,
               "k": 4,
@@ -1052,7 +1052,7 @@
               "id": "008",
               "english": "Initial Conditions",
               "korean": "초기 위치와 속도",
-              "meaning": "진폭이 0이면 위상 의미 없음",
+              "meaning": "같은 위치에서 출발 속도 방향을 뒤집습니다",
               "equation": "x₀=0, v₀=0 → 정지",
               "condition": "진폭이 0이면 위상 의미 없음"
             }
@@ -1061,19 +1061,19 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "처음에 오른쪽",
-          "position": 0.0,
-          "character": 91
+          "phrase": "처음 위치가 같아도 어느 쪽으로 움직이기 시작하는지에 따라 용수철의 위상이 달라집니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "속도를 반대로",
-          "position": 0.3333333333333333,
-          "character": 106
+          "phrase": "가운데에서 출발하는 물체를 오른쪽으로 보냈다가, 같은 속력으로 왼쪽에 보내 볼게요",
+          "character": 49,
+          "position": 0.3333333333333333
         },
         {
-          "phrase": "위치와 속도가 모두 영",
-          "position": 0.6666666666666666,
-          "character": 167
+          "phrase": "가장 멀리 가는 거리는 같지만 처음 그리는 그래프의 기울기가 반대로 뒤집히죠",
+          "character": 96,
+          "position": 0.6666666666666666
         }
       ],
       "clockFields": [
@@ -1450,7 +1450,7 @@
     {
       "id": "012",
       "sourceBeatId": "M28-012-ratio",
-      "speech": "감쇠가 없을 때의 각진동수를 오메가 영이라고 하겠습니다. 감쇠 계수 씨를 이 곱하기 질량 곱하기 오메가 영으로 나눈 값이 감쇠비 제타입니다. 계수 씨와 비율 제타는 다른 값이죠. 식은 가속도가 마이너스 오메가 영 제곱 곱하기 위치, 마이너스 이 제타 오메가 영 곱하기 속도가 됩니다. 질량 일, 용수철 상수 십육, 감쇠 계수 사라면 각진동수 사, 감쇠비 영점오입니다.",
+      "speech": "진동이 몇 번이나 남을지를 비교하려면 감쇠 계수 자체보다 감쇠비를 보는 편이 편리합니다. 감쇠가 없을 때의 각진동수가 오메가 영이고, 실제 감쇠 계수 씨를 임계 감쇠 계수로 나눈 값이 제타예요. 임계 감쇠 계수는 질량과 오메가 영의 곱을 두 배 한 값입니다. 같은 질량과 용수철에서 감쇠만 키워 보세요. 복원력은 여전히 가운데로 향하지만 속도에 반대인 화살표가 길어져 다음 왕복의 폭이 줄어듭니다.",
       "sourceParagraphs": [
         "S122-P140",
         "S122-P141",
@@ -1469,9 +1469,9 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "이 곱하기",
-            "formula": "ω₀=√(k/m)\nζ=c/(2mω₀)",
-            "meaning": "c의 단위와 무차원 비율 ζ는 다릅니다",
+            "anchor": "진동이 몇 번이나 남을지를 비교하려면 감쇠 계수 자체보다 감쇠비를 보는 편이 편리합니다",
+            "formula": "같은 스프링에서 속도에 맞서는 힘을 키웁니다",
+            "meaning": "복원력과 감쇠력의 작용점",
             "model": {
               "mass": 1,
               "k": 16,
@@ -1491,15 +1491,15 @@
               "id": "012",
               "english": "Damping Ratio",
               "korean": "감쇠비",
-              "meaning": "c의 단위와 무차원 비율 ζ는 다릅니다",
+              "meaning": "같은 스프링에서 속도에 맞서는 힘을 키웁니다",
               "equation": "ω₀=√(k/m)\nζ=c/(2mω₀)",
               "condition": "c의 단위와 무차원 비율 ζ는 다릅니다"
             }
           },
           {
-            "anchor": "질량 일",
-            "formula": "m=1, k=16, c=4\nω₀=4, ζ=0.5",
-            "meaning": "x″=−ω₀²x−2ζω₀x′",
+            "anchor": "감쇠가 없을 때의 각진동수가 오메가 영이고, 실제 감쇠 계수 씨를 임계 감쇠 계수로 나눈 값이 제타예요",
+            "formula": "ζ = c / (2mω₀)",
+            "meaning": "복원력과 감쇠력의 작용점",
             "model": {
               "mass": 1,
               "k": 16,
@@ -1519,7 +1519,7 @@
               "id": "012",
               "english": "Damping Ratio",
               "korean": "감쇠비",
-              "meaning": "x″=−ω₀²x−2ζω₀x′",
+              "meaning": "같은 스프링에서 속도에 맞서는 힘을 키웁니다",
               "equation": "m=1, k=16, c=4\nω₀=4, ζ=0.5",
               "condition": "x″=−ω₀²x−2ζω₀x′"
             }
@@ -1528,14 +1528,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "이 곱하기",
-          "position": 0.0,
-          "character": 41
+          "phrase": "진동이 몇 번이나 남을지를 비교하려면 감쇠 계수 자체보다 감쇠비를 보는 편이 편리합니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "질량 일",
-          "position": 0.5,
-          "character": 159
+          "phrase": "감쇠가 없을 때의 각진동수가 오메가 영이고, 실제 감쇠 계수 씨를 임계 감쇠 계수로 나눈 값이 제타예요",
+          "character": 50,
+          "position": 0.5
         }
       ],
       "clockFields": [
@@ -2591,7 +2591,7 @@
     {
       "id": "022",
       "sourceBeatId": "M28-022-first-order",
-      "speech": "왕복하거나 속도를 기억할 필요가 없으면 일차 지연을 쓸 수 있습니다. 오차의 변화율을 마이너스 람다 곱하기 오차로 두고, 람다는 양수로 잡습니다. 목표가 계산 구간 동안 고정돼 있다면, 남은 거리에 지수 감쇠 비율을 곱해 새 값을 직접 구합니다. 목표 일, 현재 영, 람다 이에서 반 초 뒤에는 약 영점육삼입니다. 용수철의 이계 운동과는 다른 모델입니다.",
+      "speech": "왕복이 필요 없는 값은 얼마나 남았는지 하나만 보고도 목표를 따라갈 수 있습니다. 고정된 목표 옆에 현재 값을 놓고, 남은 거리에 비례해 다가가도록 해 보죠. 처음에는 빨리 움직이고 가까워질수록 천천히 다가갑니다. 감쇠율 람다가 양수이면 남은 오차는 시간에 따라 지수적으로 줄어들어요. 이 일차 지연에는 용수철처럼 따로 기억해야 할 속도 상태가 없습니다.",
       "sourceParagraphs": [
         "S122-P178",
         "S122-P185",
@@ -2607,9 +2607,9 @@
         "stepPositions": [],
         "steps": [
           {
-            "anchor": "일차 지연",
-            "formula": "value=target+(old−target)e^(−λΔt)",
-            "meaning": "목표가 구간 동안 고정된 경우의 정확한 해",
+            "anchor": "왕복이 필요 없는 값은 얼마나 남았는지 하나만 보고도 목표를 따라갈 수 있습니다",
+            "formula": "목표까지 남은 틈을 따라갑니다",
+            "meaning": "목표점과 현재점 사이의 거리",
             "model": {
               "mass": 1,
               "k": 16,
@@ -2630,16 +2630,16 @@
               "id": "022",
               "english": "First-Order Lag",
               "korean": "일차 지연",
-              "meaning": "목표가 구간 동안 고정된 경우의 정확한 해",
+              "meaning": "목표까지 남은 틈을 따라갑니다",
               "equation": "value=target+(old−target)e^(−λΔt)",
               "condition": "목표가 구간 동안 고정된 경우의 정확한 해",
               "lambda": 2
             }
           },
           {
-            "anchor": "반 초 뒤",
-            "formula": "1−e^(−2×.5)≈.632",
-            "meaning": "λ=2, target=1, old=0, Δt=.5s",
+            "anchor": "처음에는 빨리 움직이고 가까워질수록 천천히 다가갑니다",
+            "formula": "e(t) = e(0) exp(−λt)",
+            "meaning": "목표점과 현재점 사이의 거리",
             "model": {
               "mass": 1,
               "k": 16,
@@ -2660,7 +2660,7 @@
               "id": "022",
               "english": "First-Order Lag",
               "korean": "일차 지연",
-              "meaning": "λ=2, target=1, old=0, Δt=.5s",
+              "meaning": "목표까지 남은 틈을 따라갑니다",
               "equation": "1−e^(−2×.5)≈.632",
               "condition": "λ=2, target=1, old=0, Δt=.5s",
               "lambda": 2
@@ -2670,14 +2670,14 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "일차 지연",
-          "position": 0.0,
-          "character": 22
+          "phrase": "왕복이 필요 없는 값은 얼마나 남았는지 하나만 보고도 목표를 따라갈 수 있습니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "반 초 뒤",
-          "position": 0.5,
-          "character": 157
+          "phrase": "처음에는 빨리 움직이고 가까워질수록 천천히 다가갑니다",
+          "character": 89,
+          "position": 0.5
         }
       ],
       "clockFields": [

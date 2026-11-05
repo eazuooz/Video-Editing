@@ -4,7 +4,7 @@ One option is degree elevation. In power form, adding a zero higher-order coeffi
 
 Elevating a cubic to a quartic blends neighboring controls with one quarter and three quarters, then halves, then three quarters and one quarter. Repeated elevation makes evaluation and editing more complex, while influence remains global. High-degree interpolation can also oscillate between samples. This motivates splines made from lower-degree pieces.
 
-Give each piece a local parameter from zero through one. A global parameter of two point three selects segment two—the third segment—and local progress point three. At the final endpoint, handle the boundary explicitly: with n segments and s equal to n, choose segment n minus one at local parameter one rather than a nonexistent segment n.
+Walking several pieces as one path first requires locating the current piece. Assign equal parameter intervals to the pieces. The integer part selects the segment and the fractional part locates the point within it. On the next segment local progress starts at zero again, while joined endpoints should occupy the same position.
 
 For animation, map physical time to the global parameter first. Then select a segment and local progress, and evaluate that curve. Changing the time mapping changes motion along the same route. Advancing the parameter uniformly does not guarantee equal distances in space.
 
@@ -36,7 +36,7 @@ A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the
 
 Use the vector from the previous knot to the next as the middle tangent direction. Giving both incoming and outgoing tangents half that vector produces the uniform Catmull–Rom construction used here. Algebraically, this is the average of the incoming and outgoing control-polygon edges.
 
-For knots zero zero, one two, and four zero, the tangent is two zero. It points right, and sharing it on both sides gives C-one continuity. The local neighbor rule limits the effects of edits to nearby pieces. This uniform parameterization can still overshoot or form loops for some point arrangements, so inspect the resulting route.
+Use the neighbours to construct a tangent at the middle knot. Draw an arrow from the previous to the next point and attach half of it at the middle knot. This is the Catmull–Rom tangent for this uniform spacing. The arriving and departing pieces share the tangent, joining both direction and parametric velocity.
 
 You may want the automatic curve tighter or biased toward one side. Kochanek–Bartels, or TCB, splines offer three controls: tension, continuity, and bias. Setting all three to zero returns the uniform Catmull–Rom construction just used.
 
@@ -58,11 +58,11 @@ Now connect the calculations. For Lagrange nodes zero, one, and two, the first b
 
 Next launch from the origin, reaching height h at one second, then forward distance d at height zero at two seconds. With no sideways movement, x is zero. Constant forward speed gives z equal to d t over two. Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared.
 
-The third example uses controls three five, six one, zero three, and five five. At t equal to point four, blend neighboring points with weights point six and point four. The first row is four point two three point four, three point six one point eight, and two three point eight. Two more blend levels yield three point five six, two point six nine six.
+Now locate the current position on this Bézier curve. Fix the progress marker and locate points in that same ratio between neighbouring controls. Repeat the interpolation between the new points. The final single point is the current curve position. Move the marker and all intermediate points move, making the last point trace the curve.
 
-The same curve in Hermite form keeps its endpoints, with starting derivative nine minus twelve and ending derivative fifteen six. Its power form is x equal to three plus nine t minus twenty-seven t squared plus twenty t cubed, and y equal to five minus twelve t plus eighteen t squared minus six t cubed.
+Rewriting this curve in Hermite form must preserve its path. Keep the two endpoints and form their derivatives from the offsets to the adjacent handles. In monomial form collect the same position function by powers of the parameter. Its inputs look different but the same progress must give the same point.
 
-Substituting point four reproduces the de Casteljau position. Differentiate to check velocity: x is nine minus fifty-four t plus sixty t squared; y is minus twelve plus thirty-six t minus eighteen t squared. At point four it is minus three, minus point four eight, pointing left and slightly downward.
+Place the same progress marker on both representations to check agreement. First compare the two positions, then the tangent arrows attached there. Differentiating each coordinate gives the tangent components. Here it heads left and slightly down. With the same parameter both representations agree in direction and magnitude.
 
 The fourth check sums the quadratic Bernstein weights. Expand the first into one minus two t plus t squared. Add two t minus two t squared, then t squared. Both the linear and quadratic terms cancel, leaving one—the partition-of-unity condition used for the convex hull property.
 
@@ -72,14 +72,14 @@ The eighth case alternates controls start, end, start, end. It may look as thoug
 
 The ninth problem represents the earlier projectile using a cubic Bézier tool. Map its two seconds to u from zero to one. Height becomes four h u times one minus u, and forward position d u. The cubic coefficient is zero. Conversion gives both internal handles height four h over three, with forward positions d over three and two d over three.
 
-The tenth problem transfers an already fitted parabola into a graphical curve tool. Its y function is minus point three six four x squared plus one point one four five x plus two point one one. Map the given starting and ending x values to u zero and one, substitute that x expression into y, and use the same power-to-Bézier conversion.
+Transfer a known parabola to handles in a graphics editor. Select the piece's endpoints on the original parabola. Express horizontal position through new progress, then insert that position into the original height function. Both coordinates now share one progress parameter. Converting those polynomials to Bézier form gives the control points for the editor.
 
-Rounded to four decimal places, the controls are shown. The endpoints lie on the parabola, while the interior controls are tangent handles rather than samples of it. Evaluating them reproduces the prescribed interval. Once a path is expressed as a polynomial, the same conversion works whether it came from fitted observations or a physical formula.
+Connect the controls and overlay the result on the original parabola. The first and last marks lie on the curve. The inner marks are handles setting the endpoint directions, rather than samples to pass through. The control polygon looks different from the curve, yet the transferred piece lies on the original parabola.
 
-Finally extract point two through point five from the curve starting at three five. With new parameter u, the original t is point two plus point three u. Substitute into the position and derivatives to obtain the new endpoints and handles. Remember that derivatives scale by the interval width, point three.
+Finally extract only the interval between two marks on this curve. Map new progress zero to the left mark and one to the right mark. Read both endpoint positions from the original curve and scale their derivatives by the interval width to obtain handles for the new parameter.
 
-To split the same curve in half, collect the de Casteljau midpoints. The left endpoint and right start coincide at three point two five, two point seven five. Different control colors still produce pieces on the original path. When each piece is replayed from zero to one, check the time mapping too.
+Now split the same curve halfway and keep both pieces. Collect the de Casteljau midpoints and the left piece ends exactly where the right begins. The differently coloured pieces still trace the original path. To preserve the motion as each runs from zero to one, match their durations as well.
 
-Elevating this curve to quartic degree gives five controls. The endpoints stay, and the new interior controls are five point two five two, three two, and one point two five three point five. The control polygon changes while the curve overlays exactly. Changing representation degree is not the same as changing the actual path.
+Degree elevation uses one more control point while preserving the curve. Fix the endpoints and place the new interior controls between neighbouring original controls. Two control polygons appear but their curves coincide. The number of handles in an editor and the shape traced by the object are different properties.
 
 Now watch the train following the completed rails through the bends of a long route. We can say which quantities to check when building motion like this ourselves. A long path did not require one enormous formula. It required manageable pieces and explicit rules for joining their positions, directions, and rates of change. The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect. With those criteria, manual handles and automatic tangents become understandable design tools.

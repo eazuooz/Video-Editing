@@ -1,0 +1,41 @@
+# 003
+여러 조각을 하나의 길처럼 걸을 때에는 전체 진행도에서 지금의 조각을 찾아야 합니다. | Walking several pieces as one path first requires locating the current piece.
+각 조각에 같은 길이의 매개변수 구간을 배정하면, 전체 진행도의 정수 부분으로 조각을 고르고 소수 부분으로 그 안의 위치를 찾습니다. | Assign equal parameter intervals to the pieces. The integer part selects the segment and the fractional part locates the point within it.
+표시가 다음 조각으로 넘어가면 그 조각 안의 진행도는 다시 영에서 시작하지만, 서로 붙은 끝점에서는 화면의 위치가 이어져야 합니다. | On the next segment local progress starts at zero again, while joined endpoints should occupy the same position.
+# 019
+가운데 매듭의 접선을 양옆 점을 이용해 정해 볼게요. | Use the neighbours to construct a tangent at the middle knot.
+이전 점에서 다음 점으로 화살표를 그린 뒤 그 절반을 가운데 매듭에 붙입니다. 균일한 매개변수 간격을 쓰는 이 경우의 캣멀 롬 접선이에요. | Draw an arrow from the previous to the next point and attach half of it at the middle knot. This is the Catmull–Rom tangent for this uniform spacing.
+매듭으로 들어오는 조각과 나가는 조각이 같은 접선을 사용하므로 방향과 매개변수 속도가 함께 이어집니다. | The arriving and departing pieces share the tangent, joining both direction and parametric velocity.
+# 030
+이제 같은 베지에 곡선 위에서 현재 위치를 찾아보겠습니다. | Now locate the current position on this Bézier curve.
+진행도 표시를 고정하면 이웃한 제어점 사이에 같은 비율로 놓이는 점들이 생깁니다. | Fix the progress marker and locate points in that same ratio between neighbouring controls.
+그 점들 사이에서 같은 일을 반복하세요. 마지막에 남은 한 점이 현재 곡선 위의 위치입니다. | Repeat the interpolation between the new points. The final single point is the current curve position.
+표시를 움직이면 중간점들이 함께 움직이면서 마지막 점이 곡선을 따라갑니다. | Move the marker and all intermediate points move, making the last point trace the curve.
+# 031
+같은 곡선을 에르미트 형식으로 옮겨도 화면의 경로는 유지되어야 합니다. | Rewriting this curve in Hermite form must preserve its path.
+양 끝의 위치는 그대로 가져오고, 끝점과 옆 손잡이의 차이로 출발과 도착의 도함수를 만듭니다. | Keep the two endpoints and form their derivatives from the offsets to the adjacent handles.
+단항식 형식으로 쓸 때에는 같은 위치 함수를 매개변수의 거듭제곱별 계수로 모읍니다. 표현에 필요한 입력은 달라져도 같은 진행도는 같은 지점을 가리킵니다. | In monomial form collect the same position function by powers of the parameter. Its inputs look different but the same progress must give the same point.
+# 032
+두 표현이 맞는지 보려면 같은 진행도 표시를 두 곡선에 동시에 놓으세요. | Place the same progress marker on both representations to check agreement.
+위치 점들이 겹치는지 먼저 보고, 그 점에서의 접선 화살표도 비교합니다. | First compare the two positions, then the tangent arrows attached there.
+각 좌표의 식을 미분하면 접선의 가로와 세로 성분을 얻어요. 이 지점에서는 화살표가 왼쪽으로 조금 내려갑니다. 같은 매개변수를 쓴 두 표현에서는 이 방향과 크기도 일치합니다. | Differentiating each coordinate gives the tangent components. Here it heads left and slightly down. With the same parameter both representations agree in direction and magnitude.
+# 037
+이미 알고 있는 포물선을 그래픽 편집기의 손잡이로 옮겨 볼게요. | Transfer a known parabola to handles in a graphics editor.
+먼저 원래 곡선 위에서 옮길 구간의 시작과 끝을 정합니다. 가로좌표를 새 진행도의 함수로 놓고, 그 가로좌표를 원래 높이 식에 넣어요. | Select the piece's endpoints on the original parabola. Express horizontal position through new progress, then insert that position into the original height function.
+이제 가로와 세로가 같은 진행도로 움직입니다. 두 좌표의 다항식을 베지에 형식으로 바꾸면 편집기에 넣을 제어점을 얻을 수 있습니다. | Both coordinates now share one progress parameter. Converting those polynomials to Bézier form gives the control points for the editor.
+# 038
+그 제어점들을 실제로 연결해 원래 포물선과 겹쳐 보죠. | Connect the controls and overlay the result on the original parabola.
+처음과 마지막 표식은 곡선 위에 있습니다. 안쪽 두 표식은 지나가야 할 표본점이 아니라, 양 끝에서 움직일 방향을 정하는 손잡이입니다. | The first and last marks lie on the curve. The inner marks are handles setting the endpoint directions, rather than samples to pass through.
+제어 다각형과 곡선은 다르게 보이지만, 옮긴 구간의 경로 자체는 원래 포물선에 포개집니다. | The control polygon looks different from the curve, yet the transferred piece lies on the original parabola.
+# 039
+마지막으로 같은 곡선에서 두 표식 사이만 꺼내겠습니다. | Finally extract only the interval between two marks on this curve.
+새 진행도가 영일 때는 왼쪽 표식, 일일 때는 오른쪽 표식에 도착하도록 원래 진행도를 바꿔 읽습니다. | Map new progress zero to the left mark and one to the right mark.
+양 끝 위치는 원래 곡선에서 가져오고, 끝 도함수에는 구간 폭을 곱해야 새 진행도에 맞는 손잡이 길이가 나옵니다. | Read both endpoint positions from the original curve and scale their derivatives by the interval width to obtain handles for the new parameter.
+# 040
+이번에는 같은 곡선을 가운데에서 나누어 두 조각을 모두 남겨 보죠. | Now split the same curve halfway and keep both pieces.
+드 카스텔조의 중점들을 모으면 왼쪽의 마지막 점과 오른쪽의 첫 점이 같은 자리에 놓입니다. | Collect the de Casteljau midpoints and the left piece ends exactly where the right begins.
+조각을 다른 색으로 그려도 원래 경로는 이어집니다. 각각을 영부터 일까지 다시 재생할 때에는 조각별 시간까지 맞춰야 원래 움직임도 이어져요. | The differently coloured pieces still trace the original path. To preserve the motion as each runs from zero to one, match their durations as well.
+# 041
+제어점을 하나 더 쓰면서 같은 곡선을 유지하는 것이 차수 올리기입니다. | Degree elevation uses one more control point while preserving the curve.
+양 끝을 고정하고 새 안쪽 점들을 원래 이웃 점 사이에 놓습니다. 화면에는 제어 다각형 두 개가 보이지만 경로는 하나로 겹쳐요. | Fix the endpoints and place the new interior controls between neighbouring original controls. Two control polygons appear but their curves coincide.
+그래서 편집기에 보이는 점의 개수와 실제 물체가 지나가는 모양은 구분해서 봐야 합니다. | The number of handles in an editor and the shape traced by the object are different properties.
