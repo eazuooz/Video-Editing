@@ -32,6 +32,10 @@ def select(row):
     aligned=local/rev.replace("audio-","edit-")/"word-aligned-timeline.json"
     if not aligned.exists() or read(aligned).get("bindingsSha256")!=sha(p/"planning/scene-bindings.json"):
         return "자막 정렬",instruction("align","align-module-speech.py",["--project",slug,"--audio-revision",rev])
+    correction=snap(p/"production/part2-review/targeted-recording.json")
+    if correction.get("sourceRevision")==rev:
+        assert correction["episode"]==row["id"] and correction["approvedScope"]=="local grouped course production"
+        return "실제 녹음에서 확인한 문장 교정",instruction("retake","part2/edition.py",[row["id"],correction["targetRevision"],"--retakes"])
     flags=read(aligned)["flags"]
     if flags:return "확인할 대사·자막 시점 "+str(len(flags))+"건",None
     if not (p/"planning/part2-picture-plan.json").is_file():return "기호·화면 대조 중",None
@@ -75,11 +79,13 @@ def cycle():
             continue
         statuses[ep]=state
         if cmd:
+            lane=snap(STATE/"lanes"/(ep+".json"))
+            if lane.get("active") and live(lane):continue
             fail=STATE/(ep+"-"+cmd["step"]+"-error.json")
             if fail.is_file():statuses[ep]="점검 필요 · "+cmd["step"];continue
             options.append(dict(episode=ep,**cmd))
     # Prefer finishing a render whose speech is ready to admitting a new voice.
-    order=["playback-qa","media-qa","mix-qa","encode","capture","compose-check","prepare","preview","align","source-words","voice"]
+    order=["playback-qa","media-qa","mix-qa","encode","capture","compose-check","prepare","preview","retake","align","source-words","voice"]
     options.sort(key=lambda row:order.index(row["step"]))
     return dict(statuses=statuses,action=options[0] if options else None,
                 candidateBatchDone=all(s.startswith(("4파일 생성","사용자 일괄")) for s in statuses.values()))

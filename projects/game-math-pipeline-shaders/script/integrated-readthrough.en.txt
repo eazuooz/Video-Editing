@@ -38,7 +38,7 @@ Follow one position from model coordinates into the world, then into camera coor
 
 Before perspective division, clipping removes parts outside the viewing volume. A triangle crossing the boundary must be cut, not discarded entirely. In the basic Direct3D convention, x and y lie between minus w and w, while z lies between zero and w. OpenGL's default depth convention differs.
 
-Sutherland–Hodgman clipping handles one boundary plane at a time. In the start-vertex output convention, an inside-to-inside edge emits its start; outside-to-outside emits nothing; outside-to-inside emits the intersection; inside-to-outside emits the start and intersection. One circuit produces the clipped polygon's vertices.
+When only part of a triangle crosses the boundary, we need the outline of the part that remains inside. Sutherland–Hodgman clipping checks one boundary plane at a time. Look at the two endpoints of one edge. When both endpoints are inside, write down the start point. When both are outside, write down nothing. For an edge entering the boundary, keep its intersection point. For an edge leaving it, keep the start point and then the intersection. One trip around the outline leaves the clipped polygon's vertices in order.
 
 Where should an edge that leaves the visible region be cut? A point travelling from the inner endpoint to the outer one eventually touches the boundary. Lowercase t is the fraction travelled. Interpolating the texture coordinates by that fraction keeps the pattern continuous at the cut. Collect the surviving vertices in order and close the polygon. Remove duplicate points and draw it only if it still has area.
 

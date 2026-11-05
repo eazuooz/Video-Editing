@@ -4,7 +4,7 @@ Never counts ASR as human listening, rewrites audio, or creates replacement TTS.
 """
 from pathlib import Path
 from datetime import datetime,timezone
-import argparse,difflib,hashlib,json,os,re,subprocess,uuid,time
+import argparse,atexit,difflib,hashlib,json,os,re,subprocess,uuid,time
 
 ROOT=Path(__file__).resolve().parents[3]
 MODEL=Path('C:/Users/1/.cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots/41f01f3fe87f28c78e2fbf8b568835947dd65ed9')
@@ -55,6 +55,16 @@ def main():
     assert control['productionAllowedNow'] and a.project in control['projectSlugs']
     assert re.fullmatch(r'audio-v\d+',a.audio_revision)
     base=ROOT/'projects'/a.project/'production/local'/a.audio_revision;review=base/'review';review.mkdir(exist_ok=True)
+    # A previously started follow-on and the finite course worker can reach the
+    # last take together. Serialize them at the actual audio revision on Windows.
+    import msvcrt
+    word_lock=(review/'source-words.lock').open('a+b')
+    if not word_lock.tell():word_lock.write(b'1');word_lock.flush()
+    word_lock.seek(0)
+    while True:
+        try:msvcrt.locking(word_lock.fileno(),msvcrt.LK_NBLCK,1);break
+        except OSError:time.sleep(3)
+    atexit.register(word_lock.close)
     timing=read(base/'narration.timing.json');voice=base/'narration.wav';voice_hash=sha(voice)
     assert read(base/'tts-gpu-coordination.json')['state']=='finished','Only transcribe a finished speech edition'
     group=ROOT/'projects'/a.project/'planning/part2-delivery-edition.json'

@@ -40,20 +40,30 @@ def groups(rows):
         result.append(dict(koStart=ki,koCount=nk,enStart=ei,enCount=ne,ko=ko,en=en))
         ki+=nk;ei+=ne
     return result
-def prepare(episode,revision):
+def prepare(episode,revision,retakes=None):
     control=read(ROOT/"shared/publishing/video-production-control.json")["explicitMathRemainingBatch20261104"]
     item=next(r for r in read(BATCH/"batch.json")["items"] if r["id"]==episode)
     assert control["productionAllowedNow"] and item["slug"] in control["projectSlugs"] and 23<=int(episode[1:])<=33
     p=ROOT/"projects"/item["slug"]
     src=Path(__file__).parent/(episode.lower()+".txt")
+    edit_digest=sha(src)
+    extras={}
+    if retakes:
+        extra_path=Path(__file__).parent/(episode.lower()+"-retakes.txt")
+        extras=passages(extra_path)
+        edit_digest=hashlib.sha256(src.read_bytes()+b"\0"+extra_path.read_bytes()).hexdigest()
     report=p/"planning/part2-delivery-edition.json"
     if report.exists():
         prev=read(report)
         if prev["audioRevision"]==revision:
-            assert prev["editSha256"]==sha(src),"An edited script requires a new audio revision"
+            assert prev["editSha256"]==edit_digest,"An edited script requires a new audio revision"
             return
         assert int(revision.split("v")[-1])>int(prev["audioRevision"].split("v")[-1])
-    rows=passages(src); prod=p/"production"; target=prod/"local"/revision
+    rows=passages(src);rows.update(extras);prod=p/"production"; target=prod/"local"/revision
+    if retakes:
+        previous_audio=prod/"local"/prev["audioRevision"]
+        assert (previous_audio/"narration.wav").is_file() and (previous_audio/"review/source-full-asr.timestamps.json").is_file()
+        assert read(previous_audio/"finite-worker.json")["status"]=="voice-generated-review-pending"
     assert re.fullmatch(r"audio-v\d+",revision) and int(revision.split("v")[-1])>=2 and not target.exists()
     ko=read(p/"script/narration.ko.json");en=read(p/"script/narration.en.json")
     bindings=read(p/"planning/scene-bindings.json");mapping=read(p/"planning/bilingual-caption-map.json")
@@ -74,6 +84,10 @@ def prepare(episode,revision):
             assert spoken.count(phrase)==1
             anchors.append(dict(phrase=phrase,character=spoken.index(phrase),position=j/len(clauses)))
         scene.update(speech=spoken,speechPhaseAnchors=anchors)
+        if episode=="M23" and sid=="020" and sid in extras:
+            # Each state shown by this rig is a distinct inside/outside case.
+            cases=clauses[2:6];assert len(cases)==4
+            scene["speechPhaseAnchors"]=[dict(phrase=text.rstrip("."),character=spoken.index(text),position=j/4) for j,text in enumerate(cases)]
         game=scene.get("actualGamePart")
         if game and game.get("speechTarget",{}).get("prefixKo") and game["speechTarget"]["prefixKo"] not in spoken:
             game["speechTarget"]["prefixKo"]=clauses[0].split(". ")[0].rstrip(".?!")
@@ -91,13 +105,14 @@ def prepare(episode,revision):
     save(p/"planning/production-plan.json",plan);save(p/"planning/script-integration.json",integ)
     prior=sorted((prod/"local").glob("audio-v*"),key=lambda a:int(a.name.split("v")[-1]),reverse=True)
     reuse={}
+    changed={s["id"] for s in ko["scenes"] if s["lines"][0]!=previous[s["id"]]}|set(extras)
     for folder in prior:
         derived=folder/"narration.lines.ko.json"
         if not derived.exists():continue
         texts={s["id"]:s["lines"][0] for s in read(derived)["scenes"]}
         for f in (folder/"chunks").glob("*-scene.wav"):
             sid=f.name.split("-")[0]
-            if sid in rows or sid in reuse or f.stat().st_size<45 or previous.get(sid)!=texts.get(sid+"-01"):continue
+            if sid in changed or sid in reuse or f.stat().st_size<45 or previous.get(sid)!=texts.get(sid+"-01"):continue
             reuse[sid]=f
     (target/"chunks").mkdir(parents=True)
     reused=[]
@@ -108,9 +123,13 @@ def prepare(episode,revision):
     newmanifest=prod/f"tts-manifest-{revision}.json";save(newmanifest,manifest)
     save(target/"retake-plan.json",dict(sourceAudioPreserved=True,revisedScenes=list(rows),copied=reused))
     save(report,dict(episode=episode,at=datetime.now(timezone.utc).isoformat(),audioRevision=revision,
-         editSha256=sha(src),changedScenes=list(rows),sceneCount=len(ids),copiedTakes=reused,
+         editSha256=edit_digest,changedScenes=list(rows),targetedRetakes=list(extras),sceneCount=len(ids),copiedTakes=reused,
          manifest=newmanifest.relative_to(ROOT).as_posix(),finalReviewReady=False,humanReviewed=False))
     print(episode,len(rows),"revised passages;",len(reused),"preserved takes",newmanifest)
 if __name__=="__main__":
     ap=argparse.ArgumentParser();ap.add_argument("episode");ap.add_argument("revision")
-    a=ap.parse_args();prepare(a.episode,a.revision)
+    ap.add_argument("--retakes",action="store_true")
+    a=ap.parse_args();prepare(a.episode,a.revision,a.retakes)
+    if a.retakes:
+        from figures import bind
+        bind(a.episode)

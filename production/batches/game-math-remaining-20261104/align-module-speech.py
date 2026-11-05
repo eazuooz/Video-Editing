@@ -29,6 +29,14 @@ ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','
          'n':'엔','l':'엘','r':'알','v':'브이','h':'에이치','x':'엑스','y':'와이','z':'제트','t':'티','s':'에스','p':'피','d':'디','a':'에이','b':'비','c':'씨','e':'이','k':'케이','i':'아이','j':'제이','w':'더블유','u':'유'}
 DIGITS='영일이삼사오육칠팔구'
 ALIASES.update({'f':'에프','g':'지'})
+if args.project=='game-math-pipeline-shaders':
+    # The recorded rendering-state passage is recognized with these two
+    # English spellings. Preserve the word times and the on-screen Korean text.
+    ALIASES.update({'shader':'셰이더','texture':'텍스처','aos':'에이오에스','soa':'에스오에이',
+                    'opengl':'오픈지엘','direct3d':'다이렉트삼디','float4':'플로트포','float2':'플로트투',
+                    'sv_position':'에스브이포지션','svposition':'에스브이포지션','sv':'에스브이',
+                    'sv_target':'에스브이타깃','semantic':'시맨틱','halfway':'하프웨이',
+                    'fundamentals':'펀더멘털스','of':'오브','computer':'컴퓨터','graphics':'그래픽스','pbrt':'피비알티'})
 if args.project == 'game-math-circular-motion':
     # The recorded Euler's-formula cue was recognized as "oiler 공식".
     # This maps the actual recognized timestamp; neither caption nor speech changes.
@@ -63,6 +71,9 @@ def normalize_owned(s,owners):
     # Orthographic/number-name equivalence only. Unrecognized speech is not
     # rewritten to the expected script; substantive differences stay flagged.
     for source,target in [('쉐이딩','셰이딩'),('쉐이더','셰이더'),('세이더','셰이더'),('두 배','이배'),('두배','이배'),('여덟 제곱','팔제곱'),('여덟제곱','팔제곱'),('둠 쓰리','둠삼')]:replace(re.escape(source),target)
+    if args.project=='game-math-pipeline-shaders':
+        replace(r'(?<![가-힣])네\s*개','사개')
+        replace(r'(?<![가-힣])두\s*개','이개')
     # Korean particles are attached to Latin symbols (e.g. BRDF가, N과).
     # Latin-only boundaries preserve words such as "normal" while matching those.
     replace(r'(?<=\d),(?=\d{3}(?:\D|$))','')

@@ -177,6 +177,9 @@ def prepare(queue,work):
             receipts.append(annotation_ass(cut,s,work/f'game-{i:03}.ass'))
         elif P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
             frequency_guides(work/f'period-{i:03}.ass',cut['frames']/FPS)
+        elif P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
+            shot=read(work.parent/'shots/020.json')
+            clipping_guides(work/f'clip-plane-{i:03}.ass',cut,shot)
     record={'createdAt':now(),'queueSha256':sha(work.parent/'queue.json'),'narrationSha256':t['narrationSha256'],'captionLayout':layout,'gameAnnotations':receipts,'addedBackgroundMusic':False,'audioChoice':'Original synchronized game audio retained and ducked; source-specific exceptions must be recorded per source. No added lecture BGM.','humanListening':False,'finalVisualQa':False}
     save(work/'preflight.json',record);return sources,record
 
@@ -191,6 +194,29 @@ def frequency_guides(file,duration):
         C.event(lines,begin,duration,r'{\an2\pos('+str((left+right)//2)+','+str(y-4)+r')\fs36\bord2\1c&H'+color+'&}'+label,4)
     bracket(1169,1313,460,'한 주기 T','C2C773',0.35)
     bracket(1133,1709,405,'관찰 시간 Δt','83CEE9',1.1)
+    Path(file).write_text('\n'.join(lines)+'\n',encoding='utf-8')
+
+def clipping_guides(file,cut,shot):
+    lines=C.ass_header();duration=cut['frames']/FPS
+    for x,label,color in [(1320,'안쪽','A6CA88'),(1535,'바깥쪽','ABA0F0')]:
+        C.event(lines,0,duration,r'{\an2\fs43\bord2\pos('+f'{x},338'+r')\1c&H'+color+'&}'+label,4)
+    times=shot.get('phaseSeconds') or [0,shot['durationSeconds']]
+    positions=shot.get('phasePositions') or [0,1]
+    assert len(times)==len(positions) and times[0]==0
+    line_color=r'{\an7\pos(0,0)\p1\bord0\shad0\1c&H83CEE9&}'
+    for start in range(0,cut['frames'],4):
+        t=cut['sourceIn']+start/FPS
+        k=next((j for j in range(1,len(times)) if t<=times[j]),len(times)-1)
+        frac=max(0,min(1,(t-times[k-1])/(times[k]-times[k-1])))
+        u=positions[k-1]+frac*(positions[k]-positions[k-1])
+        if u<.5:continue
+        # ClipDiagram keeps the upper endpoint (.1,.8) fixed while the outer
+        # endpoint is (1.1+.8u,-.4). The right plane is x=1. The verified
+        # orthographic mapping of the native scene is 180 px per diagram unit.
+        y=535-180*(.8-1.2*.9/(1+.8*u))
+        a=start/FPS;b=min(start+4,cut['frames'])/FPS
+        C.event(lines,a,b,line_color+stroke_path([(1452,y-2),(1530,y-30),(1585,y-30)],2.4),3)
+        C.event(lines,a,b,r'{\an4\fs42\bord2\pos('+f'1592,{y-30:.1f}'+r')\1c&H83CEE9&}교점',4)
     Path(file).write_text('\n'.join(lines)+'\n',encoding='utf-8')
 
 def normalized_audio(source,start,frames,target,target_lufs,work,stem,source_decision=None):
@@ -236,6 +262,8 @@ def render(queue,work,sources,receipt,dest):
             picture_source=Path(cut['file']);vf='setsar=1,fps=60'
             if P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
                 vf+=f',ass=period-{i:03}.ass'
+            if P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
+                vf+=f',ass=clip-plane-{i:03}.ass'
         ff(['-ss',picture_start,'-i',picture_source,'-an','-vf',vf,'-frames:v',n,*encoder(),'-movflags','+faststart',v],work/'logs'/(stem+'-video.log'),work)
         video_check(v,n)
         if cut['kind']=='actual-gameplay' and not src.get('excludeOriginalAudioReason'):

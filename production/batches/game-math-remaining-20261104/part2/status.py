@@ -62,7 +62,7 @@ def refresh():
                                      "previewScenes":len(prog.get("completed",[])),"renderScenes":len(rc.get("completed",[])),
                                      "state":state,"localReviewIndex":files.get("index")})
             store(cp,data)
-        if files.get("index") and Path(files["index"]).is_file():
+        if (ep not in PROJECTS or item["localReviewReady"]) and files.get("index") and Path(files["index"]).is_file():
             master="../"+Path(files["index"]).relative_to(ROOT/"output").as_posix()
         link=f'<a href="{escape(master)}">영상 보기</a>' if master else "제작 중"
         html.append(f'<tr><td>{ep}</td><th scope="row">{escape(item["title"])}</th><td>{escape(row["productionStatus"])}</td><td>{escape(row["reviewStatus"])}</td><td>{link}</td></tr>')

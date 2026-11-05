@@ -4,6 +4,17 @@ import argparse,re
 from edition import BATCH,ROOT,read,save,sha,passages
 from preview import build
 
+def diagram_symbols(episode):
+    spellings={"엑스":"x","와이":"y","제트":"z","더블유":"w",
+               "세타":"θ","오메가":"ω","람다":"λ","델타":"Δ"}
+    if episode=="M23":
+        spellings.update({"에이오에스":"AoS","에스오에이":"SoA","플로트 포":"float4","플로트 투":"float2",
+                          "다이렉트삼디":"Direct3D","에스브이 포지션":"SV_Position","에스브이 타깃":"SV_Target",
+                          "펀더멘털스 오브 컴퓨터 그래픽스":"Fundamentals of Computer Graphics",
+                          "프린서플스 오브 디지털 이미지 신서시스":"Principles of Digital Image Synthesis",
+                          "피비알티":"PBRT","리얼타임 렌더링":"Real-Time Rendering"})
+    return spellings
+
 # Formula inputs are bound to each native teaching rig: the graph or game object's state,
 # not a second independently animated value. Only the teaching text changes here.
 def bind(episode):
@@ -25,6 +36,8 @@ def bind(episode):
          "063":("Normal Data","법선 데이터","화살표와 RGB 표본을 같은 값에서 구합니다"),
          "065":("Tangent Handedness","접선 공간의 좌우성","거울 부호만 바꾸면 B가 뒤집힙니다"),
          "066":("Tangent-to-Model Transform","접선 공간에서 모델 공간으로","면이 돌 때 함께 도는 세 축을 봅니다")}
+        if "020" in read(p/"planning/part2-delivery-edition.json").get("targetedRetakes",[]):
+            terms["020"]=("Sutherland–Hodgman Clipping","서덜랜드–호지먼 클리핑","경계면 안쪽에 남는 꼭짓점을 순서대로 적습니다")
         for sid,(en,ko,goal) in terms.items():
             binding["scenes"][int(sid)]["shot"].update(englishTerm=en,koreanTerm=ko,meaning=goal)
             changes[sid]=dict(purpose=goal,figure="Unity / PipelineMeaningGuides")
@@ -73,6 +86,9 @@ def bind(episode):
         "씨 영 연속":"C⁰ 연속","씨 일 연속":"C¹ 연속","씨 이 연속":"C² 연속",
         "지 영 연속":"G⁰ 연속","지 일 연속":"G¹ 연속","지 이 연속":"G² 연속",
         "피에스아이":"psi","킬로헤르츠":"kHz","슈퍼 마리오 메이커 투":"슈퍼 마리오 메이커 2"}
+    # These pronounced letters denote the diagram's coordinates and symbols
+    # in this course. Keep the recorded Korean separate from their printed forms.
+    spellings.update(diagram_symbols(episode))
     adjustments.setdefault("koPrintedForms",{}).update(spellings)
     save(display,adjustments)
     # The M23 diagnostics have already run on the new compiled guides; the

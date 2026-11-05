@@ -97,6 +97,15 @@ def verified_waiting_math_worker(process, arguments):
         def value(flag):
             return arguments[arguments.index(flag)+1] if flag in arguments else None
         statefile = None
+        if selected==(batch/'part2/finish_lesson.py').resolve():
+            ep=arguments[-1]
+            if not __import__('re').fullmatch(r'M(?:2[3-9]|3[0-3])',ep):return False
+            if digest(selected)!='f2d5adca3d7a7aeb8d99168edea5f3edc769931a9d9ee21ab58a95880b0d139b':return False
+            lane=read(batch/'local/part2-20261106/lanes'/f'{ep}.json')
+            # This exact program dispatches a separate process for every job.
+            # Its children, WDDM registrations and memory load are still checked.
+            return (lane.get('active') and lane.get('episode')==ep and lane.get('pid')==process.pid
+                    and abs(lane.get('createTime',0)-process.create_time())<.1)
         if selected in [(batch/'finish-selected-voice.py').resolve(), (batch/'finish-word-review.py').resolve()]:
             slug = value('--project')
             if slug not in read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['projectSlugs']:
