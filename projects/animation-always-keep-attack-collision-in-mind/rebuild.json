@@ -1,0 +1,2091 @@
+{
+  "schemaVersion": 1,
+  "slug": "animation-always-keep-attack-collision-in-mind",
+  "policy": "metadata-only-v1",
+  "notes": [
+    "Media binaries are not in Git, including archives. Keep originals in external storage.",
+    "The complete project settings below preserve approval/rights/outro warnings. This file does not grant publication approval.",
+    "Native timeline units and source-offset semantics are preserved; consult the named producer script before editing.",
+    "TTS regeneration is not byte-identical: revalidate duration, cuts, mix and BOTH SRTs."
+  ],
+  "projectSettings": {
+    "slug": "animation-always-keep-attack-collision-in-mind",
+    "title": "공격 판정과 동작 설계 | 공격 동작과 판정은 왜 함께 설계해야 할까?",
+    "status": "local-delivery-user-review-pending",
+    "revision": "series-v1",
+    "format": "animation-series",
+    "sourceReference": "https://www.youtube.com/watch?v=rwwF_4blK-o",
+    "sourceClassification": "research-reference-only",
+    "voice": "local-Qwen-own-voice",
+    "authorization": "production/batches/animation-18-20261031/batch.json",
+    "humanFinalReview": false,
+    "titles": {
+      "ko": "공격 판정과 동작 설계 | 공격 동작과 판정은 왜 함께 설계해야 할까?"
+    },
+    "sources": [
+      "https://www.youtube.com/watch?v=rwwF_4blK-o"
+    ],
+    "paths": {
+      "script": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.ko.json",
+      "scriptKo": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.ko.json",
+      "scriptEn": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.en.json",
+      "videoClean": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/clean.mp4",
+      "videoBurnedCaptions": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captioned.mp4",
+      "captionsKo": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.ko.srt",
+      "captionsEn": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.en.srt",
+      "audioMix": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/final-mix.wav",
+      "timeline": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json"
+    },
+    "editing": {
+      "targetGameplayShare": 0.6,
+      "sourceMinimum": [
+        1920,
+        1080
+      ],
+      "output": [
+        1920,
+        1080,
+        60
+      ],
+      "sourceSelection": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/source-selection.json"
+    },
+    "tts": {
+      "language": "Korean",
+      "model": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
+      "reference": "shared/voice-reference/reference-15-35s.wav",
+      "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
+      "outputDir": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/voice",
+      "filenameStem": "narration",
+      "renderMode": "scene",
+      "sceneGapSeconds": 0.25,
+      "tailRatioThreshold": 0.07,
+      "tailDecayMsThreshold": 70,
+      "maxRenderAttempts": 3,
+      "maxNewTokens": 2048,
+      "gpuMinimumFreeMiB": 8192,
+      "gpuProfileReason": "Single scene, batch one on the installed 16GB card. Existing shared guard serializes GPU work."
+    },
+    "delivery": {
+      "localStorageRoot": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/delivery",
+      "captionedMasterSha256": "f4f7c33160a1ed937ef1f7813d4531d57571b84f0072a7f7c0021818364640e2"
+    },
+    "seriesOrder": "A16",
+    "publishReady": false,
+    "platformStatus": "local-only"
+  },
+  "counts": {
+    "scriptScenes": 4,
+    "timelineScenes": 40,
+    "clipRecords": 0,
+    "selectedEditRecords": 40,
+    "referencedMediaFiles": 9,
+    "formerlyTrackedMediaFiles": 0
+  },
+  "sceneScript": {
+    "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.ko.json",
+    "data": {
+      "scenes": [
+        {
+          "id": "01",
+          "title": "보이는 칼과 맞았다는 판정",
+          "lines": [
+            "공격 애니메이션은 멋진 자세를 보여 주는 동시에, 어디를 언제 때리는지도 전달해야 합니다. 동작은 그럴듯한데 타격 결과가 예상과 다르면 조작의 감각도 흔들립니다. 오늘은 눈에 보이는 무기와 공격 판정의 차이에서 시작해, 공격이 지나가는 경로와 명중 순간의 포즈를 차례로 맞춰 보겠습니다. 게임에서 공격이 닿았는지 검사하는 영역을 공격 판정 영역, 히트박스라고 합니다. 상대의 몸에서 공격을 받는 영역은 피격 판정 영역, 허트박스입니다. 두 영역이 어떤 조건에서 겹치는지를 보고 명중을 결정할 수 있습니다. 칼을 그리는 모델과 명중을 검사하는 영역은 목적이 다릅니다. 빠르게 지나가는 칼날 모양에만 지나치게 작은 판정을 맞추면, 플레이어가 맞을 것이라고 기대한 상황에서도 빗나가기 쉬울 수 있습니다. 그래서 공격 범위를 조절해 납득할 만한 조작감을 만듭니다. 우리 시연에서는 같은 검과 같은 휘두름을 유지하고 판정 범위만 바꿔 보겠습니다. 다만 넓으면 무조건 좋다는 뜻은 아닙니다. 눈에 보이는 공격과 결과 사이의 관계가 이해되어야 합니다."
+          ]
+        },
+        {
+          "id": "02",
+          "title": "옆에서 겹쳐 보여도 실제 경로는 다를 수 있다",
+          "lines": [
+            "판정의 크기를 조금 조절하는 것과 공격 위치를 엉뚱한 곳에 두는 것은 다른 문제입니다. 옆에서 보는 화면에서는 검과 상대가 겹쳐 보여도, 위에서 내려다보면 검이 상대의 앞이나 뒤를 지나갈 수 있습니다. 한 카메라에서 보기 좋은 자세만으로는 이 차이를 찾기 어렵습니다. 우리 격자에는 캐릭터와 상대가 놓이는 기준 평면을 표시하겠습니다. 플레이 카메라와 위쪽 관찰 카메라는 같은 순간을 보여 줍니다. 먼저 검끝이 기준 경로를 벗어나는 자세를 보고, 몸의 방향과 팔의 궤적을 바꿔 상대가 있는 곳을 지나가게 만들겠습니다. 판정만 상대 쪽으로 옮기면 일단 맞게 만들 수는 있습니다. 하지만 칼은 다른 곳을 지나가는데 상대가 맞는다면 화면의 설명력이 떨어집니다. 플레이 감각을 위해 범위를 조금 보완하는 것과 동작 자체의 위치가 어긋난 것은 구분해야 합니다. 애니메이션의 공격 경로와 판정이 같은 행동을 가리키도록 만드는 것이 우선입니다."
+          ]
+        },
+        {
+          "id": "03",
+          "title": "어느 자세에서 맞게 할 것인가",
+          "lines": [
+            "지나가는 위치를 맞췄다면, 이제 어느 순간부터 공격 판정을 켤지 정해야 합니다. 팔이 움직이는 전체 시간 내내 상대를 때릴 수 있는 것은 아닐 수 있습니다. 실제로 공격 판정이 켜져 있는 구간을 활성 프레임이라고 합니다. 같은 휘두름에서도 손이 몸 가까이에 있는 순간과 팔이 뻗어 몸의 방향이 드러나는 순간은 다른 인상을 줍니다. 명중 순간에 잠깐 움직임을 멈추는 히트 스톱을 넣으면, 그때의 포즈가 특히 눈에 남습니다. 그래서 판정을 켜는 시점은 타격 자세의 연출과도 연결됩니다. 우리 시연에서는 같은 검의 움직임에서 활성 구간만 옮겨 보겠습니다. 어느 포즈가 명중 순간에 남는지 나란히 확인하고, 실제 속도로도 다시 보겠습니다. 휘두르기 시작하자마자 판정을 켜는 것만이 선택지는 아닙니다. 동작 중간의 더 분명한 자세에서 명중하도록 조절할 수도 있습니다. 다만 위치와 타이밍 모두 플레이어가 보는 행동과 납득할 수 있게 이어져야 합니다."
+          ]
+        },
+        {
+          "id": "04",
+          "title": "동작과 판정을 따로 완성하지 않기",
+          "lines": [
+            "이 연결을 마지막에 판정 담당자에게만 맡기면, 이미 완성한 동작을 크게 고쳐야 할 수 있습니다. 애니메이터가 공격의 경로와 명중 순간을 생각하고, 게임플레이를 조절하는 사람이 포즈의 인상을 함께 보면 더 일관된 결과를 만들 수 있습니다. 처음의 공격으로 돌아가 보겠습니다. 외형보다 조금 보완된 판정 범위, 상대를 지나는 궤적, 강한 자세가 남는 활성 시점은 서로 연결된 선택입니다. 보기 좋은 공격과 납득할 수 있는 타격은 별개의 완성품이 아닙니다. 같은 행동이 화면과 규칙 양쪽에서 잘 전달될 때 조작의 감각도 분명해집니다."
+          ]
+        }
+      ]
+    }
+  },
+  "editRecords": [
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 0,
+      "data": {
+        "chapter": "01",
+        "start": 120,
+        "key": "great",
+        "sourcePoint": 18,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 1,
+        "frames": 342
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 1,
+      "data": {
+        "chapter": "01",
+        "start": 462,
+        "key": "duel",
+        "sourcePoint": 28,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 2,
+        "frames": 304
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 2,
+      "data": {
+        "chapter": "01",
+        "start": 766,
+        "key": "lili",
+        "sourcePoint": 294,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 3,
+        "frames": 470
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 3,
+      "data": {
+        "chapter": "01",
+        "start": 1236,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 4,
+        "frames": 283
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 4,
+      "data": {
+        "chapter": "01",
+        "start": 1519,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 5,
+        "frames": 265
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 5,
+      "data": {
+        "chapter": "01",
+        "start": 1784,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 6,
+        "frames": 315
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 6,
+      "data": {
+        "chapter": "01",
+        "start": 2099,
+        "key": "great",
+        "sourcePoint": 42,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 7,
+        "frames": 254
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 7,
+      "data": {
+        "chapter": "01",
+        "start": 2353,
+        "key": "duel",
+        "sourcePoint": 46,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 8,
+        "frames": 89
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 8,
+      "data": {
+        "chapter": "01",
+        "start": 2442,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 8,
+        "frames": 404
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 9,
+      "data": {
+        "chapter": "01",
+        "start": 2846,
+        "key": "lili",
+        "sourcePoint": 320,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 9,
+        "frames": 252
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 10,
+      "data": {
+        "chapter": "01",
+        "start": 3098,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 10,
+        "frames": 314
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 11,
+      "data": {
+        "chapter": "01",
+        "start": 3412,
+        "key": "duel",
+        "sourcePoint": 63,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 11,
+        "frames": 220
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 12,
+      "data": {
+        "chapter": "01",
+        "start": 3632,
+        "key": "great",
+        "sourcePoint": 70,
+        "focus": "검끝이 상대를 지나는 순간",
+        "cue": 12,
+        "frames": 241
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 13,
+      "data": {
+        "chapter": "02",
+        "start": 3873,
+        "key": "great",
+        "sourcePoint": 85,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 13,
+        "frames": 353
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 14,
+      "data": {
+        "chapter": "02",
+        "start": 4226,
+        "key": "path",
+        "sourcePoint": 0,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 14,
+        "frames": 443
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 15,
+      "data": {
+        "chapter": "02",
+        "start": 4669,
+        "key": "great",
+        "sourcePoint": 95,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 15,
+        "frames": 278
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 16,
+      "data": {
+        "chapter": "02",
+        "start": 4947,
+        "key": "path",
+        "sourcePoint": 0,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 16,
+        "frames": 252
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 17,
+      "data": {
+        "chapter": "02",
+        "start": 5199,
+        "key": "path",
+        "sourcePoint": 0,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 17,
+        "frames": 235
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 18,
+      "data": {
+        "chapter": "02",
+        "start": 5434,
+        "key": "path",
+        "sourcePoint": 0,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 18,
+        "frames": 558
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 19,
+      "data": {
+        "chapter": "02",
+        "start": 5992,
+        "key": "duel",
+        "sourcePoint": 78,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 19,
+        "frames": 239
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 20,
+      "data": {
+        "chapter": "02",
+        "start": 6231,
+        "key": "great",
+        "sourcePoint": 128,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 20,
+        "frames": 290
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 21,
+      "data": {
+        "chapter": "02",
+        "start": 6521,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 21,
+        "frames": 336
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 22,
+      "data": {
+        "chapter": "02",
+        "start": 6857,
+        "key": "lili",
+        "sourcePoint": 297,
+        "focus": "플레이 시점에서는 가려지는 깊이",
+        "cue": 22,
+        "frames": 278
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 23,
+      "data": {
+        "chapter": "03",
+        "start": 7135,
+        "key": "duel",
+        "sourcePoint": 90,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 23,
+        "frames": 325
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 24,
+      "data": {
+        "chapter": "03",
+        "start": 7460,
+        "key": "great",
+        "sourcePoint": 136,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 24,
+        "frames": 276
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 25,
+      "data": {
+        "chapter": "03",
+        "start": 7736,
+        "key": "active",
+        "sourcePoint": 0,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 25,
+        "frames": 255
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 26,
+      "data": {
+        "chapter": "03",
+        "start": 7991,
+        "key": "lili",
+        "sourcePoint": 276,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 26,
+        "frames": 439
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 27,
+      "data": {
+        "chapter": "03",
+        "start": 8430,
+        "key": "duel",
+        "sourcePoint": 103,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 27,
+        "frames": 366
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 28,
+      "data": {
+        "chapter": "03",
+        "start": 8796,
+        "key": "great",
+        "sourcePoint": 149,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 28,
+        "frames": 246
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 29,
+      "data": {
+        "chapter": "03",
+        "start": 9042,
+        "key": "active",
+        "sourcePoint": 0,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 29,
+        "frames": 259
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 30,
+      "data": {
+        "chapter": "03",
+        "start": 9301,
+        "key": "active",
+        "sourcePoint": 0,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 30,
+        "frames": 321
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 31,
+      "data": {
+        "chapter": "03",
+        "start": 9622,
+        "key": "lili",
+        "sourcePoint": 293,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 31,
+        "frames": 228
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 32,
+      "data": {
+        "chapter": "03",
+        "start": 9850,
+        "key": "active",
+        "sourcePoint": 0,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 32,
+        "frames": 242
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 33,
+      "data": {
+        "chapter": "03",
+        "start": 10092,
+        "key": "duel",
+        "sourcePoint": 119,
+        "focus": "어느 자세에 판정을 켤까",
+        "cue": 33,
+        "frames": 316
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 34,
+      "data": {
+        "chapter": "04",
+        "start": 10408,
+        "key": "great",
+        "sourcePoint": 159,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 34,
+        "frames": 370
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 35,
+      "data": {
+        "chapter": "04",
+        "start": 10778,
+        "key": "lili",
+        "sourcePoint": 299,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 35,
+        "frames": 539
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 36,
+      "data": {
+        "chapter": "04",
+        "start": 11317,
+        "key": "great",
+        "sourcePoint": 41,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 36,
+        "frames": 112
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 37,
+      "data": {
+        "chapter": "04",
+        "start": 11429,
+        "key": "range",
+        "sourcePoint": 0,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 37,
+        "frames": 446
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 38,
+      "data": {
+        "chapter": "04",
+        "start": 11875,
+        "key": "duel",
+        "sourcePoint": 126,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 38,
+        "frames": 251
+      }
+    },
+    {
+      "record": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "index": 39,
+      "data": {
+        "chapter": "04",
+        "start": 12126,
+        "key": "great",
+        "sourcePoint": 63,
+        "focus": "칼의 모습과 타격 결과를 함께",
+        "cue": 39,
+        "frames": 315
+      }
+    }
+  ],
+  "sceneLayout": [
+    {
+      "chapter": "01",
+      "start": 120,
+      "key": "great",
+      "sourcePoint": 18,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 1,
+      "frames": 342
+    },
+    {
+      "chapter": "01",
+      "start": 462,
+      "key": "duel",
+      "sourcePoint": 28,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 2,
+      "frames": 304
+    },
+    {
+      "chapter": "01",
+      "start": 766,
+      "key": "lili",
+      "sourcePoint": 294,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 3,
+      "frames": 470
+    },
+    {
+      "chapter": "01",
+      "start": 1236,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 4,
+      "frames": 283
+    },
+    {
+      "chapter": "01",
+      "start": 1519,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 5,
+      "frames": 265
+    },
+    {
+      "chapter": "01",
+      "start": 1784,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 6,
+      "frames": 315
+    },
+    {
+      "chapter": "01",
+      "start": 2099,
+      "key": "great",
+      "sourcePoint": 42,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 7,
+      "frames": 254
+    },
+    {
+      "chapter": "01",
+      "start": 2353,
+      "key": "duel",
+      "sourcePoint": 46,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 8,
+      "frames": 89
+    },
+    {
+      "chapter": "01",
+      "start": 2442,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 8,
+      "frames": 404
+    },
+    {
+      "chapter": "01",
+      "start": 2846,
+      "key": "lili",
+      "sourcePoint": 320,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 9,
+      "frames": 252
+    },
+    {
+      "chapter": "01",
+      "start": 3098,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 10,
+      "frames": 314
+    },
+    {
+      "chapter": "01",
+      "start": 3412,
+      "key": "duel",
+      "sourcePoint": 63,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 11,
+      "frames": 220
+    },
+    {
+      "chapter": "01",
+      "start": 3632,
+      "key": "great",
+      "sourcePoint": 70,
+      "focus": "검끝이 상대를 지나는 순간",
+      "cue": 12,
+      "frames": 241
+    },
+    {
+      "chapter": "02",
+      "start": 3873,
+      "key": "great",
+      "sourcePoint": 85,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 13,
+      "frames": 353
+    },
+    {
+      "chapter": "02",
+      "start": 4226,
+      "key": "path",
+      "sourcePoint": 0,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 14,
+      "frames": 443
+    },
+    {
+      "chapter": "02",
+      "start": 4669,
+      "key": "great",
+      "sourcePoint": 95,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 15,
+      "frames": 278
+    },
+    {
+      "chapter": "02",
+      "start": 4947,
+      "key": "path",
+      "sourcePoint": 0,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 16,
+      "frames": 252
+    },
+    {
+      "chapter": "02",
+      "start": 5199,
+      "key": "path",
+      "sourcePoint": 0,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 17,
+      "frames": 235
+    },
+    {
+      "chapter": "02",
+      "start": 5434,
+      "key": "path",
+      "sourcePoint": 0,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 18,
+      "frames": 558
+    },
+    {
+      "chapter": "02",
+      "start": 5992,
+      "key": "duel",
+      "sourcePoint": 78,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 19,
+      "frames": 239
+    },
+    {
+      "chapter": "02",
+      "start": 6231,
+      "key": "great",
+      "sourcePoint": 128,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 20,
+      "frames": 290
+    },
+    {
+      "chapter": "02",
+      "start": 6521,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 21,
+      "frames": 336
+    },
+    {
+      "chapter": "02",
+      "start": 6857,
+      "key": "lili",
+      "sourcePoint": 297,
+      "focus": "플레이 시점에서는 가려지는 깊이",
+      "cue": 22,
+      "frames": 278
+    },
+    {
+      "chapter": "03",
+      "start": 7135,
+      "key": "duel",
+      "sourcePoint": 90,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 23,
+      "frames": 325
+    },
+    {
+      "chapter": "03",
+      "start": 7460,
+      "key": "great",
+      "sourcePoint": 136,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 24,
+      "frames": 276
+    },
+    {
+      "chapter": "03",
+      "start": 7736,
+      "key": "active",
+      "sourcePoint": 0,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 25,
+      "frames": 255
+    },
+    {
+      "chapter": "03",
+      "start": 7991,
+      "key": "lili",
+      "sourcePoint": 276,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 26,
+      "frames": 439
+    },
+    {
+      "chapter": "03",
+      "start": 8430,
+      "key": "duel",
+      "sourcePoint": 103,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 27,
+      "frames": 366
+    },
+    {
+      "chapter": "03",
+      "start": 8796,
+      "key": "great",
+      "sourcePoint": 149,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 28,
+      "frames": 246
+    },
+    {
+      "chapter": "03",
+      "start": 9042,
+      "key": "active",
+      "sourcePoint": 0,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 29,
+      "frames": 259
+    },
+    {
+      "chapter": "03",
+      "start": 9301,
+      "key": "active",
+      "sourcePoint": 0,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 30,
+      "frames": 321
+    },
+    {
+      "chapter": "03",
+      "start": 9622,
+      "key": "lili",
+      "sourcePoint": 293,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 31,
+      "frames": 228
+    },
+    {
+      "chapter": "03",
+      "start": 9850,
+      "key": "active",
+      "sourcePoint": 0,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 32,
+      "frames": 242
+    },
+    {
+      "chapter": "03",
+      "start": 10092,
+      "key": "duel",
+      "sourcePoint": 119,
+      "focus": "어느 자세에 판정을 켤까",
+      "cue": 33,
+      "frames": 316
+    },
+    {
+      "chapter": "04",
+      "start": 10408,
+      "key": "great",
+      "sourcePoint": 159,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 34,
+      "frames": 370
+    },
+    {
+      "chapter": "04",
+      "start": 10778,
+      "key": "lili",
+      "sourcePoint": 299,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 35,
+      "frames": 539
+    },
+    {
+      "chapter": "04",
+      "start": 11317,
+      "key": "great",
+      "sourcePoint": 41,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 36,
+      "frames": 112
+    },
+    {
+      "chapter": "04",
+      "start": 11429,
+      "key": "range",
+      "sourcePoint": 0,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 37,
+      "frames": 446
+    },
+    {
+      "chapter": "04",
+      "start": 11875,
+      "key": "duel",
+      "sourcePoint": 126,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 38,
+      "frames": 251
+    },
+    {
+      "chapter": "04",
+      "start": 12126,
+      "key": "great",
+      "sourcePoint": 63,
+      "focus": "칼의 모습과 타격 결과를 함께",
+      "cue": 39,
+      "frames": 315
+    }
+  ],
+  "clipRecords": [],
+  "literalSettings": [],
+  "structuredRecords": [
+    {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/delivery-output.json",
+      "sha256": "5cdbb6f61cf35d0c31ad578809843fe5b70698f79932f1ca5aee8182a5db68fb",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "slug": "animation-always-keep-attack-collision-in-mind",
+        "createdAt": "2026-11-05T21:12:42.522Z",
+        "directory": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/delivery/output/animation-always-keep-attack-collision-in-mind",
+        "previousDeliveryDirectory": null,
+        "planningDirectoryPreserved": false,
+        "publishReady": false,
+        "notices": [
+          "최신 완성 파일 모음입니다. 게시 승인 완료 상태는 아니며 최종 청취·잔여 검수를 확인하세요."
+        ],
+        "videos": [
+          {
+            "duration": 217.35,
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1"
+          },
+          {
+            "duration": 217.35,
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1"
+          }
+        ],
+        "cues": 39,
+        "cueCounts": {
+          "ko": 39,
+          "en": 39
+        },
+        "captionAlignment": "identical-cue-timing",
+        "files": [
+          {
+            "name": "animation-always-keep-attack-collision-in-mind.captioned.mp4",
+            "source": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captioned.mp4",
+            "bytes": 597956878,
+            "sha256": "f4f7c33160a1ed937ef1f7813d4531d57571b84f0072a7f7c0021818364640e2"
+          },
+          {
+            "name": "animation-always-keep-attack-collision-in-mind.clean.mp4",
+            "source": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/clean.mp4",
+            "bytes": 612609704,
+            "sha256": "767f142c9fafda84353e29ff4ed3872f4bec8de3b15343209bf882f311a4240e"
+          },
+          {
+            "name": "animation-always-keep-attack-collision-in-mind.ko.srt",
+            "source": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.ko.srt",
+            "bytes": 5794,
+            "sha256": "49c3c5187121038bb493590843771aaf413fafe3f3eb44182b2d2a771ad7e99e"
+          },
+          {
+            "name": "animation-always-keep-attack-collision-in-mind.en.srt",
+            "source": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.en.srt",
+            "bytes": 4278,
+            "sha256": "2e17894b9ae4167a374d560cf543e0240c2b40bbb1d386114a776eb45143a1cd"
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json",
+      "sha256": "5f46bba56ee66f5265c2ba2b08b2fbe3a393c24bf831d5953e268b12ddd05a08",
+      "purpose": "selected-timeline-or-source-record",
+      "data": {
+        "episode": "A16",
+        "framesPerSecond": 60,
+        "totalFrames": 13041,
+        "bodyFrames": 12321,
+        "cuts": [
+          {
+            "chapter": "01",
+            "start": 120,
+            "key": "great",
+            "sourcePoint": 18,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 1,
+            "frames": 342
+          },
+          {
+            "chapter": "01",
+            "start": 462,
+            "key": "duel",
+            "sourcePoint": 28,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 2,
+            "frames": 304
+          },
+          {
+            "chapter": "01",
+            "start": 766,
+            "key": "lili",
+            "sourcePoint": 294,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 3,
+            "frames": 470
+          },
+          {
+            "chapter": "01",
+            "start": 1236,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 4,
+            "frames": 283
+          },
+          {
+            "chapter": "01",
+            "start": 1519,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 5,
+            "frames": 265
+          },
+          {
+            "chapter": "01",
+            "start": 1784,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 6,
+            "frames": 315
+          },
+          {
+            "chapter": "01",
+            "start": 2099,
+            "key": "great",
+            "sourcePoint": 42,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 7,
+            "frames": 254
+          },
+          {
+            "chapter": "01",
+            "start": 2353,
+            "key": "duel",
+            "sourcePoint": 46,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 8,
+            "frames": 89
+          },
+          {
+            "chapter": "01",
+            "start": 2442,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 8,
+            "frames": 404
+          },
+          {
+            "chapter": "01",
+            "start": 2846,
+            "key": "lili",
+            "sourcePoint": 320,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 9,
+            "frames": 252
+          },
+          {
+            "chapter": "01",
+            "start": 3098,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 10,
+            "frames": 314
+          },
+          {
+            "chapter": "01",
+            "start": 3412,
+            "key": "duel",
+            "sourcePoint": 63,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 11,
+            "frames": 220
+          },
+          {
+            "chapter": "01",
+            "start": 3632,
+            "key": "great",
+            "sourcePoint": 70,
+            "focus": "검끝이 상대를 지나는 순간",
+            "cue": 12,
+            "frames": 241
+          },
+          {
+            "chapter": "02",
+            "start": 3873,
+            "key": "great",
+            "sourcePoint": 85,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 13,
+            "frames": 353
+          },
+          {
+            "chapter": "02",
+            "start": 4226,
+            "key": "path",
+            "sourcePoint": 0,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 14,
+            "frames": 443
+          },
+          {
+            "chapter": "02",
+            "start": 4669,
+            "key": "great",
+            "sourcePoint": 95,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 15,
+            "frames": 278
+          },
+          {
+            "chapter": "02",
+            "start": 4947,
+            "key": "path",
+            "sourcePoint": 0,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 16,
+            "frames": 252
+          },
+          {
+            "chapter": "02",
+            "start": 5199,
+            "key": "path",
+            "sourcePoint": 0,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 17,
+            "frames": 235
+          },
+          {
+            "chapter": "02",
+            "start": 5434,
+            "key": "path",
+            "sourcePoint": 0,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 18,
+            "frames": 558
+          },
+          {
+            "chapter": "02",
+            "start": 5992,
+            "key": "duel",
+            "sourcePoint": 78,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 19,
+            "frames": 239
+          },
+          {
+            "chapter": "02",
+            "start": 6231,
+            "key": "great",
+            "sourcePoint": 128,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 20,
+            "frames": 290
+          },
+          {
+            "chapter": "02",
+            "start": 6521,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 21,
+            "frames": 336
+          },
+          {
+            "chapter": "02",
+            "start": 6857,
+            "key": "lili",
+            "sourcePoint": 297,
+            "focus": "플레이 시점에서는 가려지는 깊이",
+            "cue": 22,
+            "frames": 278
+          },
+          {
+            "chapter": "03",
+            "start": 7135,
+            "key": "duel",
+            "sourcePoint": 90,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 23,
+            "frames": 325
+          },
+          {
+            "chapter": "03",
+            "start": 7460,
+            "key": "great",
+            "sourcePoint": 136,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 24,
+            "frames": 276
+          },
+          {
+            "chapter": "03",
+            "start": 7736,
+            "key": "active",
+            "sourcePoint": 0,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 25,
+            "frames": 255
+          },
+          {
+            "chapter": "03",
+            "start": 7991,
+            "key": "lili",
+            "sourcePoint": 276,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 26,
+            "frames": 439
+          },
+          {
+            "chapter": "03",
+            "start": 8430,
+            "key": "duel",
+            "sourcePoint": 103,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 27,
+            "frames": 366
+          },
+          {
+            "chapter": "03",
+            "start": 8796,
+            "key": "great",
+            "sourcePoint": 149,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 28,
+            "frames": 246
+          },
+          {
+            "chapter": "03",
+            "start": 9042,
+            "key": "active",
+            "sourcePoint": 0,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 29,
+            "frames": 259
+          },
+          {
+            "chapter": "03",
+            "start": 9301,
+            "key": "active",
+            "sourcePoint": 0,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 30,
+            "frames": 321
+          },
+          {
+            "chapter": "03",
+            "start": 9622,
+            "key": "lili",
+            "sourcePoint": 293,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 31,
+            "frames": 228
+          },
+          {
+            "chapter": "03",
+            "start": 9850,
+            "key": "active",
+            "sourcePoint": 0,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 32,
+            "frames": 242
+          },
+          {
+            "chapter": "03",
+            "start": 10092,
+            "key": "duel",
+            "sourcePoint": 119,
+            "focus": "어느 자세에 판정을 켤까",
+            "cue": 33,
+            "frames": 316
+          },
+          {
+            "chapter": "04",
+            "start": 10408,
+            "key": "great",
+            "sourcePoint": 159,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 34,
+            "frames": 370
+          },
+          {
+            "chapter": "04",
+            "start": 10778,
+            "key": "lili",
+            "sourcePoint": 299,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 35,
+            "frames": 539
+          },
+          {
+            "chapter": "04",
+            "start": 11317,
+            "key": "great",
+            "sourcePoint": 41,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 36,
+            "frames": 112
+          },
+          {
+            "chapter": "04",
+            "start": 11429,
+            "key": "range",
+            "sourcePoint": 0,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 37,
+            "frames": 446
+          },
+          {
+            "chapter": "04",
+            "start": 11875,
+            "key": "duel",
+            "sourcePoint": 126,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 38,
+            "frames": 251
+          },
+          {
+            "chapter": "04",
+            "start": 12126,
+            "key": "great",
+            "sourcePoint": 63,
+            "focus": "칼의 모습과 타격 결과를 함께",
+            "cue": 39,
+            "frames": 315
+          }
+        ],
+        "sourceEvidence": {
+          "duel": {
+            "file": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/duel.mp4",
+            "sha256": "cf866f730a8b67d3418033bc27bbaa0a9adbf45a7a05814938f3842a09daa7b4",
+            "dimensions": [
+              1920,
+              1080
+            ],
+            "fps": "60000/1001",
+            "seconds": 173.694
+          },
+          "great": {
+            "file": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/great.mp4",
+            "sha256": "b055b7fc5d21c0a93f52211e48094271eaa625151d5b7a699a8a16bb8032725a",
+            "dimensions": [
+              1920,
+              1080
+            ],
+            "fps": "60/1",
+            "seconds": 185
+          },
+          "lili": {
+            "file": "projects/animation-exaggeration/production/local/fighters-v4-kula-lili/sources/t8-lili.mp4",
+            "sha256": "1aacdbf92eaea6c8004b28f443c2352e2ce48b01fbfe225d0f869401c6b407c9",
+            "dimensions": [
+              1920,
+              1080
+            ],
+            "fps": "60/1",
+            "seconds": 1199.174
+          }
+        },
+        "wordAlignment": [
+          {
+            "scene": "01",
+            "coverage": 1,
+            "hash": "3143d377c4d5b04fbf7a5944391ea1914c052c7c5d649cf9a39f1d0603b0f6cc"
+          },
+          {
+            "scene": "02",
+            "coverage": 1,
+            "hash": "9b985efafc2f6088255243dde3839b3b3fcb95a772b6720ed920050f3528b617"
+          },
+          {
+            "scene": "03",
+            "coverage": 0.9912023460410557,
+            "hash": "86141a760a22f9e6be0c0b2f4124bb17eec92d39cd27deb6047f7e33c66bc37d"
+          },
+          {
+            "scene": "04",
+            "coverage": 1,
+            "hash": "24a1639c8bb523119f1dd2a27a969897b01f08800bdde47a4cc055e1da1ef6bb"
+          }
+        ],
+        "initialGameFrames": 7797,
+        "gameFrames": 7393,
+        "fadeAudit": []
+      }
+    },
+    {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.en.json",
+      "sha256": "2aa5eac085e47a1090a0d92e32cc62e8a13d28c4e4d745ccb0266e68e8d3b1a6",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "scenes": [
+          {
+            "id": "01",
+            "title": "보이는 칼과 맞았다는 판정",
+            "lines": [
+              "An attack pose must communicate where and when it hits. If the motion looks right but the result surprises us, the controls can feel wrong. We'll align the weapon's visible path, its collision region and the pose that registers on contact. The region that tests whether an attack reaches its target is a hitbox. The part of a character that can receive that attack is a hurtbox. The game can register a hit when those regions meet the right conditions. The visible sword model and the region that tests for contact serve different purposes. A tiny region fitted too tightly to a fast blade can miss where the player expects contact. Adjust the attack's reach so the result makes sense in play. We'll keep the sword and swing fixed and change only the collision range. A larger region isn't automatically better. Players need to understand the relationship between the visible hit and its result."
+            ]
+          },
+          {
+            "id": "02",
+            "title": "옆에서 겹쳐 보여도 실제 경로는 다를 수 있다",
+            "lines": [
+              "Tuning the size is different from putting the attack in the wrong place. From the side, blade and opponent can overlap even if the blade passes in front of or behind the target. One flattering camera angle can hide the difference. Our grid marks the reference plane for attacker and target. The play camera and overhead camera show the same instant. First the tip misses the path. Turn the body and adjust the arm so the blade crosses the target. Moving only the hitbox could make the attack connect. But a reaction to a blade that visibly passes somewhere else is harder to read. Distinguish a little extra reach from correcting a misplaced movement. The visible path and collision should describe the same action."
+            ]
+          },
+          {
+            "id": "03",
+            "title": "어느 자세에서 맞게 할 것인가",
+            "lines": [
+              "Once the path is right, choose when the attack can hit. It may not deal damage the whole time the arm moves. Frames in which the attack can register are called active frames. The hand close to the body and the fully extended arm create different impressions. A brief pause on impact, called hit stop, makes that pose especially noticeable. Activating the hitbox helps determine the impact pose the player sees. We'll move only the active window within the same swing. Compare the poses at contact, then watch them at normal speed. The attack needn't become active as soon as the swing begins. It can connect later at a clearer pose. Both position and timing must make sense alongside the visible action."
+            ]
+          },
+          {
+            "id": "04",
+            "title": "동작과 판정을 따로 완성하지 않기",
+            "lines": [
+              "Leaving collision until the animation is finished can mean substantial rework. Animators who consider contact and gameplay designers who examine the pose can shape a more coherent hit. Return to the first attack. Slightly adjusted reach, a path through the opponent and an active window on a strong pose work together. A beautiful attack and a convincing hit belong to the same action. The controls feel clear when both the image and the rules communicate that action."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration.ko.json",
+      "sha256": "6927f8c0e636359ac7ddc4cbe72b5342fa5cfc63e478757bd5751d75607bdfad",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "scenes": [
+          {
+            "id": "01",
+            "title": "보이는 칼과 맞았다는 판정",
+            "lines": [
+              "공격 애니메이션은 멋진 자세를 보여 주는 동시에, 어디를 언제 때리는지도 전달해야 합니다. 동작은 그럴듯한데 타격 결과가 예상과 다르면 조작의 감각도 흔들립니다. 오늘은 눈에 보이는 무기와 공격 판정의 차이에서 시작해, 공격이 지나가는 경로와 명중 순간의 포즈를 차례로 맞춰 보겠습니다. 게임에서 공격이 닿았는지 검사하는 영역을 공격 판정 영역, 히트박스라고 합니다. 상대의 몸에서 공격을 받는 영역은 피격 판정 영역, 허트박스입니다. 두 영역이 어떤 조건에서 겹치는지를 보고 명중을 결정할 수 있습니다. 칼을 그리는 모델과 명중을 검사하는 영역은 목적이 다릅니다. 빠르게 지나가는 칼날 모양에만 지나치게 작은 판정을 맞추면, 플레이어가 맞을 것이라고 기대한 상황에서도 빗나가기 쉬울 수 있습니다. 그래서 공격 범위를 조절해 납득할 만한 조작감을 만듭니다. 우리 시연에서는 같은 검과 같은 휘두름을 유지하고 판정 범위만 바꿔 보겠습니다. 다만 넓으면 무조건 좋다는 뜻은 아닙니다. 눈에 보이는 공격과 결과 사이의 관계가 이해되어야 합니다."
+            ]
+          },
+          {
+            "id": "02",
+            "title": "옆에서 겹쳐 보여도 실제 경로는 다를 수 있다",
+            "lines": [
+              "판정의 크기를 조금 조절하는 것과 공격 위치를 엉뚱한 곳에 두는 것은 다른 문제입니다. 옆에서 보는 화면에서는 검과 상대가 겹쳐 보여도, 위에서 내려다보면 검이 상대의 앞이나 뒤를 지나갈 수 있습니다. 한 카메라에서 보기 좋은 자세만으로는 이 차이를 찾기 어렵습니다. 우리 격자에는 캐릭터와 상대가 놓이는 기준 평면을 표시하겠습니다. 플레이 카메라와 위쪽 관찰 카메라는 같은 순간을 보여 줍니다. 먼저 검끝이 기준 경로를 벗어나는 자세를 보고, 몸의 방향과 팔의 궤적을 바꿔 상대가 있는 곳을 지나가게 만들겠습니다. 판정만 상대 쪽으로 옮기면 일단 맞게 만들 수는 있습니다. 하지만 칼은 다른 곳을 지나가는데 상대가 맞는다면 화면의 설명력이 떨어집니다. 플레이 감각을 위해 범위를 조금 보완하는 것과 동작 자체의 위치가 어긋난 것은 구분해야 합니다. 애니메이션의 공격 경로와 판정이 같은 행동을 가리키도록 만드는 것이 우선입니다."
+            ]
+          },
+          {
+            "id": "03",
+            "title": "어느 자세에서 맞게 할 것인가",
+            "lines": [
+              "지나가는 위치를 맞췄다면, 이제 어느 순간부터 공격 판정을 켤지 정해야 합니다. 팔이 움직이는 전체 시간 내내 상대를 때릴 수 있는 것은 아닐 수 있습니다. 실제로 공격 판정이 켜져 있는 구간을 활성 프레임이라고 합니다. 같은 휘두름에서도 손이 몸 가까이에 있는 순간과 팔이 뻗어 몸의 방향이 드러나는 순간은 다른 인상을 줍니다. 명중 순간에 잠깐 움직임을 멈추는 히트 스톱을 넣으면, 그때의 포즈가 특히 눈에 남습니다. 그래서 판정을 켜는 시점은 타격 자세의 연출과도 연결됩니다. 우리 시연에서는 같은 검의 움직임에서 활성 구간만 옮겨 보겠습니다. 어느 포즈가 명중 순간에 남는지 나란히 확인하고, 실제 속도로도 다시 보겠습니다. 휘두르기 시작하자마자 판정을 켜는 것만이 선택지는 아닙니다. 동작 중간의 더 분명한 자세에서 명중하도록 조절할 수도 있습니다. 다만 위치와 타이밍 모두 플레이어가 보는 행동과 납득할 수 있게 이어져야 합니다."
+            ]
+          },
+          {
+            "id": "04",
+            "title": "동작과 판정을 따로 완성하지 않기",
+            "lines": [
+              "이 연결을 마지막에 판정 담당자에게만 맡기면, 이미 완성한 동작을 크게 고쳐야 할 수 있습니다. 애니메이터가 공격의 경로와 명중 순간을 생각하고, 게임플레이를 조절하는 사람이 포즈의 인상을 함께 보면 더 일관된 결과를 만들 수 있습니다. 처음의 공격으로 돌아가 보겠습니다. 외형보다 조금 보완된 판정 범위, 상대를 지나는 궤적, 강한 자세가 남는 활성 시점은 서로 연결된 선택입니다. 보기 좋은 공격과 납득할 수 있는 타격은 별개의 완성품이 아닙니다. 같은 행동이 화면과 규칙 양쪽에서 잘 전달될 때 조작의 감각도 분명해집니다."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/visual-plan.json",
+      "sha256": "2f54d98c3b38a6d489047a004497457adebf66d50d02c6f1b3920f5898a40c60",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "rigs": [
+          "range",
+          "path",
+          "active"
+        ],
+        "gameFiles": {
+          "duel": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/duel.mp4",
+          "great": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/great.mp4",
+          "lili": "projects/animation-exaggeration/production/local/fighters-v4-kula-lili/sources/t8-lili.mp4"
+        },
+        "gameTitles": {
+          "duel": "슈퍼 스매시브라더스 얼티밋",
+          "great": "몬스터 헌터 와일즈",
+          "lili": "TEKKEN 8"
+        },
+        "shots": [
+          [
+            [
+              "great",
+              18,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "duel",
+              28,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "lili",
+              294,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "range",
+              0,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "range",
+              0,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "range",
+              0,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "great",
+              42,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "duel",
+              46,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "lili",
+              320,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "range",
+              0,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "duel",
+              63,
+              "검끝이 상대를 지나는 순간"
+            ],
+            [
+              "great",
+              70,
+              "검끝이 상대를 지나는 순간"
+            ]
+          ],
+          [
+            [
+              "great",
+              85,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "path",
+              0,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "great",
+              95,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "path",
+              0,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "path",
+              0,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "path",
+              0,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "duel",
+              78,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "great",
+              128,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "range",
+              0,
+              "플레이 시점에서는 가려지는 깊이"
+            ],
+            [
+              "lili",
+              297,
+              "플레이 시점에서는 가려지는 깊이"
+            ]
+          ],
+          [
+            [
+              "duel",
+              90,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "great",
+              136,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "active",
+              0,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "lili",
+              276,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "duel",
+              103,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "great",
+              149,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "active",
+              0,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "active",
+              0,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "lili",
+              293,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "active",
+              0,
+              "어느 자세에 판정을 켤까"
+            ],
+            [
+              "duel",
+              119,
+              "어느 자세에 판정을 켤까"
+            ]
+          ],
+          [
+            [
+              "great",
+              159,
+              "칼의 모습과 타격 결과를 함께"
+            ],
+            [
+              "lili",
+              299,
+              "칼의 모습과 타격 결과를 함께"
+            ],
+            [
+              "great",
+              41,
+              "칼의 모습과 타격 결과를 함께"
+            ],
+            [
+              "range",
+              0,
+              "칼의 모습과 타격 결과를 함께"
+            ],
+            [
+              "duel",
+              126,
+              "칼의 모습과 타격 결과를 함께"
+            ],
+            [
+              "great",
+              63,
+              "칼의 모습과 타격 결과를 함께"
+            ]
+          ]
+        ],
+        "studyLabels": {
+          "range": [
+            "좁은 타격 영역",
+            "같은 칼에 넓힌 영역"
+          ],
+          "path": [
+            "플레이 시점으로 본 경로",
+            "같은 시각 위에서 본 경로"
+          ],
+          "active": [
+            "뻗기 전 4프레임",
+            "뻗은 뒤 4프레임"
+          ]
+        },
+        "studyObservationFrames": {
+          "range": [
+            18,
+            37
+          ],
+          "path": [
+            19,
+            38
+          ],
+          "active": [
+            19,
+            38
+          ]
+        },
+        "sources": [
+          "Prodigy Gamer · 슈퍼 스매시브라더스 얼티밋 · CC BY, excerpted; source audio omitted — https://www.youtube.com/watch?v=VnFpz7ZwNq8 · https://creativecommons.org/licenses/by/4.0/",
+          "tateyou · 몬스터 헌터 와일즈 · CC BY, excerpted; source audio omitted — https://www.youtube.com/watch?v=H69UChNQW0U · https://creativecommons.org/licenses/by/4.0/",
+          "KeizoHasumi · TEKKEN 8; Creative Commons Attribution license (reuse allowed) (recording attribution; original game rights remain with the publisher). — https://www.youtube.com/watch?v=a_k1Fgrlyms",
+          "Epic Games · Game Animation Sample · 자체 비교 동작 — https://dev.epicgames.com/documentation/en-us/unreal-engine/game-animation-sample-project-in-unreal-engine",
+          "Nimbus — Eveningland · YouTube Audio Library — https://www.youtube.com/audiolibrary"
+        ],
+        "flexibleCuts": [
+          {
+            "cue": 4,
+            "game": "duel",
+            "at": 38,
+            "study": "range"
+          },
+          {
+            "cue": 8,
+            "game": "great",
+            "at": 49,
+            "study": "range"
+          },
+          {
+            "cue": 15,
+            "game": "duel",
+            "at": 69,
+            "study": "path"
+          },
+          {
+            "cue": 18,
+            "game": "great",
+            "at": 73,
+            "study": "path"
+          },
+          {
+            "cue": 25,
+            "game": "great",
+            "at": 82,
+            "study": "active"
+          },
+          {
+            "cue": 29,
+            "game": "lili",
+            "at": 275.7,
+            "study": "active"
+          },
+          {
+            "cue": 37,
+            "game": "duel",
+            "at": 109,
+            "study": "range"
+          }
+        ],
+        "gameCallouts": [
+          {
+            "source": "great",
+            "label": "대검의 궤적",
+            "points": [
+              [
+                18.45,
+                150,
+                117,
+                76,
+                29
+              ],
+              [
+                18.7,
+                105,
+                118,
+                66,
+                50
+              ],
+              [
+                18.9,
+                102,
+                114,
+                65,
+                53
+              ]
+            ],
+            "shape": "bracket",
+            "color": "#FFBF74",
+            "provenance": "좌표는 해당 원본의 320×180 비율 유지 프레임을 지정 시각에 직접 대조한 편집 가이드입니다."
+          },
+          {
+            "source": "lili",
+            "label": "피격 자세",
+            "points": [
+              [
+                275.7,
+                74,
+                25,
+                91,
+                98
+              ],
+              [
+                276.05,
+                70,
+                35,
+                80,
+                84
+              ],
+              [
+                276.4,
+                46,
+                43,
+                101,
+                91
+              ],
+              [
+                276.75,
+                50,
+                49,
+                93,
+                83
+              ],
+              [
+                277.1,
+                46,
+                32,
+                98,
+                94
+              ]
+            ],
+            "shape": "bracket",
+            "color": "#F58D79",
+            "provenance": "좌표는 해당 원본의 320×180 비율 유지 프레임을 지정 시각에 직접 대조한 편집 가이드입니다."
+          }
+        ]
+      }
+    }
+  ],
+  "editableSourceFiles": [
+    "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/make_poses.py"
+  ],
+  "sourceAndRightsDocuments": [
+    "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/narration-pairs.txt",
+    "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/translation.en.txt"
+  ],
+  "referenceUrls": [],
+  "subtitles": {
+    "captionsKo": {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.ko.srt",
+      "sha256": "82e63d15ab52ad3de61201149e9c4bdbdb2abcd37d97d81d3a3cc4343da3761c",
+      "cueCount": 39
+    },
+    "captionsEn": {
+      "file": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captions.en.srt",
+      "sha256": "e08ee283cb25307bb949ff2d6c848120e439a253f198ae87fc0e0d8014d8a794",
+      "cueCount": 39
+    }
+  },
+  "mediaAssets": [
+    {
+      "path": "animation-always-keep-attack-collision-in-mind.captioned.mp4",
+      "references": [
+        "projects/animation-always-keep-attack-collision-in-mind/production/delivery-output.json$.files.0.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "animation-always-keep-attack-collision-in-mind.clean.mp4",
+      "references": [
+        "projects/animation-always-keep-attack-collision-in-mind/production/delivery-output.json$.files.1.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/captioned.mp4",
+      "references": [
+        "project.json$.paths.videoBurnedCaptions",
+        "projects/animation-always-keep-attack-collision-in-mind/production/delivery-output.json$.files.0.source"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/clean.mp4",
+      "references": [
+        "project.json$.paths.videoClean",
+        "projects/animation-always-keep-attack-collision-in-mind/production/delivery-output.json$.files.1.source"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-always-keep-attack-collision-in-mind/production/local/series-v1/final-mix.wav",
+      "references": [
+        "project.json$.paths.audioMix"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/duel.mp4",
+      "references": [
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json$.sourceEvidence.duel.file",
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/visual-plan.json$.gameFiles.duel"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-breaking-down-attack-animations/production/local/grid-v1/sources/great.mp4",
+      "references": [
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json$.sourceEvidence.great.file",
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/visual-plan.json$.gameFiles.great"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/animation-exaggeration/production/local/fighters-v4-kula-lili/sources/t8-lili.mp4",
+      "references": [
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/edit-plan-final.json$.sourceEvidence.lili.file",
+        "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/visual-plan.json$.gameFiles.lili"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/voice-reference/reference-15-35s.wav",
+      "references": [
+        "project.json$.tts.reference"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    }
+  ],
+  "formerlyTrackedMedia": [],
+  "rebuild": {
+    "automatic": false,
+    "prerequisites": [
+      "Node dependencies: npm ci --prefix motion-canvas",
+      "FFmpeg/ffprobe; Python/Manim where used; Qwen3 model/runtime for fresh TTS",
+      "Acquire original footage/music at the recorded paths with valid rights, or restore personal external backup",
+      "Private voice reference and original membership identity images must be transferred privately; never fabricate substitutes"
+    ],
+    "productionScripts": [
+      "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/make_poses.py"
+    ],
+    "scriptRecords": [
+      {
+        "file": "projects/animation-always-keep-attack-collision-in-mind/production/series-v1/make_poses.py",
+        "sha256": "539101d67c5e73937d78cc8d67d79ae8ff3cfdfaba26f1ffc3527e1c3b742971",
+        "usageHints": []
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "action": "Read source/rights documents, project settings and selected edit records; restore inputs without changing filenames."
+      },
+      {
+        "order": 2,
+        "action": "Review the CLI/header of the project production scripts listed here. Run their prepare, narration, mix and render stages as documented, not every historical script."
+      },
+      {
+        "order": 3,
+        "action": "If generating new narration: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-project-narration.ps1 -Project animation-always-keep-attack-collision-in-mind"
+      },
+      {
+        "order": 4,
+        "action": "Validate timeline and current clean/captioned pair, KO/EN SRT, loudness, source rights and membership outro."
+      },
+      {
+        "order": 5,
+        "action": "node scripts/collect-video-output.cjs animation-always-keep-attack-collision-in-mind"
+      }
+    ],
+    "gaps": [
+      "External backup location is not configured. URLs can disappear; Git cannot recover absent media.",
+      "Project-specific render commands are retained in production scripts/README; not all legacy projects have a one-command rebuild."
+    ]
+  }
+}
