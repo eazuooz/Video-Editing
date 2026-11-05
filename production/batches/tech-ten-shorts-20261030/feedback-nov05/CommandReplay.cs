@@ -17,10 +17,12 @@ public sealed class CommandReplay : MonoBehaviour
     private System.Random random;
     private readonly int[] nextShot = new int[8];
 
-    public void ResetMatch(float moveSpeed)
+    public int NextShotTick(int unit) => nextShot[unit];
+
+    public void ResetMatch(float moveSpeed, int seed = 42)
     {
         tick = next = 0; moving = shooting = false; speed = moveSpeed;
-        hitPoints = 100; random = new System.Random(42);
+        hitPoints = 100; random = new System.Random(seed);
         Array.Clear(nextShot, 0, nextShot.Length);
         for (int i = 0; i < squad.Length; i++) squad[i].position = spawn[i];
         tracer.gameObject.SetActive(false);

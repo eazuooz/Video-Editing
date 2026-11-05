@@ -9,7 +9,7 @@ const browserDriver=require(path.join(root,'motion-canvas/node_modules/puppeteer
  const results=[];
  for(const r of rows){
  const tab=await browser.newPage();await tab.setViewport({width:375,height:810});
- const url=source+'/'+r.slug+'/local/final-reviewed-feedback-nov05-r2/index.html';
+ const url=source+'/'+r.slug+'/local/'+path.basename(r.finalDirectory)+'/index.html';
  await tab.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
  const pos=await tab.$eval('button:nth-of-type(1)',b=>Number(b.dataset.sec));
  await tab.click('button');await tab.waitForFunction('document.querySelector("video").currentTime > 0.65', {timeout:25000});
@@ -19,6 +19,10 @@ const browserDriver=require(path.join(root,'motion-canvas/node_modules/puppeteer
  if(status.error||status.width!==1080||status.height!==1920)throw Error(JSON.stringify(status));
  results.push({n:r.order,master:r.masterSha256,played:true,seekedTo:later,...status});await tab.close();
  }
- const out=path.join(JSON.parse(fs.readFileSync(path.join(__dirname,'../batch.json'),'utf8')).mediaRoot,'feedback-nov05','player-'+rows.length+'.json');fs.writeFileSync(out,JSON.stringify(results,null,2));console.log('Play + script seek passed:',rows.length);
+ const media=JSON.parse(fs.readFileSync(path.join(__dirname,'../batch.json'),'utf8')).mediaRoot;
+ const current=rows.some(r=>r.revision==='public-hooks-rope-replay-v3');
+ if(current && (rows.length!==9 || rows.some(r=>r.order===8))) throw Error('Expected the nine selected review files.');
+ const out=current?path.join(media,'general-review','player-nine.json'):path.join(media,'feedback-nov05','player-'+rows.length+'.json');
+ fs.writeFileSync(out,JSON.stringify(results,null,2));console.log('Play + script seek passed:',rows.length);
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});

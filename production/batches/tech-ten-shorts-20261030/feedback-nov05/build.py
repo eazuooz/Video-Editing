@@ -98,8 +98,14 @@ def audio(n,e,old,tmp,frame):
     (tmp/'addition.ass').write_text(ass,encoding='utf8');return nd
 def run(args,cwd=None):sp.run(args,check=True,cwd=cwd)
 def probe(path):return json.loads(sp.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(path)]))['streams']
-def build(n):
-    row=BASE[n-1];e=ED[n-1];old=Path(row['finalDirectory']);tmp=WORK/f'{n:02}-r2';dest=old.parent/'final-reviewed-feedback-nov05-r2';tmp.mkdir(parents=True,exist_ok=True);dest.mkdir(exist_ok=True)
+def build(n, *, source=None, edit=None, scratch=None, directory='final-reviewed-feedback-nov05-r2',
+          revision='feedback-20261105', body_ranges=None, draw_body=None, description=None):
+    row=source if source is not None else BASE[n-1]
+    e=edit if edit is not None else ED[n-1]
+    old=Path(row['finalDirectory'])
+    tmp=Path(scratch) if scratch is not None else WORK/f'{n:02}-r2'
+    dest=old.parent/directory
+    tmp.mkdir(parents=True,exist_ok=True);dest.mkdir(exist_ok=True)
     if (dest/'delivery.json').is_file():
         done=read(dest/'delivery.json')
         if all(sha(dest/x['name'])==x['sha256'] for x in done['files']):print(n,'already verified',flush=True);return
@@ -110,10 +116,12 @@ def build(n):
     for lang in ['ko','en']:
         name=f'captions.{lang}.srt';shutil.copyfile((tmp if frame else old)/name,dest/name)
     total=row['frames']+extra
-    ranges={1:(689,1471),2:(400,2558),3:(402,2054),6:(922,923),8:(2478,2479),10:(459,2575)}
+    ranges=body_ranges if body_ranges is not None else {1:(689,1471),2:(400,2558),3:(402,2054),6:(922,923),8:(2478,2479),10:(459,2575)}
     if n in ranges:
         from visuals import make
-        a,b=ranges[n];make(n,tmp/'body.mp4',a,b+extra,frame,extra,WORK)
+        a,b=ranges[n]
+        if draw_body is None:make(n,tmp/'body.mp4',a,b+extra,frame,extra,WORK)
+        else:draw_body(n,tmp/'body.mp4',a,b+extra,frame,extra,tmp)
     for kind in ('clean','captioned'):
         args=['ffmpeg','-hide_banner','-loglevel','error','-nostdin','-y','-threads','3','-i',str(old/(kind+'.mp4')),'-i',str(tmp/'header.png')]
         graph=[]
@@ -137,9 +145,9 @@ def build(n):
         if (sv['width'],sv['height'],sv['r_frame_rate'],int(sv['nb_frames']))!=(1080,1920,'60/1',total) or abs(float(sa['duration'])-total/60)>.15:raise RuntimeError((n,sv['nb_frames'],total,sa['duration']))
     # Mobile review transcode carries the new full audio.
     run(['ffmpeg','-v','error','-y','-threads','3','-i',str(dest/'captioned.mp4'),'-vf','scale=376:-2','-c:v','libx264','-threads','3','-preset','ultrafast','-crf','22','-c:a','copy','-movflags','+faststart',str(dest/'mobile-review.mp4')])
-    metadata={'title':e['title'],'description':row['description']}
-    if n==10:metadata['description']+='\n자체 Unity 시연 모델: Army Pack – Cute Series (얌얌코딩 보유 에셋). 부대 6기·포탑·격납고는 원리를 설명하기 위한 자체 재현입니다.'
-    receipt=dict(revision='feedback-20261105',generatedAt=datetime.now(timezone.utc).isoformat(),width=1080,height=1920,fps=60,frames=total,durationSeconds=total/60,**metadata,files=[dict(name=k,path=str(dest/k),sha256=sha(dest/k),bytes=(dest/k).stat().st_size) for k in FILES],baseMasterSha256=row['masterSha256'],additionFrames=extra,localFinalReview='awaiting-human-review',actualCompleteHumanListening=False,youtubeUploaded=False,driveUploaded=False)
+    metadata={'title':e['title'],'description':description if description is not None else row['description']}
+    if n==10 and description is None:metadata['description']+='\n자체 Unity 시연 모델: Army Pack – Cute Series (얌얌코딩 보유 에셋). 부대 6기·포탑·격납고는 원리를 설명하기 위한 자체 재현입니다.'
+    receipt=dict(revision=revision,generatedAt=datetime.now(timezone.utc).isoformat(),width=1080,height=1920,fps=60,frames=total,durationSeconds=total/60,**metadata,files=[dict(name=k,path=str(dest/k),sha256=sha(dest/k),bytes=(dest/k).stat().st_size) for k in FILES],baseMasterSha256=row['masterSha256'],additionFrames=extra,localFinalReview='awaiting-human-review',actualCompleteHumanListening=False,youtubeUploaded=False,driveUploaded=False)
     save(dest/'metadata.json',metadata);(dest/'SHA256SUMS.txt').write_text(''.join(x['sha256']+'  '+x['name']+'\n' for x in receipt['files']),encoding='ascii')
     ko=srtread(dest/FILES[2]);safe=html.escape
     pg='<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{background:#101413;color:white;font:18px/1.7 Malgun Gothic,sans-serif;max-width:800px;padding:1rem;margin:auto}video{width:min(100%,375px);display:block;margin:auto}button,a{color:#86dfc3}button{background:#17221e;border:1px solid #34483c;cursor:pointer;font:inherit}h1{font-size:1.4em;color:#ffd25a}</style><h1>'+safe(e['title'])+'</h1><video controls playsinline preload="metadata" src="captioned.mp4"></video><p><a href="captioned.mp4">전체 자막 MP4</a> · <a href="clean.mp4">무자막</a> · <a href="captions.ko.srt">한국어</a> · <a href="captions.en.srt">English</a></p><h2>대본 검수</h2>'+''.join(f'<p><button data-sec="{a}">{int(a)//60}:{int(a)%60:02}</button> {safe(s.replace(chr(10)," "))}</p>' for a,b,s in ko)+'<script>const v=document.querySelector("video");document.querySelectorAll("button").forEach(b=>b.onclick=()=>{v.currentTime=Number(b.dataset.sec);v.play();});</script></html>'
