@@ -71,6 +71,20 @@ def timing():
    assert s['key'] in sources and s['frames']-extra>=60
    following=dict(s,key=visual['balance']['study'],sourcePoint=0,start=s['start']+s['frames']-extra,frames=extra)
    s['frames']-=extra;rows.insert(chosen+1,following);plan['gameFrames']=target
+ for candidate in visual.get('flexibleCuts',[]):
+  remaining=target-plan['gameFrames']
+  if not remaining:break
+  ix=next(i for i,s in enumerate(rows) if s['cue']==candidate['cue'])
+  s=rows[ix];is_game=s['key'] in sources
+  if is_game==(remaining>0):continue
+  switch=min(abs(remaining),max(0,s['frames']-64))
+  if switch<60:continue
+  new_key=candidate['game'] if remaining>0 else candidate['study']
+  at=candidate.get('at',0) if remaining>0 else 0
+  if remaining>0:assert at+switch/60<=sources[new_key]['seconds']
+  next_shot=dict(s,frames=switch,start=s['start']+s['frames']-switch,key=new_key,sourcePoint=at)
+  s['frames']-=switch;rows.insert(ix+1,next_shot)
+  plan['gameFrames']+=switch if remaining>0 else -switch
  if EP=='A04':
   rows[0]['mark']="drawbox=x=357:y=262:w=520:h=370:color=0x4AB6FA@0.9:t=8:enable='between(t,0.1,1.10)'"
  save(L/'cue-review.json',cues);save(L/'timeline.json',plan);print('Timeline',total,'game',round(game/plan['bodyFrames'],3),'cues',len(cues),flush=True)
@@ -97,6 +111,15 @@ def overlay(s,native):
   f=typeface(40,True)
   for i,txt in enumerate(visual['studyLabels'][key]):
    x=90+i*920;w=math.ceil(d.textlength(txt,font=f))+48;d.rounded_rectangle((x,130,x+w,202),radius=8,fill='#28443a');d.text((x+18,142),txt,font=f,fill='white')
+  if key=='top' and EP=='A05':
+   # Project the verified end point of the right hand onto this fixed top camera's image plane.
+   evidence=read(H/'motion-evidence.json')['top'][1][38]['hand_r']
+   yaw=math.radians(-73);pitch=math.radians(-88)
+   world_y=math.sin(yaw)*evidence[0]+math.cos(yaw)*evidence[1]
+   up=math.sin(-pitch)*-(world_y-35)+math.cos(pitch)*(evidence[2]-720)
+   y=round(540-up*1920/500)
+   for left in range(105,1770,55):d.line((left,y,left+28,y),fill='#20867c',width=6)
+   d.text((102,y+12),'목표의 앞뒤 위치',font=typeface(33,True),fill='#12544f')
  f=typeface(35,True);width=math.ceil(d.textlength(focus,font=f))+42
  d.rounded_rectangle((46,804,46+width,870),radius=9,fill=(15,26,22,235));d.text((65,815),focus,font=f,fill='#f5d983')
  file=V/f"label-{s['index']:03}.png";im.save(file);return file
@@ -120,6 +143,23 @@ def picture():
   return dst
  for key in visual['rigs']:
   src=L/(key+'.mp4')
+  if EP=='A06':
+   prepared=V/(key+'-clock.mp4')
+   with (L/(key+'-clock.log')).open('wb') as log:
+    encoder=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s','1920x1080','-r','60','-i','pipe:0','-an',*enc,prepared],stdin=subprocess.PIPE,stderr=log)
+    for ix,file in enumerate(sorted((L/'frames'/key).glob('*.png'))):
+     im=Image.open(file).convert('RGB');d=ImageDraw.Draw(im);frame=min(60,ix%82)
+     for side in (0,1):
+      x=90+side*950;y=701;w=710;cancel=42 if key!='control' or side else 60
+      d.rounded_rectangle((x,y,x+w,y+90),radius=8,fill='#1b2a24')
+      d.line((x+20,y+58,x+w-20,y+58),fill='#849587',width=8)
+      d.line((x+20+round(15*(w-40)/60),y+58,x+20+round(19*(w-40)/60),y+58),fill='#ffbc73',width=16)
+      px=x+20+round(frame*(w-40)/60);d.line((px,y+42,px,y+77),fill='white',width=5)
+      state='판정 활성' if 15<=frame<19 else '다음 행동 가능' if frame>=cancel else '회복' if frame>=19 else '준비'
+      d.text((x+17,y+6),f'{frame} / 60 F   ·   {state}',font=typeface(30,True),fill='white')
+     encoder.stdin.write(im.tobytes())
+    encoder.stdin.close();assert encoder.wait()==0
+   src=prepared
   if key=='outline':
    from scipy.ndimage import binary_closing,binary_fill_holes
    directory=L/'frames'/key;prepared=V/'outline-mask.mp4'
@@ -134,7 +174,8 @@ def picture():
    src=prepared
   samples=visual.get('studyObservationFrames',{}).get(key,[16,27])
   first,second=samples
-  graph=(f'[0:v]split=4[a][b][c][d];[a]trim=start_frame=8:end_frame=63,setpts=PTS-STARTPTS[a0];'
+  native_start,native_end=visual.get('studyBasePlayback',[8,63])
+  graph=(f'[0:v]split=4[a][b][c][d];[a]trim=start_frame={native_start}:end_frame={native_end},setpts=PTS-STARTPTS[a0];'
          f'[b]trim=start_frame=14:end_frame={max(second+2,37)},setpts=4*(PTS-STARTPTS),fps=60[b0];'
          f'[c]trim=start_frame={first}:end_frame={first+1},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=1.15[c0];'
          f'[d]trim=start_frame={second}:end_frame={second+1},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=0.78[d0];'
