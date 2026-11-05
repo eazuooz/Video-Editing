@@ -53,11 +53,17 @@ def sync_scene_assets():
  receipt.write_text(json.dumps(planned,indent=2),'utf-8')
 sync_scene_assets()
 if '--build-only' in sys.argv:sys.exit(0)
+capture_receipt=L/'captured-inputs.json'
+captures=json.loads(capture_receipt.read_text('utf-8')) if capture_receipt.exists() else {}
 for key in job['keys']:
  meta=json.loads((L/(key+'-build.json')).read_text());folder=L/'frames'/key
- if len(list(folder.glob('*.png')))!=meta['frames']:
+ capture_inputs=(H/'build_level.py',W/'build-job.json',W/'Config/DefaultEngine.ini',L/'poses'/(key+'.json'))
+ signature=hashlib.sha256(b''.join(hashlib.sha256(f.read_bytes()).digest() for f in capture_inputs)).hexdigest()
+ if captures.get(key)!=signature or len(list(folder.glob('*.png')))!=meta['frames']:
   with idle_slot(ep+'-animation-capture',wait=True):
    run([meta['level'],'-game','-LevelSequence='+meta['sequence'],'-MoviePipelineConfig='+meta['config'],'-RenderOffscreen','-NoScreenMessages','-NoLoadingScreen','-notexturestreaming','-resx=1920','-resy=1080'],'render-'+key)
  assert len(list(folder.glob('*.png')))==meta['frames'],key
  subprocess.run(['ffmpeg','-v','error','-y','-framerate','60','-i',str(folder/'%06d.png'),'-frames:v',str(meta['frames']),'-c:v','h264_nvenc','-preset','p4','-cq','17','-b:v','0','-pix_fmt','yuv420p',str(L/(key+'.mp4'))],check=True)
+ captures[key]=signature
+ capture_receipt.write_text(json.dumps(captures,indent=2),'utf-8')
  print('Rendered',key,flush=True)

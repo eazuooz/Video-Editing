@@ -75,10 +75,14 @@ def compose(ep,key,h,l,v,encoder):
                     label(draw,advanced[0]-28,advanced[1]-58,'루트',23)
             if ep=='A11' and key=='kick':
                 for i in range(2):
-                    x=85+i*950;panel(draw,x,664,685,114);label(draw,x+18,672,f'시작 14 F   →   도착 22 F    /    현재 {n} F')
+                    x=(56,1008)[i];panel(draw,x,262,230,134)
+                    label(draw,x+14,268,'14 → 22 F',27);label(draw,x+14,308,f'현재 {n} F',23)
                     for j in range(9):
                         u=j/8;pos=u if not i else max(0,(u-.625)/.375)
-                        px=x+62+round(547*pos);dot(draw,(px,748),6,GOLD if j==min(8,max(0,n-14)) else '#96A49C')
+                        px=x+18+round(194*pos);dot(draw,(px,371),5,GOLD if j==min(8,max(0,n-14)) else '#96A49C')
+                    if 14<=n<=22:
+                        p=joint(motion[key][i][n]['foot_r'],i,-65,505)
+                        dot(draw,p,14,GOLD if not i else MINT)
             if ep=='A11' and key=='returning':
                 for i in range(2):
                     trace=motion[key][i]
