@@ -1,6 +1,7 @@
 """Generate and read back one explicitly bound animation episode, waiting for a free GPU slot."""
 from pathlib import Path
 import sys,subprocess,json,time,msvcrt
+from screen_share import HOLD,ShareState
 B=Path(__file__).resolve().parent;R=B.parents[2];ep=sys.argv[1]
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 batch=read(B/'batch.json');assert ep in batch['episodeIds'] and batch['ttsAuthorized']
@@ -19,16 +20,24 @@ while True:
  except OSError:time.sleep(7)
 if report.exists() and read(report)['complete']:sys.exit(0)
 completed=l/'voice/narration.timing.json'
+share=ShareState()
+voice_runner=[sys.executable,'-X','utf8','-u',str(B/'screen_share.py')]
 while not completed.exists():
+ if not share.clear():time.sleep(5);continue
  if (R/'shared/output/GPU_HANDOFF.json').exists():time.sleep(15);continue
  free,util=map(int,subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,utilization.gpu','--format=csv,noheader,nounits'],text=True).strip().split(','))
  if free<8192 or util>=15:time.sleep(12);continue
  with (l/'tts.log').open('wb') as log:
-  rc=subprocess.call([sys.executable,'-X','utf8','-u','qwen3-tts/render_narration.py',*args],cwd=R,stdout=log,stderr=log)
+  rc=subprocess.call([*voice_runner,'qwen3-tts/render_narration.py',*args],cwd=R,stdout=log,stderr=log)
+ if rc==HOLD:continue
  if rc:
   message=(l/'tts.log').read_text('utf-8',errors='replace')
   if any(t in message for t in ['Unregistered GPU','GPU capacity','GPU is reserved','GPU handoff']):time.sleep(15);continue
   raise RuntimeError(message[-1300:])
-with (l/'asr.log').open('wb') as log:
- subprocess.run([sys.executable,'-X','utf8','-u','qwen3-tts/review_project_narration.py',*args,'--device','cuda'],cwd=R,stdout=log,stderr=log,check=True)
+while True:
+ with (l/'asr.log').open('wb') as log:
+  rc=subprocess.call([*voice_runner,'qwen3-tts/review_project_narration.py',*args,'--device','cuda'],cwd=R,stdout=log,stderr=log)
+ if rc==HOLD:continue
+ if rc:raise RuntimeError(str(l/'asr.log'))
+ break
 assert read(report)['complete']
