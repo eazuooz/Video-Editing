@@ -16,7 +16,7 @@ def values(key,i,t):
     return [round(v,5) for v in (yaw,nod,tilt,eye)]
 def sample(key,i,t):
     yaw,nod,tilt,eye=values(key,i,t);p={}
-    if key=='wrist':
+    if key in ('wrist','wristIsolated'):
         a=smooth(t,8,49);b=math.sin(math.pi*a)
         face(p,'hand_r',0,(0,26*i*b,68*a))
         # Keep the same grip through both trials. Only the wrist and proximal motion differ.
@@ -38,6 +38,8 @@ if __name__=='__main__':
     settings={k:dict(cameraWidth=122,cameraHeight=173,yaw=0,actorSpacing=30,exposeEyes=True) for k in keys}
     settings['wrist']=dict(cameraWidth=142,cameraHeight=115,yaw=0,actorLocations=[[20,0,0],[91,0,0]],
                            handSockets=['hand_r','hand_r'],handOffset=[-11.32,3.46,3.47],handScale=[.037,.037,.25],exposeEyes=True)
+    # Capture the same right-side trial separately so the other actor's coat cannot hide its turning hand.
+    settings['wristIsolated']=dict(settings['wrist'],actorLocations=[[-900,0,0],[91,0,0]])
     author('A18',P,settings,sample)
     curves={key:[[values(key,i,t) for t in range(120)] for i in range(2)] for key in keys}
     (H/'degrees-by-frame.json').write_text(json.dumps(curves,separators=(',',':')),'utf-8')

@@ -119,6 +119,9 @@ const server=http.createServer((req,res)=>{
   const f=path.join(dir,e.slug+'.'+m[2]);if(!relative(fs.realpathSync(f)).startsWith('projects/'+e.slug+'/production/local/'))return res.writeHead(403).end();
   const size=fs.statSync(f).size;let a=0,b=size-1,status=200;const headers={'Content-Type':m[2].endsWith('.mp4')?'video/mp4':'application/x-subrip; charset=utf-8','Accept-Ranges':'bytes','Cache-Control':'no-cache'};
   if(req.headers.range){const range=req.headers.range.match(/^bytes=(\d*)-(\d*)$/);if(!range||(!range[1]&&!range[2]))return res.writeHead(416).end();a=range[1]?Number(range[1]):Math.max(0,size-Number(range[2]));b=range[1]&&range[2]?Math.min(size-1,Number(range[2])):size-1;if(a>b||a>=size)return res.writeHead(416).end();status=206;headers['Content-Range']='bytes '+a+'-'+b+'/'+size;}
-  headers['Content-Length']=b-a+1;res.writeHead(status,headers);if(req.method==='HEAD')return res.end();fs.createReadStream(f,{start:a,end:b}).on('error',()=>res.destroy()).pipe(res);
+  headers['Content-Length']=b-a+1;res.writeHead(status,headers);if(req.method==='HEAD')return res.end();
+  const stream=fs.createReadStream(f,{start:a,end:b});
+  res.once('close',()=>stream.destroy());
+  stream.on('error',()=>res.destroy()).pipe(res);
 });
 server.listen(port,'127.0.0.1');

@@ -48,7 +48,7 @@ def progressdraw(draw,frame,key,side):
 def compose(ep,key,h,l,v,encoder):
     needed={'A10':('recoil','root'),'A11':('kick','returning'),'A12':('expression','mouth'),
             'A14':('blend','duration','guard','slope'),'A15':('scale','count'),
-            'A16':('range','path','active'),'A17':('fkik','hint'),'A18':('head','curves','gaze')}
+            'A16':('range','path','active'),'A17':('fkik','hint'),'A18':('head','curves','gaze','wrist')}
     if key not in needed.get(ep,()):return l/(key+'.mp4')
     motion=read(h/'motion-evidence.json') if ep in ('A10','A11','A14','A17') else {}
     collision=read(h/'collision-samples.json') if ep=='A16' else {}
@@ -146,7 +146,10 @@ def compose(ep,key,h,l,v,encoder):
                     py=540-(wz-105)*1920/370
                     dot(draw,(px,py),20,GOLD if side==0 and key=='fkik' else MINT)
                     label(draw,round(px)+25,round(py)-36,'손목',22)
-            if ep=='A18':
+            if ep=='A18' and key=='wrist':
+                with Image.open(l/'frames/wristIsolated'/frame.name) as isolated:
+                    im.paste(isolated.crop((960,0,1920,1080)),(960,0))
+            if ep=='A18' and key in ('head','curves','gaze'):
                 for i in range(2):
                     x=80+i*950;panel(draw,x,651,724,145)
                     yaw,nod,tilt,eye=degrees[key][i][n]
