@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "updatedAt": "2026-11-04T19:36:11.282547+00:00",
   "status": "complete-design-awaiting-actual-speech-timing-and-visual-QA",
-  "sourceNarrationSha256": "163abdf1c75a196a65c828953fdb3fa70134c4c47579906ea1344a4f11bb2e76",
+  "sourceNarrationSha256": "cf6591b7e8635ddcf4929b9e160215544adf41492a3090b3799192075bb3edd6",
   "allBodyParagraphsRetained": true,
   "pendingImplementationBeatCount": 0,
   "actualNativeGameParts": 3,
@@ -212,7 +212,11 @@
           "sourceFrames": "projects/game-math-skinning-normal-map/production/local/game-layout-in-context-v1/mario-spoken-focus.jpg",
           "finalQa": false
         }
-      }
+      },
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "001",
@@ -260,7 +264,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "002",
@@ -380,7 +388,11 @@
         "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending",
         "duration": 24,
         "minimumObservedResultOut": 744.8
-      }
+      },
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "003",
@@ -428,12 +440,16 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "004",
       "sourceBeatId": "M22-004-lbs",
-      "speech": "두 본의 영향을 받는 정점 하나를 따라가 보겠습니다. 먼저 위팔에 완전히 붙어 있다고 가정한 위치를 만들고, 다음에는 아래팔에 완전히 붙었다고 가정한 위치를 만듭니다. 실제 정점은 그 두 위치를 가중평균한 곳에 둡니다. 이것이 선형 블렌드 스키닝입니다. 회전각 자체를 육십 퍼센트와 사십 퍼센트로 섞는 것이 아니라, 각 본으로 옮긴 위치들을 섞는 겁니다.",
+      "speech": "팔꿈치가 굽을 때, 소매의 한 점은 어디로 가야 할까요? 파란 점은 그 정점이 위팔만 따라갈 때의 위치이고, 초록 점은 아래팔만 따라갈 때의 위치예요. 두 점 사이에서 각 본의 영향만큼 섞은 곳이 실제 소매의 위치입니다. 이게 선형 블렌드 스키닝이에요. 섞는 대상은 회전각이 아니라, 본이 옮겨 놓은 두 위치입니다.",
       "sourceParagraphs": [
         "S108-P009",
         "S108-P010",
@@ -462,35 +478,39 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "먼저 위팔에",
-          "position": 0,
-          "character": 30
+          "phrase": "파란 점은",
+          "position": 0.12,
+          "character": 32
         },
         {
-          "phrase": "다음에는 아래팔에",
-          "position": 0.3333333333333333,
+          "phrase": "초록 점은",
+          "position": 0.38,
           "character": 61
         },
         {
-          "phrase": "실제 정점은",
-          "position": 0.6666666666666666,
-          "character": 94
+          "phrase": "두 점 사이에서",
+          "position": 0.68,
+          "character": 85
         },
         {
-          "phrase": "이것이 선형",
+          "phrase": "선형 블렌드",
           "position": 1,
-          "character": 123
+          "character": 127
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "005",
       "sourceBeatId": "M22-005-lbs-numbers",
-      "speech": "위팔이 제안한 위치를 영, 이, 아래팔이 제안한 위치를 이, 영이라고 해 볼까요? 위팔 육십 퍼센트, 아래팔 사십 퍼센트라면 결과는 영점팔, 일점이입니다. 위팔 쪽 위치에 더 가깝죠. 손 쪽 정점처럼 위팔 이십 퍼센트, 아래팔 팔십 퍼센트로 바꾸면 일점육, 영점사가 됩니다. 같은 본 움직임이라도 정점마다 가중치가 달라 팔꿈치 주변이 이어지는 것입니다.",
+      "speech": "그럼 어느 본이 이 점을 더 많이 끌어가는 걸까요? 팔의 자세를 그대로 두고, 아래팔의 영향만 서서히 늘려 볼게요. 아래팔의 몫이 늘면 위팔의 몫은 줄어들고, 소매의 점이 초록 점 쪽으로 다가갑니다. 팔꿈치 주변의 정점마다 이 비율을 조금씩 다르게 주면, 소매가 한 덩어리로 꺾이지 않고 이어져요.",
       "sourceParagraphs": [
         "S108-P013",
         "S108-P014"
@@ -513,30 +533,34 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "위팔 육십 퍼센트",
-          "position": 0,
-          "character": 46
+          "phrase": "팔의 자세를",
+          "position": 0.08,
+          "character": 29
         },
         {
-          "phrase": "영점팔, 일점이",
-          "position": 0.45,
-          "character": 74
+          "phrase": "아래팔의 몫이",
+          "position": 0.28,
+          "character": 65
         },
         {
-          "phrase": "손 쪽 정점처럼",
-          "position": 0.5,
-          "character": 103
+          "phrase": "초록 점 쪽으로",
+          "position": 0.75,
+          "character": 96
         },
         {
-          "phrase": "일점육, 영점사가",
+          "phrase": "정점마다",
           "position": 1,
-          "character": 139
+          "character": 120
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "006",
@@ -589,7 +613,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "007",
@@ -649,7 +677,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "008",
@@ -703,7 +735,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "009",
@@ -747,12 +783,16 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "010",
       "sourceBeatId": "M22-010-bind-conversion",
-      "speech": "본이 모델 공간의 어디에 있는지를 나타내는 바인드 행렬이 있다면, 그 역행렬은 모델 공간의 정점을 본 공간으로 데려갑니다. 그다음 현재 본의 행렬을 적용하면 지금 자세의 모델 공간으로 돌아오죠. 원래 위치를 매 프레임 덮어쓰며 또 움직이는 것이 아니라, 원래 바인드 위치에서 현재 자세를 다시 구해야 오차가 누적되지 않습니다.",
+      "speech": "기준 자세에 있던 정점이 지금 어디에 있는지 구해 볼게요. 먼저 바인드 행렬의 역행렬로, 그 점을 본에서 본 위치로 바꿉니다. 이제 현재 본의 행렬을 적용하면, 같은 점이 지금 자세의 모델 공간에 놓이죠. 매번 원래 바인드 위치에서 시작해야, 지난 프레임의 움직임을 또 더하지 않습니다.",
       "sourceParagraphs": [
         "S108-P040",
         "S108-P041",
@@ -777,30 +817,34 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "그 역행렬은",
-          "position": 0,
-          "character": 37
+          "phrase": "바인드 행렬의",
+          "position": 0.16,
+          "character": 36
         },
         {
-          "phrase": "그다음 현재 본의",
-          "position": 0.5,
-          "character": 69
+          "phrase": "현재 본의 행렬",
+          "position": 0.56,
+          "character": 74
         },
         {
-          "phrase": "현재 자세를 다시",
+          "phrase": "매번 원래",
           "position": 1,
-          "character": 154
+          "character": 115
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "011",
       "sourceBeatId": "M22-011-bind-example",
-      "speech": "아주 간단히, 바인드 자세에서 본의 원점이 가로 일에 있고 정점이 가로 이에 있다고 해 보겠습니다. 본 공간에서는 정점이 원점에서 일만큼 떨어져 있죠. 본을 가로 삼으로 옮기면 정점은 사로 갑니다. 기준 자세에서의 본 위치를 먼저 빼지 않으면 원래 배치까지 다시 더하게 됩니다. 그래서 바인드 역행렬을 거치는 단계가 필요합니다.",
+      "speech": "이 두 단계가 왜 필요한지 소매에 단추 하나를 달아 보면 분명해요. 처음 팔꿈치에서 단추까지 선을 그어 볼게요. 이 간격이 본을 기준으로 본 단추의 위치입니다. 팔꿈치를 옮기면 이 선도 함께 옮겨지고, 그 끝이 단추의 새 위치가 되죠. 처음 팔꿈치가 어디에 있었는지를 빼 주지 않으면, 그 자리까지 움직임에 다시 들어갑니다.",
       "sourceParagraphs": [
         "S108-P043",
         "S108-P044",
@@ -824,25 +868,34 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "본의 원점이 가로 일",
-          "position": 0,
-          "character": 17
+          "phrase": "처음 팔꿈치에서",
+          "position": 0.12,
+          "character": 38
         },
         {
-          "phrase": "본 공간에서는",
+          "phrase": "팔꿈치를 옮기면",
           "position": 0.5,
-          "character": 56
+          "character": 90
         },
         {
-          "phrase": "정점은 사로",
+          "phrase": "새 위치가",
+          "position": 0.9,
+          "character": 122
+        },
+        {
+          "phrase": "처음 팔꿈치가",
           "position": 1,
-          "character": 99
+          "character": 132
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "012",
@@ -897,7 +950,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "013",
@@ -946,7 +1003,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "014",
@@ -998,7 +1059,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "015",
@@ -1120,12 +1185,16 @@
         "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending",
         "duration": 17,
         "minimumObservedResultOut": 119.5
-      }
+      },
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "016",
       "sourceBeatId": "M22-016-encode-normal",
-      "speech": "기본적인 노멀 맵은 법선의 엑스, 와이, 제트 성분을 빨강, 초록, 파랑에 대응시킵니다. 방향 성분은 마이너스 일부터 일까지지만 색 채널은 보통 영부터 일까지이므로, 절반을 곱하고 영점오를 더해 저장합니다. 다시 읽을 때는 두 배로 만든 뒤 일을 빼면 됩니다. 바깥쪽을 곧게 향하는 영, 영, 일은 영점오, 영점오, 일이라서 푸른색 계열로 보이는 것입니다.",
+      "speech": "노멀 맵에서 꺼내려는 건 색이 아니라, 표면이 어느 쪽을 향하느냐예요. 빨강은 가로 기울기, 초록은 세로 기울기, 파랑은 표면 밖을 향하는 성분을 담습니다. 방향에는 음수가 있지만 색 채널에는 보통 음수가 없어서, 저장할 때 범위를 옮기고 읽을 때 되돌립니다. 기울지 않은 곳은 바깥쪽 성분이 가장 커서 푸른색으로 보이죠.",
       "sourceParagraphs": [
         "S109-P004",
         "S109-P005"
@@ -1148,30 +1217,29 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "빨강, 초록, 파랑",
-          "position": 0,
-          "character": 30
+          "phrase": "빨강은 가로",
+          "position": 0.22,
+          "character": 40
         },
         {
-          "phrase": "절반을 곱하고",
-          "position": 0.3,
-          "character": 93
+          "phrase": "방향에는 음수가",
+          "position": 0.5,
+          "character": 88
         },
         {
-          "phrase": "두 배로 만든 뒤",
-          "position": 0.65,
-          "character": 125
-        },
-        {
-          "phrase": "푸른색 계열",
+          "phrase": "푸른색으로",
           "position": 1,
-          "character": 182
+          "character": 170
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "017",
@@ -1229,7 +1297,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "018",
@@ -1282,7 +1354,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "019",
@@ -1331,12 +1407,16 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "020",
       "sourceBeatId": "M22-020-decode-example",
-      "speech": "예를 들어 여덟 비트 색이 삼십칠, 백이십팔, 이백십팔이면 각 값을 이백오십오로 나눈 뒤 두 배하고 일을 뺍니다. 결과는 대략 마이너스 영점칠일, 영점영영사, 영점칠일입니다. 이를 정규화하면 거의 마이너스 영점칠영칠, 영, 영점칠영칠 방향이 되죠. 약 사십오 도 기울었다는 뜻이며, 아주 작은 차이는 여덟 비트로 저장한 양자화 오차입니다.",
+      "speech": "이제 같은 표면점에서 빨강 채널만 바꾸면 법선이 어디로 기우는지 보죠. 표시된 식은 색에 저장된 성분을 꺼내서, 길이가 일정한 방향 화살표로 만드는 식입니다. 빨강을 낮추면 화살표가 접선의 반대쪽으로 기울고, 같은 빛에서도 그 자리의 밝기가 바뀝니다. 여덟 비트 색에는 저장할 수 있는 단계가 정해져서, 원래 방향을 정확히 되찾지 못할 수도 있어요.",
       "sourceParagraphs": [
         "S109-P019",
         "S109-P074"
@@ -1359,35 +1439,39 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "여덟 비트 색이",
-          "position": 0,
-          "character": 6
+          "phrase": "표시된 식은",
+          "position": 0.15,
+          "character": 40
         },
         {
-          "phrase": "결과는 대략",
-          "position": 0.4,
-          "character": 64
+          "phrase": "빨강을 낮추면",
+          "position": 0.36,
+          "character": 89
         },
         {
-          "phrase": "이를 정규화하면",
-          "position": 0.7,
-          "character": 98
+          "phrase": "밝기가 바뀝니다",
+          "position": 0.9,
+          "character": 131
         },
         {
-          "phrase": "양자화 오차",
+          "phrase": "저장할 수 있는",
           "position": 1,
-          "character": 179
+          "character": 151
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "021",
       "sourceBeatId": "M22-021-local-left",
-      "speech": "마이너스 엑스는 화면 왼쪽이라는 뜻이 아닙니다. 그 표면에서 유가 줄어드는 방향이에요. 접선 공간의 법선이 마이너스 영점칠영칠, 영, 영점칠영칠이라면, 접선 티를 마이너스 영점칠영칠 배 하고 법선 엔을 영점칠영칠 배 해서 더합니다. 이렇게 각 성분에 해당 축을 곱해 합치면 모델 공간의 방향을 얻습니다. 면이 돌아가도 같은 요철이 그 면에 붙어 있게 되는 이유입니다.",
+      "speech": "그 화살표가 실제 모델에서는 어느 쪽을 향할까요? 텍스처의 가로 성분이 음수라는 건 화면 왼쪽이 아니라, 표면에서 유가 줄어드는 쪽을 뜻해요. 가로, 세로, 바깥쪽 성분을 각각 접선, 비탄젠트, 법선 방향에 얹어 더하면 모델 공간의 법선이 됩니다. 면을 돌려 볼게요. 기준축과 합성한 화살표가 같이 돌아서 요철이 표면에 붙어 있습니다.",
       "sourceParagraphs": [
         "S109-P019",
         "S109-P020",
@@ -1413,25 +1497,34 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "마이너스 엑스는",
-          "position": 0,
-          "character": 0
+          "phrase": "텍스처의 가로",
+          "position": 0.14,
+          "character": 28
         },
         {
-          "phrase": "각 성분에 해당 축",
-          "position": 0.5,
-          "character": 134
+          "phrase": "바깥쪽 성분을",
+          "position": 0.38,
+          "character": 88
         },
         {
-          "phrase": "면이 돌아가도",
+          "phrase": "면을 돌려",
+          "position": 0.65,
+          "character": 139
+        },
+        {
+          "phrase": "요철이 표면에",
           "position": 1,
-          "character": 170
+          "character": 171
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "022",
@@ -1479,7 +1572,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "023",
@@ -1526,7 +1623,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "024",
@@ -1578,7 +1679,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "025",
@@ -1630,12 +1735,16 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "026",
       "sourceBeatId": "M22-026-linear-system",
-      "speech": "첫 번째 변은 유 방향으로 에스 일만큼, 브이 방향으로 티 일만큼 이동한 결과입니다. 따라서 큐 일은 에스 일 곱하기 티, 더하기 티 일 곱하기 비로 쓸 수 있습니다. 두 번째 변도 같은 방식이죠. 변과 유브이 차이는 이미 알고 있으니, 모르는 티와 비를 두 식에서 풀어내면 됩니다. 두 개의 좌표계를 연결하는 연립방정식인 셈입니다.",
+      "speech": "우리가 찾을 건 텍스처에서 가로로 갈 때와 세로로 갈 때, 모델 위에서 각각 어느 쪽으로 움직이느냐입니다. 먼저 첫 번째 변을 따라가 보죠. 텍스처에서 가로로 간 몫과 세로로 간 몫을 합치면, 모델에서는 바로 그 변이 됩니다. 두 번째 변도 같은 두 방향으로 나눌 수 있어요. 두 변의 길과 유브이 변화는 이미 압니다. 그래서 두 식을 함께 풀면 아직 모르는 접선과 비탄젠트를 구할 수 있어요.",
       "sourceParagraphs": [
         "S109-P039",
         "S109-P040",
@@ -1660,30 +1769,39 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "첫 번째 변은",
-          "position": 0,
-          "character": 0
+          "phrase": "첫 번째 변을",
+          "position": 0.15,
+          "character": 63
         },
         {
-          "phrase": "두 번째 변도",
-          "position": 0.5,
+          "phrase": "세로로 간 몫",
+          "position": 0.47,
           "character": 94
         },
         {
-          "phrase": "연립방정식인 셈",
+          "phrase": "두 번째 변도",
+          "position": 0.62,
+          "character": 127
+        },
+        {
+          "phrase": "두 식을 함께",
           "position": 1,
-          "character": 174
+          "character": 183
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "027",
       "sourceBeatId": "M22-027-invert-system",
-      "speech": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다. 이것이 유브이 삼각형의 방향과 넓이 정보를 담은 행렬식입니다. 접선은 티 이 곱하기 첫 번째 변에서 티 일 곱하기 두 번째 변을 뺀 뒤 이 행렬식으로 나눕니다. 비탄젠트는 마이너스 에스 이 곱하기 첫 번째 변에 에스 일 곱하기 두 번째 변을 더해 같은 값으로 나눕니다. 아직 길이가 일인 벡터는 아닙니다.",
+      "speech": "두 변에서 접선과 비탄젠트를 따로 꺼내려면, 유브이 삼각형이 넓이를 갖는지부터 봅니다. 식의 분모는 두 유브이 변의 행렬식입니다. 그 크기는 삼각형 넓이의 두 배이고, 부호에는 꼭짓점 순서가 남아요. 첫 식은 두 변에서 세로 몫을 지워 접선을 남기고, 둘째 식은 가로 몫을 지워 비탄젠트를 남깁니다. 이렇게 얻은 벡터에는 방향뿐 아니라, 텍스처 좌표가 변할 때 모델에서 얼마나 이동하는지도 들어 있어요.",
       "sourceParagraphs": [
         "S109-P043",
         "S109-P044"
@@ -1706,35 +1824,44 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "이차 행렬의 역행렬",
-          "position": 0,
-          "character": 0
+          "phrase": "삼각형이 넓이를",
+          "position": 0.12,
+          "character": 29
         },
         {
-          "phrase": "접선은 티 이",
-          "position": 0.3,
-          "character": 83
+          "phrase": "분모는",
+          "position": 0.32,
+          "character": 52
         },
         {
-          "phrase": "비탄젠트는 마이너스",
-          "position": 0.65,
-          "character": 138
+          "phrase": "세로 몫을",
+          "position": 0.56,
+          "character": 123
         },
         {
-          "phrase": "길이가 일인 벡터는",
+          "phrase": "가로 몫을",
+          "position": 0.8,
+          "character": 147
+        },
+        {
+          "phrase": "방향뿐 아니라",
           "position": 1,
-          "character": 202
+          "character": 180
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "028",
       "sourceBeatId": "M22-028-tangent-worked",
-      "speech": "숫자로 확인해 보겠습니다. 삼차원 변을 이, 영, 영과 영, 일, 영으로 두고, 유브이 변을 일, 영과 영, 일로 두죠. 행렬식은 일입니다. 그러면 접선은 이, 영, 영, 비탄젠트는 영, 일, 영이 됩니다. 접선의 길이를 일로 맞추면 일, 영, 영이죠. 텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "speech": "식을 그림으로 확인해 볼게요. 텍스처 위의 작은 점을 오른쪽으로만 움직여 봅니다. 모델에서 같은 점이 지나가는 길이 바로 접선 방향입니다. 이번에는 텍스처에서 위로 움직여 볼게요. 모델에서는 비탄젠트를 따라가죠. 화살표의 길이를 같게 맞춰도 각각 가리키는 쪽은 그대로예요. 그런데 텍스처를 뒤집으면 어떨까요?",
       "sourceParagraphs": [
         "S109-P036",
         "S109-P037",
@@ -1764,30 +1891,39 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "숫자로 확인해",
-          "position": 0,
-          "character": 0
+          "phrase": "오른쪽으로만",
+          "position": 0.16,
+          "character": 30
         },
         {
-          "phrase": "행렬식은 일",
-          "position": 0.3,
+          "phrase": "접선 방향",
+          "position": 0.46,
           "character": 68
         },
         {
-          "phrase": "접선의 길이를 일로",
-          "position": 0.7,
-          "character": 116
+          "phrase": "위로 움직여",
+          "position": 0.62,
+          "character": 89
         },
         {
-          "phrase": "연결되었습니다",
+          "phrase": "비탄젠트를 따라",
+          "position": 0.86,
+          "character": 107
+        },
+        {
+          "phrase": "텍스처를 뒤집으면",
           "position": 1,
-          "character": 176
+          "character": 157
         }
       ],
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "029",
@@ -1835,7 +1971,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "030",
@@ -1880,7 +2020,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "031",
@@ -1946,7 +2090,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "032",
@@ -1995,7 +2143,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "033",
@@ -2047,7 +2199,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "034",
@@ -2084,11 +2240,6 @@
           "character": 34
         },
         {
-          "phrase": "좌표를 바꿔",
-          "position": 0.5,
-          "character": 43
-        },
-        {
           "phrase": "조명하는 과정",
           "position": 0.75,
           "character": 50
@@ -2102,7 +2253,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     },
     {
       "id": "035",
@@ -2158,7 +2313,11 @@
       "hold": 0,
       "independentEditableSceneRequired": true,
       "status": "source-implemented-final-audio-and-layout-QA-pending",
-      "timing": "Bind actual word timestamps before capture; no estimated narration pauses"
+      "timing": "Bind actual word timestamps before capture; no estimated narration pauses",
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ]
     }
   ]
 }

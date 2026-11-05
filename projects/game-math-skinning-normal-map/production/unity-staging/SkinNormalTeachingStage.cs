@@ -117,6 +117,7 @@ namespace Yamyam.SkinNormal {
                 rig.RotateLocalBone("lowerarm.l",axis,Mathf.Lerp(shot.bendFrom,shot.bendTo,u));
             }
             if(b<=14)ApplySkinning(b,u);else ApplyNormals(b,u);
+            DrawMeaning(b,u);
             foreach(var r in hero.GetComponentsInChildren<Renderer>(true)){var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",Color.white*(b==6?.65f:code.text.Length>0?.12f:1));r.SetPropertyBlock(block);}
             FinishPools();
         }

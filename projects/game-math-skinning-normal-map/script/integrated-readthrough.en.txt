@@ -6,9 +6,9 @@ When a bicycle jumps in Riders Republic, its frame retains its shape while the r
 
 Skinning assigns which bones affect each vertex and by how much. Those proportions are skin weights. An elbow vertex may be influenced by both arm bones. Rigging can also include animator controls beyond these assignments. Automatic weights are a starting point, but extreme poses still need inspection.
 
-Track a vertex influenced by two bones. Compute where it would be if rigidly attached to the upper arm, then where it would be if attached to the forearm. Place the final vertex at the weighted average of those positions. This is linear blend skinning: it blends transformed positions, not rotation angles.
+When an elbow bends, where should a point on the sleeve go? Blue marks where the upper arm alone would put the vertex; green marks the forearm's proposal. The sleeve vertex lies between them, blended according to each bone's influence. This is linear blend skinning. We blend the transformed positions, rather than the angles.
 
-If the upper arm proposes (0,2) and the forearm proposes (2,0), weights of 0.6 and 0.4 produce (0.8,1.2), closer to the upper-arm position. Weights of 0.2 and 0.8 produce (1.6,0.4). Different vertices use different weights, producing a connected deformation around the same moving joint.
+Which bone has more influence on this vertex? Hold the pose still and gradually increase the forearm's share. As the forearm gains influence, the upper arm loses it and the sleeve point approaches green. Varying that blend across neighboring vertices gives the sleeve a continuous bend.
 
 A vertex stores influencing bone indices and weights. In the simple method, it also stores a position in each influencing bone's space. Nonnegative weights sum to one so identical proposed positions remain unchanged. Four influences may be an implementation limit, but it is not a mathematical maximum.
 
@@ -18,9 +18,9 @@ Unchanged normals would make lighting fail to follow the deformation. Transform 
 
 The bone-space positions come from a reference configuration called the bind pose: the original mesh and skeleton arrangement used for binding. Visualized bones are not physical rods pushing the mesh. Knowing each vertex and bone frame in the bind pose lets us express the vertex in that bone's coordinates.
 
-The bind matrix locates the bone in model space; its inverse takes a model-space vertex into that bone's space. Applying the bone's current matrix then returns it to the current model pose. Recompute from the original bind position rather than repeatedly deforming last frame's output.
+Where is a bind-pose vertex in the current pose? The inverse bind matrix expresses the point relative to its bone. The current bone matrix then places the point in model space in the new pose. Always start from the bind position so last frame's motion is not applied twice.
 
-Suppose a bind-pose bone origin is at x=1 and the vertex at x=2. In bone space, the vertex is one unit from the origin. Moving the bone origin to x=3 places the vertex at x=4. Without first removing the bind transform, the original offset would be applied incorrectly.
+A button on the sleeve makes those two steps easier to see. Draw a line from the original elbow to the button. It locates the button relative to the bone. Move the elbow: the line follows it, and its tip is the button's new position. Without removing the original elbow placement, we would count that offset twice.
 
 We can reduce storage by keeping one bind-pose position per vertex instead of one per bone. Precombine each bone's inverse bind transform with its current transform. For a vertex, blend the required matrices using its weights, then apply that blended matrix once.
 
@@ -30,7 +30,7 @@ Skinning therefore involves more than creating bones. Test joint extremes and ad
 
 As a flashlight sweeps over a metal wall in Doom 3, small grooves emerge through changes in brightness. We will now compare one way to create this kind of surface detail on a fixed surface in our own implementation. Textures can store more than color. Bump mapping represents small relief through changes in shading direction. A height map stores height and derives normals from its slope; a normal map stores the directions directly. We will focus on normal maps, which alone do not displace vertices or change the silhouette.
 
-A basic normal map encodes x, y, and z into red, green, and blue. Direction components in [-1,1] are mapped to [0,1] using 0.5*n+0.5, and decoded using 2*c-1. The straight outward normal (0,0,1) becomes (0.5,0.5,1), explaining the familiar bluish color.
+What we need from a normal map is the surface direction, not its color. Red carries the first tangent component, green the second, and blue the outward component. A direction can be negative; an ordinary color channel cannot. Encoding and decoding convert between those ranges. At an untilted point the outward component dominates, giving the map its familiar blue tint.
 
 These colors package direction data rather than decorative color. Altering brightness changes the encoded direction. Import them as normal data, not ordinary sRGB color, and handle renormalization after sampling or compression. A common workflow bakes surface directions from detailed geometry into a texture for a lower-resolution mesh.
 
@@ -38,9 +38,9 @@ Reusing a texture saves memory and authoring work, but normals are directions. I
 
 Tangent space supplies the local frame: normal N points outward, tangent T follows increasing texture u, and bitangent B follows increasing v. Some references call B the binormal; we will consistently use bitangent. Together they form the TBN basis. Image-up and increasing-v conventions must agree across tools.
 
-For the eight-bit values (37,128,218), divide by 255, multiply by two, and subtract one. The result is approximately (-0.710,0.0039,0.710). Renormalizing gives nearly (-0.707,0,0.707): about a forty-five-degree tilt. The small discrepancy comes from quantization.
+At the same surface point, what happens to the normal when only red changes? The formula decodes the stored channels and normalizes the resulting arrow. Lower red and the arrow leans against the tangent; illumination changes under the same light. Eight-bit channels have finite steps, so decoding may introduce a small direction error.
 
-Negative x means decreasing u on the surface, not screen-left. For tangent-space normal (-0.707,0,0.707), multiply T by -0.707 and N by 0.707, then add. This weighted combination of basis vectors produces the object-space direction, keeping the same apparent detail attached as the surface rotates.
+Which way does that arrow point on the model itself? A negative first component points toward decreasing surface U, not toward screen left. Combine the three components along the tangent, bitangent and surface normal to obtain a model-space normal. Rotate the face. Its axes and the resulting arrow turn together, keeping the detail attached.
 
 Across a curved surface, N, T, and B change with position. Even on a flat surface, distorted UV mapping can alter the u and v directions, which need not be perpendicular. Vertex frames can be interpolated across the surface and then adjusted into an orthonormal frame for the intended shading convention.
 
@@ -48,13 +48,13 @@ Either transform the mapped normal into object space or transform lighting and v
 
 An orthogonal frame need not store all three axes: a cross product of N and T can reconstruct the third. Mirrored UV mapping may require that axis to reverse, so store a handedness sign that distinguishes the frame's orientation: +1 or -1. Reconstruct B as sign times cross(N,T); formats may store this sign in tangent.w.
 
-To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, define the two geometric edges q1 and q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.
+To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, call the first geometric edge q1 and the second edge q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.
 
-The first edge results from moving s1 along T and t1 along B, so q1=s1*T+t1*B. The second edge gives q2=s2*T+t2*B. Since the edges and UV differences are known, solve these two vector equations for T and B. This connects the two coordinate systems.
+We want the two model-space directions corresponding to horizontal and vertical texture travel. For the first edge, its horizontal and vertical texture contributions add up to the observed model edge. The second edge uses the same two directions. Both model edges and both UV changes are known. Solving those two equations gives the unknown tangent and bitangent.
 
-The two-by-two inverse introduces the UV determinant D=s1*t2-s2*t1. It encodes oriented UV area. The tangent is (t2*q1-t1*q2)/D, and the bitangent is (-s2*q1+s1*q2)/D. These vectors are not yet normalized.
+To separate the tangent from the bitangent, first check whether the UV triangle has area. The denominator is the UV determinant. Its magnitude is twice the triangle area, and its sign records orientation. The first expression eliminates the vertical contribution to isolate T; the second eliminates the horizontal contribution to isolate B. These vectors encode travel per texture unit as well as direction, so they need not have unit length.
 
-Take geometric edges (2,0,0) and (0,1,0), with UV edges (1,0) and (0,1). The determinant is one. We obtain T=(2,0,0) and B=(0,1,0), then normalize T to (1,0,0). Moving right in texture coordinates now corresponds to the model's rightward direction.
+Check the formula visually: move a point only to the right on the texture. The matching point on the model follows the tangent. Move the texture point up instead. The model point now follows the bitangent. Normalizing the arrows preserves their directions. What changes when the texture is mirrored?
 
 Do not discard the denominator merely because you will normalize. A negative sign survives normalization. Mirroring the u direction changes the determinant to -1 and requires T to reverse. Normalization changes length, not orientation, so the determinant's sign must be preserved.
 

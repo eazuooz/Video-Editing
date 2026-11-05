@@ -232,6 +232,8 @@ def main():
         if (name in epic_gui and exe.endswith(epic_gui[name])) or (name == 'eosoverlayrenderer-win64-shipping.exe' and '/epic games/epic online services/managedartifacts/' in exe):
             gui_allow.add(name)
         process_names[info['pid']] = name
+        if SLUG=='game-math-skinning-normal-map' and exe=='c:/program files/windowsapps/microsoft.zunemusic_11.2609.11.0_x64__8wekyb3d8bbwe/microsoft.media.player.exe':
+            gui_allow.add(name)  # local playback; capacity samples still required
         arguments = [str(a).lower() for a in (info['cmdline'] or [])]
         joined = ' '.join(arguments)
         hub = name == 'unity.exe' and exe.endswith('/unity hub/resources/unity.exe') and 'serve' in arguments
@@ -264,6 +266,20 @@ def main():
             if module_at<len(arguments) and arguments[module_at] in ('yt_dlp','http.server'):
                 compute=False
         cpu_research = name.startswith('python') and verified_cpu_research(arguments)
+        # These exact read-only HTTP servers serve already-rendered local files.
+        # Keep games, other Python workers, the WDDM PID check, load samples
+        # and the exclusive lease unchanged. Limit this selection to M22.
+        if compute and name.startswith('python') and SLUG=='game-math-skinning-normal-map':
+            review_servers={
+                'projects/shorts-doom-noise-alert/serve_review.py':('b0d9bcae8eea8e69106fe579729acacc42e09da91acf50bfa7cb0965f9f3e85b',{'9364'}),
+                'production/batches/tech-ten-shorts-20261030/general-review/serve.py':('8a7fd9b973882c64005fa9228cde51b46b7b4dfff13ddffddebf6b43aca8171f',{'9358','9359'}),
+            }
+            if len(arguments)==6 and arguments[1:4]==['-x','utf8','-u']:
+                for rel,(signature,ports) in review_servers.items():
+                    path=(ROOT/rel).resolve()
+                    if Path(arguments[4]).resolve()==path and arguments[5] in ports and digest(path)==signature:
+                        compute=False
+                        baseline.append({'pid':info['pid'],'disposition':'preserved-read-only-review-server','sourceSha256':signature})
         if cpu_research:
             compute=False
             baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-verified-CPU-only-research','sourceSha256':'bf9ab30630f0a7e054b444779123ad3f7e25648bec2af77f66bd3b69f79a3f06'})
