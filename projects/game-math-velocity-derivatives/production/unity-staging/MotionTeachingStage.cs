@@ -303,8 +303,14 @@ namespace Yamyam.MathMotion {
             values.text="t = "+t.ToString("0.000")+" "+shot.timeUnit+"   "+component+" = "+p(state).ToString("0.000")+" "+shot.positionUnit;
             if(shot.showVelocityGraph)values.text+="\n"+(state.velocityDefined?"v"+component+" = "+v(state).ToString("0.000")+" "+shot.positionUnit+"/"+shot.timeUnit:"v = 정의되지 않음 (구간 경계)");
             if(shot.showAccelerationGraph)values.text+="\n"+(state.accelerationDefined?"a"+component+" = "+a(state).ToString("0.000")+" "+shot.positionUnit+"/"+shot.timeUnit+"²":"a = 정의되지 않음");
-            details.text=shot.showSecant?"Δt = "+shot.secantH.ToString("0.000")+"\n평균 속도 = "+(shot.graphY?MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).y:MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).x).ToString("0.000"):
-                shot.parameters.kind==MotionKind.Circle?"r = "+shot.parameters.radius.ToString("0.00")+"   ω = "+shot.parameters.omega.ToString("0.00")+" rad/s\n|v| = "+state.velocity.Length.ToString("0.000")+"   |a| = "+state.acceleration.Length.ToString("0.000"):"값은 현재 해설 모형에서 직접 계산\n화살표 축척은 장면 안에서 고정";
+            if(shot.showSecant){
+                double left=shot.fixedSecant?shot.secantStartTime:t;
+                var mean=MotionMathModel.SecantVelocity(shot.parameters,left,shot.secantH);
+                details.text="Δt = "+shot.secantH.ToString("0.###")+" "+shot.timeUnit+"\n평균 속도 = "+
+                    (shot.graphY?mean.y:mean.x).ToString("0.###")+" "+shot.positionUnit+"/"+shot.timeUnit;
+            }else{
+                details.text=shot.parameters.kind==MotionKind.Circle?"r = "+shot.parameters.radius.ToString("0.00")+"   ω = "+shot.parameters.omega.ToString("0.00")+" rad/s\n|v| = "+state.velocity.Length.ToString("0.000")+"   |a| = "+state.acceleration.Length.ToString("0.000"):"값은 현재 해설 모형에서 직접 계산\n화살표 축척은 장면 안에서 고정";
+            }
             if(shot.showRiemann)RiemannOverlay(t);
             GraphLandmark(t);
             for(int i=lineCursor;i<lines.Count;i++)lines[i].gameObject.SetActive(false);

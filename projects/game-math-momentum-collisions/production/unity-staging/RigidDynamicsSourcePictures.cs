@@ -63,10 +63,49 @@ namespace Yamyam.RigidTeaching {
    formula.text=detection?"검출: 어디에서 닿았는가?\n\n반응: 어떤 움직임으로 바뀌는가?\n\n접촉점 + 법선 + 침투 깊이":"n: A에서 B 방향\nvrel = vA − vB\n\nvrel · n > 0: 접근\nvrel · n ≤ 0: 반발 생략";
    values.text=detection?"검출 결과를 물리 반응 또는 설계한 게임 사건에 연결":separating?"멀어지는 접촉에는 새 반발 충격량을 넣지 않음":swapped?"물체 이름을 바꾸면 법선과 속도 차이도 함께 반전":"마찰 없는 반발: 법선 성분만 바꾸고 접선 성분은 유지";
   }
-  void RestitutionBounce(double u){double g=9.8,e=shot.restitution,hit=Math.Sqrt(2/g),t=u*(hit+2*e*hit);double y=t<hit?1-.5*g*t*t:e*Math.Sqrt(2*g)*(t-hit)-.5*g*(t-hit)*(t-hit);y=Math.Max(0,y);var basePoint=new Vector3(-5.2f,-1.2f);Path(Muted,basePoint+Vector3.left*2,basePoint+Vector3.right*3);Dot(basePoint+new Vector3(0,(float)y*3+.22f),.22f,Blue);Path(Yellow,basePoint+new Vector3(.6f,3),basePoint+new Vector3(2.3f,3));Path(Teal,basePoint+new Vector3(.6f,(float)(3*e*e)),basePoint+new Vector3(2.3f,(float)(3*e*e)));formula.text="vout = e × vin\n\nhout / hin = e²\n\ne = "+N(e)+"\nhout = "+N(e*e)+" m";values.text="1 m 낙하의 해석해 · 마찰/공기저항 없음";}
+  void RestitutionBounce(double u){
+   double g=9.8,e=shot.restitution,hit=Math.Sqrt(2/g),t=u*(hit+2*e*hit);
+   double vy=t<hit?-g*t:e*g*hit-g*(t-hit);
+   double y=t<hit?1-.5*g*t*t:e*g*hit*(t-hit)-.5*g*(t-hit)*(t-hit);
+   var origin=new Vector3(-5.2f,-1.2f);
+   var ball=origin+new Vector3(0,(float)(3*Math.Max(0,y))+.22f);
+   Path(Muted,origin+Vector3.left*2,origin+Vector3.right*3);
+   Dot(ball,.22f,Blue);
+   var tip=ball+Vector3.up*(float)(vy*.25);
+   Arrow(ball,tip,Teal);
+   Tag(tip+Vector3.left*.65f,"vᵧ",Teal,160);
+   var initial=origin+Vector3.up*3;
+   var rebound=origin+Vector3.up*(float)(3*e*e);
+   Path(Yellow,initial+Vector3.right*.6f,initial+Vector3.right*2.3f);
+   Path(Teal,rebound+Vector3.right*.6f,rebound+Vector3.right*2.3f);
+   Tag(initial+Vector3.right*2.5f,"처음 h₀",Yellow,280);
+   Tag(rebound+Vector3.right*2.5f,"반발 h₁",Teal,280);
+   values.text="같은 낙하 높이 h₀ · 반발계수 e = "+N(e);
+  }
   void Penetration(double u){float depth=(float)(.35*(1-u));Vector3 c=new Vector3(-4.5f,0);Dot(c+Vector3.left*(.7f-depth/2),.7f,Blue);Dot(c+Vector3.right*(.7f-depth/2),.7f,Red);Path(Yellow,c+new Vector3(-depth/2,1),c+new Vector3(depth/2,1));formula.text="속도 보정: 더 들어가지 않게\n\n위치 보정: 기존 겹침을 분리\n\n침투 깊이 = "+N(depth);values.text="위치 분리의 개념도 · 별도 처리임을 구분";}
   void Kinematic(double u){double t=1.2*u,vp=1,vin=-3,e=.6,vout=vp+e*(vp-vin);Vector3 basePoint=new Vector3(-4.7f,(float)(vp*t)-.7f);Path(Teal,basePoint+Vector3.left*2,basePoint+Vector3.right*2);double dt=t-.5;double y=dt<0?(-3-vp)*dt:(vout-vp)*dt;Dot(basePoint+new Vector3(0,(float)y+.25f),.25f,Blue);Arrow(basePoint+Vector3.right*2.4f,basePoint+new Vector3(2.4f,1),Teal);formula.text="발판 invMass = 0\n발판 v = +1 m/s\n\n공의 상대 입사속도 = −4\n공 v′ = 1 + 0.6 × 4\n= 3.4 m/s";values.text="역질량 0: 충격량에 반응하지 않음 · 속도 0이라는 뜻은 아님";}
-  void ApplyOnce(double u){int count=(int)(u*5);double once=u>0?3:0,force=Math.Min(u/.5,1)*3,wrong=count*3;var origin=new Vector3(-7,1.5f);double[] v={once,force,wrong};Color[] c={Teal,Blue,Red};string[] names={"J=6 한 번","F=12, 0.5초","매번 J=6 (오류)"};for(int i=0;i<3;i++){var p=origin+Vector3.down*i*1.5f;Arrow(p,p+Vector3.right*(float)v[i]*.35f,c[i]);Tag(p+Vector3.up*.55f,names[i],c[i],700);}formula.text="m = 2 kg\nΔv = J/m = 3 m/s\n\n반복 적용 횟수 = "+count+"\n잘못 누적한 Δv = "+N(wrong);values.text="충격량은 한 번 · 힘은 정해진 시간 동안 누적";}
+  void ApplyOnce(double u){
+   double t=(shot.spokenStep+u)/3.0,press=Math.Min(t,.5);
+   int count=0;double repeatedPosition=0;
+   for(int tick=0;tick<5;tick++){
+    double since=t-tick*.2;
+    if(since<=0)break;
+    count++;repeatedPosition+=3*since;
+   }
+   double[] speeds={t>0?3:0,6*press,3*count};
+   double[] positions={3*t,3*press*press+6*press*(t-press),repeatedPosition};
+   Color[] colors={Teal,Blue,Red};
+   string[] labels={"충격량 J 한 번","힘 F · 0.5초","매 틱 J 반복"};
+   for(int i=0;i<3;i++){
+    var start=new Vector3(-7.2f,1.6f-1.5f*i);
+    var at=start+Vector3.right*(float)positions[i]*.52f;
+    Path(Muted*.6f,start,start+Vector3.right*6.7f);
+    Dot(at,.14f,colors[i]);
+    Arrow(at,at+Vector3.right*(float)speeds[i]*.16f,colors[i]);
+    Tag(start+Vector3.up*.63f,labels[i],colors[i],560);
+   }
+   values.text="같은 질량 · 같은 출발점     시간 t = "+N(t)+" s";
+  }
   void VelocityJump(double u){var o=new Vector3(-7.4f,0);Path(Muted,o+Vector3.down*2.2f,o+Vector3.up*2.2f);Path(Muted,o,o+Vector3.right*7.5f);Path(Teal,o+Vector3.down*1.6f,o+new Vector3(3.7f,-1.6f),o+new Vector3(3.7f,1.6f),o+new Vector3(7.4f,1.6f));Arrow(o+Vector3.right*3.7f,o+new Vector3(3.7f,2.4f),Yellow);formula.text="v(2−) = −130 ft/s\nv(2+) = +130 ft/s\nΔv = 260 ft/s\n\na(t) = 260 δ(t−2)\n힘은 F = ma";values.text="t=2 주변에서 가속도를 적분하면 속도 변화 260 ft/s";}
   void Summary(double u){string[] labels={"힘을 시간에 대해 모음","충격량 → 운동량 변화","보존 + 접촉 조건 → 새 속도"};for(int i=0;i<3;i++){var p=new Vector3(-7,2.4f-i*1.4f);Tag(p,labels[i],i==shot.spokenStep?Yellow:White,950);if(i<2)Arrow(p+new Vector3(.3f,-.5f),p+new Vector3(.3f,-1.05f),Teal);}formula.text="J = ∫F dt\np′ = p + J\n\n다음: 질량중심을 비껴 미는 힘\n병진 + 회전";values.text="같은 사건의 전과 후를 연결하는 세 단계";}
  }

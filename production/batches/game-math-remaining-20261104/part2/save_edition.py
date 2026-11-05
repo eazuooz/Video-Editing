@@ -43,6 +43,12 @@ def commit(message,push):
     for slug in ["game-math-pipeline-shaders","game-math-velocity-derivatives","game-math-acceleration-integration","game-math-circular-motion"]:
         s=ROOT/"projects"/slug/"production/unity-staging"
         direct.extend(s/x for x in ["PipelineMeaningGuides.cs","PipelineTeachingStage.cs","MotionLessonStage.cs","MotionTeachingStage.cs","MotionAnimalSubjects.cs","verify-source.py","compile-check.json","sandbox-preparation.json"] if (s/x).is_file())
+    for slug in ["game-math-momentum-collisions","game-math-rigid-body-inertia","game-math-bezier-subdivision","game-math-splines-continuity"]:
+        p=ROOT/"projects"/slug
+        direct.extend([p/"planning/unity-plan.json",p/"production/unity-staging/sandbox-preparation.json"])
+    for slug,files in {"game-math-momentum-collisions":["RigidDynamicsStage.cs","RigidDynamicsSourcePictures.cs"],
+                       "game-math-parametric-hermite":["CurveTeachingStage.cs"]}.items():
+        direct.extend(ROOT/"projects"/slug/"production/unity-staging"/f for f in [*files,"compile-check.json"])
     shared=["shared/publishing/video-production-control.json","shared/publishing/video-worklist.json","docs/VIDEO_WORKLIST.md",(BATCH/"batch.json").relative_to(ROOT).as_posix()]
     head=git("rev-parse","HEAD").decode().strip();ref=git("symbolic-ref","HEAD").decode().strip()
     real=Path(git("rev-parse","--path-format=absolute","--git-path","index").decode().strip());original=real.read_bytes()

@@ -73,7 +73,14 @@ namespace Yamyam.RigidTeaching {
    double x=shot.initialVelocity*t+shot.force/shot.massA*(during*during/2+during*Math.Max(0,t-shot.forceDuration));
    var p=new Vector3(-7.2f+(float)x*.65f,-.9f,0);Grid();Crate(p);Arrow(p+Vector3.up*.9f,p+new Vector3((float)v*.55f,.9f,0),Teal);
    if(t<shot.forceDuration)Arrow(p+Vector3.left*1.2f,p,Red);
-   Plot(s=>s<shot.forceDuration?shot.force:0,Math.Max(shot.duration,shot.forceDuration*1.5),.12,Red,new Vector3(-7.5f,1.0f,0));Tag(new Vector3(-7.4f,2.9f,0),"힘 F(t) · 빨강\n넓이 = 충격량 J",Red,640);
+   double window=Math.Max(shot.duration,shot.forceDuration*1.5);
+   var origin=new Vector3(-7.5f,1.0f,0);
+   float width=(float)(7.8*during/window),height=(float)(shot.force*.12);
+   for(float offset=0;offset<width;offset+=.042f)
+     Path(new Color(.28f,.18f,.16f),origin+new Vector3(offset,0,.08f),origin+new Vector3(offset,height,.08f));
+   Plot(s=>s<shot.forceDuration?shot.force:0,window,.12,Red,origin);
+   Tag(new Vector3(-7.4f,2.9f,0),"힘 F(t) · 빨강\n넓이 = 충격량 J",Red,640);
+   Tag(p+new Vector3(.34f,.83f),"v",Teal,100);
    formula.text="J = F × Δt\n= "+N(shot.force)+" × "+N(during)+"\n= "+N(impulse)+" N·s\n\nΔv = J / m = "+N(impulse/shot.massA)+" m/s";
    values.text="m = "+N(shot.massA)+" kg     v = "+N(v)+" m/s     p = "+N(shot.massA*v)+" kg·m/s";
    note.text="힘은 작용하는 동안, 충격량은 그동안 누적된 운동량 변화입니다.";
@@ -127,7 +134,7 @@ namespace Yamyam.RigidTeaching {
   }
   void IntegratorComparison(double t){
    double h=shot.stepSize;int steps=(int)Math.Floor(t/h);KinematicState a=new KinematicState(0,0),b=a;
-   for(int i=0;i<steps;i++){a=Dynamics.Integrate(a,i*h,h,(tt,x,v)=>2,Integration.ExplicitEuler);b=Dynamics.Integrate(b,i*h,h,(tt,x,v)=>2,Integration.SemiImplicitEuler);}double end=steps*h,exact=end*end;float scale=2.5f/(float)Math.Max(.1,shot.duration*shot.duration);
+   for(int i=0;i<steps;i++){a=Dynamics.Integrate(a,i*h,h,(tt,x,v)=>2,Integration.ExplicitEuler);b=Dynamics.Integrate(b,i*h,h,(tt,x,v)=>2,Integration.SemiImplicitEuler);}double end=steps*h,exact=end*end;float scale=4.6f/(float)Math.Max(.1,shot.duration*shot.duration);
    var start=new Vector3(-7,1.8f,0);Dot(start+Vector3.right*(float)a.position*scale,.23f,Red);Dot(start+new Vector3((float)b.position*scale,-1.7f,0),.23f,Blue);Dot(start+new Vector3((float)exact*scale,-3.4f,0),.23f,Teal);Tag(start+Vector3.up*.7f,"명시적 오일러",Red);Tag(start+Vector3.down,"반암시적 오일러",Blue);Tag(start+Vector3.down*2.7f,"등가속도 정확해",Teal);
    formula.text="h = "+N(h)+" s,  a = 2 m/s²\n\nx₍explicit₎ = "+N(a.position)+" m\nx₍semi₎ = "+N(b.position)+" m\nx₍exact₎ = "+N(exact)+" m\n\nv = "+N(a.velocity)+" m/s";values.text="t = "+N(end)+" s     두 줄의 갱신 순서 비교";note.text="정확도뿐 아니라 힘의 성질과 안정성도 함께 비교합니다.";
   }

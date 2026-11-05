@@ -17,6 +17,8 @@ namespace Yamyam.MathCurves {
         public double radius=1,splitAt=.5,extractA=.2,extractB=.5,tension=0,continuity=0,bias=0;
         public double leftDuration=1,rightDuration=1;
         public double domainMin=0,domainMax=1,displayT=.5;
+        public bool useTravelInterval=false;
+        public double travelFrom,travelTo=1;
         public float modelScale=1.25f;
         public Vector3 worldOffset=new Vector3(-7,-1,0);
         public bool tangent=true,acceleration=false,triangle=false,basisGraph=false,equalTimeMarkers=false,codeVisible=false;
@@ -135,6 +137,36 @@ namespace Yamyam.MathCurves {
                 return CurveMathModel.Sample(local.p,local.d1*scale,local.d2*(scale*scale));
             }
             Curve(u=>CurveMathModel.Bezier(b,u),Yellow);Controls(b);if(shot.convexHull)Hull(b);
+            if(shot.animation=="BuildCasteljau"){
+                var rows=CurveMathModel.Casteljau(b,t);
+                double clock=phase*(rows.Length-.2);
+                int lastRow=0;
+                for(int level=1;level<rows.Length;level++){
+                    double fraction=Math.Max(0,Math.Min(1,clock-level+1));
+                    if(fraction<=0)break;
+                    var polygon=new List<Vector3>();
+                    for(int k=0;k<rows[level].Length;k++){
+                        CVec from=rows[level-1][k],to=rows[level][k];
+                        CVec moving=from+(to-from)*fraction;
+                        Poly(new[]{W(from),W(moving)},Roles[level%4],.046f);
+                        Dot(moving,Roles[level%4],"",.095f);polygon.Add(W(moving));
+                    }
+                    Poly(polygon,Roles[level%4],.044f);
+                    lastRow=level;
+                }
+                basisCaption.text=lastRow==rows.Length-1?"마지막 두 점에서 곡선 위의 점을 찾습니다":"이웃한 점끼리 보간 · "+lastRow+"단계";
+                if(shot.mode=="Split"&&clock>=rows.Length-1){
+                    var pieces=CurveMathModel.Split(b,shot.splitAt);
+                    double reveal=Math.Min(1,(clock-rows.Length+1)/.8);
+                    for(int i=0;i<2;i++){
+                        var part=pieces[i];Color color=i==0?Teal:Green;
+                        Curve(u=>CurveMathModel.Bezier(part,i==0?1-u*reveal:u*reveal),color,.08f);
+                        Poly(Array.ConvertAll(part,W),color,.042f);
+                    }
+                    basisCaption.text="두 조각은 같은 분할점 p(t)를 공유합니다";
+                }
+                return CurveMathModel.BezierSample(b,t);
+            }
             if(shot.mode=="Split"){
                 var pieces=CurveMathModel.Split(b,shot.splitAt);Curve(u=>CurveMathModel.Bezier(pieces[0],u),Teal,.06f);Curve(u=>CurveMathModel.Bezier(pieces[1],u),Green,.06f);Controls(pieces[0],"L");Controls(pieces[1],"R");
             }else if(shot.mode=="Extract"){
@@ -146,7 +178,9 @@ namespace Yamyam.MathCurves {
         }
         public void Evaluate(double motionProgress,int spokenStep=-1){
             if(motionProgress<0||motionProgress>1||double.IsNaN(motionProgress))throw new ArgumentOutOfRangeException(nameof(motionProgress),"No looping, freeze padding or silent clamping.");
-            Build();lineCursor=labelCursor=0;double t=shot.parameterFixed?shot.displayT:shot.domainMin+(shot.domainMax-shot.domainMin)*motionProgress;
+            Build();lineCursor=labelCursor=0;double t=shot.parameterFixed?shot.displayT:
+                shot.useTravelInterval?shot.travelFrom+(shot.travelTo-shot.travelFrom)*motionProgress:
+                shot.domainMin+(shot.domainMax-shot.domainMin)*motionProgress;
             if(spokenStep>=0)shot.stepIndex=spokenStep;
             if(shot.steps.Length>0&&(shot.stepIndex<0||shot.stepIndex>=shot.steps.Length))throw new ArgumentOutOfRangeException("Spoken formula step has no binding.");
             term.text=shot.termExpanded?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.englishTerm+" · "+shot.koreanTerm+"\n"+shot.meaning;
@@ -157,10 +191,12 @@ namespace Yamyam.MathCurves {
             basisCaption.rectTransform.sizeDelta=new Vector2(740,shot.basisGraph?95:190);
             stepText.text=shot.codeVisible?shot.code:shot.steps.Length>0?shot.steps[shot.stepIndex]:"";
             basisCaption.text="";var state=Render(t,motionProgress);
-            if(shot.mode!="Pascal")Dot(state.p,White,shot.mode=="Blossom"?"blossom":"p(t)",.105f);
+            bool forming=shot.animation=="BuildCasteljau"&&motionProgress*(shot.controls.Length-.2)<shot.controls.Length-1;
+            if(shot.mode!="Pascal"&&!forming)Dot(state.p,White,shot.mode=="Blossom"?"blossom":"p(t)",.105f);
             if(shot.tangent&&state.regular)Arrow(state.p,state.d1,Teal,shot.arrowScale);
             if(shot.acceleration)Arrow(state.p,state.d2,Red,.12f);
             values.text="t = "+t.ToString("0.000")+"   p = "+V(state.p);
+            if(forming)values.text="공통 보간 비율 t = "+t.ToString("0.##");
             if(shot.showDerivative)values.text+="\np′ = "+V(state.d1)+"   |p′| = "+Number(state.d1.Length);
             if(shot.showCurvature)values.text+="\n곡률 κ = "+Number(state.curvature);
             if(shot.showDerivative&&(shot.mode=="Lagrange"||shot.mode=="Aitken"))values.text+="  (도함수: 수치 근사)";

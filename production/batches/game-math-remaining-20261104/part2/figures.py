@@ -40,6 +40,28 @@ def acceleration_examples(scenes):
         step["anchor"]=phrase
         row["speechPhaseAnchors"].append(dict(phrase=phrase,character=row["speech"].index(phrase),position=i/3))
 
+def matched_motion(episode,scenes):
+    if episode=="M25":
+        acceleration_examples(scenes)
+    elif episode=="M29":
+        for step,e in zip(scenes[24]["shot"]["steps"],(.45,.8)):
+            step["model"]["restitution"]=e
+        for i,step in enumerate(scenes[34]["shot"]["steps"]):
+            step["model"]["spokenStep"]=i
+    elif episode=="M30":
+        # Show several actual integration steps and their first divergence.
+        for step in scenes[38]["shot"]["steps"]:
+            step["model"]["duration"]=5*step["model"]["stepSize"]
+    elif episode=="M32":
+        for index in (9,25,27):
+            for step in scenes[index]["shot"]["steps"]:
+                step["model"]["animation"]="BuildCasteljau"
+    elif episode=="M33":
+        # Carry the traveling point continuously from one side of the first
+        # join to the other, while the local parameter returns to zero.
+        for step,domain in zip(scenes[3]["shot"]["steps"],[(0,1/3),(1/3,1)]):
+            step["model"].update(parameterFixed=False,useTravelInterval=True,travelFrom=domain[0],travelTo=domain[1])
+
 # Formula inputs are bound to each native teaching rig: the graph or game object's state,
 # not a second independently animated value. Only the teaching text changes here.
 def bind(episode):
@@ -94,7 +116,7 @@ def bind(episode):
             row["speechPhaseAnchors"]=anchors
             changes[sid]=dict(purpose=purpose,formula=formula,figure=target,rig=shot.get("diagramMode") or "existing native teaching stage")
         ids=list(diagrams);samples=sorted({ids[0],ids[len(ids)//2],ids[-1]})
-    if episode=="M25":acceleration_examples(binding["scenes"])
+    matched_motion(episode,binding["scenes"])
     save(bindingfile,binding)
     plan["sceneBindingsSha256"]=sha(bindingfile)
     for sid,edit in changes.items():plan["learningSteps"][int(sid)]["screenIntent"]=edit["figure"]
