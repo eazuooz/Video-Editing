@@ -57,13 +57,16 @@ def main():
   except psutil.NoSuchProcess:pass
  s=dict(pid=os.getpid(),createTime=psutil.Process().create_time(),status='waiting',completed=[],startedAt=now(),finalReviewReady=False,automation=False);owned=None
  episode=int(q['episode'][1:]);prefix='RemainingMath' if episode<=23 else 'MotionMath' if episode<=26 else 'Mechanics' if episode<=28 else 'Dynamics' if episode<=30 else 'Curve'
+ shots_in_slot=0;slot_started=0.0
  try:
-  for jp in q['jobs']:
+  for job_index,jp in enumerate(q['jobs']):
    authorized();job=read(Path(jp));folder=Path(job['output'])
    assert job['command']=='render' and job['speechTimingVerified'] and job['expectedFingerprint']==q['fingerprint']
    if q.get('preservedPrefix') and (Path(q['targetAudioDirectory'])/'narration.wav').is_file():
     s.update(status='prefix-stopped-at-final-audio-boundary',finishedAt=now());save(statefile,s);return
-   if verify(job,folder) or adopt_prefix(q,job,folder):s['completed'].append(job['id']);save(statefile,s);continue
+   if verify(job,folder) or adopt_prefix(q,job,folder):
+    G.release_lease(owned);owned=None
+    s['completed'].append(job['id']);save(statefile,s);continue
    assert not folder.exists() or not any(folder.iterdir()),'Preserve partial capture and inspect before retry'
    deadline=time.monotonic()+a.wait_hours*3600
    while owned is None:
@@ -75,7 +78,8 @@ def main():
      try:
       with LEASE.open('x',encoding='utf-8') as f:json.dump(dict(owner=P.name+'-capture',id=candidate,pid=os.getpid(),createdAt=now()),f)
      except FileExistsError:pass
-     else:owned=candidate;break
+     else:
+      owned=candidate;shots_in_slot=0;slot_started=time.monotonic();break
     if time.monotonic()>deadline:raise RuntimeError('Bounded resource wait ended; other jobs preserved')
     time.sleep(5)
    if adopt_prefix(q,job,folder):
@@ -84,7 +88,13 @@ def main():
    child=subprocess.Popen([q['unity'],'-batchmode','-job-worker-count','2','-projectPath',q['sandbox'],'-executeMethod',f'Yamyam.{prefix}Capture.UnityLectureCapture.Run','-logFile',str(qpath.parent/(job['id']+'.unity.log'))],env=env,creationflags=CREATE)
    s.update(status='capturing',unityPid=child.pid);save(statefile,s)
    if child.wait() or not verify(job,folder):raise RuntimeError('Owned capture failed; inspect preserved logs')
-   G.release_lease(owned);owned=None;s['completed'].append(job['id']);save(statefile,s)
+   s['completed'].append(job['id']);shots_in_slot+=1;save(statefile,s)
+   # Keep at most three consecutive, already-admitted scenes together. Check
+   # again at every boundary and hand back the GPU when another workload is
+   # active. Never retain the slot while waiting, compositing or running QA.
+   if (shots_in_slot>=3 or time.monotonic()-slot_started>=240 or
+       job_index+1==len(q['jobs']) or G.idle_reason(owned) is not None):
+    G.release_lease(owned);owned=None
   s.update(status='preserved-prefix-captures-complete' if q.get('preservedPrefix') else 'body-captures-complete-compositing-and-QA-pending',finishedAt=now());save(statefile,s)
  except BaseException as exc:s.update(status='failed-or-blocked',error=repr(exc),finishedAt=now());save(statefile,s);raise
  finally:G.release_lease(owned)
