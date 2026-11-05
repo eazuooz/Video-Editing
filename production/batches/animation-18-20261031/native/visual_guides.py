@@ -27,21 +27,24 @@ def project(point,top=False,width=500):
 def joint(point,side,yaw=-73,width=500):
     a=math.radians(yaw);x,y,z=point
     return project([x*math.cos(a)-y*math.sin(a)+(-125,125)[side],x*math.sin(a)+y*math.cos(a),z],width=width)
-def progressdraw(draw,x,frame,key,side):
-    panel(draw,x,654,710,135)
+def progressdraw(draw,frame,key,side):
+    # The legs are the evidence. Place timing controls in the empty outer edge of each view.
+    x=45+side*960
+    panel(draw,x,280,300,180)
     if key=='guard':
         r=ease((frame-8)/30)*side;theta=(frame-8)*math.pi/65
-        cx,cy=x+112,721;draw.ellipse((cx-50,cy-50,cx+50,cy+50),outline='#8C9C94',width=3)
-        px=cx+round(45*r*math.cos(theta));py=cy-round(45*r*math.sin(theta))
-        draw.line((cx,cy,px,py),fill=MINT,width=5);dot(draw,(px,py),6,WHITE);label(draw,x+190,692,f'기울기  {r:.2f}',29);return
+        cx,cy=x+68,362;draw.ellipse((cx-47,cy-47,cx+47,cy+47),outline='#8C9C94',width=3)
+        px=cx+round(43*r*math.cos(theta));py=cy-round(43*r*math.sin(theta))
+        draw.line((cx,cy,px,py),fill=MINT,width=5);dot(draw,(px,py),6,WHITE);label(draw,x+128,341,f'기울기 {r:.2f}',25);return
     length=((1,14) if key=='blend' else (6,24))[side]
-    w=ease((frame-18)/length);label(draw,x+18,658,'공격',25,GOLD);label(draw,x+18,710,'걷기',25,MINT)
-    left=x+130;right=x+670;start=left+(right-left)*18/70
+    w=ease((frame-18)/length)
+    label(draw,x+12,293,'공격',24,GOLD);label(draw,x+12,339,'걷기',24,MINT)
+    left=x+85;right=x+282;start=left+(right-left)*18/70
     finish=left+(right-left)*(18+length)/70
-    draw.line((left,682,finish,682),fill=GOLD,width=12)
-    draw.line((start,736,right,736),fill=MINT,width=12)
-    px=left+round((right-left)*min(70,frame)/70);draw.line((px,667,px,748),fill=WHITE,width=3)
-    label(draw,x+282,750,f'걷기 가중치   {w:.2f}',23)
+    draw.line((left,315,finish,315),fill=GOLD,width=9)
+    draw.line((start,360,right,360),fill=MINT,width=9)
+    px=left+round((right-left)*min(70,frame)/70);draw.line((px,300,px,374),fill=WHITE,width=3)
+    label(draw,x+15,400,f'걷기 가중치  {w:.2f}',25)
 def compose(ep,key,h,l,v,encoder):
     needed={'A10':('recoil','root'),'A11':('kick','returning'),'A12':('expression','mouth'),
             'A14':('blend','duration','guard','slope'),'A15':('count',),
@@ -105,7 +108,7 @@ def compose(ep,key,h,l,v,encoder):
                 for i in range(2):
                     if key=='slope':
                         pos=joint(motion[key][i][n]['foot_l'],i,-72);dot(draw,pos,16,MINT if i else GOLD)
-                    else:progressdraw(draw,86+950*i,n,key,i)
+                    else:progressdraw(draw,n,key,i)
             if ep=='A15':
                 # Four simultaneous instances of the same authored character image make the arithmetic visible.
                 tile=im.crop((970,140,1900,835)).resize((374,280),Image.Resampling.LANCZOS)

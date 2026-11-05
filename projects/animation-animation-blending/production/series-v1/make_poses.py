@@ -12,9 +12,13 @@ def attacking():
 @functools.lru_cache(maxsize=128)
 def walking(t):
     p=rig.pose_copy();phase=(t-17)*2*math.pi/49
+    root,q=p['root'];p['root']=(root+np.array([0,0,-7+.9*math.cos(2*phase)]),q)
     for i,side in enumerate(('l','r')):
-        v=math.sin(phase+i*math.pi)
-        local_rotation(p,'thigh_'+side,'x',24*v);local_rotation(p,'calf_'+side,'x',-25*max(v,0))
+        step=phase+i*math.pi;v=math.sin(step)
+        target=rig.WORLD['foot_'+side][0].copy()
+        target[1]=rig.WORLD['thigh_'+side][0][1]+23*v
+        target[2]+=12*max(0,math.cos(step))
+        ankle(p,side,target)
         arm(p,side,[4,13-12*v,-36])
     return p
 def blend(a,b,w):
