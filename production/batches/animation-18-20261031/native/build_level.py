@@ -104,7 +104,10 @@ def build(key):
   yaw=d.get('sideYaws',[d.get('yaw',-73)]*2)[i]
   a=u.EditorLevelLibrary.spawn_actor_from_class(u.SkeletalMeshActor,u.Vector(*xyz),u.Rotator(pitch=0,yaw=yaw,roll=0));a.set_actor_label(f'{key}_{row["side"]}')
   mesh=a.skeletal_mesh_component;mesh.set_skeletal_mesh(u.load_asset(job['mesh']))
-  if d.get('exposeEyes'):expose_portrait_eyes(mesh)
+  if d.get('exposeEyes'):
+   expose_portrait_eyes(mesh)
+   # These comparisons isolate facial/hand controls. Keep the coat skinned so cloth warm-up cannot obscure them.
+   mesh.set_editor_property('disable_cloth_simulation',True)
   mesh.set_editor_property('animation_mode',u.AnimationMode.ANIMATION_SINGLE_NODE)
   mesh.set_editor_property('visibility_based_anim_tick_option',u.VisibilityBasedAnimTickOption.ALWAYS_TICK_POSE_AND_REFRESH_BONES);mesh.set_editor_property('bounds_scale',2)
   parent=seq.add_possessable(a);child=seq.add_possessable(mesh);child.set_parent(parent);track=child.add_track(u.MovieSceneSkeletalAnimationTrack);section=track.add_section();section.set_range(0,d['frames'])

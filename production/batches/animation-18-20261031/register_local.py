@@ -34,7 +34,7 @@ def prepare(ep):
  batchState=read(B/'checkpoint.json');batchState.update(completedLocalDeliveries=completed,completedLocalReviews=[],currentEpisode=ep,currentWork=['완성본 '+', '.join(completed)+' · 나머지 편 순차 제작'],nextAction='사용자가 선택한 A04–A18의 통합 검수본 제작. 공개·예약·다른 편 업로드는 별도.',reviewCollection='http://127.0.0.1:9248/',updatedAt=datetime.now(timezone.utc).isoformat())
  batchState['batchContinuationUserEvidence']={'message':'나머지 작업 애니메이션 재생목록 전부 해줘 검수 모아서 한번에 할게','scope':'A04–A18 to verified local outputs. Separate private uploads apply only where explicitly requested.'};save(B/'checkpoint.json',batchState)
  if len(completed)==18:
-  batchState.update(status='local-batch-delivered-user-review-pending',currentWork=['18편 전체 로컬 통합 검수 가능'],reviewCollection='http://127.0.0.1:9253/',offlineReviewIndex='output/animation-series-review/index.html',nextAction='사용자 통합 검수.')
+  batchState.update(status='local-batch-delivered-user-review-pending',currentWork=['18편 전체 로컬 통합 검수 가능'],reviewCollection='http://127.0.0.1:9274/',offlineReviewIndex='output/animation-series-review/index.html',nextAction='사용자 통합 검수.')
   save(B/'checkpoint.json',batchState)
  owned={rel(f) for f in h.iterdir() if f.is_file() and f.suffix in ('.py','.txt','.json')}
  owned.update(rel(f) for f in (p/'project.json',p/'rebuild.json',p/'production/delivery-output.json',B/'checkpoint.json',B/'review-collection.cjs',B/'prepare_selected_episode.py',B/'assemble_episode.py',B/'render_voice.py',B/'readback.py',B/'register_local.py') if f.is_file())
