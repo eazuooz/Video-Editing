@@ -8,7 +8,9 @@ import datetime as dt
 import hashlib
 import html
 import json
+import os
 from pathlib import Path
+from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -30,10 +32,6 @@ def sha(path):
 
 def escaped(value):
     return html.escape(str(value), quote=True)
-
-
-def href(path):
-    return escaped(Path(path).resolve().as_uri())
 
 
 def collect():
@@ -91,7 +89,11 @@ def collect():
                        approvalInferred=False, platformActionsPerformed=False)
 
 
-def render(record):
+def render(record, page_directory):
+    def href(path):
+        relative = Path(os.path.relpath(path, page_directory)).as_posix()
+        return escaped(quote(relative))
+
     cards = []
     navigation = '<nav aria-label="완성 영상 바로가기"><ul>' + ''.join(
         f'<li><a href="#video-{row["order"]}">{row["order"]}. {escaped(row["title"].split("#", 1)[0].split("|", 1)[0].strip())}</a></li>'
@@ -105,7 +107,7 @@ def render(record):
             links = ' · '.join(f'<a href="{href(final / name)}">{escaped(name)}</a>' for name in FILES)
             detail = f'<p>{row["seconds"]:.2f}초 · 1080×1920 · 60fps · {escaped(row["visualVersion"] or row["revision"])}</p>'
             detail += f'<p class="status">네 출력·해시·기술 검사 확인 / 사용자 검수 대기</p>{player}<p>{links}</p>'
-            detail += f'<p><a href="{href(row["review"])}">개별 대본·검수 모음</a> · <a href="{href(final / "mobile-review.mp4")}">모바일 크기 영상</a></p>'
+            detail += f'<p><a href="{href(row["review"])}">대본과 영상 함께 보기</a> · <a href="{href(final / "mobile-review.mp4")}">모바일 크기 영상</a></p>'
             if cover:
                 detail += f'<p><a href="{href(cover["path"])}">실제 게임 프레임 썸네일 후보</a> · 플랫폼 적용 전</p>'
             detail += f'<details><summary>정확한 버전 SHA256</summary><code>{row["masterSha256"]}</code></details>'
@@ -125,20 +127,55 @@ p,pre,code{overflow-wrap:anywhere}pre{white-space:pre-wrap;font:inherit}.muted{c
 <p><a href="review-ten.json">정확한 제목·설명·파일 해시와 검수 기록</a></p>''' + navigation + ''.join(cards) + '</main></html>'
 
 
+def serve_review(media, record, port):
+    """Serve only review artifacts. FileResponse handles seeking and HEAD."""
+    from aiohttp import web
+
+    app = web.Application()
+    overview_url = '/delivery/review-ten.html'
+    files = [media / 'delivery/review-ten.html', media / 'delivery/review-ten.json']
+    for row in record['projects']:
+        if not row['generated']:
+            continue
+        directory = Path(row['finalDirectory'])
+        files.extend(directory / name for name in (
+            *FILES, 'index.html', 'mobile-review.mp4', 'metadata.json', 'delivery.json', 'SHA256SUMS.txt'))
+        if row.get('coverCandidate'):
+            files.append(Path(row['coverCandidate']['path']))
+
+    routes = {'/' + path.resolve().relative_to(media).as_posix(): path.resolve() for path in files}
+
+    async def get_review(request):
+        if request.path == '/':
+            raise web.HTTPFound(overview_url)
+        path = routes.get(request.path)
+        if path is None or not path.is_file():
+            raise web.HTTPNotFound()
+        return web.FileResponse(path, headers={'Cache-Control': 'no-cache'})
+
+    app.router.add_get('/{path:.*}', get_review)
+    web.run_app(app, host='127.0.0.1', port=port)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--require-all', action='store_true')
+    parser.add_argument('--serve', action='store_true', help='Open the verified review pages over loopback HTTP.')
+    parser.add_argument('--port', type=int, default=9358)
     args = parser.parse_args()
     media, record = collect()
     if args.require_all and record['completeCount'] != 10:
         raise RuntimeError('All ten complete review outputs are required.')
     target = media / 'delivery'
     target.mkdir(exist_ok=True)
+    (target / 'review-ten.html').write_text(render(record, target), encoding='utf8')
+    if args.serve:
+        serve_review(media, record, args.port)
+        return
     contents = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
     snapshot = target / ('review-ten-' + hashlib.sha256(contents.encode()).hexdigest()[:12] + '.json')
     snapshot.write_text(contents, encoding='utf8')
     (target / 'review-ten.json').write_text(contents, encoding='utf8')
-    (target / 'review-ten.html').write_text(render(record), encoding='utf8')
     print(json.dumps(dict(complete=record['completeCount'], index=str(target / 'review-ten.html'), snapshot=str(snapshot)), ensure_ascii=False))
 
 
