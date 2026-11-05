@@ -1,4 +1,4 @@
-// Isolated headless Edge QA; play and seek the real served media through the script-review controls.
+// Isolated headless Chrome QA; play and seek the real served media through the script-review controls.
 const path=require('path'),fs=require('fs');
 const root=path.resolve(__dirname,'../../../..');
 const browserDriver=require(path.join(root,'motion-canvas/node_modules/puppeteer-core'));

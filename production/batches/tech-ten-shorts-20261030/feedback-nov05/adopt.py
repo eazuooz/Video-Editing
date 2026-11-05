@@ -2,6 +2,7 @@
 from build import *
 import importlib.util,sys
 R2='final-reviewed-feedback-nov05-r2';REV='feedback-20261105'
+EN_TITLES=['The Bottle Tilts. How Does the Water Stay Level? | Half-Life: Alyx','How Filming Footprints from Under the Snow Makes a Dent | Batman: Arkham Origins','How Do Games Keep the Sea Outside a Floating Ship? | Sea of Thieves','How Games Create the Illusion of Endless Flight | Uncharted 3','How Games Depict Unstable Rope Physics | Uncharted 4','Why StarCraft Lets Gathering Workers Slip Past Other Units','The Bridge Is Diagonal. What Path Do StarCraft Units See?','Why Did Blizzard Bring Back Custom Maps It Had Blocked?','Why Do StarCraft II Marines Gradually Fire Out of Sync?','StarCraft II Replays Save the Order of Commands Instead of the Screen']
 def update(path,change):
     x=read(path);change(x);save(path,x)
 def evidence(row):
@@ -9,6 +10,17 @@ def evidence(row):
     files={f['name']:{k:v for k,v in f.items() if k!='name'} for f in d['files']}
     assert all(sha(path/k)==v['sha256'] for k,v in files.items()) and qa['master']==files['captioned.mp4']['sha256']
     ev=dict(masterSHA256=qa['master'],finalDirectory=str(path),deliveryPath=str(path/'delivery.json'),deliverySHA256=sha(path/'delivery.json'),technicalEvidence=str(path/'feedback-check.json'),sampledVisualStatus='pass-at-sampled-times',fullListening='pending',fullRealtimePlayback='pending',humanFinalReview='pending')
+    if d['additionFrames']:
+        idx=row['order'];pinfile=WORK/f'{idx:02}-r2'/'voice-files.json';pin=read(pinfile) if pinfile.exists() else {}
+        takes=[]
+        for j in (1,2):
+            wav=Path(pin[str(j)]['path']) if pin else ROOT/f'shared/output/tech-ten-feedback-nov05/extra-speech/chunks/{idx:02}-{j:02}.wav'
+            digest=sha(wav);record=WORK/'speech-check'/f'{idx:02}-{j:02}-{digest[:12]}.json';asr=read(record);assert asr['sha256']==digest
+            takes.append(dict(sha256=digest,rawRecognition=asr['rawRecognition'],evidence=str(record)))
+        ev['additionalNarrationASR']=takes
+        if idx==2:
+            cues=srtread(path/'captions.ko.srt');timecode=next(a for a,b,s in cues if '각 점에서' in s.replace('\n',' '))
+            ev['listenAtSeconds']=round(timecode,2);ev['listeningNote']='추가 문장의 ‘높이맵’을 자동 인식은 ‘높임맵’으로 표기. 실제 발음은 청취 확인 전.'
     final=dict(directory=str(path),fourOutputsVerified=True,reviewFilesGenerated=True,presentOutputNames=FILES,issues=[],files=files,masterSHA256=qa['master'],reviewPage=str(path/'index.html'),delivery=str(path/'delivery.json'))
     return d,qa,ev,final
 def worklist(w):
@@ -26,7 +38,7 @@ def main():
         d,q,ev,final=evidence(r)
         assert (Path(final['directory'])/'visually-inspected.txt').is_file(),'inspect actual frame sheets before adoption'
         manifest=p/'project.json';meta=p/'publishing/metadata.json';pc=p/'production/checkpoint.json';led=p/'production/review-ledger.json';cfg=p/'production/visual-config.json'
-        publication=read(meta);publication.update(title=d['title'],description=d['description'],revision=REV,humanFinalReview='pending');save(meta,publication)
+        publication=read(meta);publication.update(title=d['title'],englishTitle=EN_TITLES[e['n']-1],description=d['description'],revision=REV,humanFinalReview='pending');save(meta,publication)
         m=read(manifest);m.update(currentRevision=REV,currentVisualVersion=REV,title=d['title'],currentFinalDirectory='production/local/'+R2,status='local-final-review-pending')
         for k,name in zip(['videoClean','videoBurnedCaptions','captionsKo','captionsEn','localReview'],[*FILES,'index.html']):m['paths'][k]=f'projects/{slug}/production/local/{R2}/{name}'
         m['paths']['feedbackEdit']=(HERE/'edit.json').relative_to(ROOT).as_posix();save(manifest,m)

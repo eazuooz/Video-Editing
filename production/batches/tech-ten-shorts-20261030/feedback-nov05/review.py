@@ -16,12 +16,20 @@ def getrows():
         rows.append(row)
     return dict(completeCount=sum(r['generated'] for r in rows),projects=rows)
 allowed={('/'+r['slug']+'/local/'+DIR+'/'+k):(Path(r['finalDirectory']).parent/DIR/k) for r in BASE for k in [*FILES,'index.html','mobile-review.mp4','delivery.json','metadata.json','SHA256SUMS.txt']}
+previous={('/'+r['slug']+'/local/'+Path(r['finalDirectory']).name+'/'+k):Path(r['finalDirectory'])/k for r in BASE for k in [*FILES,'index.html','mobile-review.mp4','delivery.json','metadata.json','SHA256SUMS.txt']}
 async def access(req):
     if req.path=='/':raise web.HTTPFound('/delivery/review-ten.html')
     if req.path in ['/delivery/review-ten.html','/delivery/review-ten.json']:
         rows=getrows()
-        if req.path.endswith('.json'):return web.json_response(rows)
+        if req.path.endswith('.json'):
+            final=MEDIA/'delivery/review-ten.json'
+            if final.exists() and rows['completeCount']==10:
+                saved=read(final)
+                if [r.get('masterSha256') for r in saved['projects']]==[r.get('masterSha256') for r in rows['projects']]:
+                    return web.FileResponse(final,headers={'Cache-Control':'no-cache'})
+            return web.json_response(rows)
         return web.Response(text=overview.render(rows,MEDIA/'delivery'),content_type='text/html',headers={'Cache-Control':'no-store'})
+    if req.path in previous and previous[req.path].is_file():return web.FileResponse(previous[req.path],headers={'Cache-Control':'no-cache'})
     p=allowed.get(req.path)
     if not p or not p.is_file() or not (p.parent/'feedback-check.json').exists():raise web.HTTPNotFound()
     return web.FileResponse(p,headers={'Cache-Control':'no-cache'})

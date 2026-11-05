@@ -16,6 +16,10 @@ for n in (1,2,6,8):
         while not(raw.exists() or gpu.exists()):time.sleep(4)
         # Write finished only after explicit GPU render release; takes with retry may still change.
         path=gpu if gpu.exists() else raw;time.sleep(1);digest=hashlib.sha256(path.read_bytes()).hexdigest()
+        pin=media/'feedback-nov05'/f'{n:02}-r2'/'voice-files.json'
+        while n!=1 and not pin.exists():time.sleep(3)
+        if pin.exists():
+            record=json.loads(pin.read_text(encoding='utf8'))[str(j)];path=Path(record['path']);digest=hashlib.sha256(path.read_bytes()).hexdigest();assert digest==record['sha256']
         report=folder/f'{n:02}-{j:02}-{digest[:12]}.json'
         if report.exists():continue
         pcm=np.frombuffer(subprocess.check_output(['ffmpeg','-v','error','-i',str(path),'-ar','16000','-ac','1','-f','f32le','-']),dtype=np.float32)
