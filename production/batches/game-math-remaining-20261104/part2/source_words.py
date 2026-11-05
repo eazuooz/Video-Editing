@@ -12,5 +12,5 @@ if not (target/"review/reused-pcm-evidence.json").is_file():
     if previous and edition["copiedTakes"]:
         subprocess.run([sys.executable,"-X","utf8",str(BATCH/"reuse-unchanged-word-evidence.py"),
                         "--project",a.project,"--source",previous[0].name,"--target",a.revision],check=True,cwd=ROOT)
-subprocess.run([sys.executable,"-X","utf8",str(BATCH/"review-source-voice.py"),"--project",a.project,
-                "--audio-revision",a.revision,"--transcribe","--device","cpu"],check=True,cwd=ROOT)
+subprocess.run([sys.executable,"-X","utf8",str(BATCH/"finish-word-review.py"),"--project",a.project,
+                "--audio-revision",a.revision,"--group-device","cuda","--wait-hours","48"],check=True,cwd=ROOT)

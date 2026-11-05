@@ -58,7 +58,7 @@ def select(row):
     if not qa.is_file():return "영상·자막 검사",instruction("media-qa","verify-module-media.py",["--queue",queue,"--output",ROOT/"output"/(slug+"-"+output.name)])
     if not (output/"final-mix-review/report.json").is_file():
         if live(snap(output/"final-mix-review/worker.json")):return "최종 음성 대조 중",None
-        return "최종 음성 대조",instruction("mix-qa","review-final-mix.py",["--queue",queue,"--device","cpu"],True)
+        return "최종 음성 대조",instruction("mix-qa","review-final-mix.py",["--queue",queue,"--device","cuda","--wait-hours","48"],True)
     if not (output/"part2-delivery-evidence.json").exists():
         return "재생·게임 장면 점검",instruction("playback-qa","part2/check_delivery.py",[row["id"]],True)
     return "4파일 생성 · 화면과 음성 직접 검수 대기",None

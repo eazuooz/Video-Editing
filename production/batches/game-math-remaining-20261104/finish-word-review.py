@@ -4,7 +4,8 @@ from datetime import datetime,timezone
 import importlib.util,json,os,subprocess,time,uuid,shutil,argparse
 import psutil
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
-ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--reuse-from');ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--reuse-from');ap.add_argument('--wait-hours',type=float,default=6)
+ap.add_argument('--group-device',choices=['cpu','cuda'],default='cpu');args=ap.parse_args()
 c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs']
 assert __import__('re').fullmatch(r'audio-v\d+',args.audio_revision)
 P=R/'projects'/args.project;A=P/'production/local'/args.audio_revision
@@ -27,7 +28,7 @@ def save():statefile.write_text(json.dumps(s,ensure_ascii=False,indent=2)+'\n',e
 spec=importlib.util.spec_from_file_location('guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py');G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
 deadline=time.monotonic()+args.wait_hours*3600
 edition=P/'planning/part2-delivery-edition.json'
-group_cpu=edition.is_file() and read(edition)['audioRevision']==args.audio_revision
+group_cpu=edition.is_file() and read(edition)['audioRevision']==args.audio_revision and args.group_device=='cpu'
 try:
     while True:
         c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs'];voice=read(A/'finite-worker.json')
