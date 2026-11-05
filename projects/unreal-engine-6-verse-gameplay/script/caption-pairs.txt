@@ -1,0 +1,114 @@
+스위치 앞에 선 캐릭터가 버튼을 누릅니다. | The character at the switch presses a button.
+문이 열리죠. | The door opens.
+언리얼 엔진에서 이 짧은 동작을 만들 때, | To build this little interaction in Unreal Engine,
+개발자는 블루프린트의 노드를 선으로 이어 왔습니다. | developers have connected nodes in Blueprints.
+그런데 에픽게임즈가 언리얼 엔진 6에서는 | Now, for Unreal Engine 6, Epic Games
+이 선을 걷어내겠다고 발표했습니다. | has announced plans to retire those wires.
+그럼 문을 여는 규칙은 어디에 적게 될까요? | Where will the door-opening rule go?
+
+2026년 11월 3일, 도쿄 발표 화면에는 | At the Tokyo presentation on November 3, 2026,
+세 항목이 나란히 있었습니다. | three items appeared side by side.
+액터, 블루프린트, 그리고 C++ 게임플레이 프레임워크입니다. | Actors, Blueprints and the C++ Gameplay Framework.
+마지막 항목은 끝까지 읽어야 뜻이 통합니다. | Read that last name in full.
+C++로 화면에 빛을 그리고 | C++ continues to power the engine systems
+물체의 충돌을 계산하는 엔진 기반은 계속 쓰입니다. | that render light and calculate collisions.
+바뀌는 쪽은 버튼을 눌렀을 때 | What changes is the gameplay code that decides
+무슨 일이 생길지 정하는 게임플레이 코드입니다. | what happens when you press the button.
+
+지금 쓰는 언리얼 엔진 5에서 문과 스위치는 | In Unreal Engine 5, the door and the switch
+레벨에 놓을 수 있는 물건입니다. | are objects you can place in a level.
+엔진은 이런 물건을 액터라고 부릅니다. | Unreal calls these objects Actors.
+화면에 보이는 모양이나 충돌 범위는 | The visible shape and collision volume
+액터에 컴포넌트라는 부품을 붙여 정할 수 있습니다. | can be defined by Components on the Actor.
+스위치를 눌렀을 때 열쇠가 있으면 문을 열고, | Press the switch with a key and the door opens.
+없으면 닫아 둡니다. | Without one, it stays shut.
+블루프린트는 이 조건과 동작을 | Blueprints express these conditions and actions
+상자와 연결선으로 표현하는 도구입니다. | as nodes connected by wires.
+
+문을 여는 캐릭터에도 같은 뿌리가 있습니다. | The character opening the door has the same roots.
+엔진 5의 실제 클래스 선언을 보면, | In the actual UE5 class declarations,
+캐릭터는 폰을 상속하고 폰은 액터를 상속합니다. | Character inherits from Pawn, and Pawn from Actor.
+상속이란 앞 단계가 가진 기능을 물려받는다는 뜻입니다. | Inheritance lets a class build on its parent's abilities.
+폰은 플레이어나 인공지능이 조종할 수 있고, | A player or AI can control a Pawn.
+캐릭터에는 걷거나 점프하는 데 필요한 기능이 더해집니다. | Character adds support for walking and jumping.
+개발자는 이 바탕 위에 자기 게임의 행동을 얹어 왔습니다. | Developers add their own game behaviors on top.
+이 바탕이 바로 게임플레이 프레임워크입니다. | These building blocks are part of the Gameplay Framework.
+
+에픽이 제시한 새 구조의 이름은 씬 그래프입니다. | Epic calls the new framework Scene Graph.
+씬을 구성하는 단위를 엔티티라고 하고, | An Entity is a unit in the scene.
+그 엔티티가 무엇을 보여 주고 어떻게 행동할지는 | What an Entity displays and how it behaves
+컴포넌트로 조합합니다. | are defined by combining Components.
+우리 문을 다시 만들어 보죠. | Let's build our door again.
+문 엔티티에 겉모양을 주고, 상호작용을 감지하고, | Give it a visible shape and interaction detection,
+열쇠를 확인하는 동작을 붙입니다. | then add behavior that checks for a key.
+경첩을 기준으로 문짝만 돌리려면 | To rotate just the door leaf around the hinge,
+문짝을 자식 엔티티로 둡니다. | make the leaf a child Entity.
+이제 부모를 옮기면 문 전체가 함께 움직이고, | Move the parent and the whole door moves.
+자식을 돌리면 문짝만 열립니다. | Rotate the child and just the leaf swings open.
+
+여기서 열쇠를 확인하는 규칙은 | The rule that checks for the key
+에픽의 프로그래밍 언어인 Verse로 작성합니다. | is written in Verse, Epic's programming language.
+문 하나를 만드는 예에서는 차이가 작아 보여도, | The difference looks small with a single door.
+팀이 만든 문 백 개가 같은 규칙을 사용한다면 | When a team has a hundred doors using the same rule,
+이야기가 달라집니다. | reuse matters.
+그 구조를 프리팹, 곧 여러 번 배치할 수 있는 원형으로 저장하면 | Save the structure as a prefab, a template you can place repeatedly,
+같은 동작을 재사용할 수 있습니다. | and each instance can reuse its behavior.
+포트나이트용 언리얼 에디터인 UEFN에서는 | In Unreal Editor for Fortnite, or UEFN,
+이미 Verse와 씬 그래프를 시험할 수 있습니다. | you can already try Verse and Scene Graph.
+
+이 구조가 발표된 건 지난 6월이었습니다. | Epic outlined the new framework in June.
+당시 에픽의 로드맵에서는 언리얼 엔진 6 초기 버전에도 | The roadmap at the time called for early UE6 releases
+액터와 블루프린트를 넣고, | to include Actors and Blueprints.
+새 구조가 충분히 자리 잡으면 단계적으로 정리할 계획이었습니다. | The old systems would be phased out once the new one matured.
+11월 도쿄 발표에서 그 순서가 달라졌습니다. | The November presentation in Tokyo changed that sequence.
+얼리 액세스, 곧 개발자에게 먼저 공개하는 버전부터 | Beginning with Early Access, the first public development release,
+기존 구조를 제거한다는 겁니다. | the old systems are slated for removal.
+팀 입장에서는 두 방식을 한 프로젝트에서 | This changes when teams can compare both approaches
+나란히 써 보며 옮길 시간이 달라집니다. | side by side in a project as they migrate.
+
+에픽이 이 결정을 내린 이유로 든 건 개발 속도와 이식성입니다. | Epic cited development speed and portability.
+이식성이 좋다는 말은 한 프로젝트에서 만든 동작이나 콘텐츠를 | Good portability makes behavior and content built for one project
+다른 프로젝트에서도 활용하기 쉽다는 뜻입니다. | easier to use in another.
+여기에 AI 도구가 들어옵니다. | AI tools are part of that plan.
+에픽은 프로그래밍, 오류 추적, 레벨 설계에서 | Across programming, debugging and level design,
+사내 생산성이 1.5배에서 4배까지 높아졌다고 발표했습니다. | Epic reported internal productivity of 1.5 to 4 times its previous level.
+이 숫자는 에픽이 자사 작업에서 관찰한 범위입니다. | That range describes Epic's own observations.
+
+예를 들어 문 백 개 중 열쇠 확인이 빠진 문을 | Imagine searching a hundred doors for any
+찾아야 한다고 해 보죠. | missing a key check.
+개발자가 직접 규칙을 쓰고, | A developer can write the rule,
+도구에 검색을 맡긴 다음 결과를 검사할 수 있습니다. | have a tool search for exceptions, then inspect the results.
+에픽이 발표한 MCP는 | Model Context Protocol, or MCP,
+AI 도구가 에디터의 기능을 호출하도록 연결하는 규약입니다. | connects an AI tool to functions exposed by the editor.
+파이썬은 반복 작업을 스크립트로 다루는 통로입니다. | Python offers a way to script repetitive tasks.
+게임 속 문이 따를 규칙을 쓰는 일과, | Writing the rule the door follows
+그 규칙을 점검할 도구를 고르는 일은 이렇게 구분됩니다. | and choosing a tool to inspect it are separate decisions.
+
+그렇다면 이미 블루프린트로 만든 문은 어떻게 옮길까요? | How do you move a door already built in Blueprints?
+에픽은 AI를 활용한 변환을 지원하겠다고 밝혔습니다. | Epic has announced plans for AI-assisted conversion.
+구체적인 제공 방식은 아직 정해지지 않았습니다. | The exact delivery format is still open.
+에픽도 포트나이트를 운영하면서 | While continuing to operate Fortnite, Epic is migrating
+기존 블루프린트와 게임 코드를 Verse로 옮기는 작업을 진행하고 있습니다. | existing Blueprints and gameplay code to Verse.
+우리 문이라면 이전 전후에 딱 두 번 눌러 보면 됩니다. | For our door, try two interactions before and after migration.
+열쇠가 없을 땐 닫혀 있는지, | Does it stay closed without a key?
+열쇠를 가진 뒤에는 열리는지요. | Does it open once the player has one?
+선이 글자로 바뀌어도 지켜야 할 기준은 | As wires give way to text, what must be preserved
+플레이어가 경험하는 두 결과입니다. | is the pair of outcomes the player experiences.
+
+그 두 결과를 이미 안정적으로 내는 게임이라면 | If a game already delivers those results reliably,
+엔진 5에서 개발을 계속할 수 있습니다. | its developers can continue on UE5.
+에픽은 11월 3일 발표에서 5.9 프리뷰를 | On November 3, Epic announced a 5.9 preview
+그다음 주에 공개할 예정이라고 밝혔습니다. | planned for the following week.
+웹을 실행 대상으로 삼는 기능, AI 작업 흐름 개선, | It includes web as a target and improved AI workflows,
+렌더링과 애니메이션 업데이트가 예고됐습니다. | along with rendering and animation updates.
+한편 엔진 6의 얼리 액세스 목표는 2027년 말입니다. | UE6 Early Access is targeted for late 2027.
+하나는 곧 시험할 5의 업데이트이고, | One date is for an upcoming UE5 update.
+다른 하나는 새 구조를 도입할 6의 목표 시점입니다. | The other is the target for the new UE6 framework.
+
+지금 언리얼을 배우는 사람이라면, | If you are learning Unreal now,
+버전 6을 기다리기 전에 문 하나를 완성해 보세요. | try finishing one door before UE6 arrives.
+무엇이 입력이고, 어떤 상태를 확인하며, | Decide what the input is, which state to check
+어떤 결과를 보여 줄지 결정해 보는 겁니다. | and what result the player should see.
+그다음 UEFN에서 같은 문을 엔티티와 Verse로 표현해 보세요. | Then try expressing the same door with Entities and Verse in UEFN.
+화면에서는 똑같이 문이 열리지만, | The door still opens on screen,
+그 안에서 무엇을 옮겨야 하는지 이제 직접 짚어낼 수 있습니다. | and now you can identify which parts of the implementation have to move.
