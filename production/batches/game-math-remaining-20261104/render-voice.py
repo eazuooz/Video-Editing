@@ -53,6 +53,20 @@ def verified_cpu_research(arguments):
 def command_output(command):
     return subprocess.check_output(command, text=True, creationflags=CREATE_NO_WINDOW)
 
+def selected_probe_parent(process,arguments):
+    """A finite recorder's read-only capacity probe never imports a model."""
+    import psutil
+    if '--check-resources' not in arguments or '--synthesize' in arguments:return False
+    try:
+        project=arguments[arguments.index('--project')+1]
+        if project not in read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['projectSlugs']:return False
+        source=ROOT/arguments[arguments.index('--manifest')+1]
+        if source.resolve().parent!=(ROOT/'projects'/project/'production').resolve():return False
+        state=read(ROOT/read(source)['tts']['outputDir']/'finite-worker.json')
+        return (state.get('status')=='waiting-for-resource-boundary' and
+                any(parent.pid==state['pid'] and abs(parent.create_time()-state['createTime'])<.1 for parent in process.parents()))
+    except (ValueError,KeyError,OSError,IndexError,psutil.Error):return False
+
 def passive_python_host(proc, arguments):
     """Recognise a waiting coordinator, without granting its child a GPU exemption.
 
@@ -75,8 +89,17 @@ def passive_python_host(proc, arguments):
         idle_input=(arguments[1:] in (['-X','utf8','-'],['-u','-X','utf8','-']) and time.time()-proc.create_time()>90)
         if not (known or idle_input):return False
         before=evidence()
-        if before is None or before[0]>2.5 or before[1]>4:return False
-        time.sleep(.25)
+        if before is None or before[1]>4:return False
+        delay=.25
+        if before[0]>2.5:
+            # A long-running stdin monitor accrues CPU time even while it only
+            # polls. Admit this narrow case only after measuring its current
+            # inactivity too. A renderer, child job or GPU client stays blocked.
+            age=time.time()-proc.create_time()
+            if not idle_input or age<600 or before[0]>min(15,age*.01):return False
+            if proc.children() or proc.memory_info().rss>48*2**20:return False
+            delay=2
+        time.sleep(delay)
         return before==evidence()
     except (OSError,psutil.Error,ValueError):
         return False
@@ -97,6 +120,7 @@ def verified_waiting_math_worker(process, arguments):
         def value(flag):
             return arguments[arguments.index(flag)+1] if flag in arguments else None
         statefile = None
+        if selected==(batch/'render-voice.py').resolve() and selected_probe_parent(process,arguments):return True
         if selected==(batch/'part2/finish_lesson.py').resolve():
             ep=arguments[-1]
             if not __import__('re').fullmatch(r'M(?:2[3-9]|3[0-3])',ep):return False
@@ -248,6 +272,16 @@ def main():
     import psutil
     me = psutil.Process()
     family = {p.pid for p in [me, *me.parents()]}
+    if (args.check_resources and not args.synthesize and edition_path.is_file()
+        and selected_probe_parent(me,sys.argv) and LEASE.exists()):
+        # A long existing GPU job can otherwise end between two 30-second
+        # polls. Wait for its normal release in this read-only probe. All the
+        # usual process checks, GPU samples and exclusive acquisition still run.
+        until=time.monotonic()+180
+        while LEASE.exists() and time.monotonic()<until:
+            time.sleep(1)
+            auth=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
+            assert auth['productionAllowedNow'] and SLUG in auth['projectSlugs']
     assert not LEASE.exists(), 'Existing GPU lease preserved; root must coordinate next boundary.'
     blocked = []
     baseline = []

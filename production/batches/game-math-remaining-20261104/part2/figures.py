@@ -40,7 +40,8 @@ def bind(episode):
             terms["020"]=("Sutherland–Hodgman Clipping","서덜랜드–호지먼 클리핑","경계면 안쪽에 남는 꼭짓점을 순서대로 적습니다")
         for sid,(en,ko,goal) in terms.items():
             binding["scenes"][int(sid)]["shot"].update(englishTerm=en,koreanTerm=ko,meaning=goal)
-            changes[sid]=dict(purpose=goal,figure="Unity / PipelineMeaningGuides")
+            figure="Unity / PipelineDiagrams.ClipDiagram with the on-plane intersection label" if sid=="020" else "Unity / PipelineMeaningGuides"
+            changes[sid]=dict(purpose=goal,figure=figure)
         samples=["021","037","053","055","062","065"]
     else:
         for line in (Path(__file__).parent/"figures.txt").read_text("utf8").splitlines():
