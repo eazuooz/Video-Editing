@@ -55,6 +55,8 @@ for item in batch['items']:
  if composite.get('status')=='encoded' or qa:stage='1080p60 영상 2개·한영 자막 2개 생성 · 내부 검수 중'
  ready=bool(content.get('localFinalReviewReady'))
  if ready:stage='1080p60 네 파일 · 내부 검수 완료 · 사용자 검수 대기'
+ elif item['id']=='M21' and content.get('annotationRevision')=='teaching-v7' and state(render/'final-qa/browser-playback.json'):
+  stage='1080p60 · 산술 대입을 걷어내고 공식과 기호를 표면에 연결 · 재질 셰이더와 벡터 검수'
  elif item['id']=='M21' and content.get('annotationRevision')=='terms-v6' and state(render/'final-qa/browser-playback.json'):
   stage='1080p60 · 영어·한국어 용어 제목과 수식·코드 적용 · 여덟 문장 수정 · 로컬 재생 확인'
  elif item['id']=='M21' and content.get('annotationRevision')=='sphere-v5' and state(render/'final-qa/browser-playback.json'):
@@ -81,6 +83,9 @@ for item in batch['items']:
   row.update(localMasterAvailable=four)
  if item['id']=='M21' and content.get('annotationRevision')=='terms-v6' and (P/'production/terms-v6/review-evidence.json').is_file():
   item['evidence'].update(termsEvidence=str(P/'production/terms-v6/review-evidence.json'),sceneCatalog=str(P/'production/terms-v6/scene-catalog.json'))
+  row.update(localMasterAvailable=four)
+ if item['id']=='M21' and content.get('annotationRevision')=='teaching-v7' and (P/'production/teaching-v7/review-evidence.json').is_file():
+  item['evidence'].update(teachingEvidence=str(P/'production/teaching-v7/review-evidence.json'),sceneCatalog=str(P/'production/teaching-v7/scene-catalog.json'))
   row.update(localMasterAvailable=four)
  cp=P/'production/checkpoint.json';d=state(cp);d.update(updatedAt=at,stage=stage,batch='production/batches/game-math-remaining-20261104/batch.json',localReviewReady=ready,humanReview=item.get('humanReviewed',False),outputsReady=four,outputCandidates=outputs,evidence=item['evidence'],boundSourceParagraphs=n,voiceWorker=voice,wordReviewWorker=words)
  d['nextAction']='Finish actual speech, source-matched runtime/annotation checks, full edit and internal audiovisual/mobile review. Existing outputs remain candidates until the stated review is complete.'
