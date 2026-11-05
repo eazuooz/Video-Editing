@@ -172,6 +172,36 @@ namespace Yamyam.MathMotion {
             label.rectTransform.anchoredPosition=new Vector2(v.x*1920+offset.x,-(1-v.y)*1080+offset.y);
             label.text=text;
         }
+        Vector3 GuidePoint(Vector2 pixel) {
+            return stageCamera.ViewportToWorldPoint(new Vector3(pixel.x/1920,1-pixel.y/1080,17));
+        }
+        void AccelerationUnitGuide(Vector3 at,DVec value,bool isVelocity) {
+            // This scene compares two collinear vectors of different units. Use
+            // parallel tails attached to the object, with one fixed scale per
+            // quantity and unit system, so gaining speed is visible in mobile.
+            Vector3 projected=stageCamera.WorldToViewportPoint(at);
+            Vector2 objectPixel=new Vector2(projected.x*1920,(1-projected.y)*1080);
+            float side=isVelocity?-1:1;
+            Vector2 start=shot.graphY
+                ? new Vector2(objectPixel.x+side*56,Mathf.Clamp(objectPixel.y,578,650))
+                : new Vector2(Mathf.Clamp(objectPixel.x+32,180,770),Mathf.Clamp(objectPixel.y+side*33,600,708));
+            Vector3 dir=RawVector(shot,value);
+            double limit=isVelocity?Math.Max(Math.Abs(shot.velocityMin),Math.Abs(shot.velocityMax))
+                                   :Math.Max(Math.Abs(shot.accelerationMin),Math.Abs(shot.accelerationMax));
+            float extent=shot.graphY?100:134;
+            Vector2 tip=start+new Vector2(dir.x,-dir.y)*extent/(float)limit;
+            Color color=isVelocity?Teal:Red;
+            Poly(new[]{GuidePoint(objectPixel),GuidePoint(start)},Color.Lerp(Muted,color,.5f),.026f);
+            Arrow(GuidePoint(start),GuidePoint(tip)-GuidePoint(start),color);
+            Text label=isVelocity?velocityCallout:accelerationCallout;
+            float x=Mathf.Clamp(tip.x+(isVelocity?-65:10),110,793);
+            float y=isVelocity?563:741;
+            Poly(new[]{GuidePoint(tip),GuidePoint(new Vector2(x+20,isVelocity?y+43:y-2))},color*.7f,.022f);
+            label.gameObject.SetActive(true);
+            label.rectTransform.anchoredPosition=new Vector2(x,-y);
+            label.fontSize=44;
+            label.text=isVelocity?"v · 속도":"a · 가속도";
+        }
         void SecantMarker(Vector3 center) {
             var ring=new List<Vector3>();
             for(int i=0;i<=24;i++){
@@ -226,11 +256,16 @@ namespace Yamyam.MathMotion {
             velocityTitle.gameObject.SetActive(shot.showVelocityGraph);accelerationTitle.gameObject.SetActive(shot.showAccelerationGraph);
             kind.text="현재 화면: 우리 구현\n해설용 해석 운동 모형 · 게임 실측 아님";
             var path=new List<Vector3>();for(int i=0;i<=160;i++){double pt=shot.startTime+(shot.endTime-shot.startTime)*i/160.0;path.Add(Position(MotionMathModel.Sample(shot.parameters,pt).position));}Poly(path,Muted*.45f,.018f);
-            if(shot.showVelocity&&state.velocityDefined)Arrow(at,DisplayVector(state.velocity)*shot.velocityArrowScale,Teal);
-            if(shot.showAcceleration&&state.accelerationDefined)Arrow(at,DisplayVector(state.acceleration)*shot.accelerationArrowScale,Red);
+            if(shot.beatId=="M25-002"){
+                AccelerationUnitGuide(at,state.velocity,true);
+                AccelerationUnitGuide(at,state.acceleration,false);
+            }else{
+                if(shot.showVelocity&&state.velocityDefined)Arrow(at,DisplayVector(state.velocity)*shot.velocityArrowScale,Teal);
+                if(shot.showAcceleration&&state.accelerationDefined)Arrow(at,DisplayVector(state.acceleration)*shot.accelerationArrowScale,Red);
+                PlaceCallout(velocityCallout,at+DisplayVector(state.velocity)*shot.velocityArrowScale,"v  |v|="+state.velocity.Length.ToString("0.00"),shot.showVelocity&&state.velocityDefined);
+                PlaceCallout(accelerationCallout,at+DisplayVector(state.acceleration)*shot.accelerationArrowScale,"a  |a|="+state.acceleration.Length.ToString("0.00"),shot.showAcceleration&&state.accelerationDefined);
+            }
             if(shot.showRadius)Arrow(Position(shot.parameters.origin),at-Position(shot.parameters.origin),Yellow);
-            PlaceCallout(velocityCallout,at+DisplayVector(state.velocity)*shot.velocityArrowScale,"v  |v|="+state.velocity.Length.ToString("0.00"),shot.showVelocity&&state.velocityDefined);
-            PlaceCallout(accelerationCallout,at+DisplayVector(state.acceleration)*shot.accelerationArrowScale,"a  |a|="+state.acceleration.Length.ToString("0.00"),shot.showAcceleration&&state.accelerationDefined);
             PlaceCallout(radiusCallout,Vector3.Lerp(Position(shot.parameters.origin),at,.5f),"r = "+(state.position-shot.parameters.origin).Length.ToString("0.00"),shot.showRadius);
             if(shot.showSecant){var q=MotionMathModel.Sample(shot.parameters,t+shot.secantH);Poly(new[]{at,Position(q.position)},Green,.035f);}
             motionGuideCount=lineCursor;
