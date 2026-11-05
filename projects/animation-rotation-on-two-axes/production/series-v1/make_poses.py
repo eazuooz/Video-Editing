@@ -19,6 +19,12 @@ def sample(key,i,t):
     if key=='wrist':
         a=smooth(t,8,49);b=math.sin(math.pi*a)
         face(p,'hand_r',0,(0,26*i*b,68*a))
+        # Keep the same grip through both trials. Only the wrist and proximal motion differ.
+        for finger in ('index','middle','ring','pinky','thumb'):
+            for segment,bend in ((1,8),(2,19),(3,15)):
+                amount=bend if finger=='thumb' else -bend
+                axis=Rotation.from_rotvec(np.deg2rad(amount)*np.array([.33,.89,.30]))
+                face(p,f'{finger}_{segment:02}_r',0,axis.as_euler('xyz',degrees=True))
         if i:
             face(p,'clavicle_r',1.5*b,(0,6*b,4*b))
             face(p,'upperarm_r',0,(8*b,-7*b,0))
@@ -29,8 +35,9 @@ def sample(key,i,t):
     return p
 if __name__=='__main__':
     keys=('head','tilt','wrist','curves','gaze')
-    settings={k:dict(cameraWidth=122,cameraHeight=173,yaw=0,actorSpacing=30) for k in keys}
-    settings['wrist']=dict(cameraWidth=184,cameraHeight=129,yaw=0,actorLocations=[[10,0,0],[101,0,0]],handSockets=['hand_r','hand_r'])
+    settings={k:dict(cameraWidth=122,cameraHeight=173,yaw=0,actorSpacing=30,exposeEyes=True) for k in keys}
+    settings['wrist']=dict(cameraWidth=142,cameraHeight=115,yaw=0,actorLocations=[[20,0,0],[91,0,0]],
+                           handSockets=['hand_r','hand_r'],handOffset=[-11.32,3.46,3.47],handScale=[.037,.037,.25],exposeEyes=True)
     author('A18',P,settings,sample)
     curves={key:[[values(key,i,t) for t in range(120)] for i in range(2)] for key in keys}
     (H/'degrees-by-frame.json').write_text(json.dumps(curves,separators=(',',':')),'utf-8')
