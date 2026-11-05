@@ -47,7 +47,7 @@ def progressdraw(draw,frame,key,side):
     label(draw,x+15,400,f'걷기 가중치  {w:.2f}',25)
 def compose(ep,key,h,l,v,encoder):
     needed={'A10':('recoil','root'),'A11':('kick','returning'),'A12':('expression','mouth'),
-            'A14':('blend','duration','guard','slope'),'A15':('count',),
+            'A14':('blend','duration','guard','slope'),'A15':('scale','count'),
             'A16':('range','path','active'),'A18':('head','curves','gaze')}
     if key not in needed.get(ep,()):return l/(key+'.mp4')
     motion=read(h/'motion-evidence.json') if ep in ('A10','A11','A14') else {}
@@ -109,7 +109,11 @@ def compose(ep,key,h,l,v,encoder):
                     if key=='slope':
                         pos=joint(motion[key][i][n]['foot_l'],i,-72);dot(draw,pos,16,MINT if i else GOLD)
                     else:progressdraw(draw,n,key,i)
-            if ep=='A15':
+            if ep=='A15' and key=='scale':
+                # The wide study plays the identical authored hand pose at the same frame.
+                with Image.open(l/'frames/count'/frame.name) as wide:
+                    im.paste(wide.crop((960,0,1920,1080)),(960,0))
+            if ep=='A15' and key=='count':
                 # Four simultaneous instances of the same authored character image make the arithmetic visible.
                 tile=im.crop((970,140,1900,835)).resize((374,280),Image.Resampling.LANCZOS)
                 draw.rectangle((970,213,1887,796),fill='#D7DCD6')
