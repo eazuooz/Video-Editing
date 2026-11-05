@@ -417,7 +417,7 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 | A14 | [애니메이션 블렌딩](https://www.youtube.com/watch?v=HYHajZ0wBfU) | 애니메이션 블렌딩 \| 서로 다른 두 동작을 자연스럽게 잇는 방법 | [전체 검수본 · 5분 24초](http://127.0.0.1:9248/A14/captioned.mp4) · 사용자 통합 검수 대기 |
 | A15 | [손가락 표현](https://www.youtube.com/watch?v=nCvdmQKrjf8) | 손가락 표현 \| 게임 속 손가락 하나에 계산이 많이 필요한 이유 | [전체 검수본 · 3분 50초](http://127.0.0.1:9248/A15/captioned.mp4) · 사용자 통합 검수 대기 |
 | A16 | [공격 판정과 동작 설계](https://www.youtube.com/watch?v=rwwF_4blK-o) | 공격 판정과 동작 설계 \| 공격 동작과 판정은 왜 함께 설계해야 할까? | [전체 검수본 · 3분 37초](http://127.0.0.1:9248/A16/captioned.mp4) · 사용자 통합 검수 대기 |
-| A17 | [스켈레톤의 표현 한계](https://www.youtube.com/watch?v=q77TZaISg1Y) | 스켈레톤의 표현 한계 \| 캐릭터의 뼈대만으로는 만들 수 없는 움직임 | 한·영 대본과 실제 게임 장면 배치 완료 · 언리얼 비교 씬 빌드 완료 |
+| A17 | [스켈레톤의 표현 한계](https://www.youtube.com/watch?v=q77TZaISg1Y) | 스켈레톤의 표현 한계 \| 캐릭터의 뼈대만으로는 만들 수 없는 움직임 | [전체 검수본 · 4분 36초](http://127.0.0.1:9248/A17/captioned.mp4) · 사용자 통합 검수 대기 |
 | A18 | [두 축 회전](https://www.youtube.com/watch?v=Mh7nTn9_r40) | 두 축 회전 \| 회전 동작을 덜 기계적으로 보이게 하는 방법 | 한·영 대본과 실제 게임 장면 배치 완료 · 언리얼 비교 씬 빌드 완료 |
 
 진행 기록: [제작 배치](../production/batches/animation-18-20261031/batch.json), [체크포인트](../production/batches/animation-18-20261031/checkpoint.json), [제목·원본 대응](../production/planning/sakurai-animation-20261031/plan.json). 완성 영상·검수·게시 상태는 실제 결과가 생긴 뒤 갱신합니다.
