@@ -1,5 +1,6 @@
 """Run the finite animation batch's voice work only between Discord screen shares."""
 import _thread
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,7 @@ class ShareState:
         self.sessions = set()
         self.awaiting_connection = False
         self.seen_end = False
+        self.start_after_confirmation = False
         self.quiet_since = None
 
     def scan(self, path, offset=0):
@@ -40,6 +42,7 @@ class ShareState:
                 if START in line:
                     self.awaiting_connection = True
                     self.seen_end = False
+                    self.start_after_confirmation = True
                 match = STREAM.search(line)
                 if not match:
                     continue
@@ -81,6 +84,8 @@ class ShareState:
         if self.sessions or self.awaiting_connection or not self.seen_end:
             self.quiet_since = None
             return False
+        if self.confirmed_end and not self.start_after_confirmation:
+            return True
         if self.quiet_since is None:
             self.quiet_since = time.monotonic()
         return time.monotonic() - self.quiet_since >= 30
@@ -107,7 +112,14 @@ def run_when_clear(script, args):
     sys.argv = [str(script), *args]
     sys.path.insert(0, str(script.parent))
     try:
-        runpy.run_path(str(script), run_name="__main__")
+        # Synthesis manages its own GPU lease. Recognition can run on CPU when a renderer owns the GPU.
+        from gpu_slot import idle_slot
+        check_audio = script.name == "review_project_narration.py"
+        slot = idle_slot("animation-narration-readback") if check_audio else nullcontext()
+        with slot as available:
+            if check_audio and not available:
+                sys.argv[sys.argv.index('--device')+1]='cpu'
+            runpy.run_path(str(script), run_name="__main__")
     except KeyboardInterrupt:
         if not interrupted.is_set():
             raise
@@ -120,6 +132,7 @@ def run_when_clear(script, args):
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[3]
     script = (root / sys.argv[1]).resolve()
-    if script not in [root / "qwen3-tts" / x for x in ("render_narration.py", "review_project_narration.py")]:
+    allowed = [root / "qwen3-tts" / x for x in ("render_narration.py", "review_project_narration.py")]
+    if script not in [*allowed,Path(__file__).with_name("series_voice.py")]:
         raise ValueError("Unexpected animation voice entry point")
     run_when_clear(script, sys.argv[2:])

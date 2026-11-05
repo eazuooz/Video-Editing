@@ -35,6 +35,47 @@ function delivery(e) {
 }
 const esc=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const css='body{margin:32px auto;max-width:1000px;padding:0 18px;font:17px/1.6 system-ui,sans-serif;color:#13231d}table{border-collapse:collapse;width:100%}th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #cfdad2}th{white-space:nowrap}a{color:#075746}h1{line-height:1.3}video{width:100%;max-height:65vh;background:#111}small{color:#53645b;display:block} @media(max-width:540px){body{margin:18px auto;font-size:15px}th,td{padding:7px 4px}}';
+function clock(seconds) {
+  const n = Math.round(seconds);
+  return Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
+}
+function writeFinalIndex() {
+  const output = path.join(root, 'output', 'animation-series-review');
+  const {execFileSync} = require('node:child_process');
+  const records = episodes.map(e => {
+    const dir = delivery(e);
+    if (!dir) throw new Error('Missing verified master: ' + e.id);
+    const url = filename => path.relative(output, path.join(dir, filename))
+      .split(path.sep).map(part => encodeURIComponent(part)).join('/');
+    const movie = e.slug + '.captioned.mp4';
+    const duration = Number(execFileSync('ffprobe', ['-v','error','-show_entries','format=duration',
+      '-of','default=nw=1:nk=1',path.join(dir,movie)], {encoding:'utf8'}).trim());
+    if (!(duration > 0) || !fs.existsSync(path.join(dir,'index.html'))) throw new Error('Invalid delivery: ' + e.id);
+    return {id:e.id,title:e.title,seconds:duration,movie:url(movie),files:url('index.html')};
+  });
+  const table = records.map(e => '<tr id="'+e.id+'"><th>'+e.id+'</th><td><a class="play" href="'+e.movie+
+    '">'+esc(e.title)+'</a></td><td>'+clock(e.seconds)+'</td><td><a href="'+e.files+'">파일 모음</a></td></tr>').join('');
+  const total = records.reduce((sum, e) => sum + e.seconds, 0);
+  const fresh = records.filter(e => Number(e.id.slice(1)) >= 8).reduce((sum,e) => sum + e.seconds, 0);
+  const body = '<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+    '<title>얌얌코딩 게임 애니메이션 검수</title><style>'+css+'tr[aria-current=true]{background:#eaf3ec}</style>'+
+    '<h1>게임 애니메이션 통합 검수</h1><p>전체 18편 '+clock(total)+' · 이번 검수 A08–A18 '+clock(fresh)+'</p>'+
+    '<h2 id="now"></h2><video id="preview" controls preload="metadata" playsinline></video>'+
+    '<table><thead><tr><th>편</th><th>제목</th><th>길이</th><th>영상·자막</th></tr></thead><tbody>'+table+'</tbody></table>'+
+    '<script>const rows=[...document.querySelectorAll("tbody tr")],player=document.querySelector("video"),heading=document.getElementById("now");let current;'+
+    'function select(i,play){if(i<0||i>=rows.length)return; if(current!==undefined)rows[current].removeAttribute("aria-current");'+
+    'current=i;const row=rows[i],link=row.querySelector(".play");row.setAttribute("aria-current","true");heading.textContent=row.id+" · "+link.textContent;'+
+    'player.src=link.href;if(play)player.play().catch(()=>{});}'+
+    'rows.forEach((r,i)=>r.querySelector(".play").onclick=e=>{e.preventDefault();select(i,true);});'+
+    'player.addEventListener("ended",()=>select(current+1,true));select(rows.findIndex(r=>r.id==="A08"),false);</script></html>';
+  fs.mkdirSync(output, {recursive:true});
+  fs.writeFileSync(path.join(output,'index.html'),body,'utf8');
+  console.log(JSON.stringify({directory:output,episodes:records.length,totalSeconds:total,newSeconds:fresh}));
+}
+if (process.argv[2] === '--write-final-index') {
+  writeFinalIndex();
+  process.exit(0);
+}
 function progress(e) {
   const prod=path.join(root,'projects',e.slug,'production');
   const local=path.join(prod,'local',e.revision);

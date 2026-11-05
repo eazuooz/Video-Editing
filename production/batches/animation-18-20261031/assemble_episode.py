@@ -35,6 +35,10 @@ def timing():
   sid=entry['scene_id'];file=L/'voice/chunks'/(sid+'-scene.wav');source=read(L/'voice/asr'/(sid+'.json'));assert source['audio_sha256']==sha(file)
   assert len(g)==len(shotgroup),(sid,len(g),len(shotgroup))
   duration=sf.info(file).duration;offset=2+entry['start'];words=[];last=0.
+  report=read(L/'voice/narration.asr-review.json')
+  scene_check=next(s for s in report['scenes'] if s['scene']==sid)
+  if duration>=163.5 or scene_check['similarity']<.90:
+   raise ValueError(f'Review scene {sid} before picture: duration {duration:.2f}s, ASR similarity {scene_check["similarity"]:.3f}')
   for w in source['words']:
    a,b=w['timestamp'];a=max(last,a or 0);b=min(duration,b if b is not None else duration)
    if b>a+.0001:words.append(dict(text=w['text'],timestamp=[a,b]));last=b
