@@ -4,7 +4,7 @@ under speech. No game audio exists in this reality-check video."""
 from pathlib import Path
 import json, math, subprocess, hashlib
 import numpy as np, soundfile as sf
-from edition import BASE, EXTENDED, LOCAL, voice_dir
+from edition import BASE, EXTENDED, NEWS, LOCAL, voice_dir
 R = Path(__file__).resolve().parents[3]; P = Path(__file__).resolve().parents[1]; O = LOCAL
 def run(args, name):
     p = subprocess.run(['ffmpeg', '-hide_banner', '-y', *args], cwd=R, capture_output=True); (O / (name + '.log')).write_bytes(p.stderr)
@@ -20,7 +20,7 @@ def speech_mask(n, rate, words):
         mask[max(0, round(a * rate)):min(n, round(b * rate))] = True
     return mask
 plan = json.loads((O / 'timeline.json').read_text(encoding='utf8')); duration = plan['totalFrames'] / 60; LEAD = 2.0
-assert len(plan['scenes']) == (17 if EXTENDED else 12) and plan['totalFrames'] == plan['bodyFrames'] + 720
+assert len(plan['scenes']) == (8 if NEWS else 17 if EXTENDED else 12) and plan['totalFrames'] == plan['bodyFrames'] + 720
 sr = 24000; voice = np.zeros(round(duration * sr), dtype=np.float32); reports = []
 for s in plan['scenes']:
     N = voice_dir(s['id'])

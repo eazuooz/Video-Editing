@@ -4,7 +4,7 @@ from fractions import Fraction
 import json, hashlib, shutil, subprocess, math, sys, time
 from PIL import Image,ImageDraw
 import numpy as np
-from edition import BASE, EXTENDED, LOCAL
+from edition import BASE, EXTENDED, NEWS, LOCAL
 P=Path(__file__).resolve().parents[1];R=P.parents[1];L=LOCAL
 B=R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit'
 def read(p):return json.loads(p.read_text(encoding='utf-8'))
@@ -23,7 +23,7 @@ def video(path,n):
 def audio_encode(plan):
     run(['-loglevel','warning','-i',L/'final-mix.wav','-t',str(plan['totalFrames']/60),'-ac','2','-ar','48000','-c:a','aac','-b:a','192k',L/'audio.m4a'],'aac')
 def pair(plan):
-    body_parts=[(BASE/'body.mp4',plan.get('baseBodyFrames',plan['bodyFrames']))]
+    body_parts=[((LOCAL if NEWS else BASE)/'body.mp4',plan.get('baseBodyFrames',plan['bodyFrames']))]
     if EXTENDED:
         until=time.monotonic()+600
         while time.monotonic()<until:

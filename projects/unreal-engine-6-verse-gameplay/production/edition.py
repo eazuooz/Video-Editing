@@ -7,14 +7,19 @@ import json
 PROJECT = Path(__file__).resolve().parents[1]
 BASE = PROJECT / "production/local/v1"
 EDITION = os.environ.get("UE6_EDITION", "v1")
-if EDITION not in {"v1", "engine-comparison-v2"}:
+if EDITION not in {"v1", "engine-comparison-v2", "newsroom-v3"}:
     raise ValueError(f"Unknown UE6 production edition: {EDITION}")
 EXTENDED = EDITION == "engine-comparison-v2"
+NEWS = EDITION == "newsroom-v3"
 LOCAL = PROJECT / "production/local" / EDITION
 SCRIPT = PROJECT / "script/engine-comparison-v2" if EXTENDED else PROJECT / "script"
+if NEWS:
+    SCRIPT = PROJECT / "production/newsroom-v3"
 
 
 def voice_dir(scene_id):
+    if NEWS:
+        return LOCAL / "voice"
     if EXTENDED and int(scene_id) > 12:
         if not 13 <= int(scene_id) <= 17:
             raise ValueError(f"Unexpected comparison scene {scene_id}")

@@ -4,7 +4,7 @@ import json, re, hashlib, math, difflib, textwrap
 import numpy as np
 import soundfile as sf
 from PIL import ImageFont
-from edition import BASE, EXTENDED, LOCAL, SCRIPT, voice_dir, sealed_voice_batch
+from edition import BASE, EXTENDED, NEWS, LOCAL, SCRIPT, voice_dir, sealed_voice_batch
 P=Path(__file__).resolve().parents[1]
 R=P.parents[1]
 L=LOCAL
@@ -14,7 +14,7 @@ font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',48)
 def normalized(text):
     text=re.sub(r'\s+','',text.lower())
     aliases={'씨플러스플러스':'cpp','c++':'cpp','씨뿔뿔':'cpp','얼리얼':'언리얼','언리얼엔진식스':'언리얼엔진6','엔진식스':'엔진6','엔진파이브':'엔진5','버전식스':'버전6','유이에프엔':'uefn','유이애프엔':'uefn','유엔프엔':'uefn','유이엔에프':'uefn','버스':'verse','벌스':'verse','엠씨피':'mcp','엠시피':'mcp','에이아이':'ai','오점구':'5점9','5.9':'5점9','5.구':'5점9','한배반':'1점5배','1.5배':'1점5배','네배':'4배','이천이십육년':'2026년','이천이십칠년':'2027년','십일월':'11월','삼일':'3일','유월':'6월','백개':'100개','폰':'pawn','액터':'actor','엑터':'actor','프리팹':'prefab','프리펩':'prefab'}
-    if EXTENDED:
+    if EXTENDED or NEWS:
         # Normalize readings only while aligning. Both visible language files keep
         # their authored names, currency and thousands separators.
         aliases.update({'지디스크립트':'gdscript','gd스크립트':'gdscript','엠아이티':'mit',
@@ -22,6 +22,8 @@ def normalized(text):
             '십이개월':'12개월','백이십만':'120만','이십만':'20만','백만':'100만',
             '이천삼백십':'2310','사천육백이십':'4620','오퍼센트':'5퍼센트','5%':'5퍼센트',
             '일만달러':'1만달러','영원':'0원','영달러':'0달러','일년':'1년'})
+    if NEWS:
+        aliases.update({'오점팔':'5점8','5.8':'5점8','사배':'4배','6월':'유월','5점구':'5점9','5점팔':'5점8'})
     for a,b in aliases.items():text=text.replace(a,b)
     return re.sub(r'[^가-힣a-z0-9]','',text)
 def stamp(s,ass=False):

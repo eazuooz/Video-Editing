@@ -3,7 +3,11 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../../..');
-const selected = {
+const newsReview = process.argv.includes('--newsroom');
+const selected = newsReview ? {
+  news: ['unreal-engine-6-verse-gameplay', 'newsroom-v3'],
+  a01: ['animation-assigning', 'grid-v1'],
+} : {
   ue6: ['unreal-engine-6-verse-gameplay', 'engine-comparison-v2'],
   a02: ['animation-exaggeration', 'fighters-v4-kula-lili'],
 };
@@ -22,14 +26,14 @@ const server=http.createServer((req,res)=>{
   if (![String('localhost:'+port),String('127.0.0.1:'+port)].includes(req.headers.host))return res.writeHead(403).end();
   let key;try{key=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);}catch{return res.writeHead(400).end();}
   if (key==='/' || key==='/index.html') {
-    const titles={ue6:'언리얼·고도·유니티 비교',a02:'동작의 과장 · 쿨라와 리리'};
+    const titles={ue6:'언리얼·고도·유니티 비교',a02:'동작의 과장 · 쿨라와 리리',news:'언리얼 6 발표 · 에픽 공식 시연과 도쿄 보도',a01:'애니메이션 제작 지시'};
     const entries=Object.keys(selected).filter(id=>fs.existsSync(allowed.get('/'+id+'/index.html')))
       .map(id=>'<li><a href="/'+id+'/">'+titles[id]+'</a></li>').join('');
     const body='<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>검수 영상</title><style>body{max-width:48rem;margin:4rem auto;padding:0 1.4rem;font:18px/1.8 sans-serif}a{color:#086452}</style><h1>검수 영상</h1><ul>'+entries+'</ul></html>';
     res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Content-Length':Buffer.byteLength(body)});
     return res.end(req.method==='HEAD'?undefined:body);
   }
-  if (/^\/(a02|ue6)\/?$/.test(key))return res.writeHead(302,{Location:key.replace(/\/?$/,'/')+'index.html'}).end();
+  if (Object.hasOwn(selected,key.replace(/^\//,'').replace(/\/$/,'')))return res.writeHead(302,{Location:key.replace(/\/?$/,'/')+'index.html'}).end();
   const file=allowed.get(key);if(!file||!fs.existsSync(file))return res.writeHead(404).end();
   const size=fs.statSync(file).size;
   let a=0,b=size-1,status=200;
