@@ -51,7 +51,7 @@ namespace Yamyam.MathMotion {
         Text term,kind,values,details,coordinateLabel,positionTitle,velocityTitle,accelerationTitle,velocityCallout,accelerationCallout,radiusCallout;
         Text timeStart,timeEnd,timeAxis;
         Text formulaBoard,formulaMeaning,comparisonLegend;
-        Text hareName,tortoiseName,secantStart,secantFinish;
+        Text hareName,tortoiseName,secantStart,secantFinish,graphMark;
         readonly List<Text> graphRangeLabels=new List<Text>();
         // All graph sizes derive from the fixed 1080p camera, with room for
         // range values, units and the fixed caption below the three plots.
@@ -109,6 +109,8 @@ namespace Yamyam.MathMotion {
             velocityCallout=Label("VelocityArrowLabel",new Rect(0,0,430,48),36,Teal);
             accelerationCallout=Label("AccelerationArrowLabel",new Rect(0,0,430,48),36,Red);
             radiusCallout=Label("RadiusArrowLabel",new Rect(0,0,350,48),36,Yellow);
+            graphMark=Label("PointOnGraph",new Rect(0,0,330,54),42,Yellow);
+            graphMark.gameObject.SetActive(false);
             if(shot.subjectKind=="hare") {
                 hareName=Label("HareLabel",new Rect(0,0,130,46),36,Yellow);
                 if(comparisonAnimal)tortoiseName=Label("TortoiseLabel",new Rect(0,0,140,46),36,Teal);
@@ -151,7 +153,7 @@ namespace Yamyam.MathMotion {
         LineRenderer Line(Color color,float width) {
             LineRenderer r;
             if(lineCursor<lines.Count)r=lines[lineCursor];else {var go=Own(new GameObject("MotionGuide_"+lines.Count));r=go.AddComponent<LineRenderer>();r.useWorldSpace=true;r.sharedMaterial=lineMaterial;r.numCapVertices=4;r.numCornerVertices=4;lines.Add(r);}
-            lineCursor++;r.gameObject.SetActive(true);r.startColor=r.endColor=Color.white;r.startWidth=r.endWidth=width;r.alignment=LineAlignment.View;
+            lineCursor++;r.gameObject.SetActive(true);r.numCapVertices=4;r.startColor=r.endColor=Color.white;r.startWidth=r.endWidth=width;r.alignment=LineAlignment.View;
             var props=new MaterialPropertyBlock();props.SetColor("_BaseColor",color);props.SetColor("_Color",color);r.SetPropertyBlock(props);return r;
         }
         void Poly(IList<Vector3> points,Color color,float width=.025f) {if(points.Count<2)return;var l=Line(color,width);l.positionCount=points.Count;for(int i=0;i<points.Count;i++)l.SetPosition(i,points[i]);}
@@ -256,7 +258,7 @@ namespace Yamyam.MathMotion {
             velocityTitle.gameObject.SetActive(shot.showVelocityGraph);accelerationTitle.gameObject.SetActive(shot.showAccelerationGraph);
             kind.text="현재 화면: 우리 구현\n해설용 해석 운동 모형 · 게임 실측 아님";
             var path=new List<Vector3>();for(int i=0;i<=160;i++){double pt=shot.startTime+(shot.endTime-shot.startTime)*i/160.0;path.Add(Position(MotionMathModel.Sample(shot.parameters,pt).position));}Poly(path,Muted*.45f,.018f);
-            if(shot.beatId=="M25-002"){
+            if(shot.beatId=="M25-002"||shot.beatId=="M25-012"||shot.beatId=="M25-013"){
                 AccelerationUnitGuide(at,state.velocity,true);
                 AccelerationUnitGuide(at,state.acceleration,false);
             }else{
@@ -304,7 +306,21 @@ namespace Yamyam.MathMotion {
             details.text=shot.showSecant?"Δt = "+shot.secantH.ToString("0.000")+"\n평균 속도 = "+(shot.graphY?MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).y:MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).x).ToString("0.000"):
                 shot.parameters.kind==MotionKind.Circle?"r = "+shot.parameters.radius.ToString("0.00")+"   ω = "+shot.parameters.omega.ToString("0.00")+" rad/s\n|v| = "+state.velocity.Length.ToString("0.000")+"   |a| = "+state.acceleration.Length.ToString("0.000"):"값은 현재 해설 모형에서 직접 계산\n화살표 축척은 장면 안에서 고정";
             if(shot.showRiemann)RiemannOverlay(t);
+            GraphLandmark();
             for(int i=lineCursor;i<lines.Count;i++)lines[i].gameObject.SetActive(false);
+        }
+        void GraphLandmark(){
+            bool floor=shot.beatId=="M25-012"||shot.beatId=="M25-013";
+            bool apex=shot.beatId=="M25-023";
+            graphMark.gameObject.SetActive(floor||apex);
+            if(!floor&&!apex)return;
+            double when=floor?shot.endTime:shot.parameters.timeToApex;
+            var endpoint=MotionMathModel.Sample(shot.parameters,when);
+            var at=Plot(when,endpoint.position.y,shot.positionMin,shot.positionMax,PositionBase);
+            var initial=Plot(shot.startTime,endpoint.position.y,shot.positionMin,shot.positionMax,PositionBase);
+            Poly(new[]{initial,at},Teal,.036f);
+            SecantMarker(at);
+            PlaceDiagramText(graphMark,at,floor?"바닥 · 도착":"정점 H, T",new Vector2(floor?-202:14,-8));
         }
         public void SetExplanation(string formula,string meaning){
             formulaBoard.text=formula??"";formulaMeaning.text=meaning??"";
@@ -330,6 +346,17 @@ namespace Yamyam.MathMotion {
                 for(int i=0;i<shot.riemannCount;i++){
                     double begin=shot.startTime+i*stepWidth;var sampled=MotionMathModel.Sample(shot.parameters,begin+shot.riemannSample*stepWidth);double height=shot.graphY?sampled.velocity.y:sampled.velocity.x;
                     if(height<shot.velocityMin||height>shot.velocityMax)continue;
+                    // Line width equals the interval's physical plot width. The fill
+                    // is behind both the velocity curve and its rectangle outline.
+                    if(Math.Abs(height)>1e-8){
+                        double mid=begin+stepWidth*.5;
+                        var z=Vector3.forward*.12f;
+                        var l=Line(height>=0?new Color(.17f,.32f,.29f):new Color(.40f,.19f,.18f),
+                                   Plot(begin+stepWidth,0,shot.velocityMin,shot.velocityMax,VelocityBase).x-Plot(begin,0,shot.velocityMin,shot.velocityMax,VelocityBase).x);
+                        l.numCapVertices=0;l.positionCount=2;
+                        l.SetPosition(0,Plot(mid,0,shot.velocityMin,shot.velocityMax,VelocityBase)+z);
+                        l.SetPosition(1,Plot(mid,height,shot.velocityMin,shot.velocityMax,VelocityBase)+z);
+                    }
                     Poly(new[]{Plot(begin,0,shot.velocityMin,shot.velocityMax,VelocityBase),Plot(begin,height,shot.velocityMin,shot.velocityMax,VelocityBase),Plot(begin+stepWidth,height,shot.velocityMin,shot.velocityMax,VelocityBase),Plot(begin+stepWidth,0,shot.velocityMin,shot.velocityMax,VelocityBase)},height>=0?Yellow:Red,.022f);
                 }
                 var delta=MotionMathModel.Sample(shot.parameters,upper).position-MotionMathModel.Sample(shot.parameters,shot.startTime).position;

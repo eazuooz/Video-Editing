@@ -1,5 +1,6 @@
 """Bind the edited explanation to the original analytic scene, in measured-speech order."""
 from pathlib import Path
+from copy import deepcopy
 import argparse,re
 from edition import BATCH,ROOT,read,save,sha,passages
 from preview import build
@@ -14,6 +15,30 @@ def diagram_symbols(episode):
                           "프린서플스 오브 디지털 이미지 신서시스":"Principles of Digital Image Synthesis",
                           "피비알티":"PBRT","리얼타임 렌더링":"Real-Time Rendering"})
     return spellings
+
+def acceleration_examples(scenes):
+    jump=scenes[23]["shot"]["steps"]
+    for index,step in enumerate(jump):
+        model=step["motionOverride"]
+        t=1 if index==0 else .7
+        model["parameters"]["timeToApex"]=t
+        model.update(endTime=2*t,velocityMin=-6,velocityMax=6,accelerationMin=-9,accelerationMax=1)
+        step.update(modelFrom=t if index==2 else 0,modelTo=2*t if index==2 else t)
+    # See the same displacement after shifting x(t). Then compare signed
+    # displacement with distance for a path that really changes direction.
+    row=scenes[34];steps=row["shot"]["steps"][:2]
+    back=deepcopy(steps[-1])
+    model=back["motionOverride"]
+    model["parameters"].update(powers=[2,1,0],coefficients=[1,-4,34])
+    model.update(positionMin=29,positionMax=33,velocityMin=-3,velocityMax=3,
+                 accelerationMin=0,accelerationMax=3,riemannSample=.5)
+    back.update(modelFrom=1,modelTo=3,meaning="속도 0을 지나며 색칠한 넓이의 부호가 바뀝니다")
+    steps.append(back);row["shot"]["steps"]=steps
+    phrases=["속도 그래프의 두 시각 사이를 색칠해 볼게요","끝 위치에서 처음 위치를 빼면","뒤로 움직인 구간이 있으면"]
+    row["speechPhaseAnchors"]=[]
+    for i,(step,phrase) in enumerate(zip(steps,phrases)):
+        step["anchor"]=phrase
+        row["speechPhaseAnchors"].append(dict(phrase=phrase,character=row["speech"].index(phrase),position=i/3))
 
 # Formula inputs are bound to each native teaching rig: the graph or game object's state,
 # not a second independently animated value. Only the teaching text changes here.
@@ -69,6 +94,7 @@ def bind(episode):
             row["speechPhaseAnchors"]=anchors
             changes[sid]=dict(purpose=purpose,formula=formula,figure=target,rig=shot.get("diagramMode") or "existing native teaching stage")
         ids=list(diagrams);samples=sorted({ids[0],ids[len(ids)//2],ids[-1]})
+    if episode=="M25":acceleration_examples(binding["scenes"])
     save(bindingfile,binding)
     plan["sceneBindingsSha256"]=sha(bindingfile)
     for sid,edit in changes.items():plan["learningSteps"][int(sid)]["screenIntent"]=edit["figure"]
