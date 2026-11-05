@@ -115,10 +115,14 @@ def compose(ep,key,h,l,v,encoder):
                     im.paste(wide.crop((960,0,1920,1080)),(960,0))
             if ep=='A15' and key=='count':
                 # Four simultaneous instances of the same authored character image make the arithmetic visible.
-                tile=im.crop((970,140,1900,835)).resize((374,280),Image.Resampling.LANCZOS)
-                draw.rectangle((970,213,1887,796),fill='#D7DCD6')
+                tile=im.crop((970,135,1900,875)).resize((325,259),Image.Resampling.LANCZOS)
+                # Rebuild the entire right panel from an empty strip of the same stage.
+                # Otherwise the full-sized actor's original feet remain beneath the four figures.
+                strip=im.crop((908,0,960,1080))
+                for x in range(960,1920,52):
+                    im.paste(strip,(x,0))
                 for j in range(4):
-                    im.paste(tile,(1010+425*(j%2),218+283*(j//2)))
+                    im.paste(tile,(1030+413*(j%2),170+259*(j//2)))
                 panel(draw,72,707,765,75);label(draw,93,720,'10개 × 양손 × 1명  =  20개',29)
                 panel(draw,1007,707,799,75);label(draw,1024,720,'10개 × 양손 × 4명  =  80개',29)
             if ep=='A16':
