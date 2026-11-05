@@ -402,8 +402,8 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 | 번호 | 원본 주제 | 제작 제목 초안 | 현재 상태 |
 |---|---|---|---|
 | A01 | [애니메이션 제작 지시](https://www.youtube.com/watch?v=fV8xIP480qk) | 애니메이션 제작 지시 \| “멋지게 움직여 주세요”로는 원하는 동작이 안 나오는 이유 | 비공개 업로드 요청 · 파일·설명·썸네일 준비 · Studio 연결 대기 |
-| A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 동작의 과장 \| 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | [쿨라·리리 · 언리얼 1.0×/1.8× · 5분 39초 검수본](http://127.0.0.1:9243/a02/) |
-| A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 공격 동작의 단계 \| 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | 원본 검토·자료/격자 시연 검증 중 |
+| A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 동작의 과장 \| 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | [YouTube 비공개 · 쿨라·리리](https://youtu.be/BDmb5VwES5M) · HD·한영 자막 |
+| A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 공격 동작의 단계 \| 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | [1080p60 · 6분 2초 · 전체 검수본](http://127.0.0.1:9245/a03/) · 사용자 시청 대기 |
 | A04 | [빠르고 강한 준비 동작](https://www.youtube.com/watch?v=E8DKndKkHw8) | 빠르고 강한 준비 동작 \| 공격의 준비 동작을 짧고 강하게 만드는 방법 | 원본 검토·자료/격자 시연 검증 중 |
 | A05 | [공격 자세](https://www.youtube.com/watch?v=99gdMDF7V2E) | 공격 자세 \| 같은 공격인데 왜 어떤 자세가 더 세게 느껴질까? | 원본 검토·자료/격자 시연 검증 중 |
 | A06 | [공격 이후의 후속 동작](https://www.youtube.com/watch?v=cIB0BUe6Ihk) | 공격 이후의 후속 동작 \| 공격이 끝난 뒤의 동작이 타격감을 만드는 이유 | 원본 검토·자료/격자 시연 검증 중 |
