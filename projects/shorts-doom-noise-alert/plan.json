@@ -1,0 +1,25 @@
+{
+  "slug":"shorts-doom-noise-alert",
+  "dateKst":"2026-11-05",
+  "head":["같은 복도에서 총 한 발","왜 한쪽 괴물만 돌아볼까?"],
+  "title":"같은 복도에서 총 한 발, 왜 한쪽 괴물만 돌아볼까? | 둠의 몬스터 #게임개발 #둠",
+  "candidates":[
+    ["같은 복도에서 총 한 발, 왜 한쪽 괴물만 돌아볼까?","Doom sector sound propagation / ML_SOUNDBLOCK","https://github.com/id-Software/DOOM/blob/master/linuxdoom-1.10/p_enemy.c"],
+    ["셀레스트는 왜 벽 앞에서 한 픽셀씩 걸을까?","Subpixel remainder and pixel-step collision","https://www.maddymakesgames.com/articles/celeste_and_towerfall_physics/index.html"],
+    ["앞차 뒤에 붙었더니 왜 내 카트가 빨라질까?","SuperTuxKart slipstream","https://github.com/supertuxkart/stk-code/blob/master/src/graphics/slip_stream.cpp"],
+    ["교차로에서 두 열차가 동시에 출발해도 되는 이유","OpenTTD path signals / path reservation","https://wiki.openttd.org/en/Manual/Signals"],
+    ["점프대는 어떻게 딱 그 높이까지 날려 보낼까?","Quake III target-apex launch velocity","https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/g_trigger.c"]
+  ],
+  "choice":"The campaign shot visibly changes the approaching creature. An independently played, one-flag experiment in the same engine distinguishes alerting from audible volume. No existing Short in the worklist covers this technique.",
+  "reference":{"original":"https://github.com/id-Software/DOOM/blob/master/linuxdoom-1.10/p_enemy.c","port":"https://github.com/Farama-Foundation/ViZDoom/blob/1.3.2/src/vizdoom/src/p_enemy.cpp","game":"https://freedoom.github.io/","artLicense":"https://github.com/freedoom/freedoom/blob/master/COPYING.adoc"},
+  "mediaKind":{"opening":"Own 1920x1080 native play of stock Freedoom Phase 2 MAP04, on the ViZDoom software port. Same seed, wait versus fire. Source audio muted.","experiment":"Own two otherwise identical UDMF levels in the same Doom runtime; record as a teaching test, distinct from the stock campaign.","diagram":"Animated plan view of sector traversal, synchronized to narration. One change: ML_SOUNDBLOCK on the second two-sided boundary. Original Yamyam cat reactions at the switch and conclusion."},
+  "lines":[
+    ["총을 한 번 쐈더니 등 돌린 괴물이 달려오죠. 같은 자리에서 가만히 기다리면 그대로예요.","Fire once and the monster turns and charges. Wait in the same spot and it stays put."],
+    ["총소리는 어디까지 전해질까요? 둠은 지도를 섹터라는 구역으로 나누고, 열린 경계를 따라 이웃 구역에 경보를 전합니다.","How far does the alert travel? Doom divides a level into sectors and passes the alert to neighboring sectors through open boundaries."],
+    ["같은 복도에서 괴물을 등 돌려 놓고 옆 벽에 쏴 볼게요. 첫 경계에 소리 차단 표시가 하나 있으면, 경보는 건너갑니다.","In our test corridor, the monster faces away and we shoot the wall beside it. The alert crosses the first boundary marked to block sound."],
+    ["두 번째 경계에도 표시를 켜면 어떨까요? 길도 거리도 같은데, 이번엔 괴물이 돌아보지 않죠.","Now mark the second boundary as well. The corridor and distance stay the same, but this time the monster does not turn around."],
+    ["경보는 표시된 경계를 한 번은 넘고, 두 번째에서 멈춥니다. 다른 열린 길이 있으면 그쪽으로도 퍼질 수 있어요.","An alert can cross one marked boundary on a path. A second one stops it. Another open route can still carry the alert around."],
+    ["여기서 막힌 건 괴물을 깨우는 경보예요. 내 귀에 총소리가 얼마나 크게 들리는지는 별도로 계산합니다.","What stops here is the alert that wakes the monster. The volume the player hears is handled separately."],
+    ["그래서 똑같이 생긴 복도에서도, 지도에 그은 선 하나로 건너편 괴물을 잠재워 둘 수 있습니다.","That is how one invisible line can keep a monster idle across an otherwise identical corridor."]
+  ]
+}
