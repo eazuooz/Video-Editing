@@ -26,12 +26,13 @@ def commit(message,push):
     publish=runpy.run_path(str(ROOT/"projects/buckshot-roulette-reverse-engineering/production/save-selective-git.py"))["publish_index_and_ref"]
     rows=read(BATCH/"batch.json")["items"][2:];episodes={r["id"] for r in rows}
     direct=list(x for x in Path(__file__).parent.iterdir() if x.suffix in {".py",".txt",".ps1",".json"})
-    direct+=[BATCH/f for f in ["align-module-speech.py","compose-module.py","finish-selected-voice.py","finish-word-review.py","freeze-reviewed-module-narration.py","paragraph_level.py","prepare-module-render.py","run-module-render.py","render-voice.py","review-source-voice.py","review-final-mix.py","update-preproduction.py","verify-module-media.py","progress.md"]]
+    direct+=[BATCH/f for f in ["align-module-speech.py","compose-module.py","finish-selected-voice.py","finish-word-review.py","freeze-reviewed-module-narration.py","paragraph_level.py","prepare-module-render.py","run-module-preflight.py","run-module-render.py","render-voice.py","review-source-voice.py","review-final-mix.py","update-preproduction.py","verify-module-media.py","progress.md"]]
     for r in rows:
         p=ROOT/"projects"/r["slug"]
         direct.extend(p/x for x in ["project.json","planning/part2-delivery-edition.json","planning/part2-picture-plan.json","planning/scene-bindings.json","planning/bilingual-caption-map.json","planning/production-plan.json","planning/script-integration.json","planning/caption-reading-adjustments.json","script/narration.ko.json","script/narration.en.json","script/integrated-readthrough.ko.txt","script/integrated-readthrough.en.txt","production/checkpoint.json"])
         direct.extend((p/"production").glob("tts-manifest-audio-v*.json"))
         direct.extend((p/"production/part2-review").glob("*.json"))
+        if (p/"planning/printed-symbol-cues.json").is_file():direct.append(p/"planning/printed-symbol-cues.json")
         if (p/"production/part2-review/final-delivery.json").is_file():
             direct.append(p/"production/review-ledger.json")
         if (p/"planning/part2-rail-guide.json").exists():

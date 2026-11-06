@@ -265,7 +265,7 @@ namespace Yamyam.MathMotion {
             velocityTitle.gameObject.SetActive(shot.showVelocityGraph);accelerationTitle.gameObject.SetActive(shot.showAccelerationGraph);
             kind.text="현재 화면: 우리 구현\n해설용 해석 운동 모형 · 게임 실측 아님";
             var path=new List<Vector3>();for(int i=0;i<=160;i++){double pt=shot.startTime+(shot.endTime-shot.startTime)*i/160.0;path.Add(Position(MotionMathModel.Sample(shot.parameters,pt).position));}Poly(path,Muted*.45f,.018f);
-            if(shot.beatId.StartsWith("M25-")&&shot.showVelocity&&shot.showAcceleration&&state.velocityDefined&&state.accelerationDefined&&!shot.scalarFunction){
+            if((shot.beatId.StartsWith("M25-")||shot.beatId.StartsWith("M26-"))&&shot.showVelocity&&shot.showAcceleration&&state.velocityDefined&&state.accelerationDefined&&!shot.scalarFunction){
                 AccelerationUnitGuide(at,state.velocity,true);
                 AccelerationUnitGuide(at,state.acceleration,false);
             }else{
@@ -358,9 +358,9 @@ namespace Yamyam.MathMotion {
             foreach(var t in new[]{velocityCallout,accelerationCallout,radiusCallout})t.gameObject.SetActive(false);
             for(int i=0;i<motionGuideCount;i++)lines[i].gameObject.SetActive(false);
         }
-        public void UseIndependentDiagram(){
+        public void UseIndependentDiagram(bool hideConvention=true){
             FocusOnRightDiagram();
-            coordinateLabel.gameObject.SetActive(false);
+            if(hideConvention)coordinateLabel.gameObject.SetActive(false);
             for(int i=motionGuideCount;i<lineCursor;i++)lines[i].gameObject.SetActive(false);
             foreach(var label in new[]{positionTitle,velocityTitle,accelerationTitle,timeStart,timeEnd,timeAxis,values,details,comparisonLegend,graphMark})
                 label.gameObject.SetActive(false);

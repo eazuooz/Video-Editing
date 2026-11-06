@@ -155,7 +155,7 @@ def bind(episode):
     file=p/"planning/part2-picture-plan.json"
     q=stage/(read(file)["preflightQueue"] if file.is_file() else "local-preflight-part2-v1/queue.json")
     previous=read(file) if file.is_file() else {}
-    save(file,dict(**{key:previous[key] for key in ("renderRevision","nativeCueRevisions") if key in previous},
+    save(file,dict(**{key:previous[key] for key in ("renderRevision","nativeCueRevisions","fixedSpeedRadiusComparisons") if key in previous},
                    episode=episode,preflightQueue=q.relative_to(stage).as_posix(),fingerprint=read(q)["fingerprint"],
                    sourceBlocks=len(binding["scenes"]),teachingFigures=changes,additionalTeachingDiagrams=additional,
                    actualGameScenes=[row["id"] for row in binding["scenes"] if row.get("actualGamePart")],

@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime,timezone
 import argparse,errno,hashlib,importlib.util,json,os,shutil,subprocess,tempfile,time,uuid
 import psutil
+from part2.turn_order import earlier_waiting_picture
 R=Path(__file__).resolve().parents[3];LEASE=R/'shared/output/GPU_HANDOFF.json';CREATE=getattr(subprocess,'CREATE_NO_WINDOW',0)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -72,7 +73,11 @@ def main():
    while owned is None:
     if q.get('preservedPrefix') and (Path(q['targetAudioDirectory'])/'narration.wav').is_file():
      s.update(status='prefix-stopped-at-final-audio-boundary',finishedAt=now());save(statefile,s);return
-    authorized();reason=G.idle_reason();s.update(status='waiting',reason=reason,current=job['id'],checkedAt=now());save(statefile,s)
+    authorized()
+    control=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
+    earlier=earlier_waiting_picture(P.name,control)
+    reason=('Waiting for the earlier ready lecture '+earlier) if earlier else G.idle_reason()
+    s.update(status='waiting',reason=reason,current=job['id'],checkedAt=now());save(statefile,s)
     if reason is None:
      candidate=str(uuid.uuid4())
      try:

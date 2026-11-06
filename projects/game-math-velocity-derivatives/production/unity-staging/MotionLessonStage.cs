@@ -73,8 +73,9 @@ namespace Yamyam.MathMotion {
             movement.shot.termExpanded=expanded;movement.shot.secantH=step.secantH;movement.shot.showSecant=step.showSecant;movement.shot.showTangent=step.showTangent;
             movement.Evaluate((time-movement.shot.startTime)/(movement.shot.endTime-movement.shot.startTime));
             movement.SetExplanation(step.formula,step.meaning);
-            if(shot.diagramMode=="circle-values"||shot.diagramMode=="orbital-radius"||shot.beatId=="M26-025")
+            if(shot.beatId=="M26-025")
                 movement.FocusOnRightDiagram();
+            if(shot.beatId.StartsWith("M26-")&&!string.IsNullOrEmpty(shot.diagramMode))movement.UseIndependentDiagram(false);
             if(shot.diagramMode=="flow-accumulation")movement.UseIndependentDiagram();
             Diagram(index,fraction,time);
             if(shot.diagramMode=="flow-accumulation")diagramLabel.rectTransform.anchoredPosition=new Vector2(1100,-754);
@@ -140,6 +141,9 @@ namespace Yamyam.MathMotion {
                 Ring(teal,centre,radius);Path(yellow,centre,p0,p1,centre);var arc=new Vector3[41];for(int i=0;i<arc.Length;i++){double a=delta*i/40;arc[i]=centre+new Vector3((float)Math.Cos(a),(float)Math.Sin(a),-.1f)*radius;}Path(red,arc);
                 var basePoint=new Vector3(6.9f,1.1f,0);var v1=Vector3.up*1.8f;var v2=new Vector3(-(float)Math.Sin(delta),(float)Math.Cos(delta),0)*1.8f;
                 DiagramArrow(teal,basePoint,basePoint+v1);DiagramArrow(yellow,basePoint,basePoint+v2);DiagramArrow(red,basePoint+v1,basePoint+v2);
+                MarkVector("v₁",basePoint+v1,new Vector2(12,-16),teal);
+                MarkVector("v₂",basePoint+v2,new Vector2(-64,12),yellow);
+                MarkVector("Δv",basePoint+(v1+v2)*.5f,new Vector2(-44,-60),red);
                 double chord=4*Math.Sin(delta/2),length=2*delta;
                 diagramLabel.text="r=2, |v|=2, Δt="+delta.ToString("0.000")+"s\n현="+chord.ToString("0.000")+" · 호="+length.ToString("0.000")+"m\n빨강: Δv (같은 출발점에서 비교)";
             }else if(mode=="circle-values"){
@@ -179,6 +183,9 @@ namespace Yamyam.MathMotion {
                 var centre=new Vector3(4.6f,2.4f,0);Ring(teal,centre,1.5f);double angle=movement.shot.parameters.omega*time;var radial=new Vector3((float)Math.Cos(angle),(float)Math.Sin(angle),0);
                 if(mode=="rotation-axis"){
                     var at=centre+radial*1.5f;DiagramArrow(yellow,centre,at);DiagramArrow(teal,at,at+new Vector3(-radial.y,radial.x,0));Ring(red,centre,.2f);Ring(red,centre,.04f);
+                    MarkVector("ω",centre,new Vector2(-47,8),red);
+                    MarkVector("r",(centre+at)*.5f,new Vector2(9,9),yellow);
+                    MarkVector("v",at+new Vector3(-radial.y,radial.x,0),new Vector2(8,-44),teal);
                     diagramLabel.text="축 ω⃗: 화면 밖 ⊙\n노랑 r⃗ · 청록 v=ω⃗×r⃗\n오른손 좌표 약속의 해설 도식";
                 }else{
                     Ring(teal,centre,.75f);for(int k=1;k<=2;k++){var at=centre+radial*.75f*k;Ring(yellow,at);DiagramArrow(k==1?teal:red,at,at+new Vector3(-radial.y,radial.x,0)*.5f*k);}

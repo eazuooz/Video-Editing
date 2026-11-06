@@ -276,9 +276,10 @@ def main():
             print('A newer speech edition owns this lecture. Earlier files are preserved.')
             raise SystemExit(88)
         if args.check_resources and not args.synthesize:
-            ahead=earlier_live_course_recorder(SLUG,authorization)
+            from part2.turn_order import earlier_waiting_picture
+            ahead=earlier_live_course_recorder(SLUG,authorization) or earlier_waiting_picture(SLUG,authorization)
             if ahead:
-                print('An earlier active lecture has the next recording turn:',ahead)
+                print('An earlier active lecture has the next processing turn:',ahead)
                 raise SystemExit(75)
     plan = read(PROJECT / 'planning/production-plan.json')
     if args.synthesize:

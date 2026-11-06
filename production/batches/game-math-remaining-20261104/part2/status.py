@@ -43,6 +43,9 @@ def refresh():
             else: files={}
             state="로컬 일괄 검수 대기" if ready else {"음성":"녹음 대기","음성 생성 또는 GPU 순서 대기":"녹음 진행" if snap(audio/"finite-worker.json").get("status")=="synthesizing" else "녹음 장치 대기"}.get(state,state)
             stage=f"{state} · 음성 {wavecount}/{doc['sceneCount']}문단"
+            correction=snap(p/"production/part2-review/final-picture-correction.json")
+            if not ready and correction.get("renderRevision")==revision:
+                stage="첫 출력 검수 후 화면 보완 · "+stage
             selected_games=[(s["id"],s["actualGamePart"]) for s in read(p/"planning/scene-bindings.json")["scenes"] if s.get("actualGamePart")]
             inserts=sum((p/"production/local/part2-game-inserts"/(sid+("-"+g["insertVersion"] if g.get("insertVersion") else ""))/"receipt.json").is_file() for sid,g in selected_games)
             if inserts:

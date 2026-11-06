@@ -257,7 +257,8 @@ def main():
         # between cues to force canonical print into a small interval.
         for x in local:
             before=x['text']; printed=before
-            for literal,form in sorted(ko_literal_forms.items(),key=lambda pair:-len(pair[0])):
+            display_forms={**ko_literal_forms,**reading.get('koPrintedFormsByScene',{}).get(sid,{})}
+            for literal,form in sorted(display_forms.items(),key=lambda pair:-len(pair[0])):
                 printed=re.sub(r'(?<![가-힣])'+re.escape(literal),lambda _:form,printed)
             if printed!=before:
                 x.update(sourceDisplay=before,text=printed)

@@ -1,6 +1,7 @@
 """Bind a reviewed module sandbox to measured speech. Never launches rendering."""
 from pathlib import Path
 import argparse,hashlib,json,math
+from part2.edition import retain_circle_speed
 R=Path(__file__).resolve().parents[3]
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -35,7 +36,9 @@ assert preview_jobs,'This exact sandbox needs a prepared diagnostic queue'
 factory=read(Path(preview_jobs[0]))['factoryType'];assert factory==factories.get(P.name,factory)
 out=P/'production/local'/a.revision;assert not out.exists(),'Preserve prior media and evidence; select an additive revision'
 picture_plan=P/'planning/part2-picture-plan.json'
-cue_edits=read(picture_plan).get('nativeCueRevisions',{}).get(a.revision,{}) if picture_plan.exists() else {}
+plan=read(picture_plan) if picture_plan.exists() else {}
+cue_edits=plan.get('nativeCueRevisions',{}).get(a.revision,{})
+radius_comparisons=plan.get('fixedSpeedRadiusComparisons',{}).get(a.revision,[])
 jobs=[];cuts=[];pending_files=[]
 for row in t['scenes']:
  sid=row['id'];frames=row['endFrame']-row['startFrame'];assert frames>0
@@ -48,6 +51,8 @@ for row in t['scenes']:
    seconds[int(index)]=round(matches[0]['start']*60-row['startFrame'])/60
   assert all(a<b for a,b in zip(seconds,seconds[1:]))
   shot['stepSeconds']=seconds
+ if sid in radius_comparisons:
+  retain_circle_speed(shot)
  if game:
   assert game['playbackRate']==1 and not game['freezePadding'] and not game['loop']
   handoff=row.get('actualGameEndFrame')

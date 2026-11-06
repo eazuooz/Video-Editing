@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 import argparse, hashlib, importlib.util, json, os, subprocess, time, uuid
 import psutil
+from part2.turn_order import earlier_waiting_picture
 
 R=Path(__file__).resolve().parents[3]
 LEASE=R/'shared/output/GPU_HANDOFF.json'
@@ -40,7 +41,11 @@ def main():
     def wait_idle():
         start=time.monotonic();stable=0
         while True:
-            authorized();reason=G.idle_reason();stable=stable+1 if reason is None else 0
+            authorized()
+            control=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
+            earlier=earlier_waiting_picture(slug,control)
+            reason=('Waiting for the earlier ready lecture '+earlier) if earlier else G.idle_reason()
+            stable=stable+1 if reason is None else 0
             state.update(status='waiting',reason=reason,checkedAt=now());save(statefile,state)
             if stable>=3:return
             if time.monotonic()-start>a.wait_hours*3600:raise RuntimeError('Bounded resource wait ended; other jobs preserved')

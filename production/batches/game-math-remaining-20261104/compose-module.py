@@ -200,6 +200,8 @@ def annotation_ass(cut,source,out):
 
 def prepare(queue,work):
     t=read(queue['wordAlignment']);assert not t['flags'];assert sha(queue['wordAlignment'])==queue['wordAlignmentSha256']
+    printed=module('printed_math',Path(__file__).parent/'part2/caption_symbols.py')
+    count=printed.apply(P,work.parent.name,t['ko'],Path(queue['editDirectory'])/'narration.ko.srt',work/'display.ko.srt')
     audit=read(P/'planning/footage-audit.json');sources={s['id']:s for s in audit['sources']}
     terms=['스키닝','노멀 맵','접선 공간','클립 공간','픽셀 셰이더','정점 셰이더','깊이 버퍼','래스터화','가속도','각속도','접선','제어점','양방향 반사 분포 함수','하프웨이 벡터','표면 법선','라이트 프로브','구면 조화 함수','라이트맵','복사조도','복사휘도','정반사','난반사','환경광','발광','정점','픽셀']
     emphasis={}
@@ -223,6 +225,7 @@ def prepare(queue,work):
         elif PIPELINE_FIGURES and cut['scene'] in PIPELINE_FIGURES.TEACHING_SCENES:
             PIPELINE_FIGURES.render(work/f'vertex-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline)
     record={'createdAt':now(),'queueSha256':sha(work.parent/'queue.json'),'narrationSha256':t['narrationSha256'],'captionLayout':layout,'gameAnnotations':receipts,'addedBackgroundMusic':False,'audioChoice':'Original synchronized game audio retained and ducked; source-specific exceptions must be recorded per source. No added lecture BGM.','humanListening':False,'finalVisualQa':False}
+    record['printedSymbolCues']=count
     save(work/'preflight.json',record);return sources,record
 
 def frequency_guides(file,duration):
@@ -340,7 +343,9 @@ def render(queue,work,sources,receipt,dest):
     clean=dest/(P.name+'.clean.mp4');cap=dest/(P.name+'.captioned.mp4')
     ff(['-i',work/'visuals.mp4','-i',work/'pair-audio.m4a','-map','0:v:0','-map','1:a:0','-c','copy','-map_metadata','-1','-movflags','+faststart',clean],work/'logs/clean.log')
     ff(['-i',clean,'-vf','ass=captions.ko.ass','-map','0:v:0','-map','0:a:0',*encoder(),'-c:a','copy','-map_metadata','-1','-movflags','+faststart',cap],work/'logs/captioned.log',work)
-    for lang in ['ko','en']:shutil.copy2(Path(queue['editDirectory'])/('narration.'+lang+'.srt'),dest/(P.name+'.'+lang+'.srt'))
+    for lang in ['ko','en']:
+        srt=work/'display.ko.srt' if lang=='ko' and receipt.get('printedSymbolCues') else Path(queue['editDirectory'])/('narration.'+lang+'.srt')
+        shutil.copy2(srt,dest/(P.name+'.'+lang+'.srt'))
     for path in [clean,cap]:video_check(path,queue['bodyFrames']+720)
     meta=read(P/'project.json')
     title=html.escape(meta['titles']['ko']+' · '+meta.get('localReviewHeading','로컬 검수본'))

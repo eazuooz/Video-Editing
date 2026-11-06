@@ -1,5 +1,5 @@
 """Create a short source-matched sample queue for a revised Unity lecture."""
-from edition import BATCH, ROOT, read, save
+from edition import BATCH, ROOT, read, save, retain_circle_speed
 from pathlib import Path
 import argparse,re
 
@@ -23,6 +23,10 @@ def build(episode,sample_ids,folder_name=None):
     jobs=[]
     for sid in sample_ids:
         scene=scenes[sid]; shot=dict(scene["shot"],durationSeconds=8)
+        picture=project/"planning/part2-picture-plan.json"
+        current=read(picture) if picture.is_file() else {}
+        if sid in current.get("fixedSpeedRadiusComparisons",{}).get(current.get("renderRevision"),[]):
+            retain_circle_speed(shot)
         for field in scene.get("clockFields",["phaseSeconds","phasePositions"]):
             shot[field]=[]
         shotpath=folder/(sid+".shot.json"); save(shotpath,shot)

@@ -24,6 +24,13 @@ def render_revision(project):
     revision=read(picture).get("renderRevision","render-v2") if picture.is_file() else "render-v2"
     if not re.fullmatch(r"render-v[2-9]\d*|render-v1\d+",revision):raise ValueError(revision)
     return revision
+
+def retain_circle_speed(shot):
+    """Set only angular speed when the last teaching step changes the radius."""
+    assert shot["diagramMode"]=="circle-values" and len(shot["steps"])==3
+    base,fast,wide=[step["motionOverride"]["parameters"] for step in shot["steps"]]
+    assert base["radius"]==fast["radius"] and wide["radius"]>fast["radius"]>0
+    wide["omega"]=fast["omega"]*fast["radius"]/wide["radius"]
 def passages(source):
     rows={}
     for line in source.read_text("utf8").splitlines():
