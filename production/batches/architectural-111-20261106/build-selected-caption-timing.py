@@ -28,12 +28,19 @@ def same_text(a,b):return re.sub(r'\s+','',a)==re.sub(r'\s+','',b)
 class Pending(RuntimeError):pass
 
 def voice_binding(voice,review,narration):
-    if voice.get('topicId')!='07.04' or len(voice.get('sceneWavs',[]))!=14:raise Pending('Exact completed07.04 voice evidence required')
+    scenes=voice.get('identity',{}).get('scenes',[]);mapping=voice.get('paragraphMapping',[])
+    count=len(scenes)
+    if voice.get('topicId')!='07.04' or not count or len(voice.get('sceneWavs',[]))!=count or len(mapping)!=count:
+        raise Pending('Exact completed07.04 selected component identity required')
+    if [s['id']for s in scenes]!=[m['sceneId']for m in mapping]or len({s['id']for s in scenes})!=count:
+        raise Pending('Selected component identity/order differs from current mapping')
+    if any(' '.join(s['lines'])!=m['canonicalText']for s,m in zip(scenes,mapping)):
+        raise Pending('Selected spoken prose differs from current component mapping')
     for key,record in [('aggregateSHA256',voice['aggregateWav']),('timingSHA256',voice['timing'])]:
         if sha(record['path'])!=record['sha256'] or review.get(key)!=record['sha256']:raise Pending('ASR review is not bound to current unchanged voice/timing')
     if review.get('voiceFingerprint')!=voice['fingerprint']:raise Pending('ASR belongs to another synthesis version')
     timing=read(voice['timing']['path']);entries=timing['entries'];position=0;digest_pcm=hashlib.sha256();bounds={}
-    if timing['sample_rate']!=24000 or len(entries)!=14:raise Pending('Canonical voice clock differs')
+    if timing['sample_rate']!=24000 or len(entries)!=count:raise Pending('Canonical voice clock differs')
     for chunk,entry,mapping in zip(voice['sceneWavs'],entries,voice['paragraphMapping']):
         if sha(chunk['path'])!=chunk['sha256']:raise Pending('Selected raw voice chunk changed')
         with wave.open(chunk['path'],'rb') as audio:
@@ -53,7 +60,7 @@ def voice_binding(voice,review,narration):
         if not same_text(' '.join(m['canonicalText'] for m in mappings),narration['narrationKo'][n-1]) or p['sceneIds']!=ids:raise Pending('ASR paragraph coverage/order differs')
         first,last=bounds[ids[0]][0],bounds[ids[-1]][1]
         if (p['startSample'],p['endSample'])!=(first,last) or abs(p['start']-first/24000)>1e-9 or abs(p['end']-last/24000)>1e-9:raise Pending('ASR paragraph clock differs from actual canonical PCM')
-    return dict(voiceFingerprint=voice['fingerprint'],aggregate=voice['aggregateWav'],timing=voice['timing'],rawSelectedTakes=14,canonicalExactConcatVerified=True,automaticSpeechPass=False)
+    return dict(voiceFingerprint=voice['fingerprint'],aggregate=voice['aggregateWav'],timing=voice['timing'],rawSelectedTakes=count,canonicalExactConcatVerified=True,automaticSpeechPass=False)
 
 def verified_asr_review(path):
     """Verify existing immutable summary against all exact raw task caches."""
@@ -169,9 +176,14 @@ def build(narration,clauses,review,diagram):
             begin=whole.index(phrase);finish=begin+len(phrase)
             bound.append(dict(id=item['id'],paragraph=n,exactSpokenAnchorKo=item['exactSpokenAnchorKo'],startFrame=frame(get(begin)),endFrameExclusive=frame(get(finish)),literalAlignment=span(begin,finish),basis='Actual blind-component ASR word alignment, not normalized draft fraction',humanTimingReviewRequired=True))
         paragraph_rows.append(dict(paragraph=n,startFrame=frame(p['start']),endFrameExclusive=frame(p['end']),startSample=p['startSample'],endSample=p['endSample'],sceneIds=p['sceneIds'],recognitionBasis=p['recognitionBasis'],alignment=diagnostic))
+    total_frames=math.ceil(paragraphs[-1]['end']*FPS)
+    # Preserve every raw audio sample. Internal cut clocks use nearest-frame
+    # boundaries; the final visual interval must ceil the nonintegral PCM end.
+    # This is a final visual-frame boundary, not added silence or time warping.
+    paragraph_rows[-1]['endFrameExclusive']=total_frames
     for language,rows in cues.items():
         if any(a['endFrameExclusive']>b['startFrame'] for a,b in zip(rows,rows[1:])):raise Pending(language+' ASR-derived caption cues overlap')
-    return dict(schemaVersion='07-04-selected-caption-timing-v1',topicId='07.04',fps=FPS,totalFrames=math.ceil(paragraphs[-1]['end']*FPS),captions=cues,groups=group_frames,paragraphs=paragraph_rows,diagramCues=bound,automaticSpeechPass=False,actualListening=False,actualFinalPlayback=False,platformActions=[])
+    return dict(schemaVersion='07-04-selected-caption-timing-v1',topicId='07.04',fps=FPS,totalFrames=total_frames,captions=cues,groups=group_frames,paragraphs=paragraph_rows,diagramCues=bound,automaticSpeechPass=False,actualListening=False,actualFinalPlayback=False,platformActions=[])
 
 def srt(cues,lang):
     def stamp(f):

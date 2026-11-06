@@ -21,7 +21,7 @@
   ],
   "narrationInput": {
     "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\narration-draft.json",
-    "sha256": "7301d5c392e0b6a9d6f6d112a5b77889e6b0e451b4795dd63b6577f62fc5fc6c",
+    "sha256": "17d84699c9dcc6985d7c1ce7502941bfd1b9dfcb499061bef2911bbe52667f32",
     "paragraphCount": 7
   },
   "selectedParagraphs": [
@@ -435,7 +435,7 @@
     "alignmentSourcePins": [
       {
         "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\build-selected-caption-timing.py",
-        "sha256": "e5eb4c7fa81f3f36a1860acf903a5399ec4159505e2162e82dc0edcd094ad36d"
+        "sha256": "705f6c3fa3c220b68ea524d24387c9ff399dbbfa9a6dab12a250766051c475fd"
       },
       {
         "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-selected-voice-qa.py",
@@ -443,11 +443,11 @@
       },
       {
         "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\caption-clauses-v1.json",
-        "sha256": "fba1b9883e84ac05edfbe9cb9bc19d8b75ae47834ac61be17cfe6007b8044894"
+        "sha256": "770a723a6d99bf48fff9198bd75ec97afae09ba61342f0a69a41347c2093ecbf"
       }
     ],
-    "actualTimingGate": "Calls pinned root build-selected-caption-timing.py verified_asr_review, voice_binding,build; checks current voiceFingerprint/14take aggregatePCM/timing/summary/rawcaches, exact rebuilt caption-timing/input provenance, whole P2/P7 paragraph bounds and P6 treasure-room entry. No new ASR/model or hearing approval.",
-    "actualCuePlanProducer": "Pinned caption helper --write emits actual-schema p2/p6/p7 cue plans next to verified caption-timing.json; no actual timing/cue plan exists yet while selectedASR waits.",
+    "actualTimingGate": "Calls pinned current caption helper verified_asr_review, voice_binding and build; verifies dynamic exact selected N raw-take identity/order/PCM and seven authored paragraphs against current source/ASR. Exact P2/P7 paragraph bounds and P6 treasure-room entry required; no model or hearing approval.",
+    "actualCuePlanProducer": "Pinned current caption helper --write produces p2/p6/p7 cue plans only after current repaired canonical voice and exact blind ASR exist. Prior v1 timing is not current v2 timing.",
     "independentGateAudit": {
       "reviewer": "level_design_111_scripts_a",
       "auditedPlanSHA256": "60bf1992f66eaf741f7b9c0d08d3d492fb07ee5dd573668e3dbd6969fc85b4e1",
@@ -455,6 +455,12 @@
       "captionHelperSHA256": "e5eb4c7fa81f3f36a1860acf903a5399ec4159505e2162e82dc0edcd094ad36d",
       "verdict": "No remaining critical blocker found in strengthened gate; nonempty/stale-ASR loophole closed.",
       "scope": "Read-only source audit, not execution, visual review, speech/listening approval or model output."
+    },
+    "finalPcmFrameBoundaryCorrection": {
+      "reason": "The last actual PCM sample lies between visual frame boundaries; final paragraph endpoint now ceils total PCM duration soP7MC covers the complete master without inserting silence or dropping samples.",
+      "sourceChange": "Only final visual paragraph endpoint and one CPU fixture; actual narration/native/ASR unchanged.",
+      "cpuFixtures": 10,
+      "checkedAt": "2026-11-07T00:49:14.260562+09:00"
     }
   },
   "renderCueContract": {
@@ -486,7 +492,7 @@
       },
       "voiceFingerprint": "actualsamevoicefingerprint",
       "voicePcmSHA256": "actualsamecanonicalPCMhash",
-      "narrationSHA256": "7301d5c392e0b6a9d6f6d112a5b77889e6b0e451b4795dd63b6577f62fc5fc6c"
+      "narrationSHA256": "17d84699c9dcc6985d7c1ce7502941bfd1b9dfcb499061bef2911bbe52667f32"
     },
     "totalFrames": "actualinteger duration at60fps; no invented frames/draft-seconds launch",
     "cues": "Exactly four ordered IDs. Every localframe MUST equal independently rebuilt actual diagramCue.startFrame minus actual segmentStartGlobalFrame. Self-declared timing flags/authored fractions cannot bypass actual cached ASR proof.",
@@ -497,5 +503,25 @@
     },
     "segmentStartGlobalFrame": "P2/P7 actual paragraph start; P6 actual first treasure-room diagram cue start",
     "segmentEndGlobalFrameExclusive": "actual selected paragraph end"
+  },
+  "semanticVoiceRepairV2": {
+    "sourceNarration": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\narration-draft.json",
+      "sha256": "17d84699c9dcc6985d7c1ce7502941bfd1b9dfcb499061bef2911bbe52667f32"
+    },
+    "captionClauses": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\caption-clauses-v1.json",
+      "sha256": "770a723a6d99bf48fff9198bd75ec97afae09ba61342f0a69a41347c2093ecbf"
+    },
+    "semanticPlan": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\voice-semantic-components-v2.json",
+      "sha256": "69a4b5eb40af9b68650f3b479c48a30904bc036dc17d16290c901ff9edfc0f80"
+    },
+    "reason": "Only the narration source hash and P3 clarity display changed. P2/P6/P7 authored diagram text, geometry and keyframe meanings unchanged; future real ASR clocks must replace old timing.",
+    "newAudioGenerated": false,
+    "actualRenderedForThisRevision": false,
+    "selectedFullComponentCount": 33,
+    "newComponentCount": 32,
+    "exactReuseCandidates": 1
   }
 }

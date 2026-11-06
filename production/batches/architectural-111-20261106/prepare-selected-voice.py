@@ -85,6 +85,24 @@ def components_for(ko,plan,narration_sha):
     if plan is None:return {i:[{'text':t,'reason':'Canonical complete paragraph; no component split requested'}] for i,t in enumerate(ko,1)}
     if plan.get('sourceNarrationSHA256')!=narration_sha:raise Pending('Semantic component plan narration hash is stale')
     result={i:[{'text':t,'reason':'Canonical complete paragraph; no component split requested'}] for i,t in enumerate(ko,1)};seen=set()
+    clause_groups=None
+    policy=plan.get('clauseBoundaryPolicy')
+    if policy is not None:
+        if plan.get('topicId')!='07.04' or policy.get('kind')!='exact-current-caption-group-boundaries-v1':raise Pending('Unknown semantic clause policy')
+        source=policy.get('clauseSource',{});path=Path(source.get('path','')).resolve()
+        expected=(ROOT/'projects/shorts-leveldesign-07-04/caption-clauses-v1.json').resolve()
+        if path!=expected or not path.is_file() or sha(path)!=source.get('sha256'):raise Pending('Current exact authored caption-clause source required')
+        clauses=read(path)
+        if clauses.get('topicId')!='07.04' or clauses.get('sourceNarration',{}).get('sha256')!=narration_sha:raise Pending('Caption-clause narration binding is stale')
+        clause_groups={}
+        for n,text in enumerate(ko,1):
+            rows=[r for r in clauses.get('groups',[]) if r.get('paragraph')==n];position=0
+            if not rows or ' '.join(r['ko'] for r in rows)!=text:raise Pending('Authored caption clauses do not reconstruct canonical prose')
+            for row in rows:
+                span=[position,position+len(row['ko'])]
+                if row.get('koSourceCharRange')!=span:raise Pending('Authored caption-clause character range changed')
+                position=span[1]+1
+            clause_groups[n]=rows
     for row in plan.get('paragraphs',[]):
         n=row.get('paragraph');parts=row.get('components',[])
         if not isinstance(n,int) or n in seen or n not in result or len(parts)<2:raise Pending('Invalid semantic component paragraph')
@@ -96,7 +114,13 @@ def components_for(ko,plan,narration_sha):
             text=item.get('text');reason=item.get('reason','')
             if not isinstance(text,str) or not text or not reason.strip() or text!=text.strip():raise Pending('Each semantic component needs exact text and a reason')
             end=cursor+len(text)
-            if canonical[cursor:end]!=text or (cursor and cursor-1 not in boundary) or end not in boundary:raise Pending('Semantic component bisects a sentence or changes canonical prose')
+            if canonical[cursor:end]!=text:raise Pending('Semantic component changes canonical prose')
+            if clause_groups is None:
+                if (cursor and cursor-1 not in boundary) or end not in boundary:raise Pending('Semantic component bisects a sentence or changes canonical prose')
+            else:
+                rows=[r for r in clause_groups[n] if cursor<=r['koSourceCharRange'][0] and r['koSourceCharRange'][1]<=end]
+                if not rows or rows[0]['koSourceCharRange'][0]!=cursor or rows[-1]['koSourceCharRange'][1]!=end or item.get('captionGroupIds')!=[r['id'] for r in rows] or item.get('sourceCharRange')!=[cursor,end] or ' '.join(r['ko'] for r in rows)!=text:raise Pending('Semantic clause must use exact contiguous authored groups, never a word fragment')
+                if end not in boundary and not item.get('clauseBoundaryReason','').strip():raise Pending('Within-sentence semantic clause requires an explicit teaching/prosody reason')
             cursor=end+1
         if ' '.join(x['text'] for x in parts)!=canonical:raise Pending('Semantic components omit, repeat or change canonical prose')
         result[n]=parts
@@ -157,7 +181,10 @@ def prepare(topic,native_path,native_qa,component_path=None):
     inputs += [dict(path=str(repo(profile[name]['path'])),sha256=profile[name]['sha256']) for name in ['engine','guard']]
     inputs += [dict(path=str(repo(profile['model'])/row['path']),sha256=row['sha256']) for row in profile['modelPins']]
     inputs=list({row['path']:row for row in inputs}.values())
-    if comp:inputs.append(pin(comp))
+    if comp:
+        inputs.append(pin(comp))
+        policy=read(comp).get('clauseBoundaryPolicy')
+        if policy:inputs.append(verify_pin(policy['clauseSource'],slug))
     identity={'protocol':PROTOCOL,'topicId':topic,'scenes':[{'id':s['id'],'lines':s['lines']} for s in script['scenes']],'tts':{k:v for k,v in profile['tts'].items() if k not in ['filenameStem','gpuMinimumFreeMiB','gpuProfileReason']},'modelPins':profile['modelPins'],'referenceSHA256':profile['referenceSHA256'],'referenceTextSHA256':profile['referenceTextSHA256'],'engine':profile['engine'],'guard':profile['guard'],'rawPcmPolicy':profile['rawPcmPolicy']}
     identity_fp=fp(identity)
     preparation_fp=fp({'synthesisIdentity':identity_fp,'inputs':inputs,'script':script,'paragraphMapping':mapping})
