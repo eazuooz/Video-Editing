@@ -8,6 +8,7 @@ from urllib.request import Request, urlopen
 
 from edition import BATCH, ROOT, read, sha
 from status import refresh, store
+from check_review_player import check as check_browser
 
 def inspect(row, ffprobe):
     ep=row["id"]
@@ -60,9 +61,12 @@ def complete():
     with urlopen(hub,timeout=15) as page:
         listing=page.read().decode("utf8")
         assert all(p["url"].split("/output/")[1] in listing for p in packages)
+    browser_results=check_browser()
+    assert [r["episode"] for r in browser_results]==[r["id"] for r in packages]
     now=datetime.now(timezone.utc).isoformat()
     results=dict(status="local-course-ready",checkedAt=now,reviewHub=hub,packages=packages,
                  outputFiles=4*len(packages),totalFrames=sum(p["frames"] for p in packages),
+                 browserPlayback=browser_results,
                  awaitingHumanReview=[p["id"] for p in packages if not p["humanReview"]])
     checkpoint=BATCH/"checkpoint.json";state=read(checkpoint)
     state.update(updatedAt=now,status="local-group-review-ready",currentEpisode=None,localReviewReady=True,
