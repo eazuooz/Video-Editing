@@ -27,6 +27,8 @@ def module(name,path):
 C=module('existing_caption_geometry',R/'projects/buckshot-roulette-reverse-engineering/production/assemble_documentary.py')
 G=module('resource_guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py')
 PIPELINE_FIGURES=module('pipeline_figures',Path(__file__).parent/'part2/pipeline_figures.py') if P.name=='game-math-pipeline-shaders' else None
+VELOCITY_FIGURES=module('velocity_figures',Path(__file__).parent/'part2/velocity_figures.py') if P.name=='game-math-velocity-derivatives' else None
+VELOCITY_ART=module('diagram_art',Path(__file__).parent/'part2/pipeline_figures.py') if VELOCITY_FIGURES else None
 def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
 def save(p,d):Path(p).parent.mkdir(parents=True,exist_ok=True);Path(p).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):
@@ -36,6 +38,33 @@ def sha(p):
     return h.hexdigest()
 def now():return datetime.now(timezone.utc).isoformat()
 def probe(p):return json.loads(subprocess.check_output([str(FF.with_name('ffprobe.exe')),'-v','error','-show_streams','-show_format','-of','json',str(p)],creationflags=CREATE))
+def reuse_visual_only_segment(args,log,cwd,target,signature):
+    work=Path(BA.queue).resolve().parent
+    if target is None or not target.is_relative_to(work/'composite'):return False
+    file=P/'production/part2-review/final-picture-correction.json'
+    if not file.exists():return False
+    proof=read(file)
+    if not proof.get('reuseIdenticalSegments') or proof['renderRevision']!=work.name:return False
+    if target.suffix=='.mp4':
+        if target.parent.name!='segments':return False
+        if target.stem.split('-')[-1] in proof['correctedScenes']:return False
+    elif target.suffix not in {'.wav','.m4a'}:return False
+    old=work.parent/proof['sourceRevision']
+    def earlier(value):return str(value).replace(str(work),str(old))
+    source=Path(earlier(target));prior=Path(earlier(log)).with_suffix('.success.json')
+    if not source.is_file() or not prior.is_file():return False
+    # Same command, sample count and inputs; only the output folder changed.
+    original=read(prior)
+    old_args=[earlier(v) for v in args];previous=hashlib.sha256(json.dumps([old_args,earlier(cwd)],ensure_ascii=False).encode()).hexdigest()
+    if previous!=original['commandSha256'] or original['outputSha256']!=sha(source):return False
+    for value in args:
+        for name in re.findall(r'ass=([\w.-]+\.ass)',value):
+            if sha(Path(cwd)/name)!=sha(Path(earlier(cwd))/name):return False
+    try:os.link(source,target)
+    except OSError:return False
+    save(log.with_suffix('.success.json'),dict(commandSha256=signature,outputSha256=original['outputSha256'],
+         reusedFrom=str(source),previousCommandSha256=previous,finishedAt=now()))
+    return True
 def ff(args,log,cwd=None):
     G.authorized();log=Path(log);log.parent.mkdir(parents=True,exist_ok=True)
     args=list(map(str,args));signature=hashlib.sha256(json.dumps([args,str(cwd)],ensure_ascii=False).encode()).hexdigest()
@@ -46,6 +75,7 @@ def ff(args,log,cwd=None):
         prior=read(receipt)
         assert prior['commandSha256']==signature and prior['outputSha256']==sha(target),'Cached output changed; preserve and use a new revision: '+str(target)
         return
+    if reuse_visual_only_segment(args,log,cwd,target,signature):return
     with log.open('w',encoding='utf-8') as f:subprocess.run([str(FF),'-hide_banner','-nostdin','-n','-threads','2',*map(str,args)],stdout=f,stderr=f,check=True,cwd=cwd,creationflags=CREATE)
     if target is not None:save(receipt,{'commandSha256':signature,'outputSha256':sha(target),'finishedAt':now()})
 def encoder():return ['-c:v','h264_nvenc','-preset','p5','-tune','hq','-rc','vbr','-cq','18','-b:v','0','-g','120','-pix_fmt','yuv420p','-video_track_timescale','90000']
@@ -178,6 +208,8 @@ def prepare(queue,work):
             receipts.append(annotation_ass(cut,s,work/f'game-{i:03}.ass'))
         elif P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
             frequency_guides(work/f'period-{i:03}.ass',cut['frames']/FPS)
+        elif VELOCITY_FIGURES and cut['scene'] in VELOCITY_FIGURES.PURPOSES:
+            VELOCITY_FIGURES.render(work/f'velocity-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline,VELOCITY_ART)
         elif P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
             shot=read(work.parent/'shots/020.json')
             clipping_guides(work/f'clip-plane-{i:03}.ass',cut,shot)
@@ -265,6 +297,8 @@ def render(queue,work,sources,receipt,dest):
             picture_source=Path(cut['file']);vf='setsar=1,fps=60'
             if P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
                 vf+=f',ass=period-{i:03}.ass'
+            if VELOCITY_FIGURES and cut['scene'] in VELOCITY_FIGURES.PURPOSES:
+                vf+=f',ass=velocity-{i:03}.ass'
             if P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
                 vf+=f',ass=clip-plane-{i:03}.ass'
             if PIPELINE_FIGURES and cut['scene'] in PIPELINE_FIGURES.TEACHING_SCENES:
