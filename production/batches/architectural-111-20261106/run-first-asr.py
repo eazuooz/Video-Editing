@@ -1,6 +1,6 @@
 """Finite blind ASR of exact first03.02 PCM. Never synthesizes or edits audio."""
 from __future__ import annotations
-import argparse, difflib, hashlib, importlib.util, json, os, re, subprocess, sys, time, unicodedata, uuid
+import argparse, copy, difflib, hashlib, importlib.util, json, os, re, subprocess, sys, time, unicodedata, uuid
 from pathlib import Path
 import psutil
 from initialize import HERE, ROOT, MEDIA, AUTH_KEY, read, save
@@ -128,7 +128,82 @@ def exact_voice():
     return output,evidence,read(output/'narration.timing.json')
 
 
-def prepare_job():
+def pcm_identity(info):
+    """Exact WAV bytes and decoded integer PCM identity; no audio transformation."""
+    return {key:info[key] for key in ('sha256','pcmSHA256','sampleRate','channels','sampleWidthBytes','frames')}
+
+
+def archived_file(snapshot,archive,relative):
+    # The user/root supplies one exact snapshot receipt. Never search other
+    # projects, archives, jobs or models for a recognition that happens to fit.
+    relative=Path(relative)
+    assert not relative.is_absolute() and '..' not in relative.parts,'Unsafe archived relative path'
+    path=(snapshot/relative).resolve()
+    assert path.is_relative_to(snapshot) and path.is_file(),'Archived file escaped snapshot or is missing'
+    entries=archive['files'];indexed={entry['path']:entry['sha256'] for entry in entries}
+    assert len(indexed)==len(entries),'Duplicate archive manifest paths'
+    key=relative.as_posix()
+    assert key in indexed and voice.sha(path)==indexed[key],f'Archived evidence hash mismatch: {key}'
+    return path
+
+
+def load_reuse_source(job_path,archive_path,new_voice_fingerprint):
+    assert bool(job_path)==bool(archive_path),'Reuse requires both exact job and archive-proof paths'
+    if not job_path:return None
+    path=Path(job_path).resolve();proof=Path(archive_path).resolve()
+    preserve=(voice.VOICE_PARENT/'voice-preserved').resolve();snapshot=proof.parent
+    assert snapshot.parent==preserve and snapshot!=preserve,'Reuse is limited to one selected first-voice snapshot'
+    assert proof.name.startswith('archive-proof-') and proof.suffix=='.json' and proof.is_file(),'Unknown archive receipt'
+    assert path.is_relative_to(snapshot),'ASR job is outside the supplied voice snapshot'
+    archive=read(proof)
+    assert Path(archive['original']).resolve()==voice.OUTPUT.resolve(),'Archive is not selected03.02 voice-v1'
+    assert archive['newFingerprint']==new_voice_fingerprint,'Archive is not the predecessor of this voice version'
+    archived_file(snapshot,archive,path.relative_to(snapshot))
+    old=read(path)
+    assert old.get('protocol')=='architectural111-first-asr-v1' and digest(old['identity'])==old['fingerprint'],'Unknown old ASR identity'
+    assert Path(old['modelPath']).resolve()==MODEL.resolve(),'Archived model location changed'
+    expected_rel=Path('review/independent-asr-v1')/old['fingerprint'][:24]/'job.json'
+    assert path.relative_to(snapshot)==expected_rel,'Old ASR job path does not match its own fingerprint'
+    assert Path(old['output']).resolve()==(voice.OUTPUT/expected_rel.parent).resolve(),'Old ASR output was outside selected voice'
+    assert archive['oldFingerprint']==old['identity']['voiceFingerprint'],'Archive voice fingerprint mismatch'
+    receipt=read(archived_file(snapshot,archive,'voice-inputs.json'))
+    assert receipt['protocol']==voice.PROTOCOL and receipt['fingerprint']==archive['oldFingerprint'],'Archived voice receipt mismatch'
+    assert digest(receipt['identity'])==receipt['fingerprint'],'Archived voice identity changed'
+    timing_path=archived_file(snapshot,archive,'narration.timing.json');timing=read(timing_path)
+    aggregate=archived_file(snapshot,archive,'narration.wav')
+    assert voice.sha(timing_path)==old['identity']['timingSHA256'],'Archived ASR timing changed'
+    assert voice.sha(aggregate)==old['identity']['aggregateSHA256'],'Archived aggregate changed'
+    scenes=receipt['identity']['scenes'];entries=timing['entries']
+    assert [s['id'] for s in scenes]==[f's{i:02}' for i in range(1,7)]
+    assert [e['scene_id'] for e in entries]==[s['id'] for s in scenes]
+    assert [e['text'] for e in entries]==[' '.join(s['lines']) for s in scenes],'Archived expected literals changed'
+    paragraphs=[task for task in old['identity']['tasks'] if task['kind']=='paragraph']
+    assert [task['sceneId'] for task in paragraphs]==[e['scene_id'] for e in entries],'Archived paragraph task set changed'
+    for task,entry in zip(paragraphs,entries):
+        assert task['key']=='paragraph-'+task['sceneId'] and task['expected']==entry['text']
+        assert task['offsetSeconds']==float(entry['start'])
+        assert abs(task['durationSeconds']-(float(entry['end'])-float(entry['start'])))<2/24000
+        expected_audio=(voice.OUTPUT/'chunks'/(task['sceneId']+'-scene.wav')).resolve()
+        assert Path(task['path']).resolve()==expected_audio,'Archived scene path left selected voice'
+    return dict(snapshot=snapshot,archive=archive,job=old,jobPath=path,proofPath=proof,
+        pins=dict(protocol='architectural111-raw-asr-reuse-v1',jobPath=str(path),jobSHA256=voice.sha(path),
+                  archiveProofPath=str(proof),archiveProofSHA256=voice.sha(proof),
+                  oldVoiceFingerprint=old['identity']['voiceFingerprint'],oldAsrFingerprint=old['fingerprint']))
+
+
+def checked_reuse_source(job):
+    pins=job['identity'].get('reuseSource')
+    if not pins:return None
+    source=load_reuse_source(pins['jobPath'],pins['archiveProofPath'],job['identity']['voiceFingerprint'])
+    assert source['pins']==pins,'Explicit reuse provenance changed'
+    old=source['job']['identity'];new=job['identity']
+    for key in ('modelPins','trustedUtilitySHA256','profile'):
+        assert old[key]==new[key],f'Recognizer {key} differs; raw recognition cannot be reused'
+    assert Path(source['job']['modelPath']).resolve()==MODEL.resolve(),'Archived model location changed'
+    return source
+
+
+def prepare_job(reuse_from=None,reuse_archive_proof=None):
     output,evidence,timing=exact_voice()
     model_pins=[dict(path=p.name,sha256=voice.sha(p)) for p in sorted(MODEL.iterdir())
                 if p.is_file() and (p.suffix=='.safetensors' or p.name.endswith('.json') or p.name in ('merges.txt','vocab.json'))]
@@ -136,7 +211,8 @@ def prepare_job():
     tasks=[]
     for entry,chunk in zip(timing['entries'],evidence['sceneWavs']):
         tasks.append(dict(key='paragraph-'+entry['scene_id'],kind='paragraph',sceneId=entry['scene_id'],
-            path=chunk['path'],audioSHA256=chunk['sha256'],offsetSeconds=float(entry['start']),durationSeconds=chunk['durationSeconds'],expected=entry['text']))
+            path=chunk['path'],audioSHA256=chunk['sha256'],pcmIdentity=pcm_identity(chunk),
+            offsetSeconds=float(entry['start']),durationSeconds=chunk['durationSeconds'],expected=entry['text']))
     total=evidence['aggregateWav']['durationSeconds']
     for left,right in zip(timing['entries'],timing['entries'][1:]):
         boundary=float(right['start']);start=max(0,boundary-4);end=min(total,boundary+4)
@@ -147,9 +223,94 @@ def prepare_job():
             expectedContextOnly=dict(previousEnding=' '.join(left['text'].split()[-8:]),nextBeginning=' '.join(right['text'].split()[:8]))))
     identity=dict(voiceFingerprint=evidence['fingerprint'],aggregateSHA256=evidence['aggregateWav']['sha256'],
         timingSHA256=evidence['timing']['sha256'],modelPins=model_pins,trustedUtilitySHA256=voice.sha(TRUSTED),profile=PROFILE,tasks=tasks)
+    source=load_reuse_source(reuse_from,reuse_archive_proof,evidence['fingerprint'])
+    if source:
+        identity['reuseSource']=source['pins']
+        for key in ('modelPins','trustedUtilitySHA256','profile'):
+            assert source['job']['identity'][key]==identity[key],f'Recognizer {key} differs; refuse reuse'
     fp=digest(identity);folder=output/'review/independent-asr-v1'/fp[:24]
     return dict(protocol='architectural111-first-asr-v1',fingerprint=fp,identity=identity,voiceEvidenceSHA256=voice.sha(PROOF),
                 modelPath=str(MODEL),output=str(folder),humanListening=False,pcmModified=False,finalApproval=False)
+
+
+def words_from_raw(raw,task):
+    """Translate unchanged recognizer-relative times into this aggregate timeline."""
+    assert isinstance(raw,dict) and isinstance(raw['text'],str)
+    words=[];flags=[]
+    for chunk in raw.get('chunks',[]):
+        start,end=chunk['timestamp']
+        if start is None or end is None:flags.append('unknown-word-boundary')
+        elif start<0 or end>task['durationSeconds']+.08 or end<start:flags.append('word-timestamp-outside-PCM')
+        words.append(dict(text=chunk['text'],timestamp=[None if start is None else task['offsetSeconds']+float(start),
+                                                     None if end is None else task['offsetSeconds']+float(end)]))
+    return words,sorted(set(flags))
+
+
+def recognition_record(job,task,raw):
+    words,flags=words_from_raw(raw,task)
+    data=dict(fingerprint=job['fingerprint'],task=task,text=raw['text'],rawRecognition=copy.deepcopy(raw),
+        globalWords=words,boundaryFlags=flags,expectedPrompt=None,aliasesApplied=False,humanListening=False,
+        pcmModified=False,device='cuda',recognizer=str(MODEL))
+    if task['kind']=='paragraph':data['comparison']=comparison(task['expected'],raw['text'])
+    else:data['comparison']=dict(expectedContextOnly=task['expectedContextOnly'],recognizedLiteral=raw['text'],automaticSpeechPass=False,
+        warning='Window edges may cut words; review actual paragraph endings/beginnings without trimming PCM.')
+    return data
+
+
+def reusable_paragraph(job,task,source):
+    if task['kind']!='paragraph':return None
+    matches=[old for old in source['job']['identity']['tasks'] if old['key']==task['key'] and old['kind']=='paragraph']
+    assert len(matches)==1,'Archived paragraph key missing or duplicated'
+    old_task=matches[0]
+    if old_task['expected']!=task['expected'] or old_task['audioSHA256']!=task['audioSHA256']:return None
+    assert old_task['sceneId']==task['sceneId']
+    old_wav=archived_file(source['snapshot'],source['archive'],'chunks/'+task['sceneId']+'-scene.wav')
+    old_pcm=pcm_identity(voice.wav_info(old_wav));new_pcm=pcm_identity(voice.wav_info(task['path']))
+    assert old_pcm==new_pcm==task['pcmIdentity'],'Exact scene WAV/PCM identity does not match'
+    assert old_pcm['sha256']==old_task['audioSHA256'] and task['durationSeconds']==old_task['durationSeconds']
+    if 'pcmIdentity' in old_task:assert old_task['pcmIdentity']==old_pcm
+    relative=Path('review/independent-asr-v1')/source['job']['fingerprint'][:24]/(task['key']+'.json')
+    old_path=archived_file(source['snapshot'],source['archive'],relative);data=read(old_path)
+    assert data['fingerprint']==source['job']['fingerprint'] and data['task']==old_task,'Archived ASR task/result mismatch'
+    assert data['expectedPrompt'] is None and data['aliasesApplied'] is False and data['pcmModified'] is False
+    assert data['recognizer']==str(MODEL) and data['device']=='cuda','Archived recognition implementation mismatch'
+    assert data['text']==data['rawRecognition']['text']
+    assert data['comparison']==comparison(old_task['expected'],data['text']),'Archived literal differences changed'
+    old_words,old_flags=words_from_raw(data['rawRecognition'],old_task)
+    assert data['globalWords']==old_words and data['boundaryFlags']==old_flags,'Archived raw/global timestamps differ'
+    receipt=dict(protocol='architectural111-raw-asr-reuse-v1',sourceJobPath=str(source['jobPath']),
+        sourceJobSHA256=source['pins']['jobSHA256'],sourceJobFingerprint=source['job']['fingerprint'],
+        sourceArchiveProofPath=str(source['proofPath']),sourceArchiveProofSHA256=source['pins']['archiveProofSHA256'],
+        sourceResultPath=str(old_path),sourceResultSHA256=voice.sha(old_path),sourceWavPath=str(old_wav),
+        pcmIdentity=old_pcm,expectedLiteralSHA256=digest(task['expected']),rawRecognitionSHA256=digest(data['rawRecognition']),
+        sourceOffsetSeconds=old_task['offsetSeconds'],destinationOffsetSeconds=task['offsetSeconds'],
+        sourceHumanListening=data.get('humanListening'),modelLoadedForThisTask=False,
+        boundaryWindowsReused=False,sourceFilesModified=False)
+    return data,receipt
+
+
+def apply_paragraph_reuse(job):
+    """Read-only old evidence, new cache files only; all join windows stay fresh."""
+    source=checked_reuse_source(job)
+    if not source:return []
+    assert digest(job['identity'])==job['fingerprint'],'New aggregate ASR identity changed'
+    assert Path(job['output']).resolve()==(voice.OUTPUT/'review/independent-asr-v1'/job['fingerprint'][:24]).resolve(),'New cache output escaped selected first voice'
+    reused=[]
+    for task in job['identity']['tasks']:
+        if task['kind']!='paragraph':continue
+        candidate=reusable_paragraph(job,task,source)
+        if candidate is None:continue
+        old,receipt=candidate
+        destination=Path(job['output'])/(task['key']+'.json')
+        data=recognition_record(job,task,old['rawRecognition']);data['reuse']=receipt
+        if destination.exists():
+            existing=read_cache(job,task)
+            # A freshly recognized same-task result is also valid; never overwrite it.
+            if 'reuse' in existing:assert existing==data,'Different reused cache must be preserved'
+        else:save(destination,data)
+        assert voice.sha(receipt['sourceResultPath'])==receipt['sourceResultSHA256'],'Source result was modified'
+        reused.append(task['key'])
+    return reused
 
 
 def read_cache(job,task):
@@ -158,6 +319,13 @@ def read_cache(job,task):
     data=read(p)
     assert data['fingerprint']==job['fingerprint'] and data['task']==task,'Preserve different ASR evidence'
     assert data['expectedPrompt'] is None and not data['aliasesApplied']
+    if 'reuse' in data:
+        source=checked_reuse_source(job);assert source is not None,'Reused cache lacks pinned history'
+        candidate=reusable_paragraph(job,task,source);assert candidate is not None,'Reused paragraph is no longer identical'
+        old,receipt=candidate
+        assert data['reuse']==receipt and data['rawRecognition']==old['rawRecognition'],'Reused raw evidence changed'
+        expected=recognition_record(job,task,old['rawRecognition']);expected['reuse']=receipt
+        assert data==expected,'Reused timeline or literal comparison changed'
     return data
 
 
@@ -190,9 +358,12 @@ def recognize_job(path):
     path=Path(path).resolve();job=read(path)
     assert path.is_relative_to(voice.OUTPUT.resolve()/'review/independent-asr-v1')
     assert digest(job['identity'])==job['fingerprint'] and job['identity']['profile']==PROFILE
+    assert path.name=='job.json' and path.parent==Path(job['output']).resolve()
+    assert path.parent==(voice.OUTPUT/'review/independent-asr-v1'/job['fingerprint'][:24]).resolve()
     output,evidence,_=exact_voice();assert evidence['aggregateWav']['sha256']==job['identity']['aggregateSHA256']
     for pin in job['identity']['modelPins']:assert voice.sha(MODEL/pin['path'])==pin['sha256']
     assert voice.sha(TRUSTED)==job['identity']['trustedUtilitySHA256']
+    apply_paragraph_reuse(job)  # CPU-only proof checks happen before any GPU/model request.
     pending=[t for t in job['identity']['tasks'] if read_cache(job,t) is None]
     if not pending:return
     reason=resource_reason()
@@ -211,17 +382,8 @@ def recognize_job(path):
         else:pcm,sr=sf.read(task['path'],dtype='float32')
         assert pcm.ndim==1
         raw=trusted.recognize(recognizer,pcm,sr)  # No expected text, prompt, prefix or hotwords.
-        words=[];flags=[]
-        for w in raw.get('chunks',[]):
-            start,end=w['timestamp']
-            if start is None or end is None:flags.append('unknown-word-boundary')
-            elif start<0 or end>len(pcm)/sr+.08 or end<start:flags.append('word-timestamp-outside-PCM')
-            words.append(dict(text=w['text'],timestamp=[None if start is None else task['offsetSeconds']+float(start),None if end is None else task['offsetSeconds']+float(end)]))
-        data=dict(fingerprint=job['fingerprint'],task=task,text=raw['text'],rawRecognition=raw,globalWords=words,boundaryFlags=sorted(set(flags)),
-            expectedPrompt=None,aliasesApplied=False,humanListening=False,pcmModified=False,device='cuda',recognizer=str(MODEL))
-        if task['kind']=='paragraph':data['comparison']=comparison(task['expected'],raw['text'])
-        else:data['comparison']=dict(expectedContextOnly=task['expectedContextOnly'],recognizedLiteral=raw['text'],automaticSpeechPass=False,
-                                    warning='Window edges may cut words; review actual paragraph endings/beginnings without trimming PCM.')
+        assert abs(len(pcm)/sr-task['durationSeconds'])<2/sr,'Recognized PCM duration differs from pinned task'
+        data=recognition_record(job,task,raw)
         save(Path(job['output'])/(task['key']+'.json'),data)
         print('Recognized',task['key'],flush=True)
     exact_voice()  # Revalidate the same untouched voice proof after the model job.
@@ -229,11 +391,18 @@ def recognize_job(path):
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--execute',action='store_true');ap.add_argument('--wait-hours',type=float,default=6)
-    ap.add_argument('--recognize',action='store_true');ap.add_argument('--job');ap.add_argument('--resource-decline');args=ap.parse_args()
+    ap.add_argument('--recognize',action='store_true');ap.add_argument('--job');ap.add_argument('--resource-decline')
+    ap.add_argument('--reuse-from',help='Exact job.json in the selected03.02 voice-preserved snapshot (read only)')
+    ap.add_argument('--reuse-archive-proof',help='Exact archive-proof JSON beside that snapshot; no directory search')
+    args=ap.parse_args()
+    assert bool(args.reuse_from)==bool(args.reuse_archive_proof),'Supply both --reuse-from and --reuse-archive-proof'
+    prepare=lambda:prepare_job(args.reuse_from,args.reuse_archive_proof)
     if args.recognize:
-        assert args.job;raise SystemExit(recognize_entry(args.job,args.resource_decline))
+        assert args.job and not args.reuse_from,'Recognizer reads pinned reuse paths from its exact job'
+        raise SystemExit(recognize_entry(args.job,args.resource_decline))
     if not args.execute:
-        try:job=prepare_job();print(json.dumps(dict(ready=True,asrFingerprint=job['fingerprint'],modelLoaded=False)))
+        try:job=prepare();print(json.dumps(dict(ready=True,asrFingerprint=job['fingerprint'],modelLoaded=False,
+            explicitReuseSource=job['identity'].get('reuseSource'))))
         except Pending as e:print(json.dumps(dict(ready=False,reason=str(e),modelLoaded=False)))
         return
     worker=native.SingleWorker(WORKER).acquire();worker.update(stage='asr',stageOwner='architectural111-first-asr-v1',topicId='03.02')
@@ -244,14 +413,16 @@ def main():
         deadline=time.monotonic()+max(0,args.wait_hours)*3600
         while True:
             try:
-                job=prepare_job();folder=Path(job['output']);folder.mkdir(parents=True,exist_ok=True)
+                job=prepare();folder=Path(job['output']);folder.mkdir(parents=True,exist_ok=True)
                 job_path=folder/'job.json'
                 if job_path.exists():assert read(job_path)['identity']==job['identity']
                 else:save(job_path,job)
+                reused=apply_paragraph_reuse(job)
+                state['reusedParagraphTasks']=reused
                 if summary(job):break
                 reason=resource_reason()
                 if reason:raise Pending(reason)
-                assert prepare_job()['fingerprint']==job['fingerprint']
+                assert prepare()['fingerprint']==job['fingerprint']
                 if time.monotonic()>=deadline:raise RuntimeError('Finite ASR wait ended before another model launch; other work preserved')
                 attempt_id=uuid.uuid4().hex[:8]
                 log_path=folder/('recognition-'+attempt_id+'.log');decline_path=folder/('resource-decline-'+attempt_id+'.json');log=log_path.open('ab')
@@ -261,7 +432,7 @@ def main():
                 save(STATE,state)
                 code=child.wait();log.close();log=None
                 accept_child_exit(code,decline_path,job,log_path)
-                assert prepare_job()['fingerprint']==job['fingerprint']
+                assert prepare()['fingerprint']==job['fingerprint']
                 if not summary(job):raise RuntimeError('ASR did not complete every paragraph/boundary window')
                 break
             except Pending as e:

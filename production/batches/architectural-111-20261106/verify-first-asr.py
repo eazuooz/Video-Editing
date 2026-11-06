@@ -1,5 +1,5 @@
 """CPU-only literal-comparison/cache/boundary fixtures; never imports an ASR model."""
-import copy, importlib.util, sys, tempfile, unittest
+import copy, importlib.util, json, shutil, struct, sys, tempfile, unittest, wave
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -63,7 +63,8 @@ class FirstAsrTests(unittest.TestCase):
         total=2728322/24000
         timing={'entries':[dict(scene_id=f's{i:02}',start=(i-1)*18,end=i*18,text=f'문장 {i}') for i in range(1,7)]}
         evidence=dict(fingerprint='voice',aggregateWav=dict(path=str(self.base/'immutable.wav'),sha256='audio',durationSeconds=total,sampleRate=24000),
-            timing=dict(sha256='timing'),sceneWavs=[dict(path=f's{i:02}.wav',sha256=str(i),durationSeconds=18) for i in range(1,7)])
+            timing=dict(sha256='timing'),sceneWavs=[dict(path=f's{i:02}.wav',sha256=str(i),durationSeconds=18,
+                pcmSHA256='pcm'+str(i),sampleRate=24000,channels=1,sampleWidthBytes=2,frames=18*24000) for i in range(1,7)])
         with patch.multiple(asr,MODEL=model,TRUSTED=trusted,PROOF=proof),patch.object(asr,'exact_voice',return_value=(self.base,evidence,timing)):
             job=asr.prepare_job()
         joins=[t for t in job['identity']['tasks'] if t['kind']=='boundary']
@@ -71,6 +72,102 @@ class FirstAsrTests(unittest.TestCase):
         self.assertEqual(s34['beginSample'],50*24000);self.assertEqual(s34['endSample'],58*24000)
         self.assertIsNone(job['identity']['profile']['expectedPrompt']);self.assertIsNone(job['identity']['profile']['aliases'])
         self.assertEqual(evidence['aggregateWav']['durationSeconds'],total)
+
+    def fixture_reuse(self):
+        parent=self.base/'selected03-02';output=parent/'voice-v1';snapshot=parent/'voice-preserved'/'exact-snapshot'
+        (output/'chunks').mkdir(parents=True);(snapshot/'chunks').mkdir(parents=True)
+        texts=[f'게임플레이 메트릭스 원문 {i}' for i in range(1,7)]
+        new_texts=[f'수정된 문단 {i}' if i in (2,3) else texts[i-1] for i in range(1,7)]
+        old_identity={'scenes':[dict(id=f's{i:02}',lines=[text]) for i,text in enumerate(texts,1)]}
+        new_identity={'scenes':[dict(id=f's{i:02}',lines=[text]) for i,text in enumerate(new_texts,1)]}
+        old_fp=asr.digest(old_identity);new_fp=asr.digest(new_identity)
+        asr.save(snapshot/'voice-inputs.json',dict(protocol=asr.voice.PROTOCOL,fingerprint=old_fp,identity=old_identity))
+        def wav(path,count,value):
+            with wave.open(str(path),'wb') as w:
+                w.setnchannels(1);w.setsampwidth(2);w.setframerate(24000);w.writeframes(struct.pack('<h',value)*count)
+        old_tasks=[];new_tasks=[];entries=[];old_pos=0;new_pos=0
+        for i in range(1,7):
+            old=snapshot/'chunks'/f's{i:02}-scene.wav';new=output/'chunks'/old.name
+            wav(old,4800,i)
+            if i in (2,3):wav(new,4800+i*2400,100+i)
+            else:shutil.copyfile(old,new)
+            oi=asr.voice.wav_info(old);ni=asr.voice.wav_info(new)
+            task=dict(key=f'paragraph-s{i:02}',kind='paragraph',sceneId=f's{i:02}',path=str(new),audioSHA256=oi['sha256'],
+                      offsetSeconds=old_pos,durationSeconds=oi['durationSeconds'],expected=texts[i-1])
+            old_tasks.append(task);entries.append(dict(scene_id=f's{i:02}',text=texts[i-1],start=old_pos,end=old_pos+oi['durationSeconds']))
+            old_pos+=oi['durationSeconds']
+            new_tasks.append(dict(task,path=str(new),audioSHA256=ni['sha256'],pcmIdentity=asr.pcm_identity(ni),
+                offsetSeconds=new_pos,durationSeconds=ni['durationSeconds'],expected=new_texts[i-1]))
+            new_pos+=ni['durationSeconds']
+        asr.save(snapshot/'narration.timing.json',dict(entries=entries))
+        wav(snapshot/'narration.wav',28800,0)
+        old_job_identity=dict(voiceFingerprint=old_fp,aggregateSHA256=asr.voice.sha(snapshot/'narration.wav'),
+            timingSHA256=asr.voice.sha(snapshot/'narration.timing.json'),modelPins=[{'path':'model.safetensors','sha256':'pinned-model'}],
+            trustedUtilitySHA256='pinned-trusted-implementation',profile=copy.deepcopy(asr.PROFILE),tasks=old_tasks)
+        old_asr_fp=asr.digest(old_job_identity)
+        relative=Path('review/independent-asr-v1')/old_asr_fp[:24]
+        old_job=dict(protocol='architectural111-first-asr-v1',fingerprint=old_asr_fp,identity=old_job_identity,
+            modelPath=str(asr.MODEL),output=str(output/relative))
+        job_path=snapshot/relative/'job.json';asr.save(job_path,old_job)
+        for task in old_tasks:
+            raw=dict(text='게임플레이 매트릭스 오류 보존',chunks=[dict(text='매트릭스',timestamp=[.02,.10]),dict(text='알수없음',timestamp=[None,.18])])
+            asr.save(job_path.parent/(task['key']+'.json'),asr.recognition_record(old_job,task,raw))
+        files=[dict(path=p.relative_to(snapshot).as_posix(),sha256=asr.voice.sha(p)) for p in sorted(snapshot.rglob('*')) if p.is_file()]
+        proof=snapshot/'archive-proof-explicit.json';asr.save(proof,dict(original=str(output),oldFingerprint=old_fp,newFingerprint=new_fp,files=files))
+        new_job_identity=dict(old_job_identity,voiceFingerprint=new_fp,aggregateSHA256='new-aggregate',timingSHA256='new-timing',tasks=new_tasks)
+        # All joins intentionally remain new, even though a paragraph is unchanged.
+        new_tasks.extend(dict(key=f'join-s{i:02}-s{i+1:02}',kind='boundary',offsetSeconds=i/5,durationSeconds=.2,
+                             expectedContextOnly={'previousEnding':'끝','nextBeginning':'시작'}) for i in range(1,6))
+        with patch.multiple(asr.voice,VOICE_PARENT=parent,OUTPUT=output):
+            source=asr.load_reuse_source(job_path,proof,new_fp)
+        new_job_identity['reuseSource']=source['pins'];fp=asr.digest(new_job_identity)
+        new_job=dict(fingerprint=fp,identity=new_job_identity,output=str(output/'review/independent-asr-v1'/fp[:24]))
+        return parent,output,snapshot,proof,job_path,new_job
+
+    def test_reuse_four_exact_paragraphs_rebases_words_and_preserves_raw_errors(self):
+        parent,output,snapshot,proof,old_path,job=self.fixture_reuse()
+        original={p:asr.voice.sha(p) for p in snapshot.rglob('*') if p.is_file()}
+        with patch.multiple(asr.voice,VOICE_PARENT=parent,OUTPUT=output),patch.object(asr.subprocess,'Popen',side_effect=AssertionError('CPU reuse must not launch model')):
+            reused=asr.apply_paragraph_reuse(job)
+            self.assertEqual(reused,['paragraph-s01','paragraph-s04','paragraph-s05','paragraph-s06'])
+            task=next(t for t in job['identity']['tasks'] if t['key']=='paragraph-s04');new=asr.read_cache(job,task)
+            old=asr.read(old_path.parent/'paragraph-s04.json')
+            self.assertEqual(new['rawRecognition'],old['rawRecognition'])
+            self.assertAlmostEqual(new['globalWords'][0]['timestamp'][0],task['offsetSeconds']+.02)
+            self.assertNotEqual(new['globalWords'],old['globalWords'])
+            self.assertEqual(new['boundaryFlags'],['unknown-word-boundary'])
+            self.assertTrue(new['comparison']['characterDifferences']);self.assertFalse(new['comparison']['automaticSpeechPass'])
+            self.assertFalse(new['humanListening']);self.assertFalse(new['reuse']['modelLoadedForThisTask'])
+            self.assertEqual(len([t for t in job['identity']['tasks'] if t['kind']=='boundary' and asr.read_cache(job,t) is None]),5)
+            self.assertEqual(asr.apply_paragraph_reuse(job),reused)  # Idempotent, no overwrite.
+        self.assertEqual({p:asr.voice.sha(p) for p in snapshot.rglob('*') if p.is_file()},original)
+
+    def test_reuse_rejects_unproven_snapshot_profile_and_tampered_archive(self):
+        parent,output,snapshot,proof,old_path,job=self.fixture_reuse()
+        with patch.multiple(asr.voice,VOICE_PARENT=parent,OUTPUT=output):
+            with self.assertRaises(AssertionError):asr.load_reuse_source(old_path,self.base/'archive-proof-outside.json',job['identity']['voiceFingerprint'])
+            bad=copy.deepcopy(job);bad['identity']['profile']['dtype']='float32'
+            with self.assertRaisesRegex(AssertionError,'profile differs'):asr.apply_paragraph_reuse(bad)
+            old_path.write_bytes(old_path.read_bytes()+b' ')
+            with self.assertRaisesRegex(AssertionError,'hash mismatch'):asr.apply_paragraph_reuse(job)
+
+    def test_reuse_requires_literal_and_complete_pcm_identity(self):
+        parent,output,snapshot,proof,old_path,job=self.fixture_reuse()
+        with patch.multiple(asr.voice,VOICE_PARENT=parent,OUTPUT=output):
+            changed=copy.deepcopy(job);changed['identity']['tasks'][0]['expected']='새 문장'
+            changed['fingerprint']=asr.digest(changed['identity'])
+            changed['output']=str(output/'review/independent-asr-v1'/changed['fingerprint'][:24])
+            self.assertEqual(asr.apply_paragraph_reuse(changed),['paragraph-s04','paragraph-s05','paragraph-s06'])
+            target=Path(job['identity']['tasks'][0]['path']);raw=target.read_bytes();target.write_bytes(raw[:-2]+b'\x7f\x00')
+            with self.assertRaisesRegex(AssertionError,'PCM identity'):asr.apply_paragraph_reuse(job)
+
+    def test_reuse_cache_timestamps_cannot_be_changed_after_rebasing(self):
+        parent,output,snapshot,proof,old_path,job=self.fixture_reuse()
+        with patch.multiple(asr.voice,VOICE_PARENT=parent,OUTPUT=output):
+            asr.apply_paragraph_reuse(job);task=job['identity']['tasks'][3]
+            cache=Path(job['output'])/(task['key']+'.json');data=asr.read(cache)
+            data['globalWords'][0]['timestamp'][0]+=.5;asr.save(cache,data)
+            with self.assertRaisesRegex(AssertionError,'timeline or literal'):asr.read_cache(job,task)
 
     def test_child_resource_race_emits75_receipt_and_parent_retries(self):
         job=self.fixture_job();job_path=self.base/'job.json';asr.save(job_path,job)

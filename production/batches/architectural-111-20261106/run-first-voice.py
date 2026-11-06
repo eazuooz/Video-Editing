@@ -1,6 +1,6 @@
 """Finite voice worker for architectural111 topic03.02 only; Qwen owns its lease."""
 from __future__ import annotations
-import argparse, hashlib, importlib.util, json, os, subprocess, sys, time, uuid, wave
+import argparse, hashlib, importlib.util, json, os, shutil, subprocess, sys, time, uuid, wave
 from pathlib import Path
 import psutil
 from initialize import HERE, ROOT, MEDIA, AUTH_KEY, read, save
@@ -140,14 +140,59 @@ def checked_output_paths():
     return parent,output
 
 
+def reusable_chunks(old,prov,output):
+    """Only proven unchanged speech under exactly the same synthesis conditions."""
+    none=dict(chunks=[],reason='No matching old voice receipt/evidence',evidence=None,evidencePath=None)
+    if not old or old.get('protocol')!=PROTOCOL or not isinstance(old.get('identity'),dict):return none
+    previous=old['identity'];current=prov['identity']
+    encode=lambda x:hashlib.sha256(json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')).hexdigest()
+    if encode(previous)!=old.get('fingerprint'):return none
+    previous_common={k:v for k,v in previous.items() if k!='scenes'}
+    current_common={k:v for k,v in current.items() if k!='scenes'}
+    candidates=[]
+    for path in (MEDIA/'first-voice-evidence.json',HERE/'first-voice-evidence.json'):
+        if not path.exists():continue
+        evidence=read(path)
+        if evidence.get('fingerprint')!=old['fingerprint'] or Path(evidence.get('output','')).resolve()!=output:continue
+        candidates.append((path,evidence))
+    if not candidates:return none
+    source_path,evidence=candidates[0]
+    if any(e.get('sceneWavs')!=evidence.get('sceneWavs') for _,e in candidates[1:]):
+        raise ValueError('Matching old voice proofs disagree; preserve and inspect')
+    base=dict(none,evidence=evidence,evidencePath=str(source_path),evidenceSHA256=sha(source_path))
+    if previous_common!=current_common:return dict(base,reason='Non-scene synthesis identity/profile/model/reference changed')
+    old_scenes=previous.get('scenes',[]);new_scenes=current.get('scenes',[])
+    if [s['id'] for s in old_scenes]!=[s['id'] for s in new_scenes]:return dict(base,reason='Scene ID/order changed')
+    previous_engine=evidence.get('audit',{}).get('engineSHA256')
+    if not previous_engine or previous_engine!=prov.get('audit',{}).get('engineSHA256'):
+        return dict(base,reason='Old/current synthesis-engine source pin is absent or differs')
+    proof_by_path={Path(p['path']).resolve():p for p in evidence.get('sceneWavs',[])}
+    rows=[]
+    for prior,now in zip(old_scenes,new_scenes):
+        if prior!=now:continue
+        sid=now['id'];path=(output/'chunks'/f'{sid}-scene.wav').resolve()
+        assert path.is_relative_to(output),'Reusable scene escaped selected output'
+        pin=proof_by_path.get(path)
+        if pin is None:continue  # No proof is never permission to reuse.
+        actual=wav_info(path)
+        keys=('sha256','pcmSHA256','sampleRate','channels','sampleWidthBytes','frames','durationSeconds')
+        if any(actual[k]!=pin.get(k) for k in keys):raise ValueError('Reusable old chunk does not match its voice evidence: '+sid)
+        rows.append(dict(sceneId=sid,file=path.relative_to(output).as_posix(),originalPath=str(path),sha256=actual['sha256'],pcmSHA256=actual['pcmSHA256'],
+            sampleRate=actual['sampleRate'],frames=actual['frames'],spokenLines=now['lines']))
+    return dict(chunks=rows,reason='Verified unchanged scene text and all non-scene synthesis pins',evidence=evidence,
+        evidencePath=str(source_path),evidenceSHA256=sha(source_path),commonIdentitySHA256=encode(current_common))
+
+
 def prepare_output(prov):
     parent,output=checked_output_paths();receipt=output/'voice-inputs.json'
     try:old=read(receipt) if receipt.exists() else None
     except (OSError,ValueError):old=None
     if not isinstance(old,dict):old=None
     compatible=bool(old and old.get('protocol')==PROTOCOL and old.get('fingerprint')==prov['fingerprint'] and old.get('identity')==prov['identity'])
+    reused=[];reuse_record=None
     if output.exists() and any(output.iterdir()) and not compatible:
         if same_project_children():raise RuntimeError('Do not archive outputs while an existing Qwen child runs')
+        reuse_plan=reusable_chunks(old,prov,output)
         proof=[]
         for p in sorted(output.rglob('*')):
             if p.is_file():
@@ -160,9 +205,32 @@ def prepare_output(prov):
         dest.parent.mkdir(parents=True,exist_ok=True);os.replace(output,dest)
         save(dest/('archive-proof-'+uuid.uuid4().hex+'.json'),dict(original=str(output),preservedAt=time.time(),
              oldFingerprint=(old or {}).get('fingerprint'),newFingerprint=prov['fingerprint'],files=proof))
+        evidence_copy=None
+        if reuse_plan['evidence'] is not None:
+            evidence_copy=dest/('reuse-source-voice-evidence-'+uuid.uuid4().hex[:8]+'.json')
+            save(evidence_copy,reuse_plan['evidence'])
+        if reuse_plan['chunks']:
+            output.mkdir(parents=True,exist_ok=True)
+            for row in reuse_plan['chunks']:
+                source=(dest/row['file']).resolve();target=(output/row['file']).resolve()
+                assert source.is_relative_to(dest) and target.is_relative_to(output) and not target.exists()
+                assert sha(source)==row['sha256'],'Archived reuse source changed before copying'
+                target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+                actual=wav_info(target)
+                if actual['sha256']!=row['sha256'] or actual['pcmSHA256']!=row['pcmSHA256']:
+                    raise ValueError('Copied unchanged chunk failed its WAV/PCM proof')
+                reused.append(dict(**row,sourceArchive=str(dest),preservedPath=str(source),reusedPath=str(target),sourceFingerprint=old['fingerprint']))
+            reuse_record=dict(protocol='architectural111-verified-scene-reuse-v1',oldFingerprint=old['fingerprint'],
+                newFingerprint=prov['fingerprint'],sourceArchive=str(dest),oldVoiceEvidence=str(evidence_copy),
+                oldVoiceEvidenceSHA256=sha(evidence_copy),sourceEvidencePath=reuse_plan['evidencePath'],
+                sourceEvidenceSHA256=reuse_plan['evidenceSHA256'],commonIdentitySHA256=reuse_plan['commonIdentitySHA256'],
+                reusedScenes=reused,aggregateCopied=False,timingCopied=False,srtCopied=False,asrCopied=False,
+                humanListening=False,automaticSpeechPass=False)
+            save(output/'verified-scene-reuse.json',reuse_record)
         old=None
     output.mkdir(parents=True,exist_ok=True)
     record=old or dict(protocol=PROTOCOL,fingerprint=prov['fingerprint'],identity=prov['identity'],createdAt=time.time(),initialAudit=prov['audit'])
+    if reuse_record:record['verifiedSceneReuse']=reuse_record
     record['latestAudit']=prov['audit'];save(receipt,record)
     return output
 
@@ -188,6 +256,11 @@ def verify_voice(prov):
     if receipt.get('protocol')!=PROTOCOL or receipt.get('fingerprint')!=prov['fingerprint'] or receipt.get('identity')!=prov['identity']:
         raise ValueError('Voice receipt does not match spoken/reference/profile pins')
     chunks=[wav_info(output/'chunks'/f'{sid}-scene.wav') for sid in prov['sceneIds']]
+    by_scene=dict(zip(prov['sceneIds'],chunks))
+    for reused in receipt.get('verifiedSceneReuse',{}).get('reusedScenes',[]):
+        actual=by_scene[reused['sceneId']]
+        if any(actual[key]!=reused[key] for key in ('sha256','pcmSHA256','sampleRate','frames')):
+            raise ValueError('Qwen output changed a proven unchanged scene chunk: '+reused['sceneId'])
     aggregate=wav_info(output/'narration.wav');timing=read(output/'narration.timing.json')
     entries=timing['entries']
     if [x['scene_id'] for x in entries]!=prov['sceneIds'] or [x['text'] for x in entries]!=prov['spokenLines']:

@@ -36,7 +36,7 @@ class VoiceTests(unittest.TestCase):
         scenes=scenes or self.scenes
         p=voice.synthesis_identity(scenes,tts or self.tts,self.editing,[dict(path='model.safetensors',sha256='weights')],ref,reftext)
         p.update(sceneIds=[s['id'] for s in scenes],spokenLines=[s['lines'][0] for s in scenes],sceneGapSeconds=0,
-            audit=dict(nativeFingerprint='native-a',nativeQaSHA256='qa-a',manifestSHA256='raw-manifest',scriptSHA256='raw-script'))
+            audit=dict(nativeFingerprint='native-a',nativeQaSHA256='qa-a',manifestSHA256='raw-manifest',scriptSHA256='raw-script',engineSHA256='exact-engine-source'))
         return p
 
     def write_wav(self,path,frames):
@@ -101,6 +101,52 @@ class VoiceTests(unittest.TestCase):
         out=voice.prepare_output(self.prov);chunk=out/'chunks/s01-scene.wav';self.write_wav(chunk,4000)
         old=chunk.read_bytes();voice.prepare_output(self.prov)
         self.assertEqual(chunk.read_bytes(),old);self.assertFalse((voice.VOICE_PARENT/'voice-preserved').exists())
+
+    def test_two_spoken_repairs_copy_only_four_proven_unchanged_chunks(self):
+        out=self.outputs();proof=voice.verify_voice(self.prov);voice.save(voice.MEDIA/'first-voice-evidence.json',proof)
+        before={s:(out/'chunks'/f'{s}-scene.wav').read_bytes() for s in self.prov['sceneIds']}
+        scenes=copy.deepcopy(self.scenes);scenes[1]['lines']=['clearer paragraph two'];scenes[2]['lines']=['clearer paragraph three']
+        changed=self.provenance(scenes=scenes);voice.prepare_output(changed)
+        actual=sorted(p.stem for p in (out/'chunks').glob('*.wav'))
+        self.assertEqual(actual,['s01-scene','s04-scene','s05-scene','s06-scene'])
+        for sid in ('s01','s04','s05','s06'):self.assertEqual((out/'chunks'/f'{sid}-scene.wav').read_bytes(),before[sid])
+        self.assertFalse((out/'narration.wav').exists());self.assertFalse((out/'narration.timing.json').exists())
+        self.assertFalse((out/'narration.srt').exists());self.assertFalse((out/'review').exists())
+        receipt=voice.read(out/'verified-scene-reuse.json')
+        self.assertEqual([r['sceneId'] for r in receipt['reusedScenes']],['s01','s04','s05','s06'])
+        archive=Path(receipt['sourceArchive'])
+        for sid in self.prov['sceneIds']:self.assertEqual((archive/'chunks'/f'{sid}-scene.wav').read_bytes(),before[sid])
+        self.assertFalse(receipt['automaticSpeechPass']);self.assertFalse(receipt['asrCopied'])
+        # The engine must keep those exact four chunks after rebuilding the rest.
+        p=out/'chunks/s04-scene.wav';modified=bytearray(p.read_bytes());modified[-1]^=1;p.write_bytes(modified)
+        with self.assertRaisesRegex(ValueError,'changed a proven unchanged scene chunk'):
+            # Populate only missing newly synthesized chunk fixtures first.
+            for sid in ('s02','s03'):self.write_wav(out/'chunks'/f'{sid}-scene.wav',4000)
+            voice.verify_voice(changed)
+
+    def test_profile_reference_or_model_change_never_reuses_proven_chunks(self):
+        out=self.outputs();proof=voice.verify_voice(self.prov);voice.save(voice.MEDIA/'first-voice-evidence.json',proof)
+        old=voice.read(out/'voice-inputs.json')
+        changed=[self.provenance(tts=dict(self.tts,maxNewTokens=2000)),self.provenance(ref='different-reference')]
+        model=self.provenance();model['identity']['modelPins']=[dict(path='model.safetensors',sha256='new-weights')]
+        changed.append(model)
+        for value in changed:
+            self.assertEqual(voice.reusable_chunks(old,value,out.resolve())['chunks'],[])
+        voice.prepare_output(changed[0])
+        self.assertFalse((out/'chunks').exists());self.assertFalse((out/'verified-scene-reuse.json').exists())
+
+    def test_changed_chunk_hash_stops_reuse_before_archival_or_regeneration(self):
+        out=self.outputs();proof=voice.verify_voice(self.prov);voice.save(voice.MEDIA/'first-voice-evidence.json',proof)
+        p=out/'chunks/s01-scene.wav';changed=bytearray(p.read_bytes());changed[-1]^=1;p.write_bytes(changed)
+        scenes=copy.deepcopy(self.scenes);scenes[1]['lines']=['revised paragraph two']
+        with self.assertRaisesRegex(ValueError,'does not match its voice evidence'):
+            voice.prepare_output(self.provenance(scenes=scenes))
+        self.assertEqual(p.read_bytes(),bytes(changed));self.assertFalse((voice.VOICE_PARENT/'voice-preserved').exists())
+
+    def test_missing_voice_evidence_does_not_reuse_chunks_even_with_compatible_profile(self):
+        out=self.outputs();scenes=copy.deepcopy(self.scenes);scenes[1]['lines']=['revised paragraph two']
+        voice.prepare_output(self.provenance(scenes=scenes))
+        self.assertFalse((out/'chunks').exists());self.assertFalse((out/'verified-scene-reuse.json').exists())
 
     def test_wrong_timing_and_missing_or_truncated_pcm_are_rejected(self):
         out=self.outputs();timing=voice.read(out/'narration.timing.json');timing['entries'][0]['text']='other script'
