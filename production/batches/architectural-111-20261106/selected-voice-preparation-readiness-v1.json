@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "topicId": "07.04",
+  "checkedAt": "2026-11-06T22:31:14.011893+09:00",
+  "status": "CPU-preparation-helper-ready; actual-voice-staging-blocked",
+  "files": [
+    {
+      "path": "production/batches/architectural-111-20261106/prepare-selected-voice.py",
+      "sha256": "a6f3520d64a85f53b7222857d5215a2f1465de2a0f639c0bb5219e9db1fb4d08"
+    },
+    {
+      "path": "production/batches/architectural-111-20261106/verify-selected-voice.py",
+      "sha256": "96b0c00d3feff852364fa20980c5b676c17c9789fe0dc2ff68df4cc508174639"
+    },
+    {
+      "path": "production/batches/architectural-111-20261106/approved-selected-voice-profile-v1.json",
+      "sha256": "241b86cefa19b92b200b2aa435c05ee18b159e5593059454c7904c78e02ed4e5"
+    }
+  ],
+  "currentActualPreflight": {
+    "ready": false,
+    "reason": "Narration is not finalized for TTS",
+    "stagedFiles": [],
+    "modelLoaded": false,
+    "jobLaunched": false
+  },
+  "fixtures": {
+    "passed": 8,
+    "scope": [
+      "False finality flags and unresolved opener rejected",
+      "Placeholders rejected even if both finality flags are true",
+      "Exact contiguous full-sentence component mapping reconstructs canonical prose",
+      "Mid-sentence cuts and stale narration-hash plans rejected",
+      "Unverified rights rejected before file access",
+      "Actual selected-source hash/FHD/view checks",
+      "Native completion/QA hash and actual artifact pins required",
+      "Unready staging rejected"
+    ]
+  },
+  "trustedInterface": {
+    "engine": "qwen3-tts/render_narration.py",
+    "engineSHA256": "cde46536ba7f4050b2677c3d8d12379d447675b353cf7b843441049abd7489dc",
+    "sourceInspected": [
+      "configure_project119–183",
+      "load_jobs194–201",
+      "build_render_items205–225",
+      "assemble_scene_outputs544–619",
+      "CLI622–666"
+    ],
+    "preparationCLI": [
+      "python",
+      "-B",
+      "-X",
+      "utf8",
+      "production/batches/architectural-111-20261106/prepare-selected-voice.py",
+      "--topic",
+      "07.04"
+    ],
+    "stagingOption": "--stage writes only immutable input JSON after every gate passes; never launches TTS",
+    "nativeEvidenceDefault": "projects/shorts-leveldesign-07-04/native-evidence-v1.json",
+    "nativeQaDefault": "projects/shorts-leveldesign-07-04/native-visual-qa-v1.json",
+    "futureQwenCLI": "Approved venv python -u -X utf8 qwen3-tts/render_narration.py --project <selected slug> --manifest <immutable staged repo path> --batch-size 1 --device cuda:0; add --dry-run for trusted manifest validation. Exact argv emitted only by a ready preflight.",
+    "executionByThisTool": false
+  },
+  "synthesisPolicy": {
+    "approvedModelReferencePinsCopiedFromFirstEvidence": true,
+    "currentModelWeightsRehashedInThisBlockedRun": false,
+    "futureReadyPreflightChecks": "Profile checksum, actual engine/guard/reference/tokenizer/model pins, adopted independent FHD/viewed/rights source, actual native capture and sampled375px QA",
+    "renderMode": "scene",
+    "defaultTakeUnit": "one complete canonical paragraph",
+    "optionalComponentUnit": "exact contiguous complete-sentence groups with narration SHA/character mapping, each a distinct scene take; preserve paragraph reconstruction",
+    "speechSpeed": 1,
+    "fades": 0,
+    "automaticTrimming": false,
+    "timeWarp": false,
+    "newModelOrSpeaker": false,
+    "resourceAndSingletonPolicy": "Later caller rechecks existing worker/children and user game/Unity state; trusted engine alone owns cooperative GPU lease."
+  },
+  "protectedFilesNotEdited": [
+    "run-first-voice.py",
+    "narration-draft.json",
+    "scene-plan-draft.json",
+    "07.04 checkpoint and publishing metadata",
+    "all first03.02 inputs/outputs"
+  ],
+  "actualTtsOrGpuActions": []
+}

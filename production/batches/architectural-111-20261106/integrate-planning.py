@@ -201,7 +201,7 @@ def main():
 
 def build_html(batch,rows,plans,cp,*,write_delivery=True):
     esc=html.escape
-    cards=[];selected=cp.get('selectedFirstTopic');current_status={}
+    cards=[];selected=cp.get('currentTopicId',cp.get('selectedFirstTopic'));current_status={}
     for row in rows:
         ident=row['topicId'];e=plans.get(ident);parts=''
         # This renderer may run after production begins. Show the existing
@@ -232,7 +232,7 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
         if row.get('nativeCaptureVerified'):
             stages.append('Unity 캡처 완료 · 표본 화면 확인' if row.get('nativeVisualQa') else 'Unity 캡처 완료 · 화면 검수 전')
         stage=str(row.get('status',''))
-        repair=cp.get('firstS03LevelRepair',{}) if ident==selected else {}
+        repair=cp.get('firstS03LevelRepair',{}) if ident=='03.02' else {}
         if 'S03-only-level-repair-in-progress' in stage or 'S03-only-level-repair-in-progress' in str(repair.get('stage','')):
             stages.append('세 번째 문단 음량 보완 중')
             stages.append('새 음성 대조·최종 편집·전체 청취 전')
@@ -240,6 +240,8 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
             stages.append('로컬 완성본 제작 기록 있음')
         elif row.get('voiceGenerated'):
             stages.append('음성 생성 · 최종 편집·전체 청취 전')
+        elif row.get('nativePreparation'):
+            stages.append('Unity 소스 준비 · 실제 촬영·화면 검수 대기')
         elif row.get('nativeCaptureVerified'):
             stages.append('음성·최종 편집 진행 전')
         else:
@@ -258,7 +260,7 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
     history=(f' 이전 음성 {preserved}개 버전은 보존되어 있습니다.' if preserved else '')
     resource=(' 다른 작업의 GPU 사용이 끝나기를 기다리고 있습니다.'
               if cp.get('currentResourceConstraint') and not cp.get('firstVoiceWorker',{}).get('completed') else '')
-    out+=f'<div class="summary"><p>선택한 주제 <b>{len(rows)}편</b> · 한영 대본 초안 <b>{cp["scriptDraftCount"]}편</b> · Unity 캡처 기록 <b>{native_count}편</b> · 완성 검수본 <b>{complete_count}편</b></p><p>실제 게임 현상 → 작동 원리 → 한 변수 비교 → 실제 게임 확인 순서로 제작합니다.</p><p>첫 편 현재 상태: {esc(first_status)}.{esc(history)}{esc(resource)}</p></div>'
+    out+=f'<div class="summary"><p>선택한 주제 <b>{len(rows)}편</b> · 한영 대본 초안 <b>{cp["scriptDraftCount"]}편</b> · Unity 캡처 기록 <b>{native_count}편</b> · 완성 검수본 <b>{complete_count}편</b></p><p>실제 게임 현상 → 작동 원리 → 한 변수 비교 → 실제 게임 확인 순서로 제작합니다.</p><p>현재 선택 {esc(str(selected))}: {esc(first_status)}.{esc(history)}{esc(resource)}</p></div>'
     player_note=('완성 검수본은 해당 항목에서 재생하거나 검수 모음을 열 수 있습니다. 전체 청취·실시간 재생·사용자 최종 검수 여부는 각 검수 기록에서 확인하세요.'
                  if complete_count>0 else '아직 완성 영상 플레이어가 아닙니다. 실제 완성 MP4가 검증되면 그 파일과 한영 자막을 별도로 연결합니다.')
     out+=f'<p class="note">이 페이지는 제작·대본 현황입니다. {player_note} Google Drive·YouTube 업로드와 공개·예약은 실행하지 않았습니다.</p>'
