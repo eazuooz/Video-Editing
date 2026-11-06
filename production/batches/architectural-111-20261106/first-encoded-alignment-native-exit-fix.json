@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "03-02-encoded-alignment-native-exit-fix-v1",
+  "scope": "One selected03.02 numerical reviewer helper; no production audio, movie, timeline, renderer or collector changes",
+  "failure": {
+    "observed": "Windows fatal exception0xc06d007f at np.dot(template,template); process exits1 before a Python traceback",
+    "libraryCulprit": "The failing entry point is NumPy BLAS dot; the particular delayed-load DLL or missing export was not identified",
+    "numpyVersion": "2.3.3",
+    "scipyVersion": "1.16.2",
+    "pythonVersion": "3.11.13 packaged by Anaconda",
+    "threadsEnvironment": "OMP_NUM_THREADS/MKL_NUM_THREADS/OPENBLAS_NUM_THREADS/NUMEXPR_NUM_THREADS unset; KMP_DUPLICATE_LIB_OK unset",
+    "diagnosticScript": {
+      "path": "C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/shorts-leveldesign-03-02/level-continuity-review/diagnostics-20261106-native-exit/diagnose-alignment.py",
+      "sha256": "d6982415271d1d4da11105d7acf0ee2a5c965f7dbfa6283519b7283043339d9e"
+    },
+    "faultEvidence": {
+      "path": "C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/shorts-leveldesign-03-02/level-continuity-review/diagnostics-20261106-native-exit/fault.log",
+      "sha256": "5586f4f771bfca57fca69ae9d971e109828d9906ccdabab76b6ba1e38acafaaf"
+    }
+  },
+  "preservedInputs": {
+    "mixSHA256": "0b47ad49e5e5c35ca198eaf3f2c649bdf174c100715577be32ba2699739e1721",
+    "captionedSHA256": "0bbedf5239b9a2af7bed27fb5eada1b188150b2c55bb9c1921a7e0ac81755d0e",
+    "cachedDecodedWavSHA256": "4105fba6f39d8ccec6be40439b192e35881d8486549f8ef802153678d2807eb1"
+  },
+  "change": {
+    "beforeHelperSHA256": "817f1ce9cd51bb60a7f9be5d9a039d00c2a147956ef1219cfe6cce6194265cec",
+    "afterHelperSHA256": "545104df16cf26af0c0637faa76750bea1e5b70f424cc13820f13baa8b773544",
+    "expression": "float(np.sum(template*template,dtype=np.float64)) instead of float(np.dot(template,template))",
+    "reason": "Equivalent float64 sum-of-squares energy avoids unnecessary BLAS dispatch",
+    "fftCorrelationUnchanged": true,
+    "anchorPositionsAndSampleClocksUnchanged": true,
+    "comparisonOffsetPolicyUnchanged": true,
+    "audioTrimPaddingOrRepair": false,
+    "unsafeDllOrEnvironmentBypass": false,
+    "oldHelperAndTestsCopies": "C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/shorts-leveldesign-03-02/level-continuity-review/diagnostics-20261106-native-exit/before-*.py"
+  },
+  "boundedActualAnchorProof": {
+    "referenceStartSample": 674151,
+    "referenceSamples": 24000,
+    "searchSamples": 33600,
+    "rate": 48000,
+    "energy": 121.47560966240009,
+    "fftCorrelationResultSamples": 9601,
+    "processExitCode": 0,
+    "evidence": {
+      "path": "C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/shorts-leveldesign-03-02/level-continuity-review/diagnostics-20261106-native-exit/steps-reduction.jsonl",
+      "sha256": "db100ee72cc75ba99ca97581ea3966f53e7cefcd274e0ee5237b328dedc89776"
+    },
+    "newDecodeStarted": false,
+    "fullActualAnalysisPerformed": false
+  },
+  "regression": {
+    "checks": 19,
+    "existingChecksRetained": 18,
+    "newCheck": "48kHz actual-size24k anchors establish the known173-sample offset across6 anchors while np.dot raises if called",
+    "testSHA256": "2cca8247b22e9e7f01ca0bd3308098cd0a7cb8b6a1d8a4c7671fb0a52404fe42",
+    "reportSHA256": "d2c82ea5f1db0ae08eb068b2e56f9fd9d984301fc0c5f1aca9a775b9e85c1477",
+    "allPassed": true,
+    "actualAudioOrMovieChanged": false
+  },
+  "remaining": "Root must rerun full numerical analysis against this unchanged verified decode; no full encoded alignment or human listening pass is claimed here",
+  "humanListening": false,
+  "actualVideoPlayback": false
+}

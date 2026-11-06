@@ -31,6 +31,17 @@ class ReviewTests(unittest.TestCase):
         info=self.video();info['streams'][1]['channels']=1
         with self.assertRaises(AssertionError):review.video_contract(info,[i/60 for i in range(6)],6)
 
+    def test_cat_reaction_midpoints_join_section_samples_only_on_valid_movie_ranges(self):
+        timeline=dict(totalFrames=120,sections=[dict(kind='gameplay',startFrame=0,endFrameExclusive=120)],
+            catCues=[dict(pose='realize',startFrame=90,endFrameExclusive=120,easeInFrames=7,easeOutFrames=9),
+                dict(pose='puzzled',startFrame=0,endFrameExclusive=1)])
+        kinds,samples=review.section_contract(timeline)
+        self.assertEqual(kinds,dict(gameplay=120))
+        self.assertEqual(samples,[0,59,104,119])  # Section midpoint misses the later reaction.
+        for a,b in [(-1,10),(10,10),(20,19),(110,121),(1.5,20),(False,20)]:
+            with self.subTest(start=a,end=b):
+                changed=copy.deepcopy(timeline);changed['catCues']=[dict(startFrame=a,endFrameExclusive=b)]
+                with self.assertRaisesRegex(AssertionError,'Cat reaction range'):review.section_contract(changed)
     def test_same_codec_or_payload_is_insufficient_when_packet_timing_differs(self):
         first=[dict(pts_time='0.000000',dts_time='0.000000',duration_time='.021333',data_hash='SHA256:actual-payload',flags='K_')]
         self.assertTrue(review.same_audio(first,copy.deepcopy(first))['identicalPacketPayloadAndTiming'])

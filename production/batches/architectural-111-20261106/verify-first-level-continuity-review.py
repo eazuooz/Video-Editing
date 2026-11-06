@@ -6,6 +6,7 @@ import math
 import tempfile
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 import numpy as np
 
 HERE=Path(__file__).resolve().parent
@@ -86,6 +87,15 @@ def main():
     tone=np.sin(2*np.pi*200*np.arange(rate*5)/rate)
     assert not m.estimate_alignment(tone,tone,rate)['supported']
     passed('silent or periodic ambiguous alignment is not declared established')
+    # The actual48kHz path uses24k-sample anchors. BLAS initialization can fail
+    # natively in the selected Windows environment, so forbid dot entirely.
+    rate48=48000;reference48=rng.normal(0,.04,(rate48*3,2)).astype(np.float32)
+    shifted48=np.pad(reference48,((173,0),(0,0)))
+    with patch.object(m.np,'dot',side_effect=AssertionError('Alignment must not initialize BLAS dot')):
+        alignment48=m.estimate_alignment(reference48,shifted48,rate48)
+    assert alignment48['supported'] and alignment48['decodedMinusReferenceSamples']==173
+    assert alignment48['audioModified'] is False and len(alignment48['anchors'])==6
+    passed('actual-rate24k-sample alignment anchors use BLAS-free reduction without changing offset or FFT checks')
     with tempfile.TemporaryDirectory(prefix='first-level-continuity-cpu-') as folder:
         mix=Path(folder)/'mix.wav';mix.write_bytes(b'synthetic immutable mix identity')
         record=m.pin(mix);m.verify_pin(record,'fixture mix');mix.write_bytes(b'changed mix')

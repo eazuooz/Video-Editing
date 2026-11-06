@@ -596,7 +596,7 @@ class FrameRouter:
             gameplay=section['kind']=='gameplay',identified_objects=bool(result.evidence.get('annotations')))
         clean=self._purpose_illustration(clean,section.get('illustrationOverlay'))
         if section['kind']!='gameplay' and section['native'].get('holdPolicy') and not section.get('illustrationOverlay'):
-            self.style.text(ImageDraw.Draw(clean),'설명을 위한 정지 화면',(492,1488),30,self.style.tokens['muted'])
+            self.style.text(ImageDraw.Draw(clean),'설명을 위한 정지 화면',(240,1488),30,self.style.tokens['muted'])
         pose=section.get('catPose');alpha=None
         reactions=self.timeline.get('catCues') or section.get('catCues',[])
         for cat in reactions:

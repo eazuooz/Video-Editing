@@ -143,6 +143,10 @@ def section_contract(timeline):
         assert row['kind'] in ('gameplay','native','illustration');counts[row['kind']]=counts.get(row['kind'],0)+b-a
         samples.add((a+b-1)//2);position=b
     assert position==timeline['totalFrames'] and timeline['sections'][0]['kind']=='gameplay'
+    for cue in timeline.get('catCues',[]):
+        a,b=cue['startFrame'],cue['endFrameExclusive']
+        assert type(a) is int and type(b) is int and 0<=a<b<=timeline['totalFrames'],'Cat reaction range escaped the actual movie clock'
+        samples.add((a+b-1)//2)
     assert len(samples)<=100,'Unexpected unbounded sample request'
     return counts,sorted(samples)
 

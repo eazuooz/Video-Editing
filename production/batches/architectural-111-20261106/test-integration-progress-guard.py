@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.dont_write_bytecode=True
 HERE=Path(__file__).resolve().parent
@@ -32,7 +33,8 @@ class ProgressGuard(unittest.TestCase):
         here=root/'production/batches/architectural-111-20261106'
         media=root/'media'
         # Reuse only the exact selected IDs/paths, never live mutable state.
-        rows=copy.deepcopy(integration.read(HERE/'batch.json')['projects'])
+        rows=[{key:row[key] for key in ('topicId','project','slug')}
+              for row in integration.read(HERE/'batch.json')['projects']]
         self.assertEqual(len(rows),111)
         for row in rows:
             row.update(status='source-mapped-script-draft',productionComplete=False,
@@ -134,6 +136,37 @@ class ProgressGuard(unittest.TestCase):
         def mutate(root,here,media,rows,first,voice):
             write(first/'project.json',{'status':'voice-generated-awaiting-render'})
         self.check(mutate,True)
+
+    def test_html_links_only_declared_final_review_and_retains_current_six_ko_en_draft(self):
+        with tempfile.TemporaryDirectory(prefix='yamyam-worklist-html-') as temp:
+            root=Path(temp);here=root/'batch';media=root/'media';here.mkdir();media.mkdir()
+            folder=media/'review & 한글';folder.mkdir()
+            final={key:str(folder/name) for key,name in [('index','index.html'),('captioned','captioned.mp4'),('cover','cover.png')]}
+            for path in final.values():Path(path).write_bytes(b'disposable fixture only')
+            draft=dict(topicId='03.02',narrationKo=[f'현재 한국어 문단 {i}' for i in range(1,7)],
+                paragraphsEn=[f'Current English paragraph {i}' for i in range(1,7)],glossary=[])
+            relative='projects/fixture/narration-draft.json';write(root/relative,draft)
+            row=dict(topicId='03.02',order=1,chapterName='장면',printPages='1',title='검수본',
+                narrationDraft=relative,productionComplete=True,humanApproval=False,localFinalReview=final)
+            cp=dict(selectedFirstTopic='03.02',scriptDraftCount=111,completedLocalReviewCount=1)
+            before=snapshot(root);unchanged=copy.deepcopy((row,cp))
+            with patch.multiple(integration,ROOT=root,HERE=here,MEDIA=media):
+                integration.build_html({},[row],{},cp,write_delivery=False)
+                page=(here/'worklist.html').read_text(encoding='utf8')
+                for key in final:self.assertIn(integration.html.escape(Path(final[key]).resolve().as_uri(),quote=True),page)
+                self.assertIn('<video controls preload="none"',page)
+                self.assertIn('대본 초안 · 한영 6문단',page)
+                for paragraph in draft['narrationKo']+draft['paragraphsEn']:self.assertIn(paragraph,page)
+                self.assertNotIn('아직 완성 영상 플레이어가 아닙니다.',page)
+                self.assertFalse((media/'delivery').exists())
+                self.assertEqual(unchanged,(row,cp))
+                after=snapshot(root);after.pop('batch/worklist.html')
+                self.assertEqual(before,after)
+                pending=copy.deepcopy(row);pending.pop('localFinalReview');pending['productionComplete']=False
+                integration.build_html({},[pending],{},dict(cp,completedLocalReviewCount=0),write_delivery=False)
+                page=(here/'worklist.html').read_text(encoding='utf8')
+                self.assertNotIn('<video ',page)
+                self.assertIn('아직 완성 영상 플레이어가 아닙니다.',page)
 
 
 if __name__=='__main__':

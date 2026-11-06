@@ -139,7 +139,10 @@ def estimate_alignment(reference,decoded,rate):
         start=max(lag,min(round(len(a)*fraction),len(a)-size-lag));template=a[start:start+size]
         lo=max(0,start-lag);hi=min(len(b),start+size+lag);search=b[lo:hi]
         if len(search)<size:continue
-        template=template-template.mean();energy=float(np.dot(template,template))
+        # A scalar sum of squares is sufficient here. Avoid BLAS dispatch: the
+        # selected Windows NumPy build can abort natively on np.dot for24k
+        # anchors before Python can report an exception. FFT/cadence stay exact.
+        template=template-template.mean();energy=float(np.sum(template*template,dtype=np.float64))
         if energy<1e-12:continue
         dot=correlate(search,template,mode='valid',method='fft')
         sums=np.concatenate(([0.],np.cumsum(search)));squares=np.concatenate(([0.],np.cumsum(search*search)))
