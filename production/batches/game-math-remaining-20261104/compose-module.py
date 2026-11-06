@@ -357,10 +357,32 @@ def render(queue,work,sources,receipt,dest):
         from runpy import run_path
         run_path(str(Path(__file__).parent/'part2/player.py'))['render'](dest,queue)
     save(work/'progress.json',{'status':'encoded-internal-QA-pending','output':str(dest),'files':[{'path':str(p),'sha256':sha(p)} for p in dest.glob('*')],'originalPcmUnchanged':sha(voice)==receipt['narrationSha256'],'humanReview':False,'finalReviewReady':False,'finishedAt':now()})
+def composition_work(queue_path):
+    work = queue_path.parent / 'composite'
+    if work.is_dir():
+        return work
+    # All published review paths stay on the project drive. Only new local
+    # intermediates may use the user's other volume when the project drive fills.
+    gib = 2 ** 30
+    alternate = Path(os.environ.get('LOCALAPPDATA', str(R)))
+    use_scratch = (os.name == 'nt' and (P/'planning/part2-delivery-edition.json').is_file()
+                   and alternate.drive.lower() != work.drive.lower()
+                   and shutil.disk_usage(work.parent).free < 36 * gib
+                   and shutil.disk_usage(alternate).free > 64 * gib)
+    if use_scratch:
+        from _winapi import CreateJunction
+        workspace_key = hashlib.sha256(str(R).encode()).hexdigest()[:12]
+        scratch = alternate / 'YamyamCoding' / 'VideoEditingScratch' / workspace_key / P.name / work.parent.name / 'composite'
+        scratch.mkdir(parents=True, exist_ok=True)
+        CreateJunction(str(scratch), str(work))
+    else:
+        work.mkdir(exist_ok=True)
+    return work
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--render',action='store_true');ap.add_argument('--wait-hours',type=float,default=0);a=ap.parse_args()
     q=Path(a.queue).resolve();assert q.is_relative_to(P/'production/local');G.authorized();queue=read(q)
-    work=q.parent/'composite';work.mkdir(exist_ok=True);sources,receipt=prepare(queue,work)
+    work=composition_work(q);sources,receipt=prepare(queue,work)
     if not a.render:print(json.dumps({'prepared':True,'cuts':len(queue['cuts']),'rendered':False}));return
     worker=work/'worker.json'
     if worker.exists():

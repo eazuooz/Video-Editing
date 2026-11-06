@@ -84,6 +84,7 @@ def normalize_owned(s,owners):
     # is not an alias for Besiege. Keep raw evidence and display spelling intact.
     for pattern,name in [
         (r'beam\s*ng\s*[.]?\s*drive','비이엠엔지드라이브'),
+        (r'bemng\s*드라이브','비이엠엔지드라이브'),
         (r'besiege','비시지'),(r'riders\s+republic','라이더스리퍼블릭'),
         (r'forza\s+horizon\s*(?:5|five)','포르자호라이즌파이브'),
         (r'super\s+mario\s+odyssey','슈퍼마리오오디세이'),
@@ -93,6 +94,9 @@ def normalize_owned(s,owners):
     replace(r'포르자\s*호라이즌\s*5(?!\d)','포르자호라이즌파이브')
     replace(r'슈퍼\s*마리오\s*메이커\s*2(?!\d)','슈퍼마리오메이커투')
     for symbol,pronunciation in [('θ','세타'),('ω','오메가'),('π','파이')]:replace(symbol,pronunciation)
+    if args.project=='game-math-forces-friction':
+        replace(r'(?<![a-z])mg\s*sin(?=세타)','엠지사인')
+        replace(r'(?<![a-z])mg\s*cos(?=세타)','엠지코사인')
     if args.project=='game-math-velocity-derivatives':
         replace(r'(?<![a-z])minus(?![a-z])','마이너스')
         replace(r'(?<![a-z])([xyz])(?=(?:sin|cos|tan)[xyz](?![a-z]))',lambda m:m.group(1)+' ')
