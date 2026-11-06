@@ -34,10 +34,20 @@ for q in S.glob('local-preflight-*/queue.json'):
 assert preview_jobs,'This exact sandbox needs a prepared diagnostic queue'
 factory=read(Path(preview_jobs[0]))['factoryType'];assert factory==factories.get(P.name,factory)
 out=P/'production/local'/a.revision;assert not out.exists(),'Preserve prior media and evidence; select an additive revision'
+picture_plan=P/'planning/part2-picture-plan.json'
+cue_edits=read(picture_plan).get('nativeCueRevisions',{}).get(a.revision,{}) if picture_plan.exists() else {}
 jobs=[];cuts=[];pending_files=[]
 for row in t['scenes']:
  sid=row['id'];frames=row['endFrame']-row['startFrame'];assert frames>0
  shot=dict(row['shot'],durationSeconds=frames/60);game=row.get('actualGamePart');gameframes=0;game_start=row.get('actualGameStartFrame',0)
+ if sid in cue_edits:
+  seconds=list(shot['stepSeconds'])
+  for index,phrase in cue_edits[sid].items():
+   matches=[c for c in t['ko'] if c['scene']==sid and c['spoken'].startswith(phrase)]
+   assert len(matches)==1 and 0<int(index)<len(seconds)-1,(sid,phrase)
+   seconds[int(index)]=round(matches[0]['start']*60-row['startFrame'])/60
+  assert all(a<b for a,b in zip(seconds,seconds[1:]))
+  shot['stepSeconds']=seconds
  if game:
   assert game['playbackRate']==1 and not game['freezePadding'] and not game['loop']
   handoff=row.get('actualGameEndFrame')

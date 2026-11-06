@@ -47,11 +47,12 @@ namespace Yamyam.MathMotion {
         readonly List<LineRenderer> lines=new List<LineRenderer>();
         int lineCursor,motionGuideCount;
         float motionFitScale=1;
+        double maxVectorSpeed,maxVectorAcceleration;
         Vector3 motionFitOffset;
         Text term,kind,values,details,coordinateLabel,positionTitle,velocityTitle,accelerationTitle,velocityCallout,accelerationCallout,radiusCallout;
         Text timeStart,timeEnd,timeAxis;
         Text formulaBoard,formulaMeaning,comparisonLegend;
-        Text hareName,tortoiseName,secantStart,secantFinish,graphMark;
+        Text hareName,tortoiseName,secantStart,secantFinish,graphMark,triangleBase;
         readonly List<Text> graphRangeLabels=new List<Text>();
         // All graph sizes derive from the fixed 1080p camera, with room for
         // range values, units and the fixed caption below the three plots.
@@ -111,6 +112,7 @@ namespace Yamyam.MathMotion {
             radiusCallout=Label("RadiusArrowLabel",new Rect(0,0,350,48),36,Yellow);
             graphMark=Label("PointOnGraph",new Rect(0,0,330,54),42,Yellow);
             graphMark.gameObject.SetActive(false);
+            if(shot.beatId=="M25-009")triangleBase=Label("TriangleBase",new Rect(0,0,100,50),42,Yellow);
             if(shot.subjectKind=="hare") {
                 hareName=Label("HareLabel",new Rect(0,0,130,46),36,Yellow);
                 if(comparisonAnimal)tortoiseName=Label("TortoiseLabel",new Rect(0,0,140,46),36,Teal);
@@ -139,6 +141,8 @@ namespace Yamyam.MathMotion {
             foreach(var model in models)for(int i=0;i<=160;i++){
                 double t=model.startTime+(model.endTime-model.startTime)*i/160.0;
                 var state=MotionMathModel.Sample(model.parameters,t);
+                if(state.velocityDefined)maxVectorSpeed=Math.Max(maxVectorSpeed,state.velocity.Length);
+                if(state.accelerationDefined)maxVectorAcceleration=Math.Max(maxVectorAcceleration,state.acceleration.Length);
                 var at=model.worldOrigin+RawVector(model,state.position)*model.worldUnitsPerModelUnit;
                 var points=new List<Vector3>{at};
                 if(model.showVelocity&&state.velocityDefined)points.Add(at+RawVector(model,state.velocity)*model.velocityArrowScale);
@@ -190,6 +194,9 @@ namespace Yamyam.MathMotion {
             Vector3 dir=RawVector(shot,value);
             double limit=isVelocity?Math.Max(Math.Abs(shot.velocityMin),Math.Abs(shot.velocityMax))
                                    :Math.Max(Math.Abs(shot.accelerationMin),Math.Abs(shot.accelerationMax));
+            if(shot.beatId!="M25-002"&&shot.beatId!="M25-012"&&shot.beatId!="M25-013")
+                limit=isVelocity?maxVectorSpeed:maxVectorAcceleration;
+            limit=Math.Max(limit,1e-8);
             float extent=shot.graphY?100:134;
             Vector2 tip=start+new Vector2(dir.x,-dir.y)*extent/(float)limit;
             Color color=isVelocity?Teal:Red;
@@ -258,7 +265,7 @@ namespace Yamyam.MathMotion {
             velocityTitle.gameObject.SetActive(shot.showVelocityGraph);accelerationTitle.gameObject.SetActive(shot.showAccelerationGraph);
             kind.text="현재 화면: 우리 구현\n해설용 해석 운동 모형 · 게임 실측 아님";
             var path=new List<Vector3>();for(int i=0;i<=160;i++){double pt=shot.startTime+(shot.endTime-shot.startTime)*i/160.0;path.Add(Position(MotionMathModel.Sample(shot.parameters,pt).position));}Poly(path,Muted*.45f,.018f);
-            if(shot.beatId=="M25-002"||shot.beatId=="M25-012"||shot.beatId=="M25-013"){
+            if(shot.beatId.StartsWith("M25-")&&shot.showVelocity&&shot.showAcceleration&&state.velocityDefined&&state.accelerationDefined&&!shot.scalarFunction){
                 AccelerationUnitGuide(at,state.velocity,true);
                 AccelerationUnitGuide(at,state.acceleration,false);
             }else{
@@ -316,6 +323,16 @@ namespace Yamyam.MathMotion {
             for(int i=lineCursor;i<lines.Count;i++)lines[i].gameObject.SetActive(false);
         }
         void GraphLandmark(double currentTime){
+            if(triangleBase){
+                var v=MotionMathModel.Sample(shot.parameters,currentTime).velocity.y;
+                var tip=Plot(currentTime,v,shot.velocityMin,shot.velocityMax,VelocityBase);
+                var foot=Plot(currentTime,0,shot.velocityMin,shot.velocityMax,VelocityBase);
+                Poly(new[]{foot,tip},Teal,.042f);
+                graphMark.gameObject.SetActive(true);
+                PlaceDiagramText(graphMark,tip,"at",new Vector2(-55,-3));
+                PlaceDiagramText(triangleBase,foot,"t",new Vector2(4,-5));
+                return;
+            }
             bool floor=shot.beatId=="M25-012"||shot.beatId=="M25-013";
             bool apex=shot.beatId=="M25-023";
             bool tangent=shot.beatId=="M26-025";
@@ -341,6 +358,14 @@ namespace Yamyam.MathMotion {
             foreach(var t in new[]{velocityCallout,accelerationCallout,radiusCallout})t.gameObject.SetActive(false);
             for(int i=0;i<motionGuideCount;i++)lines[i].gameObject.SetActive(false);
         }
+        public void UseIndependentDiagram(){
+            FocusOnRightDiagram();
+            coordinateLabel.gameObject.SetActive(false);
+            for(int i=motionGuideCount;i<lineCursor;i++)lines[i].gameObject.SetActive(false);
+            foreach(var label in new[]{positionTitle,velocityTitle,accelerationTitle,timeStart,timeEnd,timeAxis,values,details,comparisonLegend,graphMark})
+                label.gameObject.SetActive(false);
+            foreach(var label in graphRangeLabels)label.gameObject.SetActive(false);
+        }
         public void SetExplanation(string formula,string meaning){
             formulaBoard.text=formula??"";formulaMeaning.text=meaning??"";
             bool board=!string.IsNullOrEmpty(formula);formulaBoard.gameObject.SetActive(board);formulaMeaning.gameObject.SetActive(!string.IsNullOrEmpty(meaning));
@@ -359,7 +384,8 @@ namespace Yamyam.MathMotion {
         void RiemannOverlay(double currentTime) {
             if(shot.riemannFromModel){
                 if(shot.riemannCount<1||shot.riemannCount>128||shot.riemannSample<0||shot.riemannSample>1)throw new InvalidOperationException("Invalid displayed rectangle count or sample fraction.");
-                double upper=shot.riemannMovingEnd?currentTime:shot.endTime;
+                bool growingTriangle=shot.beatId=="M25-009";
+                double upper=shot.riemannMovingEnd||growingTriangle?currentTime:shot.endTime;
                 if(upper<=shot.startTime){details.text="아직 쌓인 넓이 = 0";return;}
                 double stepWidth=(upper-shot.startTime)/shot.riemannCount;
                 for(int i=0;i<shot.riemannCount;i++){

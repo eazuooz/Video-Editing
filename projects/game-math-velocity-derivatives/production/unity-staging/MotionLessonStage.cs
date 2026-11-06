@@ -75,7 +75,9 @@ namespace Yamyam.MathMotion {
             movement.SetExplanation(step.formula,step.meaning);
             if(shot.diagramMode=="circle-values"||shot.diagramMode=="orbital-radius"||shot.beatId=="M26-025")
                 movement.FocusOnRightDiagram();
+            if(shot.diagramMode=="flow-accumulation")movement.UseIndependentDiagram();
             Diagram(index,fraction,time);
+            if(shot.diagramMode=="flow-accumulation")diagramLabel.rectTransform.anchoredPosition=new Vector2(1100,-754);
             if(!string.IsNullOrEmpty(shot.guideCaption) && !string.IsNullOrEmpty(shot.diagramMode))
                 diagramLabel.text=shot.guideCaption;
         }

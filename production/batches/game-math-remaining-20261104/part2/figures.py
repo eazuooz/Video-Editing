@@ -120,12 +120,14 @@ def bind(episode):
     save(bindingfile,binding)
     plan["sceneBindingsSha256"]=sha(bindingfile)
     for sid,edit in changes.items():plan["learningSteps"][int(sid)]["screenIntent"]=edit["figure"]
-    additional={}
+    additional={};supplement={}
     if episode=="M23":
-        from pipeline_figures import PURPOSES
-        for sid,purpose in PURPOSES.items():
-            additional[sid]=dict(purpose=purpose,figure="Measured-speech diagram composited onto the original Unity capture")
-            plan["learningSteps"][int(sid)]["screenIntent"]=purpose
+        from pipeline_figures import PURPOSES as supplement
+    elif episode=="M24":
+        from velocity_figures import PURPOSES as supplement
+    for sid,purpose in supplement.items():
+        additional[sid]=dict(purpose=purpose,figure="Measured-speech diagram composited onto the original Unity capture")
+        plan["learningSteps"][int(sid)]["screenIntent"]=purpose
     save(planfile,plan)
     display=p/"planning/caption-reading-adjustments.json"
     adjustments=read(display) if display.exists() else {"groups":[]}
@@ -153,7 +155,7 @@ def bind(episode):
     file=p/"planning/part2-picture-plan.json"
     q=stage/(read(file)["preflightQueue"] if file.is_file() else "local-preflight-part2-v1/queue.json")
     previous=read(file) if file.is_file() else {}
-    save(file,dict(**({"renderRevision":previous["renderRevision"]} if "renderRevision" in previous else {}),
+    save(file,dict(**{key:previous[key] for key in ("renderRevision","nativeCueRevisions") if key in previous},
                    episode=episode,preflightQueue=q.relative_to(stage).as_posix(),fingerprint=read(q)["fingerprint"],
                    sourceBlocks=len(binding["scenes"]),teachingFigures=changes,additionalTeachingDiagrams=additional,
                    actualGameScenes=[row["id"] for row in binding["scenes"] if row.get("actualGamePart")],

@@ -44,12 +44,19 @@ def reuse_visual_only_segment(args,log,cwd,target,signature):
     file=P/'production/part2-review/final-picture-correction.json'
     if not file.exists():return False
     proof=read(file)
-    if not proof.get('reuseIdenticalSegments') or proof['renderRevision']!=work.name:return False
+    if proof.get('renderRevision')!=work.name:return False
+    if not (proof.get('reuseIdenticalSegments') or proof.get('reuseAudioOnly')):return False
     if target.suffix=='.mp4':
+        if not proof.get('reuseIdenticalSegments'):return False
         if target.parent.name!='segments':return False
         if target.stem.split('-')[-1] in proof['correctedScenes']:return False
     elif target.suffix not in {'.wav','.m4a'}:return False
     old=work.parent/proof['sourceRevision']
+    if proof.get('reuseAudioOnly'):
+        previous_queue=read(old/'queue.json')
+        for key in ('wordAlignmentSha256','bodyFrames','audioDirectory'):
+            if previous_queue[key]!=QB[key]:return False
+        if [c for c in previous_queue['cuts'] if c['kind']=='actual-gameplay']!=[c for c in QB['cuts'] if c['kind']=='actual-gameplay']:return False
     def earlier(value):return str(value).replace(str(work),str(old))
     source=Path(earlier(target));prior=Path(earlier(log)).with_suffix('.success.json')
     if not source.is_file() or not prior.is_file():return False
