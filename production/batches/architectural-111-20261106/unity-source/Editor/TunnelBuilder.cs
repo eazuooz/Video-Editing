@@ -122,14 +122,16 @@ namespace Yamyam.Architectural111.Editor {
             var requested=modes.Split(',');
             foreach(var mode in requested)if(mode!="narrow"&&mode!="wide")throw new ArgumentException("Unknown experiment mode");
             Directory.CreateDirectory(output);BuildScenes();
-            var target=new RenderTexture(1920,1080,24);target.antiAliasing=2;target.Create();
-            var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);
             foreach(var name in requested) {
                 float width=name=="narrow"?2.5f:3.5f;
                 string dir=Path.Combine(output,name);
                 if(Directory.Exists(dir)&&Directory.GetFiles(dir,"*",SearchOption.AllDirectories).Length>0)
                     throw new InvalidOperationException("Preserve existing mode output; the driver must choose an empty mode directory");
                 var rig=Build(width);Directory.CreateDirectory(dir);
+                // NewScene can unload transient textures. Allocate capture buffers
+                // AFTER building each scene and release them before the next one.
+                var target=new RenderTexture(1920,1080,24);target.antiAliasing=2;target.Create();
+                var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);
                 var trace=new StringBuilder("frame,width,sideClearance,playerDiameter,commandX,commandZ,playerX,playerZ,travelled,blocked\n");
                 for(int frame=0;frame<270;frame++) {
                     rig.Step(1f/60f);Physics.SyncTransforms();
@@ -145,6 +147,8 @@ namespace Yamyam.Architectural111.Editor {
                 string receipt=Path.Combine(dir,"mode-complete.json");
                 File.WriteAllText(receipt+".tmp",JsonUtility.ToJson(new ModeReceipt{fingerprint=fingerprint,mode=name},true));
                 File.Move(receipt+".tmp",receipt);
+                rig.observer.targetTexture=null;rig.playerView.targetTexture=null;RenderTexture.active=null;
+                target.Release();UnityEngine.Object.DestroyImmediate(target);UnityEngine.Object.DestroyImmediate(tex);
             }
             bool both=true;
             foreach(var mode in new[]{"narrow","wide"}) {
