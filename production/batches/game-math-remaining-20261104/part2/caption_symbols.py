@@ -6,8 +6,9 @@ def apply(project,revision,rows,source_srt,destination):
     if not plan.exists():return 0
     data=json.loads(plan.read_text("utf-8-sig"))
     if revision not in data.get("renderRevisions",[data["renderRevision"]]):return 0
-    changes={(r["scene"],r["original"]):r["caption"] for r in data["edits"]}
-    assert len(changes)==len(data["edits"])
+    edits=[r for r in data["edits"] if revision in r.get("revisions",[revision])]
+    changes={(r["scene"],r["original"]):r["caption"] for r in edits}
+    assert len(changes)==len(edits)
     blocks=source_srt.read_text("utf-8-sig").strip().split("\n\n")
     assert len(blocks)==len(rows)
     applied=set()

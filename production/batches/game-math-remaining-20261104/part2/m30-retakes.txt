@@ -1,0 +1,18 @@
+# 000
+대포가 발사되는 순간을 보세요. 차체가 뒤로 밀려나면서 들리고, 그대로 뒤집힙니다. | Watch the instant the cannon fires. The chassis moves backward, lifts and overturns.
+물체가 이동하는 것과 돌아가는 것을 함께 계산하려면 무엇이 더 필요할까요? | What else is needed to calculate translation and rotation together?
+힘을 가하는 위치와 질량 분포를 살펴보고, 회전 속도와 토크에서 충돌, 물리 엔진의 시간 갱신까지 연결하겠습니다. | We will examine where forces act and how mass is distributed, then connect angular velocity and torque to collisions and a physics engine’s time update.
+먼저 하나의 물체에 이동과 회전이 함께 있다는 사실부터 정리해 보죠. | First, separate translation from rotation on a single object.
+# 012
+경첩에서 먼 쪽의 손잡이를 밀면 같은 힘으로도 큰 토크를 낼 수 있습니다. 이번에는 손잡이를 그대로 두고, 문에 붙인 추를 경첩에서 멀리 옮겨 보죠. 이렇게 질량이 퍼지면 관성모멘트가 커집니다. | Pushing a handle farther from the hinge gives the same force more torque. Now keep the handle still and move a weight attached to the door farther from the hinge. Spreading the mass out increases the moment of inertia.
+앞의 변화는 같은 힘으로 더 잘 돌게 하고, 뒤의 변화는 같은 토크에 덜 반응하게 합니다. | The first change strengthens the same force’s effect; the second reduces response to the same torque.
+이제 이 한 축의 관계를 삼차원으로 넓혀 보겠습니다. | Now extend the fixed-axis relationship to three dimensions.
+# 027
+차가 요철을 넘는 순간 바퀴를 보세요. 바퀴는 차체에 연결된 채 회전하고 위아래로도 움직입니다. | Watch the wheel as the car crosses uneven ground. It remains attached to the chassis while rotating and moving up and down.
+연결됐다고 해서 모든 움직임이 사라지는 것은 아니죠. | Being connected does not eliminate every motion.
+이 관계를 강체 모형으로 단순화하면, 어떤 움직임을 남기고 어떤 움직임을 막을지 정해야 합니다. | In an ideal rigid-body model, we must decide which motions to allow and which to constrain.
+볼 소켓 관절은 두 점을 같은 위치에 붙들고 회전을 허용합니다. | A ball joint holds two anchor points together while allowing rotation.
+힌지는 축까지 맞춰 문처럼 한 방향 회전만 남깁니다. | A hinge also aligns axes, leaving one rotation.
+프리즘 관절은 회전 없이 축을 따라 미끄러집니다. 축 회전도 허용하는 결합은 별도로 구분합니다. | A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint.
+유니버설 관절은 서로 직교한 두 축의 회전을 허용하고, 어깨 같은 관절에는 원뿔 모양의 스윙 한계와 비틀림 한계를 줄 수 있습니다. | A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits.
+이름보다 실제 남은 자유도를 확인해야 합니다. | Check actual degrees of freedom, not names alone.

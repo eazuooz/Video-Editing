@@ -1,4 +1,4 @@
-When a cannon fires in Besiege, its vehicle moves backward and also rears up and overturns. What else is needed to calculate translation and rotation together? We will examine where forces act and how mass is distributed, then connect angular velocity and torque to collisions and a physics engine’s time update. First, separate translation from rotation on a single object.
+Watch the instant the cannon fires. The chassis moves backward, lifts and overturns. What else is needed to calculate translation and rotation together? We will examine where forces act and how mass is distributed, then connect angular velocity and torque to collisions and a physics engine’s time update. First, separate translation from rotation on a single object.
 
 Orientation is rotation’s counterpart to position. Matrices and quaternions encode the same orientation in different forms. Angular velocity describes spin axis and rate; angular acceleration describes its change. Angular velocity is not simply the componentwise derivative of Euler angles or a quaternion. That distinction matters when updating orientation.
 
@@ -22,7 +22,7 @@ Compare four arrangements of total mass six. Three masses of two at radii three,
 
 For a fixed axis, torque equals inertia times angular acceleration, and angular momentum equals inertia times angular velocity. A particle’s radius times tangential momentum gives the same quantity; summing particles gives the rigid body’s total. Integrating torque gives the change, added to initial angular momentum. Zero net external torque conserves angular momentum.
 
-A farther handle increases torque, while moving the door’s mass farther from the hinge increases inertia. The first change strengthens the same force’s effect; the second reduces response to the same torque. Now extend the fixed-axis relationship to three dimensions.
+Pushing a handle farther from the hinge gives the same force more torque. Now keep the handle still and move a weight attached to the door farther from the hinge. Spreading the mass out increases the moment of inertia. The first change strengthens the same force’s effect; the second reduces response to the same torque. Now extend the fixed-axis relationship to three dimensions.
 
 Three-dimensional torque is lever arm cross force. The cross product includes both lengths and their angle’s sine, with direction identifying rotational effect. Particle angular momentum is position cross linear momentum. What replaces the single fixed-axis inertia value in three dimensions?
 
@@ -52,7 +52,7 @@ Force and torque accumulators are working space cleared and filled with contribu
 
 Shapes range from primitives to convex polyhedra and triangle meshes. Convex pieces can make complex concave objects easier to handle. Shapes attached to one body represent a compound shape rather than self-colliding parts. Filters can ignore connected limbs or create barriers blocking only selected character categories.
 
-In BeamNG.drive, wheels rotate while connected to the body and move vertically over bumps. Being connected does not eliminate every motion. In an ideal rigid-body model, we must decide which motions to allow and which to constrain. A ball joint holds two anchor points together while allowing rotation. A hinge also aligns axes, leaving one rotation. A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint. A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits. Check actual degrees of freedom, not names alone.
+Watch the wheel as the car crosses uneven ground. It remains attached to the chassis while rotating and moving up and down. Being connected does not eliminate every motion. In an ideal rigid-body model, we must decide which motions to allow and which to constrain. A ball joint holds two anchor points together while allowing rotation. A hinge also aligns axes, leaving one rotation. A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint. A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits. Check actual degrees of freedom, not names alone.
 
 A joint maintains geometry; a motor drives a desired relative velocity with force or torque limits. Limits prevent unlimited pushing. Required effort can trigger motor sounds or break a joint. Compliance can make constraints behave like springs and dampers. Rigidity versus flexibility is a design choice.
 

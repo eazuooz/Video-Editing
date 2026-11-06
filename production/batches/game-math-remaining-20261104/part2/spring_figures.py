@@ -50,7 +50,7 @@ def damping(d,art):
 
 def render(file,cut,timeline,caption,stroke,reveal,art):
     d=art.Diagram(caption,stroke,reveal,cut,timeline)
-    bottom=1080 if file.parent.parent.name=='render-v4' else 912
+    bottom=912 if file.parent.parent.name=='render-v3' else 1080
     d.area([(0,178),(1920,178),(1920,bottom),(0,bottom)],"000000",0,d.duration,2)
     {"009":frequency,"012":damping}[cut["scene"]](d,art)
     file.write_text("\n".join(d.lines)+"\n",encoding="utf8")
