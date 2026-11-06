@@ -5,7 +5,7 @@ version after exact raw-voice ASR evidence exists. It neither encodes a movie no
 performs ASR, TTS, GPU work, actual listening or a platform operation.
 """
 from __future__ import annotations
-import argparse, hashlib, importlib.util, io, json, math, os, re, subprocess, uuid
+import argparse, copy, hashlib, importlib.util, io, json, math, os, re, shutil, subprocess, uuid
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -125,7 +125,173 @@ def aggregate_comparison(raw,aggregate_slice,rate,contract):
     return record
 
 
-def inputs():
+def sentence_gaps(text,words,offset,rate):
+    sentences=[s.strip() for s in re.findall(r'[^.!?]+[.!?]?',text) if s.strip()]
+    assert len(sentences)==3 and ' '.join(sentences)==text,'Exactly three unchanged canonical sentences are required'
+    useful=[(i,w,asr.folded(w['text'])) for i,w in enumerate(words) if asr.folded(w['text'])]
+    assert ''.join(v for _,_,v in useful)==asr.folded(text),'ASR word literals differ; no pronunciation aliases may hide them'
+    result=[];boundary=0
+    for sentence in sentences[:-1]:
+        boundary+=len(asr.folded(sentence));position=0;found=None
+        for j,(index,word,chars) in enumerate(useful):
+            position+=len(chars)
+            if position==boundary:found=(j,index,word);break
+        assert found is not None,'Canonical sentence end is not an exact ASR word end'
+        j,index,left=found;right_index,right,_=useful[j+1]
+        a,b=left['timestamp'][1],right['timestamp'][0]
+        assert a is not None and b is not None and a<b,'Sentence boundary has no actual blind-ASR word gap'
+        begin=math.ceil((a-offset)*rate-1e-6);end=math.floor((b-offset)*rate+1e-6)
+        result.append(dict(previousWordIndex=index,nextWordIndex=right_index,previousWord=left,nextWord=right,
+            asrGapGlobalSeconds=[a,b],asrGapLocalSampleRange=[begin,end]))
+    return sentences,result
+
+
+def safe_sentence_cut(samples,rate,gap):
+    inset=round(.005*rate);a,b=gap['asrGapLocalSampleRange'];lo=a+inset;hi=b-inset
+    assert 0<lo<=hi<len(samples),'No guarded actual word gap available'
+    indices=np.arange(lo,hi+1);score=np.maximum(np.abs(samples[indices-1]),np.abs(samples[indices]));minimum=float(score.min())
+    choices=indices[score==minimum];mid=(a+b)/2
+    cut=int(min(choices,key=lambda k:(abs(float(k)-mid),int(k))))
+    window=round(.01*rate)
+    assert cut-window>=0 and cut+window<=len(samples)
+    left=db(np.sqrt(np.mean(samples[cut-window:cut].astype(np.float64)**2)))
+    right=db(np.sqrt(np.mean(samples[cut:cut+window].astype(np.float64)**2)))
+    assert samples[cut-1]==0 and samples[cut]==0,'Selected sentence gain step is not between exact zero-valued raw samples'
+    return dict(gap,guardedSearchSampleRangeInclusive=[lo,hi],cutSample=cut,
+        previousSample=float(samples[cut-1]),nextSample=float(samples[cut]),minimumMaximumAdjacentMagnitude=minimum,
+        rawLeft10msRmsDbfs=left,rawRight10msRmsDbfs=right)
+
+
+def pcm16_slice_sha(samples):
+    integers=np.rint(samples.astype(np.float64)*32768)
+    assert np.min(integers)>=-32768 and np.max(integers)<=32767
+    assert np.array_equal(samples,integers.astype(np.float32)/32768),'Expected exact decoded canonical PCM16 samples'
+    return hashlib.sha256(integers.astype('<i2').tobytes()).hexdigest()
+
+
+def validate_sentence_cut_plan(path,evidence,rows):
+    path=Path(path).resolve();assert path.parent==HERE.resolve(),'Cut plan must be the explicit selected batch-local proof'
+    plan=read(path);assert plan['schemaVersion']=='architectural111-sentence-cut-plan-v1' and plan['topicId']=='03.02' and plan['sceneId']=='s02'
+    assert digest({k:v for k,v in plan.items() if k!='fingerprint'})==plan['fingerprint'],'Cut-plan fingerprint changed'
+    assert plan['voiceFingerprint']==evidence['fingerprint'] and plan['actualAudioModified'] is False and plan['automaticSpeechPass'] is False
+    row=next(r for r in rows if r['sceneId']=='s02');source=plan['sourceWav']
+    assert Path(source['path']).resolve()==Path(row['rawTake']).resolve()
+    actual=asr.voice.wav_info(source['path'])
+    assert all(actual[k]==source[k] for k in ('sha256','pcmSHA256','sampleRate','channels','sampleWidthBytes','frames'))
+    assert source['sha256']==row['rawTakeSha256'] and source['pcmSHA256']==row['rawPcmSha256'] and source['frames']==row['frames']
+    assert (source['sampleRate'],source['channels'],source['sampleWidthBytes'])==(24000,1,2)
+    narration=plan['narration'];assert Path(narration['path']).resolve()==(PROJECT/'narration-voice-v1.json').resolve() and sha(narration['path'])==narration['sha256']
+    selected=read(narration['path'])['scenes'][1];assert selected['id']=='s02' and ' '.join(selected['lines'])==row['text']==plan['canonicalText']
+    raw=plan['rawASR'];pins={}
+    for name in ('job','review','cache'):
+        pin=raw[name];p=Path(pin['path']).resolve()
+        assert p.is_relative_to(asr.voice.OUTPUT.resolve()/'review/independent-asr-v1') and sha(p)==pin['sha256'],'Raw ASR proof changed'
+        pins[name]=p
+    job=read(pins['job']);assert digest(job['identity'])==job['fingerprint'] and job['identity']['profile']==asr.PROFILE
+    assert job['identity']['voiceFingerprint']==evidence['fingerprint'] and job['identity']['aggregateSHA256']==evidence['aggregateWav']['sha256']
+    assert job['identity']['timingSHA256']==evidence['timing']['sha256']
+    assert pins['job']==(asr.voice.OUTPUT/'review/independent-asr-v1'/job['fingerprint'][:24]/'job.json').resolve()
+    task=next(t for t in job['identity']['tasks'] if t['key']=='paragraph-s02');cache=asr.read_cache(job,task)
+    assert cache is not None and pins['cache']==pins['job'].parent/'paragraph-s02.json' and read(pins['cache'])==cache
+    review=read(pins['review']);assert review['fingerprint']==job['fingerprint'] and review['paragraphs'][1]==cache
+    assert task['expected']==row['text'] and task['audioSHA256']==source['sha256']==raw['taskAudioSHA256']
+    assert raw['sourceOffsetSeconds']==task['offsetSeconds'] and raw['recognizedLiteral']==cache['text']
+    assert raw['rawRecognitionSHA256']==digest(cache['rawRecognition'])
+    assert not cache['boundaryFlags'] and cache['aliasesApplied'] is False and raw['aliasesApplied'] is False
+    assert asr.folded(cache['text'])==asr.folded(row['text']),'Substantive ASR difference requires explicit review before cuts'
+    words,flags=asr.words_from_raw(cache['rawRecognition'],task);assert words==cache['globalWords'] and not flags
+    sentences,gaps=sentence_gaps(row['text'],words,task['offsetSeconds'],source['sampleRate'])
+    assert sentences==plan['canonicalSentences']
+    samples,rate=sf.read(source['path'],dtype='float32');computed=[safe_sentence_cut(samples,rate,g) for g in gaps]
+    cuts=[0,*[c['cutSample'] for c in computed],len(samples)]
+    assert cuts==plan['sampleCuts'] and len(plan['cuts'])==2
+    for actual_cut,pin in zip(computed,plan['cuts']):
+        for key,value in actual_cut.items():
+            if isinstance(value,float):assert abs(value-pin[key])<1e-8,'Cut waveform proof changed: '+key
+            else:assert value==pin[key],'Cut word-gap proof changed: '+key
+    assert plan['algorithm']['insetSamples']==120 and plan['algorithm']['fade'] is False
+    assert plan['algorithm']['trimmedSamples']==plan['algorithm']['insertedSamples']==0
+    assert all(PROFILE[k]==v for k,v in plan['scalarProfile'].items()),'Sentence matcher profile changed'
+    assert [s['index'] for s in plan['segments']]==[1,2,3]
+    for i,segment in enumerate(plan['segments']):
+        a,b=cuts[i:i+2]
+        assert segment['canonicalText']==sentences[i] and segment['sourceSampleRange']==[a,b]
+        assert segment['destinationSampleRange']==[row['destinationSampleRange'][0]+a,row['destinationSampleRange'][0]+b]
+        assert segment['rawSlicePcmSHA256']==pcm16_slice_sha(samples[a:b])
+        assert segment['insertedSamples']==segment['trimmedSamples']==0 and segment['speechSpeed']==1 and segment['withinSpeechFade'] is False
+    return dict(path=str(path),sha256=sha(path),fingerprint=plan['fingerprint'],plan=plan,
+        verifiedGapCuts=computed,rawAsrReviewedForCutLiteralOnly=True,humanListening=False,automaticSpeechPass=False)
+
+
+def match_sentence_segments(samples,rate,row,cut):
+    plan=cut['plan'];assert row['sceneId']=='s02' and len(samples)==plan['sourceWav']['frames'] and rate==24000
+    parts=[];segments=[]
+    for item in plan['segments']:
+        a,b=item['sourceSampleRange'];source=samples[a:b]
+        assert len(source)==b-a and pcm16_slice_sha(source)==item['rawSlicePcmSHA256']
+        matched,levels=match_paragraph(source,rate)
+        for key,value in item['predictedLevels'].items():
+            if isinstance(value,bool):assert levels[key]==value
+            else:assert abs(levels[key]-value)<1e-6,'Predicted sentence scalar gain changed: '+key
+        parts.append(matched);segments.append(dict(index=item['index'],canonicalText=item['canonicalText'],sourceSampleRange=[a,b],
+            destinationSampleRange=item['destinationSampleRange'],rawSlicePcmSHA256=item['rawSlicePcmSHA256'],**levels))
+    values=np.concatenate(parts);assert len(values)==len(samples)
+    joins=[];window=round(.01*rate)
+    for k in plan['sampleCuts'][1:-1]:
+        step=float(abs(values[k]-values[k-1]));left=db(np.sqrt(np.mean(values[k-window:k].astype(np.float64)**2)));right=db(np.sqrt(np.mean(values[k:k+window].astype(np.float64)**2)))
+        assert step==0 and max(left,right)<=-45,'Sentence gain change is not safely inside the measured quiet gap'
+        joins.append(dict(sample=k,postGainStep=step,left10msRmsDbfs=left,right10msRmsDbfs=right))
+    return values,dict(normalizationMode='per-sentence-constant-gains-v1',sentenceCutPlan={k:cut[k] for k in ('path','sha256','fingerprint')},
+        segments=segments,constantGainPerSegment=True,postGainJoins=joins,rawSamplesRetained=True,trimmedSamples=0,insertedSamples=0,speechSpeed=1,
+        voiceFades=False,compressorUsed=False,levelContinuityReview='pending; individual peak caps do not imply stable within-sentence level',humanListening=False)
+
+
+def baseline_normalized_pins(path,evidence,rows):
+    """Only copy the five already measured pre-global FLOAT files, byte for byte."""
+    path=Path(path).resolve();folder=path.parent
+    assert path.name=='audio-build.json' and folder.is_relative_to(DEST.resolve()),'Baseline must be an explicit selected03.02 audio version'
+    build=read(path);assert Path(build['output']).resolve()==folder
+    assert build['rawVoiceFingerprint']==evidence['fingerprint'] and build['rawVoiceSha256']==evidence['aggregateWav']['sha256']
+    assert build['normalizedVoiceFrames']==evidence['aggregateWav']['frames'] and build['normalizedVoiceRate']==24000
+    def artifact(name):
+        pin=build['artifacts'][name];source=(folder/pin['file']).resolve()
+        assert source.parent==folder and source.name==name and sha(source)==pin['sha256'],'Baseline artifact changed'
+        return source
+    recipe_path=artifact('input-recipe.json');recipe=read(recipe_path)
+    assert recipe['fingerprint']==build['fingerprint'] and digest(recipe['identity'])==build['fingerprint']
+    assert recipe['identity']['profile']==PROFILE,'Baseline scalar normalization profile changed'
+    assert recipe['identity']['voiceFingerprint']==evidence['fingerprint']
+    levels_path=artifact('line-levels.json');levels=read(levels_path)
+    assert levels['voiceFingerprint']==evidence['fingerprint']
+    old_rows={r['sceneId']:r for r in levels['paragraphs']};pins=[]
+    for row in rows:
+        sid=row['sceneId']
+        if sid=='s02':continue
+        old=old_rows[sid]
+        for key in ('rawTakeSha256','rawPcmSha256','sourceSampleRange','destinationSampleRange','frames','rate'):assert old[key]==row[key],'Unselected normalized source changed: '+sid
+        source=artifact(sid+'-normalized.wav');assert old['normalizedTakeSha256']==sha(source)
+        info=sf.info(source);assert info.subtype=='FLOAT' and info.channels==1 and info.samplerate==24000 and info.frames==row['frames']
+        pins.append(dict(sceneId=sid,path=str(source),sha256=sha(source),metadata=old))
+    assert [p['sceneId'] for p in pins]==['s01','s03','s04','s05','s06']
+    return dict(buildPath=str(path),buildSHA256=sha(path),fingerprint=build['fingerprint'],
+        inputRecipePath=str(recipe_path),inputRecipeSHA256=sha(recipe_path),lineLevelsPath=str(levels_path),lineLevelsSHA256=sha(levels_path),
+        priorGlobalVoiceGainDb=build['voiceGlobalGain']['constantGainDb'],priorUniformMixGainDb=build['uniformMixGainDb'],
+        unchangedNormalizedScenes=pins,scope='Exact five normalized FLOAT stems before common global gain; no promise that final globally scaled voice samples are unchanged')
+
+
+def copy_normalized_scene(pin,row,baseline,destination,rate):
+    destination=Path(destination);assert sha(pin['path'])==pin['sha256']
+    if destination.exists():assert sha(destination)==pin['sha256'],'Different normalized output must be preserved'
+    else:shutil.copyfile(pin['path'],destination)
+    assert sha(destination)==pin['sha256']
+    matched,matched_rate=sf.read(destination,dtype='float32')
+    assert matched_rate==rate and matched.ndim==1 and len(matched)==row['frames']
+    record=copy.deepcopy(pin['metadata']);record.update(**row,normalizedTake=destination.name,normalizedTakeSha256=sha(destination),
+        normalizedReuse=dict(sourceBuildPath=baseline['buildPath'],sourceBuildSHA256=baseline['buildSHA256'],sourcePath=pin['path'],sourceSHA256=pin['sha256'],preGlobalFloatBytesIdentical=True))
+    return matched,record
+
+
+def inputs(sentence_level_scenes=(),sentence_cut_plan=None,reuse_normalized_from=None):
     output,evidence,timing=asr.exact_voice()  # Selected authorization + exact immutable raw hashes.
     manifest=read(PROJECT/'voice-manifest.json');profile=manifest['tts']['paragraphLevelNormalization']
     for key in ('policy','frameSeconds','gateMaximumDbfs','adaptiveGateBelowPeakDb','targetMedianDbfs','maximumGainDb'):
@@ -143,6 +309,17 @@ def inputs():
         aggregateSHA256=evidence['aggregateWav']['sha256'],aggregatePcmSHA256=evidence['aggregateWav']['pcmSHA256'],
         timingSHA256=evidence['timing']['sha256'],paragraphs=rows,profile=PROFILE,musicSHA256=MUSIC_SHA,
         processorSHA256=sha(__file__),aggregateComparisonContract=aggregate_contract)
+    if sentence_level_scenes:
+        assert tuple(sentence_level_scenes)==('s02',) and sentence_cut_plan and reuse_normalized_from,'Only the explicitly selected S02 sentence correction is supported'
+        cut=validate_sentence_cut_plan(sentence_cut_plan,evidence,rows)
+        baseline=baseline_normalized_pins(reuse_normalized_from,evidence,rows)
+        expected=cut['plan']['reuseNormalizedFrom']
+        assert Path(expected['path']).resolve()==Path(baseline['buildPath']).resolve() and expected['sha256']==baseline['buildSHA256'] and expected['fingerprint']==baseline['fingerprint'],'Cut plan baseline selection changed'
+        assert [{k:p[k] for k in ('sceneId','path','sha256')} for p in baseline['unchangedNormalizedScenes']]==[
+            dict(sceneId=p['sceneId'],path=p['sourcePath'],sha256=p['sourceSHA256']) for p in expected['exactOtherScenes']],'Cut plan other-five normalized pins changed'
+        identity['normalizationOverride']=dict(policy='per-sentence-constant-gains-v1',sceneIds=['s02'],cutPlan=cut,baseline=baseline,
+            noCompressor=True,voiceFades=False,insertedSamples=0,trimmedSamples=0,rawPcmModified=False)
+    else:assert sentence_cut_plan is None and reuse_normalized_from is None,'Sentence plan/baseline requires explicit --sentence-level-scenes s02'
     audit=dict(voiceEvidenceSHA256=sha(asr.PROOF),voiceManifestSHA256=sha(PROJECT/'voice-manifest.json'),
         musicPath=str(MUSIC),musicLicensePath=str(LICENSE),musicLicenseSHA256=sha(LICENSE),
         sourceFootageAudio='No source soundtrack adopted; both selected gameplay sources are video-only or commentary excluded.',
@@ -227,10 +404,11 @@ def reuse(folder,recipe):
     return result
 
 
-def execute():
+def execute(sentence_level_scenes=(),sentence_cut_plan=None,reuse_normalized_from=None):
     worker=asr.native.SingleWorker(WORKER).acquire();worker.update(stage='audio',stageOwner='architectural111-first-audio-v1',topicId='03.02')
     try:
-        _,evidence,recipe=inputs();asr_evidence=raw_asr_prerequisite(evidence)
+        current_inputs=lambda:inputs(sentence_level_scenes,sentence_cut_plan,reuse_normalized_from)
+        _,evidence,recipe=current_inputs();asr_evidence=raw_asr_prerequisite(evidence)
         folder=DEST/recipe['fingerprint'][:24]
         assert folder.resolve().is_relative_to((MEDIA/SLUG).resolve())
         old=reuse(folder,recipe)
@@ -247,9 +425,16 @@ def execute():
             comparison=aggregate_comparison(samples,aggregate[a:b],rate,contract)
             comparison.update(historicalAggregateSHA256=evidence['aggregateWav']['sha256'],rawTakeSHA256=row['rawTakeSha256'],
                 destinationSampleRange=[a,b],aggregateGlobalDifferenceSampleIndices=[a+i for i in comparison['rawLocalDifferenceSampleIndices']])
-            matched,levels=match_paragraph(samples,rate);name=row['sceneId']+'-normalized.wav'
-            sf.write(work/name,matched,rate,subtype='FLOAT');parts.append(matched)
-            rows.append(dict(**row,**levels,normalizedTake=name,normalizedTakeSha256=sha(work/name),aggregateComparison=comparison))
+            override=recipe['identity'].get('normalizationOverride');name=row['sceneId']+'-normalized.wav'
+            if override and row['sceneId']!='s02':
+                pin=next(p for p in override['baseline']['unchangedNormalizedScenes'] if p['sceneId']==row['sceneId'])
+                matched,record=copy_normalized_scene(pin,row,override['baseline'],work/name,rate)
+                assert matched.shape==samples.shape;record['aggregateComparison']=comparison
+            else:
+                matched,levels=(match_sentence_segments(samples,rate,row,override['cutPlan']) if override else match_paragraph(samples,rate))
+                sf.write(work/name,matched,rate,subtype='FLOAT')
+                record=dict(**row,**levels,normalizedTake=name,normalizedTakeSha256=sha(work/name),aggregateComparison=comparison)
+            parts.append(matched);rows.append(record)
         normalized=np.concatenate(parts);assert len(normalized)==len(aggregate)==evidence['aggregateWav']['frames']
         norm_path=work/'narration-paragraph-normalized.wav';sf.write(norm_path,normalized,rate,subtype='FLOAT')
         line_levels=dict(policy=PROFILE['policy'],voiceFingerprint=evidence['fingerprint'],rawVoiceSha256=evidence['aggregateWav']['sha256'],
@@ -263,6 +448,9 @@ def execute():
             rawVoiceSha256Role='Historical engine aggregate identity, not an assertion of raw-take aggregate PCM equality',
             legacyAggregateFadeRestoredFromRawTakes=any(r['aggregateComparison'].get('legacyAggregateFadeProven') for r in rows),
             historicalAggregateAndAllRawTakesPreserved=True)
+        if recipe['identity'].get('normalizationOverride'):
+            line_levels['normalizationOverride']=recipe['identity']['normalizationOverride']
+            line_levels['sentenceConstantGainsAppliedOnlyTo']=['s02']
         save(work/'line-levels.json',line_levels)
         prepared=stereo_voice(normalized,rate)
         prepared_path=work/'narration-prepared-stem.wav';sf.write(prepared_path,prepared,PROFILE['mixRate'],subtype='FLOAT')
@@ -283,7 +471,7 @@ def execute():
         else:raise RuntimeError('CPU mix true peak remains unsafe; preserved version needs review')
         for name,values in [('narration-stem.wav',stem*overall),('music-stem.wav',bed*overall),('final-mix.wav',combined*overall)]:
             assert np.isfinite(values).all();sf.write(work/name,values,PROFILE['mixRate'],subtype='FLOAT')
-        assert inputs()[2]['fingerprint']==recipe['fingerprint'],'Inputs changed; preserve staging rather than publishing stale stems'
+        assert current_inputs()[2]['fingerprint']==recipe['fingerprint'],'Inputs changed; preserve staging rather than publishing stale stems'
         names=[p.name for p in work.iterdir() if p.is_file()]
         artifacts={name:dict(file=name,sha256=sha(work/name)) for name in names}
         result=dict(status='audio-prepared-final-mix-review-pending',fingerprint=recipe['fingerprint'],artifacts=artifacts,
@@ -298,17 +486,29 @@ def execute():
             legacyAggregateFadeRestoredFromRawTakes=line_levels['legacyAggregateFadeRestoredFromRawTakes'],
             rawVoiceAsr=asr_evidence,actualListeningPerformed=False,finalMixedAsr='pending',
             encodedAacTruePeak='pending',encodedAlignedLevelReview='pending',finalMovieComplete=False,humanApproval=False)
+        if recipe['identity'].get('normalizationOverride'):
+            override=recipe['identity']['normalizationOverride'];baseline=override['baseline']
+            result['normalizationOverride']=dict(policy=override['policy'],sceneIds=['s02'],cutPlan=override['cutPlan'],
+                unchangedNormalizedScenes=[{k:p[k] for k in ('sceneId','path','sha256')} for p in baseline['unchangedNormalizedScenes']],
+                baselineAudioBuildPath=baseline['buildPath'],baselineAudioBuildSHA256=baseline['buildSHA256'],
+                otherFivePreGlobalNormalizedBytesIdentical=True,otherFiveFinalScaledSamplesIdenticalNotAsserted=True,
+                previousCommonFinalVoiceGainDb=baseline['priorGlobalVoiceGainDb']+baseline['priorUniformMixGainDb'],
+                currentCommonFinalVoiceGainDb=voice_levels['constantGainDb']+db(overall),
+                commonFinalVoiceGainChangeDb=voice_levels['constantGainDb']+db(overall)-baseline['priorGlobalVoiceGainDb']-baseline['priorUniformMixGainDb'],
+                levelContinuityReview='pending; peak-limited sentence medians and internal slope are not an automatic pass',actualListeningPerformed=False)
         save(work/'audio-build.json',result);assert not folder.exists();work.rename(folder)
         return result
     finally:worker.close(remove=True)
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true')
+    parser.add_argument('--sentence-level-scenes',choices=['s02']);parser.add_argument('--sentence-cut-plan');parser.add_argument('--reuse-normalized-from');args=parser.parse_args()
+    options=dict(sentence_level_scenes=(args.sentence_level_scenes,) if args.sentence_level_scenes else (),sentence_cut_plan=args.sentence_cut_plan,reuse_normalized_from=args.reuse_normalized_from)
     if args.execute:
-        result=execute();print(json.dumps(dict(status=result['status'],output=result['output'],fingerprint=result['fingerprint'])))
+        result=execute(**options);print(json.dumps(dict(status=result['status'],output=result['output'],fingerprint=result['fingerprint'])))
     else:
-        _,evidence,recipe=inputs();print(json.dumps(dict(ready=True,fingerprint=recipe['fingerprint'],
+        _,evidence,recipe=inputs(**options);print(json.dumps(dict(ready=True,fingerprint=recipe['fingerprint'],
             rawVoiceFrames=evidence['aggregateWav']['frames'],sampleRate=evidence['aggregateWav']['sampleRate'],
             output=str(DEST/recipe['fingerprint'][:24]),audioPrepared=False,gpuUsed=False)))
 

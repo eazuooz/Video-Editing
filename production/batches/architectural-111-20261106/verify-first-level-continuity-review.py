@@ -104,6 +104,39 @@ def main():
     stale=copy.deepcopy(timeline);stale['audio']['voice']['sha256']='old'
     reject('encoded movie from an old voice aggregate',lambda:m.assert_same_audio(build,stale))
     passed('actual render must carry the same selected voice and final-mix identity')
+    # S02 has no fake row-level gain: each sample uses its exact sentence gain,
+    # including a one-sample outward-rounded word window at a cut.
+    row,old_words,arrays=signal_fixture();raw=arrays['normalized']/2;size=len(raw);cuts=[0,size//3,2*size//3,size]
+    row.update(sceneId='s02',frames=size,normalizationMode='per-sentence-constant-gains-v1');row.pop('constantGainDb')
+    row['segments']=[dict(index=i+1,sourceSampleRange=[a,b],destinationSampleRange=[a,b],constantGainDb=g,
+        targetErrorDb=-3.53 if i==2 else 0.,peakCapApplied=i==2) for i,(a,b,g) in enumerate(zip(cuts,cuts[1:],(1.,3.,6.)))]
+    raw[cuts[1]]=0.03
+    arrays['normalized']=m.expected_normalized(raw,row);arrays['prepared']=np.repeat(arrays['normalized'],2,axis=1)
+    arrays['voice']=arrays['prepared']*.5;arrays['mix']=arrays['voice']+arrays['music']
+    recognized=dict(globalWords=[dict(text=w['recognizedText'],timestamp=w['originalAsrTimestamp']) for w in old_words])
+    recognized['globalWords'][5]['timestamp'][1]+=1e-8
+    measured=m.word_records(row,recognized,arrays,raw,8000,8000);summaries,flags=m.continuity([(row,measured)])
+    assert max(abs(w['normalizedBodyErrorVsExpectedDb']) for w in measured)<1e-6
+    assert not any(f['kind']=='unexpected-normalized-window-gain' for f in flags)
+    assert summaries[0]['recordedNormalizationGainDb'] is None
+    assert any(f['kind']=='normalization-target-shortfall' and f['segment']==3 for f in flags)
+    assert not m.residual_summary(arrays['normalized'],m.expected_normalized(raw,row))['exceedsKnownStemTolerance']
+    passed('piecewise sentence gains retain exact arithmetic, borrowed boundary sample and peak-cap shortfall without fake row gain')
+    # A derived scene can reset its level at the take boundary; flat whole-
+    # paragraph statistics must not erase either local downward trend.
+    words=[];rate=8000
+    for i in range(36):
+        value=-20-6*(i%18)/17;t=i*.5
+        words.append(dict(recognizedText=f'component-fixture-{i}',originalAsrTimestamp=[t,t+.5],
+            startSeconds=t,endSeconds=t+.5,durationSeconds=.5,
+            levels={stage:dict(bodyDbfs=value) for stage in ('canonical','normalized','voice','mix')}))
+    paragraph=dict(sceneId='s03',rate=rate,destinationSampleRange=[0,rate*18])
+    origin=dict(components=[dict(componentId='s03-a',destinationSampleRange=[0,rate*9]),dict(componentId='s03-b',destinationSampleRange=[rate*9,rate*18])])
+    assert not m.trend(words,'canonical')['suspect']
+    pieces,piece_flags=m.component_summaries(paragraph,words,origin)
+    assert len(pieces)==2 and all(p['stages']['canonical']['suspect'] for p in pieces)
+    assert {f['componentId'] for f in piece_flags}=={'s03-a','s03-b'}
+    passed('derived component declines remain explicit even when whole-paragraph trend looks flat')
     report=dict(scope='Synthetic CPU signals only; actual voice/mix/ASR/render not analyzed',checks=checks,count=len(checks),allPassed=True,
         reviewerSHA256=m.sha(HERE/'first-level-continuity-review.py'),testSHA256=m.sha(__file__),
         externalProcessesStarted=0,actualListening=False,actualVideoPlayback=False,productionArtifactsChanged=False)

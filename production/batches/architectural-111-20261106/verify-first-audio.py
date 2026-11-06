@@ -1,6 +1,7 @@
 """CPU synthetic fixtures only. No production mix, model, GPU or listening claim."""
 import copy, importlib.util, json, math, sys, tempfile, unittest
 from pathlib import Path
+from unittest.mock import patch
 import numpy as np
 
 sys.dont_write_bytecode=True
@@ -22,6 +23,84 @@ class FirstAudioTests(unittest.TestCase):
         np.testing.assert_allclose(result,samples*gain,rtol=1e-6,atol=1e-9)
         self.assertAlmostEqual(record['afterMedianDbfs'],-22,places=4)
         self.assertTrue(np.all(result[:113]==0));self.assertTrue(np.all(result[-517:]==0))
+
+    def sentence_fixture(self):
+        rate=24000;text='첫 문장입니다. 둘째 문장입니다. 셋째 문장입니다.'
+        samples=np.concatenate([self.tone(.1),np.zeros(4800,np.float32),self.tone(.05),np.zeros(4800,np.float32),self.tone(.02)])
+        samples=(np.rint(samples*32768).astype('<i2').astype(np.float32)/32768).astype(np.float32)
+        words=[dict(text=t,timestamp=[a+10,b+10]) for t,a,b in [('첫',0,.4),('문장입니다.',.4,1),('둘째',1.2,1.6),('문장입니다.',1.6,2.2),('셋째',2.4,2.8),('문장입니다.',2.8,3.4)]]
+        sentences,gaps=audio.sentence_gaps(text,words,10,rate);cuts=[0,*[audio.safe_sentence_cut(samples,rate,g)['cutSample'] for g in gaps],len(samples)]
+        segments=[]
+        for i,(a,b) in enumerate(zip(cuts,cuts[1:]),1):
+            _,levels=audio.match_paragraph(samples[a:b],rate)
+            segments.append(dict(index=i,canonicalText=sentences[i-1],sourceSampleRange=[a,b],destinationSampleRange=[100+a,100+b],rawSlicePcmSHA256=audio.pcm16_slice_sha(samples[a:b]),predictedLevels={k:v for k,v in levels.items() if isinstance(v,(int,float,bool))}))
+        plan=dict(sourceWav={'frames':len(samples)},sampleCuts=cuts,segments=segments)
+        return samples,words,gaps,dict(path='CPU-fixture-only.json',sha256='fixture-plan-sha',fingerprint='fixture-plan',plan=plan)
+
+    def test_sentence_cuts_require_literal_asr_words_actual_gaps_and_quiet_samples(self):
+        samples,words,gaps,cut=self.sentence_fixture()
+        self.assertEqual(cut['plan']['sampleCuts'],[0,26400,55200,81600])
+        changed=copy.deepcopy(words);changed[2]['text']='둘재'
+        with self.assertRaisesRegex(AssertionError,'no pronunciation aliases'):
+            audio.sentence_gaps('첫 문장입니다. 둘째 문장입니다. 셋째 문장입니다.',changed,10,24000)
+        overlapping=copy.deepcopy(words);overlapping[2]['timestamp'][0]=overlapping[1]['timestamp'][1]
+        with self.assertRaisesRegex(AssertionError,'no actual blind-ASR word gap'):
+            audio.sentence_gaps('첫 문장입니다. 둘째 문장입니다. 셋째 문장입니다.',overlapping,10,24000)
+        with self.assertRaisesRegex(AssertionError,'zero-valued'):
+            audio.safe_sentence_cut(samples,24000,{'asrGapLocalSampleRange':[500,1000]})
+
+    def test_three_sentence_scalars_preserve_raw_samples_positions_and_reveal_each_gain(self):
+        samples,_,_,cut=self.sentence_fixture();before=samples.copy()
+        result,record=audio.match_sentence_segments(samples,24000,{'sceneId':'s02'},cut)
+        np.testing.assert_array_equal(samples,before);self.assertEqual(len(result),len(samples))
+        self.assertNotIn('constantGainDb',record);self.assertEqual(len(record['segments']),3)
+        self.assertEqual(record['trimmedSamples'],0);self.assertEqual(record['insertedSamples'],0);self.assertFalse(record['voiceFades'])
+        for item in record['segments']:
+            a,b=item['sourceSampleRange'];expected=(samples[a:b]*10**(item['constantGainDb']/20)).astype(np.float32)
+            np.testing.assert_array_equal(result[a:b],expected)
+        for join in record['postGainJoins']:self.assertEqual(join['postGainStep'],0)
+        tampered=copy.deepcopy(cut);tampered['plan']['segments'][0]['sourceSampleRange'][1]-=1
+        with self.assertRaises(AssertionError):audio.match_sentence_segments(samples,24000,{'sceneId':'s02'},tampered)
+
+    def baseline_fixture(self,root):
+        destination=root/'audio-versions';folder=destination/'baseline';folder.mkdir(parents=True)
+        rows=[];old=[];files={};position=0
+        for i in range(1,7):
+            sid=f's{i:02}';row=dict(sceneId=sid,rawTakeSha256='raw-'+sid,rawPcmSha256='pcm-'+sid,
+                sourceSampleRange=[0,50],destinationSampleRange=[position,position+50],frames=50,rate=24000);position+=50;rows.append(row)
+            path=folder/(sid+'-normalized.wav');audio.sf.write(path,np.full(50,.01*i,np.float32),24000,subtype='FLOAT')
+            files[path.name]=dict(file=path.name,sha256=audio.sha(path))
+            old.append(dict(**row,normalizedTake=path.name,normalizedTakeSha256=audio.sha(path),constantGainDb=float(i)))
+        identity=dict(voiceFingerprint='voice-fixture',profile=audio.PROFILE)
+        recipe=folder/'input-recipe.json';audio.save(recipe,dict(identity=identity,fingerprint=audio.digest(identity)))
+        levels=folder/'line-levels.json';audio.save(levels,dict(voiceFingerprint='voice-fixture',paragraphs=old))
+        for p in [recipe,levels]:files[p.name]=dict(file=p.name,sha256=audio.sha(p))
+        build=folder/'audio-build.json';audio.save(build,dict(output=str(folder),fingerprint=audio.digest(identity),
+            rawVoiceFingerprint='voice-fixture',rawVoiceSha256='aggregate-fixture',normalizedVoiceFrames=300,normalizedVoiceRate=24000,
+            artifacts=files,voiceGlobalGain={'constantGainDb':-2.5},uniformMixGainDb=0))
+        evidence=dict(fingerprint='voice-fixture',aggregateWav={'sha256':'aggregate-fixture','frames':300})
+        return destination,build,evidence,rows
+
+    def test_other_five_normalized_float_files_are_copied_byte_exact_not_rematched(self):
+        with tempfile.TemporaryDirectory(prefix='first-audio-sentence-copy-') as folder:
+            root=Path(folder);destination,build,evidence,rows=self.baseline_fixture(root);work=root/'work';work.mkdir()
+            with patch.object(audio,'DEST',destination):pins=audio.baseline_normalized_pins(build,evidence,rows)
+            self.assertEqual([p['sceneId'] for p in pins['unchangedNormalizedScenes']],['s01','s03','s04','s05','s06'])
+            with patch.object(audio,'match_paragraph',side_effect=AssertionError('Do not rematch unchanged five')):
+                for pin in pins['unchangedNormalizedScenes']:
+                    row=next(r for r in rows if r['sceneId']==pin['sceneId']);target=work/(pin['sceneId']+'-normalized.wav')
+                    samples,record=audio.copy_normalized_scene(pin,row,pins,target,24000)
+                    self.assertEqual(target.read_bytes(),Path(pin['path']).read_bytes())
+                    self.assertTrue(record['normalizedReuse']['preGlobalFloatBytesIdentical']);self.assertEqual(len(samples),50)
+
+    def test_stale_baseline_or_tampered_normalized_source_is_rejected(self):
+        with tempfile.TemporaryDirectory(prefix='first-audio-sentence-tamper-') as folder:
+            root=Path(folder);destination,build,evidence,rows=self.baseline_fixture(root)
+            with patch.object(audio,'DEST',destination):
+                stale=copy.deepcopy(evidence);stale['fingerprint']='another-voice'
+                with self.assertRaises(AssertionError):audio.baseline_normalized_pins(build,stale,rows)
+                path=build.parent/'s04-normalized.wav';data=bytearray(path.read_bytes());data[-1]^=1;path.write_bytes(data)
+                with self.assertRaisesRegex(AssertionError,'artifact changed'):audio.baseline_normalized_pins(build,evidence,rows)
 
     def test_gain_limit_and_peak_limit_are_uniform_not_dynamic_compression(self):
         tiny=self.tone(.0003);result,record=audio.match_paragraph(tiny,24000)

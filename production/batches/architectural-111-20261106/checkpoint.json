@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "batchId": "architectural-111-20261106",
-  "updatedAt": "2026-11-06T18:50:55.871491+09:00",
-  "phase": "voice-v3-complete; raw-ASR-v3-in-progress",
+  "updatedAt": "2026-11-06T19:46:13.142363+09:00",
+  "phase": "corrected-mix-and-timeline-ready; composed-mobile-preflight-passed; mixed-ASR-resource-wait",
   "topicCount": 111,
   "selectedFirstTopic": "03.02",
   "completedLocalReviewCount": 0,
@@ -14,7 +14,7 @@
     "b": "Chapters 5-9: 39 topics",
     "c": "Chapters 10-14: 30 topics"
   },
-  "currentResourceConstraint": "Current independent raw-ASR worker owns/waits for cooperative resources; preserve all other jobs",
+  "currentResourceConstraint": "Another scoped job holds the shared GPU lease",
   "ownGPUJobStarted": true,
   "ownFiniteQueueRunning": true,
   "recurringAutomationCreated": true,
@@ -156,8 +156,11 @@
     "createTime": 1793958605.1608503,
     "stage": "asr",
     "topicId": "03.02",
-    "status": "waiting-for-resources",
-    "child": null,
+    "status": "independent-asr-complete-content-review-pending",
+    "child": {
+      "pid": 51940,
+      "createTime": 1793959219.624272
+    },
     "modelLoadedByWrapper": false,
     "reusedParagraphTasks": [
       "paragraph-s01",
@@ -166,8 +169,18 @@
       "paragraph-s05",
       "paragraph-s06"
     ],
-    "reason": "Another scoped job holds the shared GPU lease",
-    "checkedAt": 1793958647.711047
+    "reason": "Another media job is running",
+    "checkedAt": 1793959209.1633656,
+    "asrFingerprint": "5408e628e0e7a569ad7b1c32ba0578f8e31a13523fc84ab36909f2cc6c1faaf7",
+    "job": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1\\review\\independent-asr-v1\\5408e628e0e7a569ad7b1c32\\job.json",
+    "log": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1\\review\\independent-asr-v1\\5408e628e0e7a569ad7b1c32\\recognition-e23e1c56.log",
+    "completed": true,
+    "review": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1\\review\\independent-asr-v1\\5408e628e0e7a569ad7b1c32\\review.json",
+    "humanListening": false,
+    "pcmModified": false,
+    "automaticSpeechPass": false,
+    "childStillAlive": false,
+    "finishedOrYieldedAt": 1793959243.150013
   },
   "screenSharePolicy": {
     "policy": "Shorts-specific section9, no forced long-form body ratio",
@@ -229,5 +242,51 @@
     "record": "production/batches/architectural-111-20261106/first-s03-structure-levels-v3.json",
     "sha256": "08946245c8e50db31258f1b21ccc7aebc8b106ffed14dddbe80fe6fe1e8ca073",
     "status": "Exact5WAV/PCM, exactaggregate, component scalar derivation and no clipping pass; ASR-word/body quality and actual listening pending"
+  },
+  "firstActualAudioReview": "production/batches/architectural-111-20261106/first-audio-level-v3-review.json",
+  "firstMixedAsrWorker": {
+    "pid": 36868,
+    "createTime": 1793961043.9888923,
+    "stage": "mixed-asr",
+    "topicId": "03.02",
+    "status": "waiting-for-resources",
+    "child": null,
+    "completed": false,
+    "reason": "Another scoped job holds the shared GPU lease",
+    "checkedAt": 1793961970.4948921,
+    "job": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\audio-preparation-v1\\3b2fe7699874174009bdddac\\review\\mixed-asr-v1\\41a95d24e01c3d93d825cf92\\job.json",
+    "log": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\audio-preparation-v1\\3b2fe7699874174009bdddac\\review\\mixed-asr-v1\\41a95d24e01c3d93d825cf92\\recognition-5df786a2.log",
+    "fingerprint": "41a95d24e01c3d93d825cf924c1a2d1fb9f838e2cf66ed66201591a63b9d5155",
+    "resourceDeclines": [
+      {
+        "child": {
+          "pid": 69040,
+          "createTime": 1793961346.7788007
+        },
+        "receipt": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\audio-preparation-v1\\3b2fe7699874174009bdddac\\review\\mixed-asr-v1\\41a95d24e01c3d93d825cf92\\resource-decline-5df786a2.json",
+        "log": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\audio-preparation-v1\\3b2fe7699874174009bdddac\\review\\mixed-asr-v1\\41a95d24e01c3d93d825cf92\\recognition-5df786a2.log",
+        "diagnostic": {
+          "protocol": "architectural111-first-asr-resource-decline-v1",
+          "fingerprint": "41a95d24e01c3d93d825cf924c1a2d1fb9f838e2cf66ed66201591a63b9d5155",
+          "temporary": true,
+          "phase": "before-model",
+          "modelLoaded": false,
+          "origin": "mixed-child-resource-check",
+          "reason": "Another scoped job holds the shared GPU lease",
+          "checkedAt": 1793961348.1963909
+        }
+      }
+    ],
+    "childStillAlive": false
+  },
+  "firstS02SentenceCorrection": "production/batches/architectural-111-20261106/first-s02-correction-result-v1.json",
+  "firstComposedVisualReview": "production/batches/architectural-111-20261106/first-composed-visual-review-v3.json",
+  "firstCurrentTimeline": {
+    "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\film-timeline\\3924481e4ed6f7b1e4d9f14a\\final-timeline.json",
+    "sha256": "6f33c3517c521e75d2e5d3b89a220fdc9d658d93f2a88e3d9a49b9eef9d58c11"
+  },
+  "firstCurrentAudioBuild": {
+    "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-03-02\\audio-preparation-v1\\3b2fe7699874174009bdddac\\audio-build.json",
+    "sha256": "58a1b473bb8a08dc64645fdd061611f1586669bccf6aee83a190908de3232836"
   }
 }

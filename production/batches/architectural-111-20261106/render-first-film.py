@@ -494,15 +494,18 @@ class FrameRouter:
             return image
         if not gameplay:
             dim=Image.new('RGBA',image.size,(0,0,0,0))
-            ImageDraw.Draw(dim).rectangle((48,424,936,1468),fill=(0,0,0,150))
+            ImageDraw.Draw(dim).rectangle((48,424,936,1468),fill=(0,0,0,210))
             image=Image.alpha_composite(image.convert('RGBA'),dim).convert('RGB')
         draw=ImageDraw.Draw(image)
         self.style.text(draw,heading,(492,1060),40,self.style.tokens['title'])
         lines=[];line='';font=self.style.font(40)
-        for character in term['meaning']:
-            if font.getlength(line+character)>760:
-                lines.append(line);line=character
-            else:line+=character
+        for word in term['meaning'].split():
+            if font.getlength(word)>760:
+                raise ValueError('A definition word exceeds the readable scene width')
+            candidate=(line+' '+word) if line else word
+            if font.getlength(candidate)>760:
+                lines.append(line);line=word
+            else:line=candidate
         if line:lines.append(line)
         if len(lines)>4:raise ValueError('Definition needs readable scene-sized text, not a tiny font')
         for i,text in enumerate(lines):self.style.text(draw,text,(492,1120+i*54),40,self.style.tokens['ink'])

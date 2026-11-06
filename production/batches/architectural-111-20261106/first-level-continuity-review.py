@@ -15,6 +15,7 @@ import os
 import re
 import shutil
 import subprocess
+import wave
 from fractions import Fraction
 from pathlib import Path
 
@@ -32,6 +33,7 @@ CREATE=getattr(subprocess,'CREATE_NO_WINDOW',0)
 POLICY=dict(bodyFrameMilliseconds=20,bodyHopMilliseconds=10,bodyRank='median of upper-half frame RMS values',
     longTrendMinimumWords=9,longTrendMinimumSeconds=6.,lateMinusEarlyWarningDb=-4.,projectedSlopeWarningDb=-3.,
     paragraphBelowMedianWarningDb=-4.,musicToVoiceRmsWarningDb=-12.,normalizedGainToleranceDb=.15,
+    normalizationTargetShortfallWarningDb=-2.,
     knownStemMaximumResidual=2e-6,encodedWordLevelDeltaWarningDb=2.,alignmentMinimumCorrelation=.90,
     alignmentMaximumAnchorSpreadSamples=4,alignmentMaximumLagSeconds=.10,alignmentMinimumPeakMargin=.005)
 
@@ -63,6 +65,33 @@ def scale_window(start,end,source_rate,target_rate,offset=0):
         raise ValueError('Exact sample-grid mapping required')
     a=Fraction(start*target_rate,source_rate);b=Fraction(end*target_rate,source_rate)
     return a.numerator//a.denominator+offset,-(-b.numerator//b.denominator)+offset
+
+
+def scalar_segments(row):
+    frames=row.get('frames',row['destinationSampleRange'][1]-row['destinationSampleRange'][0])
+    mode=row.get('normalizationMode')
+    if mode is None:
+        return [dict(index=1,sourceSampleRange=[0,frames],constantGainDb=row['constantGainDb'],
+            targetErrorDb=row.get('targetErrorDb'),peakCapApplied=row.get('peakCapApplied'))]
+    if mode!='per-sentence-constant-gains-v1' or row['sceneId']!='s02' or len(row.get('segments',[]))!=3:
+        raise ValueError('Only the scoped three-sentence S02 scalar extension is supported')
+    position=0
+    for segment in row['segments']:
+        a,b=segment['sourceSampleRange'];gain=segment['constantGainDb']
+        if (type(a) is not int or type(b) is not int or a!=position or not a<b<=frames or
+            not isinstance(gain,(int,float)) or not math.isfinite(gain) or abs(gain)>12.000001 or
+            segment['destinationSampleRange']!=[row['destinationSampleRange'][0]+a,row['destinationSampleRange'][0]+b]):
+            raise ValueError('Sentence scalar segments do not preserve the exact canonical sample grid')
+        position=b
+    if position!=frames:raise ValueError('Sentence scalars do not cover the canonical scene')
+    return row['segments']
+
+
+def expected_normalized(raw,row):
+    output=np.asarray(raw,dtype=np.float32).copy()
+    for segment in scalar_segments(row):
+        a,b=segment['sourceSampleRange'];output[a:b]=(raw[a:b]*10**(segment['constantGainDb']/20)).astype(np.float32)
+    return output
 
 
 def levels(samples,rate):
@@ -178,6 +207,26 @@ def verify_bundle(audio_build,asr_review=None,render_manifest=None):
         info=sf.info(row['rawTake'])
         if (info.samplerate,info.channels,info.frames)!=(24000,1,row['frames']) or chunk['sha256']!=row['rawTakeSha256']:
             raise ValueError('Current raw-take sample properties/identity differ')
+        segments=scalar_segments(row)
+        if row.get('normalizationMode'):
+            plan_pin=row['sentenceCutPlan'];plan_path=verify_pin(plan_pin,'sentence cut plan');pins.append(dict(path=str(plan_path),sha256=plan_pin['sha256']))
+            plan=read(plan_path)
+            if (plan['sourceWav']['sha256']!=row['rawTakeSha256'] or plan['voiceFingerprint']!=build['rawVoiceFingerprint'] or
+                [s['sourceSampleRange'] for s in plan['segments']]!=[s['sourceSampleRange'] for s in segments]):
+                raise ValueError('Sentence gain rows differ from their bound canonical cut plan')
+            with wave.open(str(row['rawTake']),'rb') as file:
+                if file.getsampwidth()!=2 or file.getnchannels()!=1:raise ValueError('Expected canonical mono PCM16')
+                payload=file.readframes(file.getnframes())
+            for segment in segments:
+                a,b=segment['sourceSampleRange']
+                if hashlib.sha256(payload[a*2:b*2]).hexdigest()!=segment['rawSlicePcmSHA256']:
+                    raise ValueError('Sentence gain source PCM slice changed')
+        reuse=row.get('normalizedReuse')
+        if reuse:
+            for label,path_key,hash_key in [('baseline build','sourceBuildPath','sourceBuildSHA256'),('unchanged normalized copy','sourcePath','sourceSHA256')]:
+                record=dict(path=reuse[path_key],sha256=reuse[hash_key]);verify_pin(record,label);pins.append(record)
+            if sha(folder/row['normalizedTake'])!=reuse['sourceSHA256'] or not reuse.get('preGlobalFloatBytesIdentical'):
+                raise ValueError('Unselected normalized paragraph was changed')
         if (task.get('audioSHA256')!=row['rawTakeSha256'] or task.get('sceneId')!=row['sceneId'] or
             abs(task.get('offsetSeconds',-1)-start/24000)>1e-9 or recognized.get('aliasesApplied') is not False or recognized.get('expectedPrompt') is not None):
             raise ValueError('ASR words are not bound to this canonical WAV/sample offset')
@@ -228,7 +277,7 @@ def load_audio(path,rate,channels,frames):
 
 
 def word_records(paragraph,recognized,arrays,raw,raw_rate=24000,mix_rate=48000):
-    out=[];a,b=paragraph['destinationSampleRange'];words=recognized['globalWords']
+    out=[];a,b=paragraph['destinationSampleRange'];words=recognized['globalWords'];expected=expected_normalized(raw,paragraph)
     for index,word in enumerate(words):
         timestamp=word.get('timestamp')
         if not isinstance(timestamp,(list,tuple)) or len(timestamp)!=2 or any(not isinstance(t,(int,float)) or not math.isfinite(t) for t in timestamp):
@@ -240,6 +289,7 @@ def word_records(paragraph,recognized,arrays,raw,raw_rate=24000,mix_rate=48000):
         if end<=start:raise ValueError('ASR word has no canonical samples')
         mr=scale_window(start,end,raw_rate,mix_rate);local=(start-a,end-a)
         measured=dict(canonical=levels(raw[local[0]:local[1]],raw_rate))
+        expected_levels=levels(expected[local[0]:local[1]],raw_rate)
         for name,values in arrays.items():
             region=(start,end) if name=='normalized' else mr
             measured[name]=levels(values[region[0]:region[1]],raw_rate if name=='normalized' else mix_rate)
@@ -250,6 +300,8 @@ def word_records(paragraph,recognized,arrays,raw,raw_rate=24000,mix_rate=48000):
             globalRawSampleRange=[start,end],rawTakeLocalSampleRange=list(local),mixSampleRange=list(mr),
             startSeconds=start/raw_rate,endSeconds=end/raw_rate,durationSeconds=(end-start)/raw_rate,
             levels=measured,normalizedMinusCanonicalBodyDb=measured['normalized']['bodyDbfs']-measured['canonical']['bodyDbfs'],
+            expectedNormalizedBodyDbfs=expected_levels['bodyDbfs'],normalizedBodyErrorVsExpectedDb=measured['normalized']['bodyDbfs']-expected_levels['bodyDbfs'],
+            expectedNormalizationBodyGainDb=expected_levels['bodyDbfs']-measured['canonical']['bodyDbfs'],
             musicToVoiceWordRmsDb=measured['music']['rmsDbfs']-measured['voice']['rmsDbfs'],knownStemResidual=residual)
         out.append(row)
     return out
@@ -258,8 +310,10 @@ def word_records(paragraph,recognized,arrays,raw,raw_rate=24000,mix_rate=48000):
 def continuity(paragraphs):
     flags=[];summaries=[]
     for row,words in paragraphs:
+        segments=scalar_segments(row)
         summary=dict(sceneId=row['sceneId'],recognizedWords=len(words),stages={stage:trend(words,stage) for stage in ('canonical','normalized','voice','mix')},
-            peakCapApplied=row.get('peakCapApplied'),recordedNormalizationGainDb=row['constantGainDb'],normalizationTargetErrorDb=row.get('targetErrorDb'))
+            peakCapApplied=row.get('peakCapApplied'),normalizationMode=row.get('normalizationMode','single-paragraph-scalar'),
+            recordedNormalizationGainDb=row.get('constantGainDb'),normalizationTargetErrorDb=row.get('targetErrorDb'),normalizationSegments=segments)
         summaries.append(summary)
         for stage,stats in summary['stages'].items():
             if stats['suspect']:
@@ -268,12 +322,18 @@ def continuity(paragraphs):
                     recognizedContext=' / '.join(w['recognizedText'].strip() for w in (words[:3]+words[-3:])),
                     action='Listen to this span with adjacent context; inspect the canonical take before changing mix gain'))
         for word in words:
-            if abs(word['normalizedMinusCanonicalBodyDb']-row['constantGainDb'])>POLICY['normalizedGainToleranceDb']:
+            if abs(word['normalizedBodyErrorVsExpectedDb'])>POLICY['normalizedGainToleranceDb']:
                 flags.append(dict(kind='unexpected-normalized-window-gain',sceneId=row['sceneId'],word=word['recognizedText'],context=word['recognizedContext'],sampleRange=word['globalRawSampleRange']))
             if word['musicToVoiceWordRmsDb']>POLICY['musicToVoiceRmsWarningDb'] and word['durationSeconds']>=.08:
                 flags.append(dict(kind='music-close-to-known-voice-component',sceneId=row['sceneId'],word=word['recognizedText'],context=word['recognizedContext'],
                     startSeconds=word['startSeconds'],endSeconds=word['endSeconds'],componentRmsRatioDb=word['musicToVoiceWordRmsDb'],
                     interpretation='Known-stem RMS ratio; possible review target, not estimated SNR or proof of masking'))
+        for segment in segments:
+            error=segment.get('targetErrorDb')
+            if error is not None and error<POLICY['normalizationTargetShortfallWarningDb']:
+                flags.append(dict(kind='normalization-target-shortfall',sceneId=row['sceneId'],segment=segment.get('index'),
+                    sourceSampleRange=segment['sourceSampleRange'],targetErrorDb=error,peakCapApplied=segment.get('peakCapApplied'),
+                    action='Declared peak/gain limits prevented the target; inspect actual normalized voice, never infer a level pass'))
     medians=[s['stages']['voice'].get('medianBodyDbfs') for s in summaries]
     finite=[x for x in medians if x is not None]
     if finite:
@@ -283,6 +343,24 @@ def continuity(paragraphs):
             if value is not None and value-center<=POLICY['paragraphBelowMedianWarningDb']:
                 flags.append(dict(kind='paragraph-body-below-other-paragraphs',sceneId=summary['sceneId'],medianBodyDbfs=value,
                     otherParagraphMedianDbfs=center,deltaDb=value-center,action='Review the same voice in surrounding paragraphs; words and emphasis naturally differ'))
+    return summaries,flags
+
+
+def component_summaries(row,words,origin):
+    summaries=[];flags=[]
+    for component in origin.get('components',[]):
+        a,b=component['destinationSampleRange'];base=row['destinationSampleRange'][0];rate=row['rate']
+        selected=[w for w in words if a<=((sum(w['originalAsrTimestamp'])/2)*rate-base)<b]
+        stats={stage:trend(selected,stage) for stage in ('canonical','normalized','voice','mix')}
+        item=dict(sceneId=row['sceneId'],componentId=component['componentId'],canonicalLocalSampleRange=[a,b],
+            recognizedWords=len(selected),membership='Original ASR word midpoint; a floor/ceil borrowed boundary sample does not move a word into the next take',stages=stats)
+        summaries.append(item)
+        for stage,value in stats.items():
+            if value['suspect']:
+                flags.append(dict(kind='derived-component-word-body-decline',sceneId=row['sceneId'],componentId=component['componentId'],stage=stage,
+                    startSeconds=selected[0]['startSeconds'],endSeconds=selected[-1]['endSeconds'],trend=value,
+                    recognizedContext=' / '.join(w['recognizedText'].strip() for w in (selected[:3]+selected[-3:])),
+                    action='The whole paragraph may hide a take reset; inspect this component with adjacent context before approval'))
     return summaries,flags
 
 
@@ -335,9 +413,12 @@ def analyze(audio_build,asr_review=None,render_manifest=None,decode_aac=False,me
     grouped=[];all_words=[];normal_checks=[]
     for row,recognized in zip(line['paragraphs'],review['paragraphs']):
         raw=load_audio(row['rawTake'],raw_rate,1,row['frames']);a,b=row['destinationSampleRange']
-        normal_checks.append(dict(sceneId=row['sceneId'],residual=residual_summary(arrays['normalized'][a:b],raw*10**(row['constantGainDb']/20))))
+        normal_checks.append(dict(sceneId=row['sceneId'],residual=residual_summary(arrays['normalized'][a:b],expected_normalized(raw,row))))
         words=word_records(row,recognized,arrays,raw,raw_rate,rate);grouped.append((row,words));all_words.extend(words)
     summaries,flags=continuity(grouped)
+    derived=[]
+    for row,words in grouped:
+        values,extra=component_summaries(row,words,line['_canonicalOrigins'][row['sceneId']]);derived.extend(values);flags.extend(extra)
     voice_gain=build['voiceGlobalGain']['constantGainDb']+build['uniformMixGainDb']
     voice_residual=residual_summary(arrays['voice'],arrays['prepared']*10**(voice_gain/20))
     mix_residual=residual_summary(arrays['mix'],arrays['voice']+arrays['music'])
@@ -374,6 +455,7 @@ def analyze(audio_build,asr_review=None,render_manifest=None,decode_aac=False,me
         raise ValueError('Selected voice changed during numerical review')
     return dict(method=METHOD,inputIdentity=identity,fingerprint=digest(identity),status='suspect-regions-listening-required' if flags else 'numerical-screen-complete-listening-pending',
         paragraphSummaries=summaries,words=all_words,suspectRegions=flags,normalizedCopyChecks=normal_checks,
+        derivedComponentSummaries=derived,
         canonicalOrigins=line['_canonicalOrigins'],
         voiceFromPreparedResidual=voice_residual,mixFromKnownStemsResidual=mix_residual,encoded=encoded,fullFileLoudness=full,
         sampleGrid=dict(rawRate=raw_rate,mixRate=rate,voiceOffsetSeconds=0,window='Half-open raw sample grid; floor start / ceil end; exact rational rate mapping',
