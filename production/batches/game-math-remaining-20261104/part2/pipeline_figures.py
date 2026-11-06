@@ -7,8 +7,15 @@ PURPOSES={
     "012":"같은 정점 P에 저장된 위치, UV, 법선 N, 접선 T와 스키닝 가중치",
     "013":"같은 표면의 N과 T에서 B를 구하고 좌우성 h로 방향을 정하기",
     "015":"한 정점에 연결된 두 UV 주소와 뼈별 가중치 구분",
+    "016":"정점별로 묶은 AoS와 속성별로 묶은 SoA의 메모리 배치",
     "017":"정점 셰이더가 내보내는 클립 위치와 픽셀로 전달할 속성",
     "018":"같은 점이 모델·월드·카메라·클립 좌표를 차례로 얻는 과정",
+    "035":"표면 P에서 광원과 시점을 향하는 L, V와 두 방향의 중간 H",
+    "036":"표면 법선 N과 L, H 사이 각도로 난반사와 정반사를 구하기",
+    "040":"카메라 원점으로 향하는 V와 표면 위치 P의 관계",
+    "041":"비균일 확대 뒤에도 변환된 면에 수직인 법선",
+    "045":"표면 위 T, B, N 세 축에서 광원 방향을 읽기",
+    "046":"RGB에서 복원한 n을 정규화해 셰이딩에 쓰기",
 }
 TEACHING_SCENES=set(PURPOSES)
 WHITE="EBF2F4";MUTED="909E9A";GOLD="83CEE9";TEAL="C2C773";GREEN="A6CA88";RED="9390EA"
@@ -145,9 +152,82 @@ def lod(d):
         else:d.line([points[1],points[-1]],TEAL,at,e,1.8)
         d.label(x,633,"가까운 메시" if i==0 else "먼 메시",at,e,GOLD,39)
 
+def memory_layout(d):
+    e=d.duration;swap=d.cue("위치끼리");field=d.cue("스트라이드와")
+    # Hide the native example address while showing the two different layouts.
+    d.area([(76,272),(994,272),(994,729),(76,729)],"000000",0,e,2)
+    d.label(451,378,"P  위치     N  법선",0,e,TEAL)
+    d.label(453,454,"UV  텍스처 좌표",0,e,WHITE)
+    for begin,end,heading,rows in [
+        (0,swap,"AoS · 정점 하나씩",[["P₀","N₀","UV₀"],["P₁","N₁","UV₁"],["P₂","N₂","UV₂"]]),
+        (swap,e,"SoA · 속성 하나씩",[["P₀","P₁","P₂"],["N₀","N₁","N₂"],["UV₀","UV₁","UV₂"]])]:
+        d.label(1405,302,heading,begin,end,GOLD)
+        for j,row in enumerate(rows):
+            y=410+105*j
+            box=[(1083,y-40),(1736,y-40),(1736,y+40),(1083,y+40)]
+            d.area(box,DARK,begin,end,2);d.line(box+box[:1],TEAL,begin,end,2)
+            for i,word in enumerate(row):d.label(1204+i*208,y,word,begin,end)
+    d.label(431,571,"stride · 다음 원소까지",field,e,GOLD)
+    d.label(425,651,"offset · 필드 위치",field,e,GOLD)
+
+def lighting_frame(d,which):
+    e=d.duration;p=(1410,574)
+    d.line([(1080,574),(1745,574)],MUTED,0,e,4);d.dot(p,GOLD,0,e)
+    d.label(1430,630,"P · 표면점",0,e,GOLD)
+    if which=="035":
+        light=d.cue("광원 위치");view=d.cue("시점 방향")
+    else:
+        light=0;view=d.cue("정반사 계수")
+    # Unit directions L and V are symmetric around a near-upward bisector.
+    # All arrows use the same scale. H is computed from the normalized sum.
+    l=(-.8,-.6);v=(.6,-.8);hx,hy=l[0]+v[0],l[1]+v[1];hn=math.hypot(hx,hy)
+    for vector,when,color,label,offset in [
+        ((0,-1),0,GREEN,"N", (47,-13)),(l,light,GOLD,"L · 광원",(-32,-36)),
+        (v,view,TEAL,"V · 시점",(73,-13)),((hx/hn,hy/hn),view,RED,"H",(-38,-22))]:
+        tip=(p[0]+205*vector[0],p[1]+205*vector[1])
+        d.arrow(p,tip,color,when,e);d.label(tip[0]+offset[0],tip[1]+offset[1],label,when+.25,e,color)
+
+def view_vector(d):
+    e=d.duration;p=(1610,555);camera=(1160,395)
+    d.dot(camera,TEAL,0,e);d.label(1175,335,"카메라 O",0,e,TEAL)
+    d.dot(p,GOLD,0,e);d.label(1630,620,"표면 P",0,e,GOLD)
+    t=d.cue("시선 방향은");d.arrow(p,camera,TEAL,t,e)
+    d.label(1510,435,"V · 시선 방향",t+.25,e,TEAL)
+    d.label(1450,695,"V = normalize(O − P)",t+.4,e)
+
+def normal_transform(d):
+    e=d.duration;p=(1390,532)
+    # For tangent (2,-1) and transformed normal (0.5,1), their dot is zero.
+    d.line([(1120,397),(1660,667)],MUTED,0,e,4)
+    d.dot(p,GOLD,0,e);d.label(1380,590,"P",0,e,GOLD)
+    t=d.cue("위치처럼");d.arrow(p,(1590,432),RED,t,e)
+    d.label(1690,404,"M · N",t+.25,e,RED)
+    t=d.cue("역행렬");d.arrow(p,(1490,332),GREEN,t,e)
+    d.label(1637,314,"M⁻ᵀ · N",t+.25,e,GREEN)
+    d.label(1240,675,"변환된 표면",t+.3,e)
+
+def normal_coordinates(d,which):
+    e=d.duration;p=patch(d,0,e)
+    axes=[((1364,338),"N",(1407,324),GREEN),((1549,579),"T",(1595,604),TEAL),
+          ((1470,447),"B",(1510,430),GOLD)]
+    coords=d.cue("법선과 접선") if which=="045" else 0
+    for tip,symbol,pos,color in axes:
+        d.arrow(p,tip,color,coords,e);d.label(*pos,symbol,coords+.24,e,color)
+    if which=="045":
+        t=d.cue("광원 방향과")
+        d.arrow(p,(1193,346),WHITE,t,e);d.label(1143,315,"L",t+.25,e)
+        d.label(1460,696,"(L·T, L·B, L·N)",t+.25,e)
+    else:
+        t=d.cue("파랑을 두 배");d.arrow(p,(1265,375),RED,t,e)
+        d.label(1184,349,"n",t+.25,e,RED)
+        d.label(1430,696,"n = normalize(2 RGB − 1)",d.cue("수 있으니 다시"),e)
+
 def render(file,cut,timeline,caption,stroke,reveal):
     draw=Diagram(caption,stroke,reveal,cut,timeline)
     builders={"003":lod,"011":shared_state,"012":vertex_attributes,"013":tangent_frame,
-              "015":uv_sets,"017":vertex_outputs,"018":transforms}
+              "015":uv_sets,"016":memory_layout,"017":vertex_outputs,"018":transforms,
+              "035":lambda d:lighting_frame(d,"035"),"036":lambda d:lighting_frame(d,"036"),
+              "040":view_vector,"041":normal_transform,
+              "045":lambda d:normal_coordinates(d,"045"),"046":lambda d:normal_coordinates(d,"046")}
     builders[cut["scene"]](draw)
     file.write_text("\n".join(draw.lines)+"\n",encoding="utf8")

@@ -2,7 +2,7 @@
 import argparse, json, subprocess, sys
 from pathlib import Path
 import psutil
-from edition import BATCH,ROOT,read,save,sha
+from edition import BATCH,ROOT,read,save,sha,render_revision
 
 PROJECTS={x["id"]:x for x in read(BATCH/"batch.json")["items"][2:]}
 STATE=BATCH/"local/part2-20261106"
@@ -20,7 +20,7 @@ def select(row):
     doc=p/"planning/part2-delivery-edition.json";slug=p.name
     if not doc.exists():return "편별 수정 작업 중",None
     edition=read(doc); rev=edition["audioRevision"];audio=local/rev
-    output=local/"render-v2";queue=output/"queue.json";qa=output/"final-qa/report.json"
+    output=local/render_revision(p);queue=output/"queue.json";qa=output/"final-qa/report.json"
     if row.get("localReviewReady") and (output/"content-review.json").is_file():return "사용자 일괄 검수 대기",None
     if not (audio/"narration.wav").is_file():
         w=snap(audio/"finite-worker.json")
@@ -60,7 +60,7 @@ def select(row):
         if live(snap(output/"final-mix-review/worker.json")):return "최종 음성 대조 중",None
         return "최종 음성 대조",instruction("mix-qa","review-final-mix.py",["--queue",queue,"--device","cuda","--wait-hours","48"],True)
     if not (output/"part2-delivery-evidence.json").exists():
-        return "재생·게임 장면 점검",instruction("playback-qa","part2/check_delivery.py",[row["id"]],True)
+        return "재생·게임 장면 점검",instruction("playback-qa","part2/check_delivery.py",[row["id"],"--revision",output.name],True)
     return "4파일 생성 · 화면과 음성 직접 검수 대기",None
 
 def cycle():

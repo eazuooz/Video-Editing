@@ -12,6 +12,39 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def now():return datetime.now(timezone.utc).isoformat()
 def module(name,path):
  s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+def reuse_visual_correction(queue_path,queue,master,master_hash,ff):
+ # The earlier master was transcribed in full. Reuse its word/gain evidence
+ # only if the new actual file has identical sound, origin and normalization.
+ project=R/'projects'/queue['project']
+ proof=project/'production/part2-review/final-picture-correction.json'
+ if not proof.exists():return False
+ correction=read(proof)
+ if correction.get('renderRevision')!=queue_path.parent.name:return False
+ prior=project/'production/local'/correction['sourceRevision']
+ before=prior/'final-mix-review/report.json'
+ if not before.exists():return False
+ source=read(before);qa=read(prior/'final-qa/report.json')
+ oldmaster=Path(qa['files']['captioned']['path'])
+ if source['masterSha256']!=correction['sourceMasterSha256'] or source['masterSha256']!=sha(oldmaster):return False
+ if sha(queue_path.parent/'composite/narration-normalized.wav')!=source['normalizedNarrationSha256']:return False
+ if read(prior/'queue.json')['wordAlignmentSha256']!=queue['wordAlignmentSha256']:return False
+ def sound(path):
+  stream=subprocess.check_output([str(ff.with_name('ffprobe.exe')),'-v','error','-select_streams','a:0',
+      '-show_entries','stream=codec_name,channels,channel_layout,sample_rate,start_pts,time_base,duration_ts,nb_frames',
+      '-of','json',str(path)])
+  pcm=subprocess.check_output([str(ff),'-nostdin','-loglevel','error','-i',str(path),'-map','0:a:0','-c:a','pcm_f32le','-f','hash','-'])
+  return {'stream':json.loads(stream)['streams'][0],'pcmSha256':pcm.decode('ascii').strip().split('=')[-1]}
+ previous_audio=sound(oldmaster);current_audio=sound(master)
+ if previous_audio!=current_audio:return False
+ timing=read(Path(queue['audioDirectory'])/'narration.timing.json')
+ if [p['entry'] for p in source['paragraphs']]!=timing['entries']:return False
+ where=queue_path.parent/'final-mix-review'
+ evidence=dict(method='Inherited full recognition and 100ms gain checks from bit-identical decoded whole-program audio.',
+     originalReport=str(before),originalReportSha256=sha(before),sourceMasterSha256=source['masterSha256'],
+     currentMasterSha256=master_hash,verifiedAudio=current_audio,normalizedNarrationSha256=source['normalizedNarrationSha256'])
+ save(where/'identical-audio-evidence.json',evidence)
+ save(where/'report.json',dict(source,masterSha256=master_hash,identicalAudioEvidence=evidence))
+ return True
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--wait-hours',type=float,default=12)
  ap.add_argument('--device',choices=('cuda','cpu'),default='cuda');a=ap.parse_args()
@@ -44,6 +77,8 @@ def main():
   report=read(q.parent/'final-qa/report.json');master=Path(report['files']['captioned']['path']);master_hash=sha(master);assert master_hash==report['files']['captioned']['sha256']
   audio_dir=Path(queue.get('audioDirectory',P/'production/local/audio-v1'));timing=read(audio_dir/'narration.timing.json')
   ff=Path(read(Path(queue['jobs'][0]))['ffmpeg']);pcm=W/'actual-final-body-mono.wav'
+  if reuse_visual_correction(q,queue,master,master_hash,ff):
+   total=len(timing['entries']);state.update(status='evidence-ready-direct-content-review-pending',completed=total,total=total,finishedAt=now(),identicalAudio=True);save(statefile,state);return
   if not pcm.exists():subprocess.run([str(ff),'-v','error','-nostdin','-n','-i',str(master),'-ss','2','-t',str(timing['duration_seconds']),'-vn','-ar','48000','-ac','1','-c:a','pcm_f32le',str(pcm)],check=True,creationflags=G.CREATE)
   os.environ.update(OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2',NUMEXPR_NUM_THREADS='2',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
   import soundfile as sf,numpy as np

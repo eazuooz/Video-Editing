@@ -152,7 +152,9 @@ def bind(episode):
     stage=p/"production/unity-staging"
     file=p/"planning/part2-picture-plan.json"
     q=stage/(read(file)["preflightQueue"] if file.is_file() else "local-preflight-part2-v1/queue.json")
-    save(file,dict(episode=episode,preflightQueue=q.relative_to(stage).as_posix(),fingerprint=read(q)["fingerprint"],
+    previous=read(file) if file.is_file() else {}
+    save(file,dict(**({"renderRevision":previous["renderRevision"]} if "renderRevision" in previous else {}),
+                   episode=episode,preflightQueue=q.relative_to(stage).as_posix(),fingerprint=read(q)["fingerprint"],
                    sourceBlocks=len(binding["scenes"]),teachingFigures=changes,additionalTeachingDiagrams=additional,
                    actualGameScenes=[row["id"] for row in binding["scenes"] if row.get("actualGamePart")],
                    actualInternalMasterReview=False,sourceBindingsSha256=sha(bindingfile)))

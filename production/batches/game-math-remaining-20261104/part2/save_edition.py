@@ -42,7 +42,7 @@ def commit(message,push):
             direct.append(p/"planning/game-sound-window-audit.json")
     for slug in ["game-math-pipeline-shaders","game-math-velocity-derivatives","game-math-acceleration-integration","game-math-circular-motion"]:
         s=ROOT/"projects"/slug/"production/unity-staging"
-        direct.extend(s/x for x in ["PipelineMeaningGuides.cs","PipelineTeachingStage.cs","MotionLessonStage.cs","MotionTeachingStage.cs","MotionAnimalSubjects.cs","verify-source.py","compile-check.json","sandbox-preparation.json"] if (s/x).is_file())
+        direct.extend(s/x for x in ["PipelineDiagrams.cs","PipelineMeaningGuides.cs","PipelineTeachingStage.cs","MotionLessonStage.cs","MotionTeachingStage.cs","MotionAnimalSubjects.cs","verify-source.py","compile-check.json","sandbox-preparation.json"] if (s/x).is_file())
     for slug in ["game-math-momentum-collisions","game-math-rigid-body-inertia","game-math-bezier-subdivision","game-math-splines-continuity"]:
         p=ROOT/"projects"/slug
         direct.extend([p/"planning/unity-plan.json",p/"production/unity-staging/sandbox-preparation.json"])

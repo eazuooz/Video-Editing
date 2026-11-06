@@ -19,6 +19,11 @@ def sha(path):
     with path.open("rb") as stream:
         for block in iter(lambda:stream.read(4*1024*1024),b""):digest.update(block)
     return digest.hexdigest()
+def render_revision(project):
+    picture=project/"planning/part2-picture-plan.json"
+    revision=read(picture).get("renderRevision","render-v2") if picture.is_file() else "render-v2"
+    if not re.fullmatch(r"render-v[2-9]\d*|render-v1\d+",revision):raise ValueError(revision)
+    return revision
 def passages(source):
     rows={}
     for line in source.read_text("utf8").splitlines():

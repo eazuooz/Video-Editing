@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime,timezone
 import argparse, json, os, re
 from html import escape
-from edition import ROOT,BATCH,read
+from edition import ROOT,BATCH,read,render_revision
 from queue_state import PROJECTS,select,snap
 
 def atomic(path,payload):
@@ -28,12 +28,13 @@ def refresh():
             doc=read(p/"planning/part2-delivery-edition.json")
             audio=p/"production/local"/doc["audioRevision"]
             wavecount=len(list((audio/"chunks").glob("*-scene.wav")))
-            q=p/"production/local/render-v2";rc=snap(q/"progress.json")
+            revision=render_revision(p)
+            q=p/"production/local"/revision;rc=snap(q/"progress.json")
             picture=read(p/"planning/part2-picture-plan.json")
             preview=p/"production/unity-staging"/picture["preflightQueue"]
             prog=snap(preview.parent/"progress.json")
             qa=snap(q/"final-qa/report.json");content=snap(q/"content-review.json")
-            dest=ROOT/"output"/(p.name+"-render-v2")
+            dest=ROOT/"output"/(p.name+"-"+revision)
             files={suffix:str(dest/(p.name+"."+suffix+ext)) for suffix,ext in
                    [("clean",".mp4"),("captioned",".mp4"),("ko",".srt"),("en",".srt")]}
             allfiles=all(Path(v).is_file() for v in files.values()) and (dest/"index.html").is_file()

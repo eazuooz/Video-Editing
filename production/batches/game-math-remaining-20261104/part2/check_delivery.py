@@ -4,11 +4,13 @@ from datetime import datetime, timezone
 import argparse, os, re, subprocess
 from urllib.request import Request,urlopen
 import numpy as np
-from edition import ROOT,BATCH,read,save,sha
+from edition import ROOT,BATCH,read,save,sha,render_revision
 
-def inspect(episode):
+def inspect(episode,revision):
     row=next(r for r in read(BATCH/"batch.json")["items"][2:] if r["id"]==episode)
-    p=ROOT/"projects"/row["slug"];work=p/"production/local/render-v2"
+    p=ROOT/"projects"/row["slug"]
+    assert revision in {"render-v2",render_revision(p)}
+    work=p/"production/local"/revision
     queue=read(work/"queue.json"); qa=read(work/"final-qa/report.json"); mix=read(work/"final-mix-review/report.json")
     master=qa["files"]["captioned"];cap=Path(master["path"]); dest=cap.parent;digest=master["sha256"]
     assert digest==sha(cap)==mix["masterSha256"] and queue["project"]==p.name
@@ -67,4 +69,5 @@ def inspect(episode):
     save(work/"part2-delivery-evidence.json",receipt)
     print(episode,len(motion),"game examples;",len(anchors),"speech spots to inspect")
 if __name__=="__main__":
-    ap=argparse.ArgumentParser();ap.add_argument("episode");inspect(ap.parse_args().episode)
+    ap=argparse.ArgumentParser();ap.add_argument("episode");ap.add_argument("--revision",default="render-v2")
+    args=ap.parse_args();inspect(args.episode,args.revision)

@@ -2,12 +2,12 @@
 from pathlib import Path
 import argparse
 from datetime import datetime, timezone
-from edition import ROOT,BATCH,read,save,sha
+from edition import ROOT,BATCH,read,save,sha,render_revision
 from status import refresh
 
 def finish(episode):
     row=next(r for r in read(BATCH/"batch.json")["items"][2:] if r["id"]==episode)
-    p=ROOT/"projects"/row["slug"];work=p/"production/local/render-v2"
+    p=ROOT/"projects"/row["slug"];work=p/"production/local"/render_revision(p)
     qa=read(work/"final-qa/report.json");d=read(work/"part2-delivery-evidence.json")
     notes=read(p/"production/part2-review/final-inspection.json")
     h=qa["files"]["captioned"]["sha256"];assert h==d["masterSha256"]==notes["masterSha256"]
