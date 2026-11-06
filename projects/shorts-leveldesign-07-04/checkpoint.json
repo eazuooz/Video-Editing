@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:40:23.230528+09:00",
+  "updatedAt": "2026-11-07T01:50:57.511202+09:00",
   "batchId": "architectural-111-20261106",
   "topicId": "07.04",
-  "stage": "v2-33component-subset-voice-repair-worker-queued-or-running",
+  "stage": "v2-33component-subset-voice-repair-engine-running",
   "completedStages": [
     "independentFHD-source-adopted",
     "source-editorial-conformance",
@@ -370,14 +370,37 @@
         "6"
       ],
       "commandSHA256": "ec43ef03a1899d0065c2415694374e8db4a2643b03c3eb20dc636abe115fec61",
-      "child": null,
-      "status": "waiting-for-preparation-or-resources",
+      "child": {
+        "pid": 53932,
+        "createTime": 1793983572.596224,
+        "argv": [
+          "D:\\Github\\VideoEditing\\qwen3-tts\\.venv\\Scripts\\python.exe",
+          "-u",
+          "-X",
+          "utf8",
+          "D:\\Github\\VideoEditing\\qwen3-tts\\render_narration.py",
+          "--project",
+          "shorts-leveldesign-07-04",
+          "--manifest",
+          "projects/shorts-leveldesign-07-04/production/voice-preparation/2915d9b431e9005acf3ac7fe/repair-subset-68afb17b2545e123f62857ad/voice-missing-only-manifest.json",
+          "--batch-size",
+          "1",
+          "--device",
+          "cuda:0"
+        ],
+        "commandSHA256": "3703f962d102b4d767f7c6a231276cee47d536f719c00e666a2a985cd9986a51"
+      },
+      "status": "engine-running",
       "completed": false,
-      "engineLaunched": false,
+      "engineLaunched": true,
       "externalGpuLeaseAcquired": false,
       "engineOwnsGpuLease": true,
-      "reason": "Another scoped job holds the shared GPU lease",
-      "checkedAt": 1793983215.061738
+      "reason": "Another media job is running",
+      "checkedAt": 1793983550.8887086,
+      "fingerprint": "7708244a3181f8005b7dc6dd41da3d28c2dd807027c5008ca1c21e2a4d9a3487",
+      "preparationFingerprint": "2915d9b431e9005acf3ac7fea7e7fddb616ed21152c45c532ae240cc30f43adb",
+      "output": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\07-04\\voice-attempts\\7708244a3181f8005b7dc6dd",
+      "log": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\07-04\\voice-attempts\\7708244a3181f8005b7dc6dd\\engine-attempts\\20261107-014612-29c7c63b\\engine.log"
     },
     "launch": {
       "topicId": "07.04",
@@ -406,7 +429,7 @@
       "repairFingerprint": "68afb17b2545e123f62857ad83b247f845f2107450fc974a5872eabb6341be90",
       "scope": "One finite selected07.04 Qwen subset repair:32newrawchunks/1exactoldreuse; no ASR/mix/MC/film/nexttopic/platform. Engine owns cooperative GPU lease."
     },
-    "observedAt": "2026-11-07T01:40:23.230528+09:00",
+    "observedAt": "2026-11-07T01:50:57.511202+09:00",
     "scope": "Onefinite07.04subset-only Qwen repair; no nextstage/platform",
     "expectedFullVoiceFingerprint": "7708244a3181f8005b7dc6dd41da3d28c2dd807027c5008ca1c21e2a4d9a3487",
     "expectedRepairFingerprint": "68afb17b2545e123f62857ad83b247f845f2107450fc974a5872eabb6341be90"
@@ -421,5 +444,26 @@
   },
   "currentComponentCount": 33,
   "currentNewSynthesisCount": 32,
-  "currentExactReuseCount": 1
+  "currentExactReuseCount": 1,
+  "voiceRepairActualStage": {
+    "manifest": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\production\\voice-preparation\\2915d9b431e9005acf3ac7fe\\repair-subset-68afb17b2545e123f62857ad\\voice-missing-only-manifest.json",
+      "sha256": "fba22f10eb38691ba980f65caa54ea70d763dd472c285017683c99e0ca31ceb4"
+    },
+    "script": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-07-04\\production\\voice-preparation\\2915d9b431e9005acf3ac7fe\\repair-subset-68afb17b2545e123f62857ad\\narration-missing-only.json",
+      "sha256": "9ddf2fea9bfc4d2e94dacbed1cb8ac28e914669dfa8f624ab6178e1fcb6e5f0c"
+    },
+    "fullCanonicalSceneCount": 33,
+    "engineOnlyMissingSceneCount": 32,
+    "engineIncludesReusedScene": false,
+    "reusedRawWave": {
+      "path": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\07-04\\voice-attempts\\7708244a3181f8005b7dc6dd\\chunks\\p003-c01-scene.wav",
+      "sha256": "cf03bc5cc0ec7d6a3b83a2da978fa66bca5fad254418129dfbd49bd8024d497f"
+    },
+    "reuseByteIdenticalVerified": true,
+    "observedAt": "2026-11-07T01:50:57.511202+09:00",
+    "actualNewVoiceComplete": false,
+    "actualAsrForNewVoice": false
+  }
 }
