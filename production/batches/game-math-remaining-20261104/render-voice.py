@@ -53,6 +53,24 @@ def verified_cpu_research(arguments):
 def command_output(command):
     return subprocess.check_output(command, text=True, creationflags=CREATE_NO_WINDOW)
 
+def capture_activity(recorder_pids):
+    """Read WDDM activity for the inspected recorder, independently of Discord or Parsec."""
+    import psutil
+    pids=sorted(pid for pid in recorder_pids if psutil.pid_exists(pid))
+    if not pids:
+        return {'enginePercent':0,'fileBytesWritten':0}
+    pattern='^pid_('+'|'.join(str(int(pid)) for pid in pids)+')_.*engtype_(VideoEncode|Compute|Cuda)'
+    script=("$ErrorActionPreference='Stop'; "
+            "$rows=Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine; "
+            f"$rows | Where-Object {{$_.Name -match '{pattern}'}} | "
+            "ForEach-Object {$_.UtilizationPercentage}")
+    values=command_output(['powershell','-NoProfile','-NonInteractive','-Command',script]).split()
+    written=0
+    for pid in pids:
+        try:written+=psutil.Process(pid).io_counters().write_bytes
+        except psutil.NoSuchProcess:continue
+    return {'enginePercent':max((int(v) for v in values),default=0),'fileBytesWritten':written}
+
 def selected_probe_parent(process,arguments):
     """A finite recorder's read-only capacity probe never imports a model."""
     import psutil
@@ -442,15 +460,16 @@ def main():
         free, total, utilization = [int(v.strip()) for v in command_output(['nvidia-smi', '--query-gpu=memory.free,memory.total,utilization.gpu', '--format=csv,noheader,nounits']).splitlines()[0].split(',')]
         samples.append({'freeMiB': free, 'totalMiB': total, 'utilization': utilization})
         if recorder_pids:
-            encoder=command_output(['nvidia-smi','--query-gpu=utilization.encoder','--format=csv,noheader,nounits'])
-            samples[-1]['encoderUtilization']=int(encoder.splitlines()[0].strip())
+            samples[-1]['recorder']=capture_activity(recorder_pids)
         if sample_index < 2:
             time.sleep(1)
     # A 7 GiB allocator cap leaves at least 2 GiB of measured free headroom.
     # The previous 10 GiB admission rule rejected otherwise idle launchers.
     minimum_free, maximum_utilization = (9216, 40) if args.allow_idle_editors else (8192, 14)
     assert all(s['freeMiB'] >= minimum_free and s['utilization'] <= maximum_utilization for s in samples), ('Insufficient inspected GPU capacity; existing windows/jobs preserved', samples)
-    assert all(s.get('encoderUtilization',0)<=2 for s in samples), ('Screen recorder open and video encoding active; wait without disturbing it', samples)
+    if recorder_pids:
+        activity=[s['recorder'] for s in samples]
+        assert max(s['enginePercent'] for s in activity)<=1 and max(s['fileBytesWritten'] for s in activity)-min(s['fileBytesWritten'] for s in activity)<131072, ('Active recording; wait without disturbing it',activity)
     free = min(s['freeMiB'] for s in samples)
     if args.check_resources and not args.synthesize:
         preflight = {'status':'resource-preflight-passed-no-synthesis','checkedAt':time.time(),'project':SLUG,'rootScope':'explicit M21–M33 local review batch','allowIdleEditors':args.allow_idle_editors,'baselineProcesses':baseline,'observedGpuRows':observed_gpu_rows,'gpuSamples':samples,'allocatorCapMiBIfStarted':min(7168 if args.allow_idle_editors else 8192,free-700),'gpuModelLoaded':False,'gpuLeaseCreated':False,'foreignProcessesChanged':False}

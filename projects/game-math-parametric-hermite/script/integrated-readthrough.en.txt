@@ -2,7 +2,7 @@ Watch the train in Satisfactory. As the track bends, the train changes both posi
 
 Write the moving point as p of t. The parameter t describes progress along the curve. One input gives an x, y, and z coordinate together. We often use zero to one, but that interval does not automatically mean one physical second. Curve values can also represent properties such as color or intensity rather than spatial coordinates. Here we will follow moving paths.
 
-For a unit circle, let x be cosine of two pi t and y be sine of two pi t. At one quarter we reach the top; at one half, the left. The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle.
+For a unit circle, let x be cosine of two pi t and y be sine of two pi t. Start on the right and divide one lap into four equal parts. The point is at the top after the first quarter and on the left after half a turn. The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle.
 
 Now make each coordinate a polynomial in t. Take coefficient vectors c zero through c three, multiply them by one, t, t squared, and t cubed, and add them. This is the power, or monomial, form of a cubic polynomial curve. Higher degree is possible, but it does not automatically make a shape easier to control.
 
@@ -32,7 +32,7 @@ Assign parameter values zero, one third, two thirds, and one, with heights two, 
 
 Even in three dimensions, solve the coordinate problems separately. Use the same parameter values to interpolate x, y, and z. Changing those parameter spacings can change the curve through the same spatial points. Point positions alone do not uniquely specify the polynomial.
 
-The first method is Aitken interpolation. Start with straight interpolants through pairs of points. To fit three points, blend the line through the first pair with the line through the second pair. Both already agree at the middle point, while the weights select the correct line at each outer endpoint.
+First consider recursively interpolating between values obtained from pairs of points. This is Aitken interpolation. Start with straight interpolants through pairs of points. To fit three points, blend the line through the first pair with the line through the second pair. Both already agree at the middle point, while the weights select the correct line at each outer endpoint.
 
 In the formula, multiply the earlier interpolant by the last parameter minus t, and the later one by t minus the first parameter, then divide by the full parameter interval. Each level fits one additional point. Blending two quadratic interpolants this way produces the cubic through four points.
 
@@ -46,7 +46,7 @@ To make a weight zero at the other sample times, multiply the factors t minus ea
 
 The height of each basis function tells us how much its point contributes to the path. Move the time marker from the first knot to the last. At each knot its own weight is one and all other weights are zero. Between knots a basis curve can fall below zero or rise above one. A point can pull the other way or too strongly, allowing an overshoot.
 
-Multiply those four functions by two, three, two, and three. The resulting height is eighteen t cubed minus twenty-seven t squared plus ten t plus two. At one half it equals two point five. It is the same curve produced by Aitken interpolation, with the same overshoot.
+Multiply those four functions by two, three, two, and three. The height is the sum of four terms. The cubic coefficient is 18, the quadratic coefficient is minus 27, the linear coefficient is 10, and the constant is 2. Halfway through the interval, t is 0.5 and the height is 2.5. This is the same curve obtained earlier by interpolating successive points; it still overshoots between the samples.
 
 Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t. The weights sum to one but may be negative. Nonnegative weights summing to one keep a result inside the points' convex hull—the smallest convex enclosure, like a taut rubber band around planar points. These weights do not provide that guarantee.
 
