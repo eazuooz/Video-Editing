@@ -1,4 +1,4 @@
-On a bumpy road in BeamNG.drive, the wheels and body move to different heights. What lets a displaced object return while also reducing its oscillation? We will start with a spring’s restoring force, add damping, then connect those ideas to code that smoothly tracks a camera or menu value. First, look at displacement followed by return.
+On a bumpy road in BeamNG.drive, the wheels and body move to different heights. What lets a displaced object return while also reducing its oscillation? First see how the spring pulls the wheel back. Then add damping and use the same idea to make a camera or a menu follow its target smoothly. First, look at displacement followed by return.
 
 In Super Mario Odyssey, a captured Chain Chomp can be pulled back and released toward a wall. Use that pull-and-return motion as a starting point for a spring model whose force we can calculate. Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring.
 
@@ -16,13 +16,13 @@ Amplitude sets the maximum displacement; phase sets where in the cycle motion be
 
 With the same starting position, the initial direction of motion changes a spring's phase. Start at the centre and send the object right, then left at the same speed. The farthest excursion is the same but the initial graph slope reverses. Both starting position and velocity determine amplitude and phase. If both are zero it stays still and no phase distinguishes any movement.
 
-A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. Quadrupling stiffness doubles frequency; quadrupling mass halves it. Pulling farther changes amplitude, but not frequency in the ideal linear model.
+A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. With the mass fixed, quadrupling stiffness doubles frequency. Now hold the spring fixed and quadruple the object's mass. The frequency falls to half. Pulling farther changes amplitude, but not frequency in the ideal linear model.
 
 Restoring force alone produces perpetual oscillation. Driving force can start or sustain it; damping removes energy. Add viscous damping, proportional and opposite to velocity. Twice the speed produces twice the opposing force, unlike ideal constant-magnitude Coulomb friction. Damping reduces amplitude and, where oscillation remains, its frequency.
 
 The spring pulls toward equilibrium; the damper opposes current velocity. Net force is minus k x minus c velocity; dividing by mass gives acceleration. At equilibrium the spring force is zero, while remaining velocity still produces damping. These forces can reinforce or oppose each other depending on position and velocity.
 
-To compare how long oscillations persist, use damping ratio rather than the damping coefficient alone. Omega zero is the undamped angular frequency. Zeta divides the coefficient c by the critical damping coefficient, twice mass times omega zero. Keep the mass and spring fixed and raise damping. Restoration still points to the centre, while the arrow opposing velocity grows and the next swing becomes smaller.
+To compare how long oscillations persist, use damping ratio rather than the damping coefficient alone. Omega zero is the undamped angular frequency. Zeta divides the coefficient c by the critical damping coefficient, twice mass times omega zero. Hold mass and spring stiffness fixed and increase damping alone. The spring still pulls towards the centre. The force opposite the velocity changes. As that arrow grows, the next swing becomes smaller.
 
 For a ratio between zero and one, the system is underdamped: it crosses the target with decreasing amplitude. Sine and cosine create oscillation while a decaying exponential forms the envelope. Actual angular frequency is omega zero times square root of one minus zeta squared. Two constants match initial position and velocity. At ratio zero, the envelope is one and motion is undamped.
 
