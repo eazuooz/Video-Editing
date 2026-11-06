@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "batchId": "architectural-111-20261106",
-  "updatedAt": "2026-11-06T18:11:30.254773+09:00",
-  "phase": "voice-v3-S03-only-level-repair-in-progress",
+  "updatedAt": "2026-11-06T18:50:55.871491+09:00",
+  "phase": "voice-v3-complete; raw-ASR-v3-in-progress",
   "topicCount": 111,
   "selectedFirstTopic": "03.02",
   "completedLocalReviewCount": 0,
-  "completedVoiceCount": 0,
+  "completedVoiceCount": 1,
   "scriptDraftCount": 111,
   "verifiedFootageCount": 1,
   "workers": {
@@ -14,7 +14,7 @@
     "b": "Chapters 5-9: 39 topics",
     "c": "Chapters 10-14: 30 topics"
   },
-  "currentResourceConstraint": "Another scoped job holds the shared GPU lease",
+  "currentResourceConstraint": "Current independent raw-ASR worker owns/waits for cooperative resources; preserve all other jobs",
   "ownGPUJobStarted": true,
   "ownFiniteQueueRunning": true,
   "recurringAutomationCreated": true,
@@ -109,29 +109,65 @@
     "topicId": "03.02",
     "pid": 70364,
     "createTime": 1793956162.6280007,
-    "child": null,
-    "completed": false,
-    "gpuStarted": false,
-    "status": "waiting-for-preparation-or-resources",
-    "reason": "Another scoped job holds the shared GPU lease",
-    "checkedAt": 1793956288.4010296,
-    "scope": "Dedicated S03-only two-take level repair; preserve exact five other canonical WAV/PCM; engine guard owns lease"
+    "child": {
+      "pid": 79320,
+      "createTime": 1793957941.087058
+    },
+    "completed": true,
+    "gpuStarted": true,
+    "status": "voice-generated-review-pending",
+    "reason": "Another media job is running",
+    "checkedAt": 1793957930.758697,
+    "fingerprint": "e0426906238c6b26f52a036b12da6cb4bc4e3d048bed405c16d65ad607ca53ae",
+    "repairFingerprint": "1066247b710308fca6c1e0d3cf19bcf5d97f7db312952f7681be44f1a372740f",
+    "log": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1\\subtakes-v3\\attempts\\generation-20261106-183901-94858bf1\\engine.log",
+    "output": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1",
+    "otherFiveUnchanged": {
+      "s01": {
+        "sha256": "c6f95b235c2bbd4cc519b3321a975cfc36ee84beef1c2119fd1fd3ea6252b823",
+        "pcmSHA256": "5647074eaddb1d6dc16c654f74e0d901f06bebb24e977fa1be73100018379991"
+      },
+      "s02": {
+        "sha256": "ecb2b0c17c170509478df57eef0a49e1a2bd5e4ba679621fab2cfc34dbe530ef",
+        "pcmSHA256": "57f5d7049c3cdd88d0f8ab40064cda9cd158fe8ecd74cf971824718e838057fd"
+      },
+      "s04": {
+        "sha256": "a51a21bdec39d3eb4983bf2385a3eca72cd2e512d02c9bcce95d14777520611f",
+        "pcmSHA256": "8fb3f599789d2623de42270921fe3fe50658eda1144836531d3a177cce9914dd"
+      },
+      "s05": {
+        "sha256": "66b9f8ba44f7dda402602fdc0d1dbc76313e4e42287dbfb4c815bdc939309a19",
+        "pcmSHA256": "9e67d2463adb04b25824ff2280c1a8f5de416d30cfacf10426631b37131558f0"
+      },
+      "s06": {
+        "sha256": "2c471a0db2c3d0dfedbe897ff5d09f74baea6ee59cac71de79dd5de4584b1ffe",
+        "pcmSHA256": "d3a25cd5639fc3d9ea467a2ded44f321dd31063631bdcedda873439af9681d9b"
+      }
+    },
+    "componentReport": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\03-02\\voice-v1\\s03-components.json",
+    "asrReview": "pending",
+    "humanListening": false,
+    "childStillAlive": false,
+    "finishedOrYieldedAt": 1793958089.404375
   },
   "firstVoiceRawLevelReport": "production/batches/architectural-111-20261106/first-voice-raw-levels-v1.json",
   "firstAsrWorker": {
-    "pid": 75736,
-    "createTime": 1793952783.2388833,
-    "status": "independent-asr-complete-content-review-pending",
-    "state": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\first-asr-progress.json",
-    "scope": "Current v2: four exact paragraph recognitions hash-reused; only two new paragraphs plus five joins recognized",
+    "pid": 47496,
+    "createTime": 1793958605.1608503,
+    "stage": "asr",
+    "topicId": "03.02",
+    "status": "waiting-for-resources",
+    "child": null,
+    "modelLoadedByWrapper": false,
     "reusedParagraphTasks": [
       "paragraph-s01",
+      "paragraph-s02",
       "paragraph-s04",
       "paragraph-s05",
       "paragraph-s06"
     ],
-    "reason": "Another media job is running",
-    "completed": true
+    "reason": "Another scoped job holds the shared GPU lease",
+    "checkedAt": 1793958647.711047
   },
   "screenSharePolicy": {
     "policy": "Shorts-specific section9, no forced long-form body ratio",
@@ -160,7 +196,7 @@
   },
   "firstOpeningTracking": "projects/shorts-leveldesign-03-02/opening-cart-tracking-v2.json",
   "firstS03LevelRepair": {
-    "stage": "voice-v3-S03-only-level-repair-in-progress",
+    "stage": "voice-v3-S03-two-take-level-repair-complete-ASR-pending",
     "canonicalFingerprint": "e0426906238c6b26f52a036b12da6cb4bc4e3d048bed405c16d65ad607ca53ae",
     "repairFingerprint": "1066247b710308fca6c1e0d3cf19bcf5d97f7db312952f7681be44f1a372740f",
     "worker": "production/batches/architectural-111-20261106/run-first-s03-level-repair.py",
@@ -186,5 +222,12 @@
     "scope": "16 synthetic fixtures passed; actual newS03/voice-stem-music-mix word-window analysis and optional actual AAC alignment remain pending",
     "actualNewMixAnalyzed": false,
     "humanListening": false
+  },
+  "firstVoiceDurationSeconds": 117.04008333333333,
+  "firstFilmV3Compatibility": "production/batches/architectural-111-20261106/first-timeline-v3-compatibility.json",
+  "firstS03ActualStructuralQa": {
+    "record": "production/batches/architectural-111-20261106/first-s03-structure-levels-v3.json",
+    "sha256": "08946245c8e50db31258f1b21ccc7aebc8b106ffed14dddbe80fe6fe1e8ca073",
+    "status": "Exact5WAV/PCM, exactaggregate, component scalar derivation and no clipping pass; ASR-word/body quality and actual listening pending"
   }
 }
