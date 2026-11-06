@@ -104,6 +104,10 @@ def normalize_owned(s,owners):
         replace(r'(?<![a-z])kx(?![a-z])','케이엑스')
         replace(r'(?<=\s)m(?![a-z])','엠')
         replace(r'감쇄','감쇠')
+    if args.project=='game-math-bezier-subdivision':
+        replace(r'(?<![a-z])blo[- ]?sso?ming(?![a-z])|(?<![a-z])blo[- ]?soming(?![a-z])','블로서밍')
+        for native,number in [('한','일'),('두','이'),('세','삼'),('네','사')]:
+            replace(r'(?<![가-힣])'+native+r'(?=\s*번)',number)
     if args.project=='game-math-velocity-derivatives':
         replace(r'(?<![a-z])minus(?![a-z])','마이너스')
         replace(r'(?<![a-z])([xyz])(?=(?:sin|cos|tan)[xyz](?![a-z]))',lambda m:m.group(1)+' ')

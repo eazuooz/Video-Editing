@@ -1,6 +1,6 @@
 Watch track editing in Super Mario Maker 2. Angular sections become rounded corners and join into a loop. What numbers would make a curved shape easy to control? We will build our own Bezier curve using control points outside the path, then split the same curve into the portions we need.
 
-A cubic Bézier curve has four control points. The curve passes through the first and last; it generally does not pass through the two interior controls. Those are shape handles. This is approximation rather than a requirement to interpolate every control point.
+A cubic Bézier curve has four control points. The curve starts at the first point and ends at the last. The two interior points need not lie on its path. Those are shape handles. This is approximation rather than a requirement to interpolate every control point.
 
 The construction begins with linear interpolation. To move a fraction t between two points, multiply the first by one minus t, the next by t, and add. Applying the same fraction to adjacent pairs of four controls produces three points, then two, then one.
 
@@ -24,7 +24,7 @@ For two controls, the weights are one minus t and t. With three they become the 
 
 Higher degrees produce Pascal's triangle: ones on the edges, and each interior number the sum of the two above. The degree-four row, one four six four one, supplies quartic coefficients. These binomial coefficients count selections of i items from n, and are computed using factorials. A factorial multiplies all positive integers up to that number; zero factorial is one. Divide n factorial by the product of i factorial and the factorial of n minus i.
 
-Each weight is a binomial coefficient times t to the i times one minus t to the n minus i. These are Bernstein basis functions. Multiply every control by its corresponding weight and sum them to evaluate the Bézier curve. At one half, cubic weights are one eighth, three eighths, three eighths, and one eighth.
+Each weight is a binomial coefficient times t to the i times one minus t to the n minus i. These are Bernstein basis functions. Multiply every control by its corresponding weight and sum them to evaluate the Bézier curve. At the midpoint of a cubic, the four weights are in the ratio one, three, three, one. Divide each by their sum of eight. Each inner control therefore contributes three times as much as each endpoint.
 
 The Bernstein weights sum to one: the binomial theorem makes their sum the nth power of the quantity t plus one minus t. The quantity inside is one, so the result is one. On zero through one they are also nonnegative, keeping the curve inside the controls' convex hull, like a taut rubber band around planar control points. At either end, only the corresponding endpoint weight is one, so the curve interpolates its endpoints.
 

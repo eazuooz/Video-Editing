@@ -26,6 +26,8 @@ def commit(message,push):
     publish=runpy.run_path(str(ROOT/"projects/buckshot-roulette-reverse-engineering/production/save-selective-git.py"))["publish_index_and_ref"]
     rows=read(BATCH/"batch.json")["items"][2:];episodes={r["id"] for r in rows}
     direct=list(x for x in Path(__file__).parent.iterdir() if x.suffix in {".py",".txt",".ps1",".json"})
+    if read(BATCH/"checkpoint.json").get("groupDelivery",{}).get("status")=="local-course-ready":
+        direct.append(BATCH/"checkpoint.json")
     direct+=[BATCH/f for f in ["align-module-speech.py","compose-module.py","finish-selected-voice.py","finish-word-review.py","freeze-reviewed-module-narration.py","paragraph_level.py","prepare-module-render.py","run-module-preflight.py","run-module-render.py","render-voice.py","review-source-voice.py","review-final-mix.py","update-preproduction.py","verify-module-media.py","progress.md"]]
     for r in rows:
         p=ROOT/"projects"/r["slug"]

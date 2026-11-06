@@ -71,7 +71,9 @@ def prepare(episode,revision,retakes=None):
             assert prev["editSha256"]==edit_digest,"An edited script requires a new audio revision"
             return
         assert int(revision.split("v")[-1])>int(prev["audioRevision"].split("v")[-1])
-    rows=passages(src);rows.update(extras);prod=p/"production"; target=prod/"local"/revision
+    rows=extras if retakes else passages(src)
+    revised_scenes=sorted(set(prev["changedScenes"] if retakes else [])|set(rows))
+    prod=p/"production"; target=prod/"local"/revision
     if retakes:
         previous_audio=prod/"local"/prev["audioRevision"]
         assert (previous_audio/"narration.wav").is_file() and (previous_audio/"review/source-full-asr.timestamps.json").is_file()
@@ -113,7 +115,7 @@ def prepare(episode,revision,retakes=None):
         mapping[lang+"Sha256"]=sha(dest);plan["scriptReadthrough"][lang+"Sha256"]=sha(dest);integ["readThrough"][lang+"Sha256"]=sha(dest)
     bindings["sourceNarrationSha256"]=mapping["koSha256"];save(p/"planning/scene-bindings.json",bindings)
     save(p/"planning/bilingual-caption-map.json",mapping);plan["sceneBindingsSha256"]=sha(p/"planning/scene-bindings.json")
-    plan["part2MeaningRevision"]=dict(rules=["meaning-before-values-v1","surface-symbol-guides-v1"],revisedScenes=list(rows),sourceOrderPreserved=True)
+    plan["part2MeaningRevision"]=dict(rules=["meaning-before-values-v1","surface-symbol-guides-v1"],revisedScenes=revised_scenes,sourceOrderPreserved=True)
     save(p/"planning/production-plan.json",plan);save(p/"planning/script-integration.json",integ)
     prior=sorted((prod/"local").glob("audio-v*"),key=lambda a:int(a.name.split("v")[-1]),reverse=True)
     reuse={}
@@ -135,7 +137,7 @@ def prepare(episode,revision,retakes=None):
     newmanifest=prod/f"tts-manifest-{revision}.json";save(newmanifest,manifest)
     save(target/"retake-plan.json",dict(sourceAudioPreserved=True,revisedScenes=list(rows),copied=reused))
     save(report,dict(episode=episode,at=datetime.now(timezone.utc).isoformat(),audioRevision=revision,
-         editSha256=edit_digest,changedScenes=list(rows),targetedRetakes=list(extras),sceneCount=len(ids),copiedTakes=reused,
+         editSha256=edit_digest,changedScenes=revised_scenes,targetedRetakes=list(extras),previousEditionSha256=prev["editSha256"] if retakes else None,sceneCount=len(ids),copiedTakes=reused,
          manifest=newmanifest.relative_to(ROOT).as_posix(),finalReviewReady=False,humanReviewed=False))
     print(episode,len(rows),"revised passages;",len(reused),"preserved takes",newmanifest)
 if __name__=="__main__":
