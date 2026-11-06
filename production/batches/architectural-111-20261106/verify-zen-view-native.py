@@ -1,5 +1,5 @@
 """07.04 disposable CPU contract fixtures; no real image decode/Unity/GPU/job."""
-import csv,importlib.util,json,sys,tempfile,unittest
+import copy,csv,importlib.util,json,struct,sys,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -21,12 +21,19 @@ class MockImage:
 class ZenNativeTests(unittest.TestCase):
     def test_additional_game_cmd_renderer_and_headless_jobs_block_but_hub_does_not(self):
         cases=[('sc2_x64.exe',[],True),('UnrealEditor-Cmd.exe',[],True),('chrome.exe',['--headless=new'],True),('Unity.exe',['serve'],False)]
-        with patch.object(native.runtime,'busy_reason',return_value=None):
+        with patch.object(native.runtime,'busy_reason',return_value=None),patch.object(native,'idle_browser_members',return_value=set()):
             for name,args,blocked in cases:
                 with self.subTest(name=name),patch.object(native.psutil,'process_iter',return_value=[SimpleNamespace(info={'name':name,'cmdline':args})]):
                     self.assertEqual(native.busy_reason() is not None,blocked)
         with patch.object(native.runtime,'busy_reason',return_value='foreign lease'),patch.object(native.psutil,'process_iter',side_effect=AssertionError('No reason to bypass prior gate')):
             self.assertEqual(native.busy_reason(),'foreign lease')
+    def test_inspected_idle_browser_identity_does_not_exempt_unknown_or_game_processes(self):
+        process=SimpleNamespace(pid=123,info={'name':'msedge.exe','cmdline':['--headless=new']})
+        with patch.object(native.runtime,'busy_reason',return_value=None),patch.object(native.psutil,'process_iter',return_value=[process]):
+            with patch.object(native,'idle_browser_members',return_value={123}):self.assertIsNone(native.busy_reason())
+            with patch.object(native,'idle_browser_members',return_value={999}):self.assertIn('unverified',native.busy_reason())
+            process.info={'name':'sc2_x64.exe','cmdline':[]}
+            with patch.object(native,'idle_browser_members',return_value={123}):self.assertIn('game process',native.busy_reason())
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='yamyam-zen-native-cpu-');self.base=Path(self.temp.name)
         self.config=json.loads((HERE/'zen-view-unity-source/capture-config.json').read_text(encoding='utf8'));self.fp='a'*64
@@ -84,12 +91,21 @@ class ZenNativeTests(unittest.TestCase):
             previous=None
             def acquire(self):return self
             def close(self,**kwargs):pass
-        with (patch.multiple(native,STATE=state,PREP=prep),patch.object(native,'authorize',return_value={}),
+        with (patch.multiple(native,STATE=state,PREP=prep),patch.object(native,'authorize',return_value={}),patch.object(native,'completed_native',return_value=None),
             patch.object(native,'scan',return_value=(None,{})),patch.object(native.runtime,'SingleWorker',return_value=Worker()),
             patch.object(native.runtime,'alive',return_value=True),patch.object(native.subprocess,'Popen',side_effect=AssertionError('No actual job')),
             patch.object(sys,'argv',['run-zen-view-native.py','--execute'])):
             with self.assertRaisesRegex(RuntimeError,'Existing worker'):native.main()
         self.assertEqual(state.read_bytes(),before)
+    def test_verified_completed_capture_reuses_cpu_without_any_worker_or_launch(self):
+        prep=self.base/'prep.json';save(prep,dict(config=self.config))
+        prior=dict(output='immutable-actual-capture',fingerprint='old-actual-native-fingerprint',actualVisualReview=False)
+        with (patch.object(native,'PREP',prep),patch.object(native,'authorize',return_value={'fingerprint':'new-validator-fingerprint'}),
+            patch.object(native,'completed_native',return_value=prior),patch.object(native,'scan',side_effect=AssertionError('No new attempt')),
+            patch.object(native.runtime,'SingleWorker',side_effect=AssertionError('No new worker')),
+            patch.object(native.subprocess,'Popen',side_effect=AssertionError('No engine launch')),
+            patch.object(sys,'argv',['run-zen-view-native.py','--execute'])):
+            native.main()
 
     def test_staged_metadata_requires_exact_source_guid_and_post_or_recorded_allowance(self):
         source=self.base/'original.meta';target=self.base/'staged.meta';guid='a'*32
@@ -124,5 +140,37 @@ class ZenNativeTests(unittest.TestCase):
             for path in bad:
                 with self.subTest(path=path):
                     with self.assertRaises(AssertionError):native.export_paths(path,project)
+
+    def test_real_unity_float32_json_preserves_config_but_rejects_changed_bits_or_schema(self):
+        # Literal values from the actual JsonUtility snapshot; remaining float
+        # fields use the sameIEEEfloat32 representation, not a tolerance.
+        actual={k:struct.unpack('<f',struct.pack('<f',v))[0] if type(v) is float else v for k,v in self.config.items()}
+        actual.update(eyeHeight=1.649999976158142,wallHeight=4.400000095367432,
+            openingBottom=0.6499999761581421,openingTop=3.299999952316284,narrowWidth=0.4000000059604645,wideWidth=6.800000190734863)
+        native.validate_capture_config(actual,self.config)
+        self.assertEqual(native.float32_bits(actual['narrowWidth']),native.float32_bits(.4))
+        for key,value in [('eyeHeight',1.650001),('eyeHeight',float('nan')),('eyeHeight',float('inf')),('eyeHeight',True),('frames',480.0),('fps',True)]:
+            with self.subTest(key=key,value=value):
+                changed=dict(actual);changed[key]=value
+                with self.assertRaises(AssertionError):native.validate_capture_config(changed,self.config)
+        changed=dict(actual);changed['extra']=0
+        with self.assertRaises(AssertionError):native.validate_capture_config(changed,self.config)
+        changed=dict(actual);changed.pop('frontZ')
+        with self.assertRaises(AssertionError):native.validate_capture_config(changed,self.config)
+        folder=self.mode();snapshot=native.read(folder/'capture-config.json');snapshot.update(contract=actual,openingWidth=0.4000000059604645);save(folder/'capture-config.json',snapshot)
+        self.assertEqual(len(self.validate()),480)
+
+    def test_canonical_unity_version_ignores_added_revision_format_only_in_identity(self):
+        path=self.base/'ProjectVersion.txt';expected='6000.6.0f1'
+        path.write_text('m_EditorVersion: '+expected+'\n',encoding='utf8');before=native.project_version(path,expected)
+        path.write_text('m_EditorVersion: '+expected+'\nm_EditorVersionWithRevision: '+expected+' (f7f8ed4d1e24)\n',encoding='utf8');after=native.project_version(path,expected)
+        self.assertEqual(before['editorVersion'],after['editorVersion'])
+        self.assertNotEqual(before['sourceAudit']['sha256'],after['sourceAudit']['sha256'])
+        self.assertEqual(after['sourceAudit']['withRevision'],'f7f8ed4d1e24')
+        self.assertEqual(native.digest(dict(editorVersion=before['editorVersion'])),native.digest(dict(editorVersion=after['editorVersion'])))
+        for text in ['m_EditorVersion: 6000.6.0f2\n','m_EditorVersion: '+expected+'\nm_EditorVersionWithRevision: 6000.6.0f2 (f7f8ed4d1e24)\n',
+            'm_EditorVersion: '+expected+'\nm_EditorVersionWithRevision: '+expected+' (short)\n','m_EditorVersion: '+expected+'\nm_EditorVersion: '+expected+'\n']:
+            path.write_text(text,encoding='utf8')
+            with self.assertRaises(AssertionError):native.project_version(path,expected)
 
 if __name__=='__main__':unittest.main(verbosity=2)
