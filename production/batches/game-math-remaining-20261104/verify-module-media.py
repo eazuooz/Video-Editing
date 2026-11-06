@@ -1,7 +1,7 @@
 """Full decode and paired-output checks. Reports evidence, never human review."""
 from pathlib import Path
 from datetime import datetime,timezone
-import argparse,hashlib,importlib.util,json,re,subprocess
+import argparse,hashlib,importlib.util,json,os,re,subprocess,time,uuid
 R=Path(__file__).resolve().parents[3]
 BOOT=argparse.ArgumentParser(add_help=False);BOOT.add_argument('--queue',required=True);BA,_=BOOT.parse_known_args();QB=json.loads(Path(BA.queue).read_text(encoding='utf-8-sig'));P=R/'projects'/QB['project']
 spec=importlib.util.spec_from_file_location('compose',R/'production/batches/game-math-remaining-20261104/compose-module.py');M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
@@ -58,4 +58,21 @@ def main():
         sheet.save(W/('contact-'+str(page).zfill(2)+'.png'))
     M.save(W/'report.json',report)
     print(json.dumps({'technicalChecks':'complete','visualSamples':len(samples),'report':str(W/'report.json'),'readyForUserReview':False}))
-if __name__=='__main__':main()
+if __name__=='__main__':
+    group=M.read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
+    if QB.get('episode') not in group.get('groupReview20261106',{}).get('remaining',[]):
+        main()
+    else:
+        token=str(uuid.uuid4());deadline=time.monotonic()+48*3600
+        while True:
+            M.G.authorized()
+            if M.G.idle_reason() is None:
+                try:
+                    with M.G.LEASE.open('x',encoding='utf8') as f:
+                        json.dump(dict(owner=P.name+'-full-media-qa',id=token,pid=os.getpid()),f)
+                except FileExistsError:pass
+                else:break
+            if time.monotonic()>deadline:raise RuntimeError('Other media jobs preserved; the decode time slot is unavailable')
+            time.sleep(10)
+        try:main()
+        finally:M.G.release_lease(token)
