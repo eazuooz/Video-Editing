@@ -28,8 +28,12 @@ C=module('existing_caption_geometry',R/'projects/buckshot-roulette-reverse-engin
 G=module('resource_guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py')
 PIPELINE_FIGURES=module('pipeline_figures',Path(__file__).parent/'part2/pipeline_figures.py') if P.name=='game-math-pipeline-shaders' else None
 VELOCITY_FIGURES=module('velocity_figures',Path(__file__).parent/'part2/velocity_figures.py') if P.name=='game-math-velocity-derivatives' else None
-FORCE_FIGURES=module('force_figures',Path(__file__).parent/'part2/force_figures.py') if P.name=='game-math-forces-friction' and Path(BA.queue).parent.name=='render-v3' else None
-DIAGRAM_ART=module('diagram_art',Path(__file__).parent/'part2/pipeline_figures.py') if VELOCITY_FIGURES or FORCE_FIGURES else None
+comparison_module={'game-math-forces-friction':'force','game-math-springs-damping':'spring'}.get(P.name)
+COMPARISON=None
+if comparison_module and Path(BA.queue).parent.name=='render-v3':
+    name=comparison_module+'_figures'
+    COMPARISON=module(name,Path(__file__).parent/'part2'/(name+'.py'))
+DIAGRAM_ART=module('diagram_art',Path(__file__).parent/'part2/pipeline_figures.py') if VELOCITY_FIGURES or COMPARISON else None
 def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
 def save(p,d):Path(p).parent.mkdir(parents=True,exist_ok=True);Path(p).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):
@@ -220,8 +224,8 @@ def prepare(queue,work):
             frequency_guides(work/f'period-{i:03}.ass',cut['frames']/FPS)
         elif VELOCITY_FIGURES and cut['scene'] in VELOCITY_FIGURES.PURPOSES:
             VELOCITY_FIGURES.render(work/f'velocity-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline,DIAGRAM_ART)
-        elif FORCE_FIGURES and cut['scene'] in FORCE_FIGURES.PURPOSES:
-            FORCE_FIGURES.render(work/f'force-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline,DIAGRAM_ART)
+        elif COMPARISON and cut['scene'] in COMPARISON.PURPOSES:
+            COMPARISON.render(work/f'{comparison_module}-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline,DIAGRAM_ART)
         elif P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
             shot=read(work.parent/'shots/020.json')
             clipping_guides(work/f'clip-plane-{i:03}.ass',cut,shot)
@@ -312,8 +316,8 @@ def render(queue,work,sources,receipt,dest):
                 vf+=f',ass=period-{i:03}.ass'
             if VELOCITY_FIGURES and cut['scene'] in VELOCITY_FIGURES.PURPOSES:
                 vf+=f',ass=velocity-{i:03}.ass'
-            if FORCE_FIGURES and cut['scene'] in FORCE_FIGURES.PURPOSES:
-                vf+=f',ass=force-{i:03}.ass'
+            if COMPARISON and cut['scene'] in COMPARISON.PURPOSES:
+                vf+=f',ass={comparison_module}-{i:03}.ass'
             if P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
                 vf+=f',ass=clip-plane-{i:03}.ass'
             if PIPELINE_FIGURES and cut['scene'] in PIPELINE_FIGURES.TEACHING_SCENES:
