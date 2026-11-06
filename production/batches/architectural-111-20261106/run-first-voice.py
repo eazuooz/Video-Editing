@@ -100,14 +100,14 @@ def preparation():
     model=repo_path(tts['model']);assert model==repo_path('qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base')
     script=repo_path(manifest['paths']['script']);scenes=read(script)['scenes']
     assert [x['id'] for x in scenes]==[f's{i:02}' for i in range(1,7)]
-    assert all(len(s['lines'])==1 and s['lines'][0].strip() for s in scenes)
+    assert all(len(s['lines']) in ((1,2) if s['id']=='s03' else (1,)) and all(x.strip() for x in s['lines']) for s in scenes)
     assert [' '.join(x.strip() for x in s['lines'] if x.strip()) for s in scenes]==[x.strip() for x in read(NARRATION)['narrationKo']], 'Voice speech differs from current canonical narration'
     model_files=[p for p in sorted(model.rglob('*')) if p.is_file() and '.cache' not in p.parts
                  and (p.suffix in ('.safetensors','.bin') or p.name in ('config.json','configuration.json','generation_config.json','preprocessor_config.json','tokenizer_config.json','vocab.json','merges.txt','tokenizer.model'))]
     assert any(p.suffix=='.safetensors' for p in model_files),'Approved local model weights missing'
     model_pins=[dict(path=p.relative_to(model).as_posix(),sha256=sha(p)) for p in model_files]
     result=synthesis_identity(scenes,tts,manifest.get('editing',{}),model_pins,sha(reference),sha(reference_text))
-    result.update(sceneIds=[s['id'] for s in scenes],spokenLines=[s['lines'][0].strip() for s in scenes],
+    result.update(sceneIds=[s['id'] for s in scenes],spokenLines=[' '.join(x.strip() for x in s['lines']) for s in scenes],
         sceneGapSeconds=float(tts.get('sceneGapSeconds',.72)),
         audit=dict(narrationSHA256=sha(NARRATION),scriptPath=str(script),scriptSHA256=sha(script),
                    manifestSHA256=sha(MANIFEST),manifestSourceHashMatches=(manifest.get('sourceNarrationSHA256')==sha(NARRATION)),
@@ -308,7 +308,9 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true');parser.add_argument('--wait-hours',type=float,default=6)
     args=parser.parse_args()
     if not args.execute:
-        try:prov=preparation();print(json.dumps(dict(ready=True,fingerprint=prov['fingerprint'],modelStarted=False)))
+        try:
+            prov=preparation();dedicated=any(s['id']=='s03' and len(s['lines'])==2 for s in prov['identity']['scenes'])
+            print(json.dumps(dict(ready=not dedicated,fingerprint=prov['fingerprint'],requiresDedicatedS03Repair=dedicated,modelStarted=False)))
         except PreparationPending as error:print(json.dumps(dict(ready=False,reason=str(error),modelStarted=False)))
         return
     worker=native.SingleWorker(WORKER).acquire();worker.update(stage='voice',stageOwner=PROTOCOL,topicId='03.02')
@@ -323,6 +325,8 @@ def main():
         while True:
             try:
                 prov=preparation()
+                if any(s['id']=='s03' and len(s['lines'])==2 for s in prov['identity']['scenes']):
+                    raise RuntimeError('Selected S03 requires run-first-s03-level-repair.py; generic scene rendering would merge its two semantic takes')
                 if same_project_children():raise PreparationPending('Existing project Qwen child is still running')
                 output=prepare_output(prov);state['fingerprint']=prov['fingerprint'];state['output']=str(output)
                 try:proof=verify_voice(prov)

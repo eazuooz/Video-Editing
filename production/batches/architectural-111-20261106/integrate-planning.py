@@ -199,30 +199,64 @@ def main():
     print(json.dumps({k:report[k] for k in ['draftedTopics','koParagraphs','enParagraphs','renderedVideos']},ensure_ascii=False))
     if problems:print('SOURCE COVERAGE REVIEW REQUIRED:',len(problems))
 
-def build_html(batch,rows,plans,cp):
+def build_html(batch,rows,plans,cp,*,write_delivery=True):
     esc=html.escape
-    cards=[]
+    cards=[];selected=cp.get('selectedFirstTopic');current_status={}
     for row in rows:
         ident=row['topicId'];e=plans.get(ident);parts=''
+        # This renderer may run after production begins. Show the existing
+        # project draft when available, never roll its prose back to the
+        # original planning bundle. All source JSON remains read-only.
+        if row.get('narrationDraft'):
+            draft=(ROOT/row['narrationDraft']).resolve()
+            if draft.is_relative_to((ROOT/'projects').resolve()) and draft.is_file():
+                current=read(draft)
+                if current.get('topicId')==ident:e=current
         if e:
             for i,(ko,en) in enumerate(zip(e['narrationKo'],e['paragraphsEn']),1):
                 parts+=f'<p><b>{i}.</b> {esc(ko)}</p><p class="en" lang="en">{esc(en)}</p>'
             gloss=' / '.join(g['english']+' ('+g['korean']+')' for g in e['glossary'] if isinstance(g,dict) and g.get('english') and g.get('korean'))
             parts+=f'<p class="terms">{esc(gloss)}</p>'
-            body=f'<details><summary>대본 초안 · 한영 {len(e["narrationKo"])}문단</summary>{parts}<p class="note">독립 실제 영상과 대조한 최종 대본·음성·완성 영상 검수는 아직입니다.</p></details>'
+            body=f'<details><summary>대본 초안 · 한영 {len(e["narrationKo"])}문단</summary>{parts}<p class="note">아래는 대본·자료 기록입니다. 완성 영상의 재생·전체 청취·사용자 검수 완료를 뜻하지 않습니다.</p></details>'
         else:body='<p class="note">원문을 대조하며 대본 작성 중</p>'
-        footage=('실제 장면 선택·확인' if row['footageStatus']=='selected-source-reviewed' else
-                 '실제 장면 후보 검토 중 · 채택 전' if row['footageStatus']=='candidate-reviewed-not-adopted' else '실제 장면 확보·검토 예정')
-        cards.append(f'<article data-ready="{int(bool(e))}"><p class="meta">제작 {row["order"]:03} · {ident} · {esc(row["chapterName"])} · 책 {esc(row["printPages"])}쪽</p><h2>{esc(row["title"])}</h2><p class="status">{footage} · 음성·렌더 전 · 사용자 영상 검수 전</p>{body}</article>')
+        footage=('실제 장면 선택·확인' if row.get('footageStatus')=='selected-source-reviewed' else
+                 '후보 장면 확인 · 채택 전' if row.get('footageStatus')=='candidate-reviewed-not-adopted' else '실제 장면 확보·검토 예정')
+        stages=[footage]
+        if row.get('nativeCaptureVerified'):
+            stages.append('Unity 캡처 완료 · 표본 화면 확인' if row.get('nativeVisualQa') else 'Unity 캡처 완료 · 화면 검수 전')
+        stage=str(row.get('status',''))
+        repair=cp.get('firstS03LevelRepair',{}) if ident==selected else {}
+        if 'S03-only-level-repair-in-progress' in stage or 'S03-only-level-repair-in-progress' in str(repair.get('stage','')):
+            stages.append('세 번째 문단 음량 보완 중')
+            stages.append('새 음성 대조·최종 편집·전체 청취 전')
+        elif row.get('productionComplete'):
+            stages.append('로컬 완성본 제작 기록 있음')
+        elif row.get('voiceGenerated'):
+            stages.append('음성 생성 · 최종 편집·전체 청취 전')
+        elif row.get('nativeCaptureVerified'):
+            stages.append('음성·최종 편집 진행 전')
+        else:
+            stages.append('대본 초안 · 시연·음성·완성본 제작 전')
+        stages.append('사용자 검수 승인 기록 있음' if row.get('humanApproval') else '사용자 영상 검수 전')
+        status=' · '.join(stages);current_status[ident]=status
+        cards.append(f'<article data-ready="{int(bool(e))}" data-topic="{esc(ident)}"><p class="meta">제작 {row["order"]:03} · {ident} · {esc(row["chapterName"])} · 책 {esc(row["printPages"])}쪽</p><h2>{esc(row["title"])}</h2><p class="status">{esc(status)}</p>{body}</article>')
     out='''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>레벨 디자인 111편 제작 현황 · 얌얌코딩</title><style>
 *{box-sizing:border-box}body{margin:0;background:#101513;color:#f2f5ef;font:16px/1.75 "Malgun Gothic",sans-serif}main{max-width:970px;margin:auto;padding:28px 22px 80px}h1{font-size:32px;line-height:1.3}h2{font-size:21px;line-height:1.5;margin:7px 0}p{margin:9px 0}.summary{border-left:4px solid #ffdb79;padding-left:16px}.meta,.note,.en{color:#b8c5bf}.meta{font-size:14px}.status{font-size:14px;color:#ffdb79}article{padding:18px 0 25px;border-bottom:1px solid #435149}summary{cursor:pointer;color:#8de3c0;font-weight:bold}details>p{margin-top:16px}.en{font-size:15px;border-left:2px solid #42534b;padding-left:12px}.terms{font-size:14px}label{display:block;font-size:14px}input,select{font:inherit;color:white;background:#1b2820;border:1px solid #879a8e;padding:10px;border-radius:3px;max-width:100%}.filters{display:flex;gap:16px;flex-wrap:wrap}a{color:#8de3c0}#shown{font-size:14px;color:#b8c5bf}[hidden]{display:none!important}@media(max-width:500px){main{padding:18px 15px 50px}h1{font-size:27px}h2{font-size:20px}.filters>*{flex:1 1 140px}}
 </style><main>'''
     out+='<style>body{word-break:keep-all;overflow-wrap:anywhere}</style><h1>레벨 디자인 111편 제작 현황</h1>'
-    out+=f'<div class="summary"><p>선택한 주제 <b>111편</b> · 한영 대본 초안 <b>{cp["scriptDraftCount"]}편</b> · 완성 검수본 <b>0편</b></p><p>실제 게임 현상 → 작동 원리 → 한 변수 비교 → 실제 게임 확인 순서로 제작합니다. 같은 수레·사람·터널을 유지하는 첫 편의 Unity 소스와 충돌 실험을 준비했습니다. 다른 제작의 GPU 렌더링을 보존하며 자료와 대본을 먼저 진행하고 있습니다.</p></div>'
+    native_count=sum(bool(row.get('nativeCaptureVerified')) for row in rows)
+    complete_count=int(cp.get('completedLocalReviewCount',0))
+    first_status=current_status.get(selected,'현재 제작 상태를 확인하고 있습니다.')
+    preserved=int(cp.get('previousCompletedVoiceVersionCount',0))
+    history=(f' 이전 음성 {preserved}개 버전은 보존되어 있습니다.' if preserved else '')
+    resource=(' 다른 작업의 GPU 사용이 끝나기를 기다리고 있습니다.'
+              if cp.get('currentResourceConstraint') and not cp.get('firstVoiceWorker',{}).get('completed') else '')
+    out+=f'<div class="summary"><p>선택한 주제 <b>{len(rows)}편</b> · 한영 대본 초안 <b>{cp["scriptDraftCount"]}편</b> · Unity 캡처 기록 <b>{native_count}편</b> · 완성 검수본 <b>{complete_count}편</b></p><p>실제 게임 현상 → 작동 원리 → 한 변수 비교 → 실제 게임 확인 순서로 제작합니다.</p><p>첫 편 현재 상태: {esc(first_status)}.{esc(history)}{esc(resource)}</p></div>'
     out+='<p class="note">이 페이지는 제작·대본 현황입니다. 아직 완성 영상 플레이어가 아닙니다. 실제 완성 MP4가 검증되면 그 파일과 한영 자막을 별도로 연결합니다. Google Drive·YouTube 업로드와 공개·예약은 실행하지 않았습니다.</p>'
     out+='<div class="filters"><label>검색<input id="q" placeholder="제목·기법·대본 검색"></label><label>상태<select id="stage"><option value="">전체 111편</option><option value="1">대본 초안 있음</option><option value="0">대본 작성 중</option></select></label></div><p id="shown"></p>'
     out+=''.join(cards)+r'''</main><script>const q=document.getElementById('q'),s=document.getElementById('stage');function filter(){let n=0;for(const a of document.querySelectorAll('article')){const ok=(!s.value||a.dataset.ready===s.value)&&q.value.toLowerCase().trim().split(/\s+/).every(t=>a.textContent.toLowerCase().includes(t));a.hidden=!ok;n+=ok}document.getElementById('shown').textContent=n+'편 표시'}q.oninput=s.onchange=filter;filter()</script></html>'''
     (HERE/'worklist.html').write_text(out,encoding='utf8')
-    delivery=MEDIA/'delivery';delivery.mkdir(exist_ok=True);(delivery/'index.html').write_text(out,encoding='utf8')
+    if write_delivery:
+        delivery=MEDIA/'delivery';delivery.mkdir(exist_ok=True);(delivery/'index.html').write_text(out,encoding='utf8')
 
 if __name__=='__main__':main()

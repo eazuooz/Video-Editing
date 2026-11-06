@@ -5,7 +5,7 @@ version after exact raw-voice ASR evidence exists. It neither encodes a movie no
 performs ASR, TTS, GPU work, actual listening or a platform operation.
 """
 from __future__ import annotations
-import argparse, hashlib, importlib.util, json, math, os, re, subprocess, uuid
+import argparse, hashlib, importlib.util, io, json, math, os, re, subprocess, uuid
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -25,6 +25,7 @@ WORKER=MEDIA/'first-audio-worker.json'
 MUSIC=ROOT/'shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.mp3'
 LICENSE=MUSIC.with_suffix('.LICENSE.md')
 MUSIC_SHA='b2609a077fae292679f25b83519f470ed308abb40d11f89bff8c6f896deefed3'
+LEGACY_ENGINE_SHA='cde46536ba7f4050b2677c3d8d12379d447675b353cf7b843441049abd7489dc'
 FF=Path(os.environ.get('YAMYAM_FFMPEG','C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe'))
 CREATE=getattr(subprocess,'CREATE_NO_WINDOW',0)
 PROFILE=dict(policy='line-level-takes-v1',frameSeconds=.05,gateMaximumDbfs=-25.,adaptiveGateBelowPeakDb=25.,
@@ -87,9 +88,46 @@ def exact_boundaries(evidence,timing):
     return rows
 
 
+def legacy_fade_pcm16(samples,rate):
+    """Exact narrow reproduction of the pinned engine's bound0.006s default.
+
+    Do not import/execute the shared engine. Its assembler reads float32 takes,
+    applies these ramps, then writes a default PCM16 WAV via libsndfile.
+    """
+    values=samples.copy();n=min(int(rate*.006),len(values)//2)
+    if n>1:
+        ramp=np.linspace(0.,1.,n,dtype=np.float32);values[:n]*=ramp;values[-n:]*=ramp[::-1]
+    memory=io.BytesIO();sf.write(memory,values,rate,format='WAV',subtype='PCM_16');memory.seek(0)
+    decoded,sr=sf.read(memory,dtype='float32');assert sr==rate
+    return decoded,n
+
+
+def aggregate_comparison(raw,aggregate_slice,rate,contract):
+    assert raw.ndim==aggregate_slice.ndim==1 and len(raw)==len(aggregate_slice),'Aggregate/take shape differs'
+    differences=np.flatnonzero(raw!=aggregate_slice)
+    record=dict(exactRawAggregateEquality=not len(differences),differingSamples=len(differences),
+        rawLocalDifferenceSampleIndices=differences.tolist(),maximumAbsoluteDifference=float(np.max(np.abs(raw-aggregate_slice))),
+        comparisonSampleRate=rate,canonicalSamplesForNormalization='unchanged verified raw scene take',
+        aggregateModified=False,rawTakeModified=False,hearingPerformed=False,automaticSpeechPass=False)
+    if not len(differences):return record
+    assert (contract['auditedEngineSHA256']==contract['currentEngineSHA256']==LEGACY_ENGINE_SHA
+        and contract['requestedEdgeFadeSeconds']==contract['voiceIdentityEdgeFadeSeconds']==0
+        and contract['aggregateSampleWidthBytes']==contract['rawSampleWidthBytes']==2
+        and rate==24000),'Aggregate mismatch is outside pinned legacy zero-fade compatibility contract'
+    expected,n=legacy_fade_pcm16(raw,rate)
+    assert np.array_equal(expected,aggregate_slice),'Aggregate must contain each exact original take or its proven pinned legacy6ms PCM16 fade'
+    assert np.all((differences<n)|(differences>=len(raw)-n)),'Interior differences are never a fade compatibility exception'
+    record.update(exactRawAggregateEquality=False,legacyAggregateFadeProven=True,deterministicExpectedAggregateEquality=True,
+        legacyFadeSeconds=.006,legacyFadeSamplesPerEdge=n,engineSHA256=LEGACY_ENGINE_SHA,
+        manifestRequestedEdgeFadeSeconds=0,quantization='float32 fade then libsndfile WAV PCM_16 write/read',
+        soundfileVersion=sf.__version__,libsndfileVersion=sf.__libsndfile_version__,
+        reason='Pinned shared-engine default argument retained6ms despite selected manifest zero. Preserve historical aggregate; normalize from natural unchanged raw edges.')
+    return record
+
+
 def inputs():
     output,evidence,timing=asr.exact_voice()  # Selected authorization + exact immutable raw hashes.
-    profile=read(PROJECT/'voice-manifest.json')['tts']['paragraphLevelNormalization']
+    manifest=read(PROJECT/'voice-manifest.json');profile=manifest['tts']['paragraphLevelNormalization']
     for key in ('policy','frameSeconds','gateMaximumDbfs','adaptiveGateBelowPeakDb','targetMedianDbfs','maximumGainDb'):
         assert profile[key]==PROFILE[key],f'Changed paragraph contract: {key}'
     assert profile['preserveRawPcm'] and profile['speechSpeed']==1
@@ -97,14 +135,19 @@ def inputs():
     credit=LICENSE.read_text(encoding='utf-8')
     assert 'Creative Commons Attribution 4.0' in credit and 'Kevin MacLeod' in credit
     rows=exact_boundaries(evidence,timing)
+    receipt=read(output/'voice-inputs.json')
+    aggregate_contract=dict(auditedEngineSHA256=evidence['audit']['engineSHA256'],currentEngineSHA256=sha(asr.voice.ENGINE),
+        requestedEdgeFadeSeconds=manifest['tts']['edgeFadeSeconds'],voiceIdentityEdgeFadeSeconds=receipt['identity']['tts']['edgeFadeSeconds'],
+        aggregateSampleWidthBytes=evidence['aggregateWav']['sampleWidthBytes'])
     identity=dict(protocol='architectural111-first-audio-v1',voiceFingerprint=evidence['fingerprint'],
         aggregateSHA256=evidence['aggregateWav']['sha256'],aggregatePcmSHA256=evidence['aggregateWav']['pcmSHA256'],
         timingSHA256=evidence['timing']['sha256'],paragraphs=rows,profile=PROFILE,musicSHA256=MUSIC_SHA,
-        processorSHA256=sha(__file__))
+        processorSHA256=sha(__file__),aggregateComparisonContract=aggregate_contract)
     audit=dict(voiceEvidenceSHA256=sha(asr.PROOF),voiceManifestSHA256=sha(PROJECT/'voice-manifest.json'),
         musicPath=str(MUSIC),musicLicensePath=str(LICENSE),musicLicenseSHA256=sha(LICENSE),
         sourceFootageAudio='No source soundtrack adopted; both selected gameplay sources are video-only or commentary excluded.',
         rawLevelsReport='production/batches/architectural-111-20261106/first-voice-raw-levels-v1.json',
+        rawLevelsReportRole='Historical v1 audit only; normalization measures current verified raw takes directly',
         visualOnlyProvenance=evidence.get('audit',{}))
     # Nonspoken visual/QA/manifest metadata does not invalidate matched PCM.
     return output,evidence,dict(identity=identity,fingerprint=digest(identity),audit=audit)
@@ -197,20 +240,29 @@ def execute():
         rows=[];parts=[];rate=evidence['aggregateWav']['sampleRate']
         aggregate,sr=sf.read(evidence['aggregateWav']['path'],dtype='float32');assert sr==rate
         for row in recipe['identity']['paragraphs']:
+            assert sha(row['rawTake'])==row['rawTakeSha256'],'Canonical raw take changed before matching'
             samples,sr=sf.read(row['rawTake'],dtype='float32');a,b=row['destinationSampleRange']
-            assert sr==rate and np.array_equal(samples,aggregate[a:b]),'Aggregate must contain each exact original take'
+            assert sr==rate
+            contract=dict(recipe['identity']['aggregateComparisonContract'],rawSampleWidthBytes=evidence['sceneWavs'][len(rows)]['sampleWidthBytes'])
+            comparison=aggregate_comparison(samples,aggregate[a:b],rate,contract)
+            comparison.update(historicalAggregateSHA256=evidence['aggregateWav']['sha256'],rawTakeSHA256=row['rawTakeSha256'],
+                destinationSampleRange=[a,b],aggregateGlobalDifferenceSampleIndices=[a+i for i in comparison['rawLocalDifferenceSampleIndices']])
             matched,levels=match_paragraph(samples,rate);name=row['sceneId']+'-normalized.wav'
             sf.write(work/name,matched,rate,subtype='FLOAT');parts.append(matched)
-            rows.append(dict(**row,**levels,normalizedTake=name,normalizedTakeSha256=sha(work/name)))
+            rows.append(dict(**row,**levels,normalizedTake=name,normalizedTakeSha256=sha(work/name),aggregateComparison=comparison))
         normalized=np.concatenate(parts);assert len(normalized)==len(aggregate)==evidence['aggregateWav']['frames']
         norm_path=work/'narration-paragraph-normalized.wav';sf.write(norm_path,normalized,rate,subtype='FLOAT')
         line_levels=dict(policy=PROFILE['policy'],voiceFingerprint=evidence['fingerprint'],rawVoiceSha256=evidence['aggregateWav']['sha256'],
             voiceSha256=sha(norm_path),paragraphs=rows,rawRate=rate,frames=len(normalized),durationSeconds=len(normalized)/rate,
             joins=[dict(previous=a['sceneId'],next=b['sceneId'],boundarySample=a['destinationSampleRange'][1],
                 insertedSamples=0,trimmedSamples=0,contextListening='pending',
-                note='All raw quiet lead/tail retained. The s03→s04 low-energy estimate≈2.67s is not a speech boundary or trim instruction.')
+                note='All current raw quiet lead/tail retained without energy-based trim or added gaps. Historical v1 s03→s04≈2.67s is not a measurement of a retaken paragraph or a trim instruction.')
                 for a,b in zip(rows,rows[1:])],allRawPcmPreserved=True,allOriginalWordBoundariesPreserved=True,
             normalizedCopyOnly=True,automaticSpeechPass=False,actualListeningPerformed=False)
+        line_levels.update(canonicalSpeechSource='Six unchanged verified raw scene takes; historical aggregate is only an identity/timing reference',
+            rawVoiceSha256Role='Historical engine aggregate identity, not an assertion of raw-take aggregate PCM equality',
+            legacyAggregateFadeRestoredFromRawTakes=any(r['aggregateComparison'].get('legacyAggregateFadeProven') for r in rows),
+            historicalAggregateAndAllRawTakesPreserved=True)
         save(work/'line-levels.json',line_levels)
         prepared=stereo_voice(normalized,rate)
         prepared_path=work/'narration-prepared-stem.wav';sf.write(prepared_path,prepared,PROFILE['mixRate'],subtype='FLOAT')
@@ -242,6 +294,8 @@ def execute():
             musicAttribution='Pixel Peeker Polka - faster Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/',
             musicSpeechDuckDb=4.,voiceSideDuck=False,compressorUsed=False,uniformMixGainDb=db(overall),measuredPcmMix=measured,
             rawPcmModified=False,wordBoundariesShifted=False,voiceOffsetSeconds=0.,insertedSamples=0,trimmedSamples=0,
+            canonicalSpeechSource='unchanged raw scene takes',historicalEngineAggregatePreserved=True,
+            legacyAggregateFadeRestoredFromRawTakes=line_levels['legacyAggregateFadeRestoredFromRawTakes'],
             rawVoiceAsr=asr_evidence,actualListeningPerformed=False,finalMixedAsr='pending',
             encodedAacTruePeak='pending',encodedAlignedLevelReview='pending',finalMovieComplete=False,humanApproval=False)
         save(work/'audio-build.json',result);assert not folder.exists();work.rename(folder)

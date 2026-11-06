@@ -33,9 +33,13 @@ def read(path):
 
 
 class GameFrameComposer:
-    def __init__(self):
-        self.tracking = read(TRACKING)
-        self.tracking_sha = sha(TRACKING)
+    def __init__(self, tracking_path=None):
+        default_v2 = PROJECT / 'opening-cart-tracking-v2.json'
+        self.tracking_path = Path(tracking_path) if tracking_path else (default_v2 if default_v2.is_file() else TRACKING)
+        if self.tracking_path.resolve() not in (TRACKING.resolve(), default_v2.resolve()):
+            raise ValueError('Tracking must remain in this selected project')
+        self.tracking = read(self.tracking_path)
+        self.tracking_sha = sha(self.tracking_path)
         self.style_path = ROOT / self.tracking['nativeStyleHelperPath']
         if sha(self.style_path) != self.tracking['nativeStyleHelperSHA256']:
             raise ValueError('Native shared styles changed; review the companion before use')
@@ -66,7 +70,7 @@ class GameFrameComposer:
 
     def _unchanged(self, source_id):
         self.style._unchanged()
-        if sha(TRACKING) != self.tracking_sha or sha(self.style_path) != self.tracking['nativeStyleHelperSHA256']:
+        if sha(self.tracking_path) != self.tracking_sha or sha(self.style_path) != self.tracking['nativeStyleHelperSHA256']:
             raise ValueError('Tracking/shared compositor changed during composition')
         if sha(self.source_record_path) != self.tracking['sourceRecordSHA256']:
             raise ValueError('Source selection changed during composition')
@@ -78,7 +82,8 @@ class GameFrameComposer:
         """No nearest-frame lookup, prediction, cut bridging or out-of-window marks."""
         if source_id != self.tracking['sourceId']:
             return [], 'no-verified-track-for-source'
-        if not 26 <= local_pts < self.tracking['inspection']['annotationWindowEndExclusive']:
+        start = self.tracking['inspection'].get('annotationWindowStartInclusive', 26)
+        if not start <= local_pts < self.tracking['inspection']['annotationWindowEndExclusive']:
             return [], 'outside-verified-opening-window'
         matches = [f for f in self.checked_frames if abs(f['localPtsSeconds']-local_pts) <= .000001]
         if len(matches) != 1:
@@ -179,7 +184,9 @@ def main():
     source_id = composer.tracking['sourceId']
     # One meaningful boundary check: the same image cannot carry a stale mark
     # before/at/after the reviewed window, or on a different selected clip.
-    for pts in (25.999999, 29, 29.000001):
+    window_start = composer.tracking['inspection'].get('annotationWindowStartInclusive', 26)
+    window_end = composer.tracking['inspection']['annotationWindowEndExclusive']
+    for pts in (window_start-.000001, window_end, window_end+.000001):
         assert composer.compose(image, source_id=source_id, local_pts=pts).evidence['annotations'] == []
     assert composer.annotations_for('tf2-black-knight-2138-2226', 26, 'anything')[0] == []
     assert composer.annotations_for(source_id, 26.016667, 'anything')[0] == []

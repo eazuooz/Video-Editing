@@ -93,5 +93,43 @@ class FirstAudioTests(unittest.TestCase):
             with self.assertRaises(AssertionError):audio.reuse(folder,recipe)
             self.assertEqual(artifact.read_bytes(),b'changed')
 
+    def legacy_fixture(self):
+        raw=((np.arange(4000,dtype=np.int32)-2000)/32768).astype(np.float32)
+        aggregate,n=audio.legacy_fade_pcm16(raw,24000)
+        contract=dict(auditedEngineSHA256=audio.LEGACY_ENGINE_SHA,currentEngineSHA256=audio.LEGACY_ENGINE_SHA,
+            requestedEdgeFadeSeconds=0,voiceIdentityEdgeFadeSeconds=0,aggregateSampleWidthBytes=2,rawSampleWidthBytes=2)
+        return raw,aggregate,contract,n
+
+    def test_exact_pinned_legacy_fade_quantization_is_proven_without_touching_raw(self):
+        raw,aggregate,contract,n=self.legacy_fixture();original=raw.copy()
+        result=audio.aggregate_comparison(raw,aggregate,24000,contract)
+        self.assertFalse(result['exactRawAggregateEquality']);self.assertTrue(result['legacyAggregateFadeProven'])
+        self.assertTrue(result['deterministicExpectedAggregateEquality']);self.assertEqual(n,144)
+        self.assertTrue(all(i<n or i>=len(raw)-n for i in result['rawLocalDifferenceSampleIndices']))
+        np.testing.assert_array_equal(raw,original)
+        normalized,_=audio.match_paragraph(raw,24000)
+        self.assertEqual(len(normalized),len(raw));self.assertFalse(result['aggregateModified']);self.assertFalse(result['hearingPerformed'])
+
+    def test_legacy_exception_rejects_interior_edge_tampering_and_changed_raw(self):
+        raw,aggregate,contract,_=self.legacy_fixture()
+        for index in (9,500,len(raw)-9):
+            changed=aggregate.copy();changed[index]+=1/32768
+            with self.assertRaises(AssertionError):audio.aggregate_comparison(raw,changed,24000,contract)
+        changed_raw=raw.copy();changed_raw[500]+=1/32768
+        with self.assertRaises(AssertionError):audio.aggregate_comparison(changed_raw,aggregate,24000,contract)
+
+    def test_legacy_exception_rejects_other_engine_or_nonzero_manifest_profile(self):
+        raw,aggregate,contract,_=self.legacy_fixture()
+        for key,value in [('auditedEngineSHA256','other'),('currentEngineSHA256','other'),
+            ('requestedEdgeFadeSeconds',.006),('voiceIdentityEdgeFadeSeconds',.006),('aggregateSampleWidthBytes',4),('rawSampleWidthBytes',4)]:
+            changed=dict(contract,**{key:value})
+            with self.assertRaisesRegex(AssertionError,'outside pinned legacy'):
+                audio.aggregate_comparison(raw,aggregate,24000,changed)
+
+    def test_exact_unchanged_aggregate_is_described_as_exact_without_claiming_legacy_fade(self):
+        raw,_,contract,_=self.legacy_fixture();result=audio.aggregate_comparison(raw,raw.copy(),24000,contract)
+        self.assertTrue(result['exactRawAggregateEquality']);self.assertEqual(result['differingSamples'],0)
+        self.assertNotIn('legacyAggregateFadeProven',result)
+
 
 if __name__=='__main__':unittest.main(verbosity=2)

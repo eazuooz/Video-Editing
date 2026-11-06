@@ -102,6 +102,13 @@ class VoiceTests(unittest.TestCase):
         old=chunk.read_bytes();voice.prepare_output(self.prov)
         self.assertEqual(chunk.read_bytes(),old);self.assertFalse((voice.VOICE_PARENT/'voice-preserved').exists())
 
+    def test_generic_worker_rejects_two_take_s03_before_archive_or_gpu(self):
+        out=self.outputs();before=(out/'narration.wav').read_bytes()
+        scenes=copy.deepcopy(self.scenes);scenes[2]['lines']=['first semantic part','second semantic part'];self.prov=self.provenance(scenes=scenes)
+        with patch.object(voice,'prepare_output',side_effect=AssertionError('No archive or output preparation')):
+            with self.assertRaisesRegex(RuntimeError,'requires run-first-s03-level-repair.py'):self.fake_main()
+        self.assertEqual((out/'narration.wav').read_bytes(),before);self.assertFalse((voice.VOICE_PARENT/'voice-preserved').exists())
+
     def test_two_spoken_repairs_copy_only_four_proven_unchanged_chunks(self):
         out=self.outputs();proof=voice.verify_voice(self.prov);voice.save(voice.MEDIA/'first-voice-evidence.json',proof)
         before={s:(out/'chunks'/f'{s}-scene.wav').read_bytes() for s in self.prov['sceneIds']}
