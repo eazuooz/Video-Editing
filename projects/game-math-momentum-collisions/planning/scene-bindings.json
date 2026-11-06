@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "game-math-momentum-collisions",
   "updatedAt": "2026-11-04T20:45:02.945098+00:00",
-  "sourceNarrationSha256": "c26a9bf4eee5d3d94f3d7b1a22f5b10748d81aad11101098109ff52f63b9b58e",
+  "sourceNarrationSha256": "4a0516129d0ae2415698a01dbefbdde9c71a03e843df696821ddaf15b1cd7e1a",
   "sourceModelsSha256": "245fc165127da44e965fb1647ce53bfee7406136fbb7431afd9a66c3eb3e9c15",
   "sourceModels": "projects\\game-math-momentum-collisions\\production\\unity-staging\\dynamics-shots.json",
   "status": "complete-design-awaiting-runtime-and-speech-QA",
@@ -190,7 +190,7 @@
     {
       "id": "002",
       "sourceBeatId": "M29-002-momentum",
-      "speech": "질량과 속도를 곱한 벡터가 운동량입니다. 단위는 킬로그램 미터 매초이고, 뉴턴 초와도 같습니다. 지금 상태만 알면 구할 수 있죠. 연필처럼 작고 느린 물체와 무겁게 구르는 자동차는 멈추는 데 필요한 변화량이 다릅니다. 같은 속도에서도 질량이 두 배면 운동량은 두 배이고, 방향을 바꾸면 운동량 방향도 바뀝니다.",
+      "speech": "운동량은 물체의 질량과 속도를 곱한 벡터입니다. 질량을 킬로그램으로, 속도를 초속 몇 미터인지로 나타내어 곱합니다. 힘의 단위인 뉴턴에 시간을 나타내는 초를 곱해도 같은 단위가 됩니다. 지금 상태만 알면 구할 수 있죠. 연필처럼 작고 느린 물체와 무겁게 구르는 자동차는 멈추는 데 필요한 변화량이 다릅니다. 같은 속도에서도 질량이 두 배면 운동량은 두 배이고, 방향을 바꾸면 운동량 방향도 바뀝니다.",
       "sourceParagraphs": [
         "S123-P009",
         "S123-P010",
@@ -264,19 +264,24 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "질량과 속도를 곱한",
-          "position": 0.0,
-          "character": 0
+          "phrase": "운동량은 물체의 질량과 속도를 곱한 벡터입니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "질량이 두 배면",
-          "position": 0.3333333333333333,
-          "character": 131
+          "phrase": "지금 상태만 알면 구할 수 있죠",
+          "character": 104,
+          "position": 0.25
         },
         {
-          "phrase": "방향을 바꾸면",
-          "position": 0.6666666666666666,
-          "character": 152
+          "phrase": "연필처럼 작고 느린 물체와 무겁게 구르는 자동차는 멈추는 데 필요한 변화량이 다릅니다",
+          "character": 123,
+          "position": 0.5
+        },
+        {
+          "phrase": "같은 속도에서도 질량이 두 배면 운동량은 두 배이고, 방향을 바꾸면 운동량 방향도 바뀝니다",
+          "character": 172,
+          "position": 0.75
         }
       ],
       "clockFields": [
@@ -1088,7 +1093,7 @@
     {
       "id": "014",
       "sourceBeatId": "M29-014-collision-model",
-      "speech": "비시지에서는 날아간 포탄이 성벽을 맞히고, 벽의 조각들이 움직이기 시작합니다. 이제 발사체 하나만 볼 것이 아니라, 부딪힌 대상까지 함께 놓고 충돌 뒤 상태를 찾아야 합니다. 짧은 충돌을 순간적인 운동량 변화로 근사하겠습니다. 충돌 전 속도 두 개를 알고, 충돌 뒤 속도에는 프라임을 붙입니다. 질량 곱하기 속도를 두 물체에 대해 더하면 충돌 전후 합이 같아야 합니다. 그런데 이것은 식 하나이고 새 속도는 두 개입니다. 운동량 보존만으로는 답이 하나로 정해지지 않습니다. 튕기는 정도나 서로 붙는지 같은 조건이 더 필요합니다.",
+      "speech": "날아간 포탄이 성벽에 부딪힙니다. 정지해 있던 벽의 조각들이 충돌 직후 움직이기 시작하죠. 이제 발사체 하나만 볼 것이 아니라, 부딪힌 대상까지 함께 놓고 충돌 뒤 상태를 찾아야 합니다. 짧은 충돌을 순간적인 운동량 변화로 근사하겠습니다. 충돌 전 속도 두 개를 알고, 충돌 뒤 속도에는 프라임을 붙입니다. 질량 곱하기 속도를 두 물체에 대해 더하면 충돌 전후 합이 같아야 합니다. 그런데 이것은 식 하나이고 새 속도는 두 개입니다. 운동량 보존만으로는 답이 하나로 정해지지 않습니다. 튕기는 정도나 서로 붙는지 같은 조건이 더 필요합니다.",
       "sourceParagraphs": [
         "S124-P004",
         "S124-P005",
@@ -1150,14 +1155,39 @@
       },
       "speechPhaseAnchors": [
         {
-          "phrase": "충돌 전 속도 두 개",
-          "position": 0.0,
-          "character": 127
+          "phrase": "날아간 포탄이 성벽에 부딪힙니다",
+          "character": 0,
+          "position": 0.0
         },
         {
-          "phrase": "식 하나이고",
-          "position": 0.5,
-          "character": 215
+          "phrase": "이제 발사체 하나만 볼 것이 아니라, 부딪힌 대상까지 함께 놓고 충돌 뒤 상태를 찾아야 합니다",
+          "character": 51,
+          "position": 0.14285714285714285
+        },
+        {
+          "phrase": "짧은 충돌을 순간적인 운동량 변화로 근사하겠습니다",
+          "character": 105,
+          "position": 0.2857142857142857
+        },
+        {
+          "phrase": "충돌 전 속도 두 개를 알고, 충돌 뒤 속도에는 프라임을 붙입니다",
+          "character": 134,
+          "position": 0.42857142857142855
+        },
+        {
+          "phrase": "질량 곱하기 속도를 두 물체에 대해 더하면 충돌 전후 합이 같아야 합니다",
+          "character": 172,
+          "position": 0.5714285714285714
+        },
+        {
+          "phrase": "그런데 이것은 식 하나이고 새 속도는 두 개입니다",
+          "character": 214,
+          "position": 0.7142857142857143
+        },
+        {
+          "phrase": "튕기는 정도나 서로 붙는지 같은 조건이 더 필요합니다",
+          "character": 272,
+          "position": 0.8571428571428571
         }
       ],
       "clockFields": [
@@ -1225,7 +1255,7 @@
           "movingCompositeApproved": false
         },
         "speechTarget": {
-          "prefixKo": "비시지에서는 날아간 포탄이",
+          "prefixKo": "날아간 포탄이 성벽에 부딪힙니다",
           "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
         },
         "handoffToExplanation": "Original two-unknowns, bullet/block and two-dimensional car calculations remain.",

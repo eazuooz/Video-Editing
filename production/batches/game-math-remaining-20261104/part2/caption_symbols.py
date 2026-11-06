@@ -5,7 +5,7 @@ def apply(project,revision,rows,source_srt,destination):
     plan=project/"planning/printed-symbol-cues.json"
     if not plan.exists():return 0
     data=json.loads(plan.read_text("utf-8-sig"))
-    if data["renderRevision"]!=revision:return 0
+    if revision not in data.get("renderRevisions",[data["renderRevision"]]):return 0
     changes={(r["scene"],r["original"]):r["caption"] for r in data["edits"]}
     assert len(changes)==len(data["edits"])
     blocks=source_srt.read_text("utf-8-sig").strip().split("\n\n")
