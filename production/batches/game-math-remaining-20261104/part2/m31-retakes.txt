@@ -1,14 +1,5 @@
-# 002
-반지름이 일인 원이라면 엑스는 코사인 이 파이 티, 와이는 사인 이 파이 티로 놓을 수 있습니다. | For a unit circle, let x be cosine of two pi t and y be sine of two pi t.
-오른쪽에서 출발해 한 바퀴를 네 등분해 보세요. 첫 구간이 끝날 때 점은 위쪽에 있습니다. 반 바퀴를 돌면 왼쪽에 도착하죠. | Start on the right and divide one lap into four equal parts. The point is at the top after the first quarter and on the left after half a turn.
-같은 원을 엑스 제곱 더하기 와이 제곱은 일이라고 적을 수도 있지만, 매개변수 표현은 다음 위치를 바로 계산하기 편합니다. 와이를 루트 일 빼기 엑스 제곱으로만 적으면 위쪽 반원만 표현한다는 차이도 있습니다. | The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle.
-# 017
-두 점 사이에서 구한 값을 다시 보간하는 방법부터 보겠습니다. 이 방법을 에이트켄 보간법이라고 부릅니다. | First consider recursively interpolating between values obtained from pairs of points. This is Aitken interpolation.
-먼저 두 점씩 직선으로 연결합니다. | Start with straight interpolants through pairs of points.
-세 점을 맞추고 싶다면 앞의 두 점으로 만든 직선과 뒤의 두 점으로 만든 직선을 다시 섞습니다. | To fit three points, blend the line through the first pair with the line through the second pair.
-두 직선이 공통으로 지나는 가운데 점에서는 어떤 비율로 섞어도 그 점에 머무르고, 양 끝에서는 해당 직선만 선택되도록 비율을 정합니다. | Both already agree at the middle point, while the weights select the correct line at each outer endpoint.
 # 024
-이 네 함수에 이, 삼, 이, 삼을 각각 곱해 더하겠습니다. | Multiply those four functions by two, three, two, and three.
+네 지점의 높이가 번갈아 바뀝니다. 첫 번째와 세 번째 지점의 높이는 둘이고, 두 번째와 네 번째 지점의 높이는 셋입니다. 이 높이를 각 지점의 보간 함수에 하나씩 곱해 더합니다. | The four heights alternate. The first and third heights are two; the second and fourth are three. Multiply each height by its interpolation basis function and add.
 높이는 네 항을 더한 값입니다. 세제곱 항의 계수는 십팔, 제곱 항은 마이너스 이십칠, 일차 항은 십, 마지막 상수는 이입니다. | The height is the sum of four terms. The cubic coefficient is 18, the quadratic coefficient is minus 27, the linear coefficient is 10, and the constant is 2.
 전체 구간의 절반까지 가면, 그러니까 티가 영 점 오가 되면 높이는 이 점 오입니다. | Halfway through the interval, t is 0.5 and the height is 2.5.
 앞에서 점을 차례로 보간해 구한 바로 그 곡선이죠. 점들 사이에서 목표 높이를 지나치는 현상도 그대로 남습니다. | This is the same curve obtained earlier by interpolating successive points; it still overshoots between the samples.

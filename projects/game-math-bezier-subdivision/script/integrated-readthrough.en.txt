@@ -12,7 +12,7 @@ Expanding the blends gives a polynomial. With two controls it is the first point
 
 Put the controls in columns of B. Multiplying by the basis-conversion matrix M gives the power coefficients. Compute those once for repeated evaluations, or multiply M by the powers of t first to obtain control-point weights. Both evaluate the same curve.
 
-One more blend yields four cubic coefficients. The constant is b zero. The linear term is three times the difference b one minus b zero. The quadratic term is three b zero minus six b one plus three b two. The cubic term is minus b zero plus three b one minus three b two plus b three. Follow each coefficient back to the contributing controls.
+One more blend yields four cubic coefficients. The constant is b zero. The linear term is three times the difference b one minus b zero. The next coefficient is three times the difference of successive edges, with weights 3, −6, 3. The last coefficient has alternating signs: subtract the first point, add three times the second, subtract three times the third and add the endpoint. Follow each coefficient back to the contributing controls.
 
 The conversion also works backward. The first control is c zero; the next is c zero plus one third c one. The second interior control adds two thirds c one and one third c two to c zero. The endpoint sums all coefficients. For a fixed degree representation, these controls are uniquely determined.
 
@@ -48,12 +48,12 @@ Map the original interval a through b to a new parameter s from zero through one
 
 To extract a piece of an existing path, map its new progress parameter onto the original one. Put start and end marks on the original curve and sweep new progress from zero to one. The moving point visits only that interval. Multiply new progress by the interval width and add its original start. Substituting that parameter into the position function preserves the selected shape.
 
-For a Bézier curve the de Casteljau construction provides that piece directly. Mark the split parameter and interpolate neighbouring control points in that ratio. The last point is the split point on the curve. Collect one edge of the construction triangle for the left control polygon and the opposite edge for the right one.
+For a Bézier curve the de Casteljau construction provides that piece directly. Mark the split parameter and interpolate neighbouring control points in that ratio. The last point is the split point on the curve. Follow one edge of the triangle to collect the controls for the left curve. Then follow the other edge for the controls of the right curve. The two curves meet at the split point we just found.
 
 The piece keeps its shape, while its playback rate depends on how it is parameterized. Part of the original parameter range now spans zero to one on the new parameter. The new derivative points in the original direction but scales by the original interval width. Comparing physical velocity also requires the chosen duration.
 
 Splitting exactly halfway makes the construction easy to see. Mark the midpoint of each neighbouring pair, then take midpoints between those new points. The final midpoint is the endpoint shared by the two pieces. Their differently coloured handles generate pieces that together coincide with the original curve.
 
-For a general interval a through b, use the same construction with different fractions at each level. The new cubic controls use a three times; a twice and b once; a once and b twice; then b three times. Their order does not matter in exact arithmetic—only their multiplicities. This symmetric extension is called blossoming.
+Select an arbitrary subinterval instead of simply splitting at the midpoint. Denote its start by a and its end by b. For a cubic we interpolate three times. Use the start three times at the first control, twice with one end at the second, once with two ends at the third, and the end three times at the last control. Their order does not matter in exact arithmetic—only their multiplicities. This symmetric multiaffine representation is called blossoming.
 
 We began by looking for inputs that make a curve easy to control. Repeated interpolation produced the point; weights and derivatives explained the handles. Collecting the same intermediate points let us split the curve without changing its shape. The remaining question is how to join multiple pieces smoothly.
