@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import argparse, os, re, subprocess
 from urllib.request import Request,urlopen
 import numpy as np
+from PIL import Image,ImageDraw
 from edition import ROOT,BATCH,read,save,sha,render_revision
 
 def inspect(episode,revision):
@@ -31,7 +32,10 @@ def inspect(episode,revision):
         assert response.status==206 and len(response.read())==64
     ff=read(Path(queue["jobs"][0]))["ffmpeg"]
     motion=[]
-    for cut in (c for c in queue["cuts"] if c["kind"]=="actual-gameplay"):
+    gamecuts=[c for c in queue["cuts"] if c["kind"]=="actual-gameplay"]
+    seams=Image.new("RGB",(1500,236*len(gamecuts)),"#080808")
+    pen=ImageDraw.Draw(seams)
+    for rownum,cut in enumerate(gamecuts):
         sec=(cut["globalStartFrame"]+120)/60; duration=cut["frames"]/60
         raw=subprocess.check_output([ff,"-loglevel","error","-nostdin","-threads","2","-ss",str(sec),"-i",cap,
              "-t",str(duration),"-an","-vf","crop=1440:740:240:135,fps=4,scale=96:48,format=gray","-threads","1","-f","rawvideo","pipe:1"])
@@ -45,6 +49,13 @@ def inspect(episode,revision):
                            sourceSha256=native["sourceSha256"],sourceMotionIntervals=native["quarterSecondMovingIntervals"],
                            sourcePictureFinding=observations[cut["scene"]],
                            movingIntervals=int((diff>.25).sum()),medianLumaDifference=round(float(np.median(diff)),3)))
+        for j,(tag,when) in enumerate([("start",sec+.2),("action",sec+duration*.5),
+                                        ("result",sec+duration-.2),("handoff",sec+duration+.2)]):
+            pixels=subprocess.check_output([ff,"-loglevel","error","-nostdin","-threads","2","-ss",str(when),"-i",cap,
+                "-frames:v","1","-an","-vf","scale=375:211:flags=lanczos","-pix_fmt","rgb24","-threads","1","-f","rawvideo","pipe:1"])
+            seams.paste(Image.frombytes("RGB",(375,211),pixels),(375*j,236*rownum))
+            pen.text((375*j+5,236*rownum+214),f"{cut['scene']} {tag} {when:.2f}",fill="white")
+    board=work/"final-qa/game-handoffs.jpg";seams.save(board,quality=96)
     assert len({c["source"] for c in motion})>=3
     anchors=[w for w in mix["paragraphs"] if w["coverage"]<.94 or w["suspectLevelWindows"]]
     ffplay=str(Path(ff).with_name("ffplay.exe"))
@@ -61,7 +72,7 @@ def inspect(episode,revision):
         playback.append(dict(requested=sec,decodedFrames=len(stats),lastPTS=float(stats[-1]),log=str(log)))
     receipt=dict(episode=episode,at=datetime.now(timezone.utc).isoformat(),masterSha256=digest,files=qa["files"],
         subtitles={lang:qa[lang+"Subtitles"] for lang in ("ko","en")},frames=qa["expectedFrames"],
-        duration=qa["expectedFrames"]/60,actualGameCuts=motion,playerTests=playback,
+        duration=qa["expectedFrames"]/60,actualGameCuts=motion,gameHandoffs=dict(path=str(board),sha256=sha(board)),playerTests=playback,
         integratedLUFS=qa["actualMixLoudness"]["input_i"],truePeak=qa["actualMixLoudness"]["input_tp"],
         fullTranscriptReviewedByMachine=len(mix["paragraphs"]),actualSamples=[s["path"] for s in qa["samples"]],
         speechChecks=[dict(scene=x["entry"]["scene_id"],coverage=x["coverage"],windows=x["suspectLevelWindows"]) for x in anchors],
