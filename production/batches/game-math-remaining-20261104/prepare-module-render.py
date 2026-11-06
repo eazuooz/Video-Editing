@@ -70,6 +70,8 @@ for row in t['scenes']:
  if frames==gameframes:continue
  shotfile=out/'shots'/(sid+'.json');pending_files.append((shotfile,shot))
  job=dict(id=episode.lower()+'-body-'+sid,projectSlug=P.name,command='render',expectedFingerprint=marker['fingerprint'],shotFile=str(shotfile),factoryType=factory,output=str(out/'unity'/sid),frames=frames,sampleFrames=[0,frames//2,frames-1],speechTimingVerified=True,sceneId=sid,ffmpeg='C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')
+ if int(a.revision.split('v')[-1])>=3:
+  job['id']=f"{episode.lower()}-{a.revision}-body-{sid}"
  jp=out/'jobs'/(sid+'.json');pending_files.append((jp,job));jobs.append(str(jp))
  if game_start>0:cuts.append(dict(scene=sid,kind='explanation',file=str(Path(job['output'])/'unity.mp4'),sourceIn=0,frames=game_start,globalStartFrame=row['startFrame']))
  after=game_start+gameframes
