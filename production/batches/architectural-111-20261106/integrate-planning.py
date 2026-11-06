@@ -17,7 +17,110 @@ def paragraph_numbers(row):
     if 'paragraphIndex' in row:return [row['paragraphIndex']]
     return []
 
+def assert_preproduction_only(*, root=ROOT, here=HERE, media=MEDIA):
+    """Read-only guard: this draft initializer must never roll back production.
+
+    A later-stage merge needs a different, progress-preserving operation. Counts
+    here are evidence to reject, never values to infer or repair from artifacts.
+    """
+    root,here,media=Path(root),Path(here),Path(media)
+    batch=read(here/'batch.json');reasons=[]
+    safe_statuses={'script-preparation','preproduction-in-progress',
+                   'source-mapped-script-draft'}
+
+    def reject_record(record,label):
+        for key in ('completedLocalReviewCount','completedVoiceCount',
+                    'completedNativeCount','completedOutputCount','renderedVideos',
+                    'humanReviewedVideos'):
+            if record.get(key):reasons.append(f'{label}: {key} is nonzero')
+        for key in ('productionComplete','humanApproval','voiceGenerated',
+                    'finalOutputsVerified','actualSceneFilesSaved',
+                    'editableUnityScenesSaved','savedScenePaths'):
+            if record.get(key):reasons.append(f'{label}: {key} records production')
+        if record.get('humanReview') not in (None,False,'','not-delivered','not-started'):
+            reasons.append(f'{label}: human review already has a state')
+        if record.get('platformStatus') not in (None,'','not-uploaded'):
+            reasons.append(f'{label}: platform status must be preserved')
+        if record.get('platformActions'):
+            reasons.append(f'{label}: platform actions already recorded')
+        for key in ('youtubeVideoId','videoId','driveFileId'):
+            if record.get(key):reasons.append(f'{label}: {key} already recorded')
+        completed=record.get('completedStages',[])
+        if completed:
+            # Only explicitly preproduction entries can be reset by this helper.
+            allowed={'planning','script-draft','source-mapping','footage-selection'}
+            if not isinstance(completed,list) or any(s not in allowed for s in completed):
+                reasons.append(f'{label}: completed stages go beyond draft preparation')
+
+    reject_record(batch,'batch')
+    checkpoint=here/'checkpoint.json'
+    if checkpoint.exists():reject_record(read(checkpoint),'batch checkpoint')
+    worklist=here/'worklist.json'
+    if worklist.exists():
+        for row in read(worklist).get('rows',[]):
+            reject_record(row,f'worklist {row.get("topicId","?")}')
+            if row.get('status') not in (None,'',*safe_statuses):
+                reasons.append(f'worklist {row.get("topicId","?")}: later/unknown status')
+
+    for row in batch['projects']:
+        ident=row['topicId'];reject_record(row,f'batch {ident}')
+        if row.get('status') not in (None,'',*safe_statuses):
+            reasons.append(f'batch {ident}: later/unknown status')
+        project=root/row['project'];folder=project.parent
+        for path in (project,folder/'checkpoint.json',folder/'review-ledger.json'):
+            if path.exists():
+                record=read(path);reject_record(record,f'{ident} {path.name}')
+                for key in ('status','stage'):
+                    if record.get(key) not in (None,'',*safe_statuses):
+                        reasons.append(f'{ident} {path.name}: later/unknown {key}')
+        # Prepared voice manifests are allowed; actual PCM, even before its
+        # checkpoint is updated, is not. Read only this episode's TTS output.
+        voice=folder/'voice-manifest.json'
+        if voice.exists():
+            record=read(voice);reject_record(record,f'{ident} voice manifest')
+            output=record.get('tts',{}).get('outputDir')
+            if output:
+                output=Path(output);output=output if output.is_absolute() else root/output
+                if output.exists() and any(output.rglob('*.wav')):
+                    reasons.append(f'{ident}: generated voice PCM exists')
+        for output in (root/'output'/row['slug'],media/row['slug']):
+            if output.exists():
+                for pattern in ('*clean*.mp4','*captioned*.mp4','*.wav'):
+                    if next(output.rglob(pattern),None) is not None:
+                        reasons.append(f'{ident}: produced/partial media exists ({pattern})')
+                for native in output.glob('native*'):
+                    if native.is_dir() and next((p for p in native.rglob('*') if p.is_file()),None):
+                        reasons.append(f'{ident}: native capture artifacts exist')
+
+    proof=here/'first-native-evidence.json'
+    if proof.exists():reasons.append('first native evidence already exists')
+    prep=here/'first-unity-preparation.json'
+    if prep.exists():
+        record=read(prep);reject_record(record,'first Unity preparation')
+        capture_project=record.get('project')
+        if capture_project:
+            capture_project=Path(capture_project)
+            if not capture_project.is_absolute():capture_project=root/capture_project
+            for scene in record.get('intendedScenes',[]):
+                if (capture_project/scene).is_file():
+                    reasons.append('a prepared native scene has actually been saved')
+    native_sources=root/'unity/VideoEditing/Assets/VideoScenes'/batch['batchId']
+    if native_sources.exists() and next(native_sources.rglob('*.unity'),None) is not None:
+        reasons.append('saved native scenes exist in the source Unity project')
+    state=media/'first-native-progress.json'
+    if state.exists():
+        record=read(state)
+        if record.get('gpuStarted') or record.get('completed'):
+            reasons.append('native worker has started production; preserve its progress')
+    if reasons:
+        raise RuntimeError('Preproduction integration refused before writes; '
+                           'preserve generated/review/platform progress. '+
+                           '; '.join(dict.fromkeys(reasons)))
+    return {'projectsChecked':len(batch['projects']),'writes':0,
+            'result':'draft-only integration allowed'}
+
 def main():
+    assert_preproduction_only()
     batch=read(HERE/'batch.json');expected={r['topicId']:r for r in batch['projects']}
     plans={};inputs={};problems=[]
     for name,chapters in [('a',set(range(5))),('b',set(range(5,10))),('c',set(range(10,15)))]:
@@ -43,6 +146,8 @@ def main():
         d=read(override)
         if d.get('readyForDraftIntegration'):
             plans['03.02']=d
+    # Input validation can take time: recheck immediately before the first write.
+    assert_preproduction_only()
     now=datetime.now().astimezone().isoformat();work=read(HERE/'worklist.json');rows=[]
     total_paragraphs=0;verified_sources=0
     for row in batch['projects']:

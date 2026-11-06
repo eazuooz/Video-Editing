@@ -10,6 +10,12 @@ using UnityEngine.Rendering;
 namespace Yamyam.Architectural111.Editor {
     public static class TunnelBuilder {
         const string Folder="Assets/VideoScenes/architectural-111-20261106/03-02";
+        [Serializable] sealed class ModeReceipt {
+            public string fingerprint;
+            public string mode;
+            public int frames=270,width=1920,height=1080,fps=60;
+            public string[] cameras={"observer","top"};
+        }
         static Material Mat(string name,Color col) {
             string path=Folder+"/"+name+".mat";
             var mat=AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -105,14 +111,25 @@ namespace Yamyam.Architectural111.Editor {
             AssetDatabase.SaveAssets();
         }
         public static void Capture() {
-            string output=null;var args=Environment.GetCommandLineArgs();
-            for(int i=0;i<args.Length-1;i++)if(args[i]=="-architecturalOutput")output=args[i+1];
+            string output=null,fingerprint=null,modes="narrow,wide";var args=Environment.GetCommandLineArgs();
+            for(int i=0;i<args.Length-1;i++) {
+                if(args[i]=="-architecturalOutput")output=args[i+1];
+                if(args[i]=="-architecturalFingerprint")fingerprint=args[i+1];
+                if(args[i]=="-architecturalModes")modes=args[i+1];
+            }
             if(string.IsNullOrEmpty(output))throw new ArgumentException("Explicit output path required");
+            if(string.IsNullOrEmpty(fingerprint)||fingerprint.Length!=64)throw new ArgumentException("Explicit input fingerprint required");
+            var requested=modes.Split(',');
+            foreach(var mode in requested)if(mode!="narrow"&&mode!="wide")throw new ArgumentException("Unknown experiment mode");
             Directory.CreateDirectory(output);BuildScenes();
             var target=new RenderTexture(1920,1080,24);target.antiAliasing=2;target.Create();
             var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);
-            foreach(float width in new[]{2.5f,3.5f}) {
-                var rig=Build(width);string name=width<3?"narrow":"wide";string dir=Path.Combine(output,name);Directory.CreateDirectory(dir);
+            foreach(var name in requested) {
+                float width=name=="narrow"?2.5f:3.5f;
+                string dir=Path.Combine(output,name);
+                if(Directory.Exists(dir)&&Directory.GetFiles(dir,"*",SearchOption.AllDirectories).Length>0)
+                    throw new InvalidOperationException("Preserve existing mode output; the driver must choose an empty mode directory");
+                var rig=Build(width);Directory.CreateDirectory(dir);
                 var trace=new StringBuilder("frame,width,sideClearance,playerDiameter,commandX,commandZ,playerX,playerZ,travelled,blocked\n");
                 for(int frame=0;frame<270;frame++) {
                     rig.Step(1f/60f);Physics.SyncTransforms();
@@ -125,8 +142,18 @@ namespace Yamyam.Architectural111.Editor {
                     }
                 }
                 File.WriteAllText(Path.Combine(dir,"trace.csv"),trace.ToString());
+                string receipt=Path.Combine(dir,"mode-complete.json");
+                File.WriteAllText(receipt+".tmp",JsonUtility.ToJson(new ModeReceipt{fingerprint=fingerprint,mode=name},true));
+                File.Move(receipt+".tmp",receipt);
             }
-            File.WriteAllText(Path.Combine(output,"capture-complete.txt"),Application.unityVersion+"; two cameras; 1920x1080; 60 physics steps/sec; simplified original collision experiment");
+            bool both=true;
+            foreach(var mode in new[]{"narrow","wide"}) {
+                string receipt=Path.Combine(output,mode,"mode-complete.json");
+                if(!File.Exists(receipt)){both=false;break;}
+                var record=JsonUtility.FromJson<ModeReceipt>(File.ReadAllText(receipt));
+                if(record.fingerprint!=fingerprint||record.mode!=mode||record.frames!=270){both=false;break;}
+            }
+            if(both)File.WriteAllText(Path.Combine(output,"capture-complete.txt"),fingerprint+"; "+Application.unityVersion+"; two cameras; 1920x1080; 60 physics steps/sec; simplified original collision experiment");
             EditorApplication.Exit(0);
         }
     }
