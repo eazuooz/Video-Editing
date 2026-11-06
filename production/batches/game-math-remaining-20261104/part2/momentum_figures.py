@@ -49,7 +49,8 @@ def vectors(d,art,sid):
 
 def render(file,cut,timeline,caption,stroke,reveal,art):
     d=art.Diagram(caption,stroke,reveal,cut,timeline)
-    d.area([(0,178),(1920,178),(1920,1080),(0,1080)],"000000",0,d.duration,2)
+    top=178 if file.parent.parent.name=='render-v3' else 226
+    d.area([(0,top),(1920,top),(1920,1080),(0,1080)],"000000",0,d.duration,2)
     if cut["scene"]=="009":
         centre(d,art)
     else:

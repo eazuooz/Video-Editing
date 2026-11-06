@@ -28,7 +28,7 @@ C=module('existing_caption_geometry',R/'projects/buckshot-roulette-reverse-engin
 G=module('resource_guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py')
 PIPELINE_FIGURES=module('pipeline_figures',Path(__file__).parent/'part2/pipeline_figures.py') if P.name=='game-math-pipeline-shaders' else None
 VELOCITY_FIGURES=module('velocity_figures',Path(__file__).parent/'part2/velocity_figures.py') if P.name=='game-math-velocity-derivatives' else None
-comparison_module={'game-math-forces-friction':'force','game-math-springs-damping':'spring','game-math-momentum-collisions':'momentum'}.get(P.name)
+comparison_module={'game-math-forces-friction':'force','game-math-springs-damping':'spring','game-math-momentum-collisions':'momentum','game-math-rigid-body-inertia':'rigid'}.get(P.name)
 COMPARISON=None
 if comparison_module and Path(BA.queue).parent.name in ('render-v3','render-v4','render-v5'):
     name=comparison_module+'_figures'

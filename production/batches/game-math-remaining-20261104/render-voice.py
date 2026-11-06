@@ -319,6 +319,16 @@ def main():
     blocked = []
     baseline = []
     process_names = {}
+    inspected_desktop_pids=set()
+    recorder_pids=set()
+    desktop_paths={
+        (Path(os.environ['LOCALAPPDATA'])/'Programs/Notion/Notion.exe').as_posix().lower(),
+        'c:/program files/microsoft visual studio/18/community/common7/ide/devenv.exe',
+    }
+    recorder_files={
+        'c:/icanx/icanrecorder/icanrecorder.exe':'bd8bd829f58b4f5d14bc7acbe27cb55fc9ff9330f90e7e98a1778fe054a6ffa2',
+        'c:/icanx/icanscreen/icanscreen.exe':'61d7e3d77af914f51f144ddbee29b76f2665939f85afd06b11ee9bc81b1ab951',
+    }
     gui_allow = {'explorer.exe', 'chrome.exe', 'msedge.exe', 'msedgewebview2.exe', 'shellhost.exe', 'shellexperiencehost.exe', 'searchhost.exe', 'startmenuexperiencehost.exe', 'applicationframehost.exe', 'textinputhost.exe', 'runtimebroker.exe', 'dwm.exe', 'codex.exe', 'steam.exe', 'steamwebhelper.exe', 'obs64.exe', 'discord.exe', 'nvidia overlay.exe', 'nvidia share.exe', 'windowsterminal.exe'}
     # Root inspected the signed/installed executable paths for these exact
     # WDDM desktop rows. This is one production's baseline, not a global rule.
@@ -329,6 +339,10 @@ def main():
             continue
         name = (info['name'] or '').lower()
         exe = (info['exe'] or '').replace('\\', '/').lower()
+        if args.allow_idle_editors and exe in desktop_paths:
+            inspected_desktop_pids.add(proc.pid)
+        if args.allow_idle_editors and exe in recorder_files and digest(Path(exe))==recorder_files[exe]:
+            recorder_pids.add(proc.pid)
         # Verified installed Epic launcher/web/overlay windows are desktop GUI,
         # not the Unreal editor or a launched game. Actual game/render checks
         # and the three GPU-capacity samples below still apply.
@@ -418,7 +432,7 @@ def main():
         if pid in family:
             continue
         name = process_names.get(pid, Path(line.split(',', 1)[1].strip()).name.lower())
-        allowed = args.allow_idle_editors and name in gui_allow
+        allowed = args.allow_idle_editors and (name in gui_allow or pid in inspected_desktop_pids or pid in recorder_pids)
         observed_gpu_rows.append({'pid': pid, 'name': name, 'classification': 'inspected-GUI-preserved' if allowed else 'unclassified-foreign-GPU-process'})
         if not allowed:
             foreign.append({'pid': pid, 'name': name})
@@ -427,12 +441,16 @@ def main():
     for sample_index in range(3):
         free, total, utilization = [int(v.strip()) for v in command_output(['nvidia-smi', '--query-gpu=memory.free,memory.total,utilization.gpu', '--format=csv,noheader,nounits']).splitlines()[0].split(',')]
         samples.append({'freeMiB': free, 'totalMiB': total, 'utilization': utilization})
+        if recorder_pids:
+            encoder=command_output(['nvidia-smi','--query-gpu=utilization.encoder','--format=csv,noheader,nounits'])
+            samples[-1]['encoderUtilization']=int(encoder.splitlines()[0].strip())
         if sample_index < 2:
             time.sleep(1)
     # A 7 GiB allocator cap leaves at least 2 GiB of measured free headroom.
     # The previous 10 GiB admission rule rejected otherwise idle launchers.
     minimum_free, maximum_utilization = (9216, 40) if args.allow_idle_editors else (8192, 14)
     assert all(s['freeMiB'] >= minimum_free and s['utilization'] <= maximum_utilization for s in samples), ('Insufficient inspected GPU capacity; existing windows/jobs preserved', samples)
+    assert all(s.get('encoderUtilization',0)<=2 for s in samples), ('Screen recorder open and video encoding active; wait without disturbing it', samples)
     free = min(s['freeMiB'] for s in samples)
     if args.check_resources and not args.synthesize:
         preflight = {'status':'resource-preflight-passed-no-synthesis','checkedAt':time.time(),'project':SLUG,'rootScope':'explicit M21–M33 local review batch','allowIdleEditors':args.allow_idle_editors,'baselineProcesses':baseline,'observedGpuRows':observed_gpu_rows,'gpuSamples':samples,'allocatorCapMiBIfStarted':min(7168 if args.allow_idle_editors else 8192,free-700),'gpuModelLoaded':False,'gpuLeaseCreated':False,'foreignProcessesChanged':False}
