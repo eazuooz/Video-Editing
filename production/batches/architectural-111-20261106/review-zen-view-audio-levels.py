@@ -16,7 +16,7 @@ MEDIA=Path('C:/Users/1/Videos/YamyamProduction/architectural-111-20261106')
 BASE=MEDIA/'shorts-leveldesign-07-04';DEST=BASE/'level-continuity-review'
 METHOD='07-04-exact-take-word-window-levels-v1'
 PRIMITIVE_SHA='545104df16cf26af0c0637faa76750bea1e5b70f424cc13820f13baa8b773544'
-AUDIO_SHA='a13607fc78494b0b1ee2941054c5ce977fe08a19a7fdeecf3fa1fe47d5cbd844'
+AUDIO_SHA='363b7e22bd99e1b860d981b12c2d91a965f740b3b77ec00935c74db456f6ed7b'
 CREATE=getattr(subprocess,'CREATE_NO_WINDOW',0)|getattr(subprocess,'BELOW_NORMAL_PRIORITY_CLASS',0)
 ACTIVE=None
 

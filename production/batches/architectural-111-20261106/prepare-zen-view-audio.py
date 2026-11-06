@@ -28,9 +28,51 @@ def module(name,p):
 if sha(HERE/'prepare-first-audio.py')!=BASE_SHA:raise RuntimeError('Reviewed first-audio primitives changed; inspect before selected audio prep')
 base=module('zen_audio_verified_first_primitives',HERE/'prepare-first-audio.py')
 PROFILE=dict(base.PROFILE)
+MUSIC_BALANCE_POLICY=dict(id='music-only-unreached-voice-target-v1',
+ formula='min(0, voice.constantGainDb - voice.desiredGainDb)',
+ application='One extra scalar after the existing nominal music excerpt/duck/fades',
+ musicBoostAllowed=False,voiceGainOrPcmChangeAllowed=False,uniformMixGainDb=0.,
+ peakFailureAction='Hold for review; never attenuate the unchanged voice as a fallback')
 runtime=module('zen_audio_private_singleton',HERE/'run-first-native.py');runtime.PROTOCOL=PROTOCOL;runtime.OWNER=OWNER
 
 class Pending(RuntimeError):pass
+
+def music_headroom_compensation(voice_levels):
+ """Pure finite scalar: restore nominal relative headroom, never boost music."""
+ values=[]
+ for key in ('constantGainDb','desiredGainDb'):
+  value=voice_levels.get(key)
+  if type(value)not in(int,float)or not math.isfinite(value):raise Pending('Finite actual/desired voice gain required for music-only compensation')
+  values.append(value)
+ actual,desired=values;difference=actual-desired
+ if not math.isfinite(difference):raise Pending('Nonfinite voice target shortfall')
+ delta=min(0.,difference);factor=10**(delta/20)
+ if not math.isfinite(factor)or not 0<factor<=1:raise Pending('Music-only factor must be finite, positive and never boost')
+ return dict(policy=dict(MUSIC_BALANCE_POLICY),voiceConstantGainDb=actual,voiceDesiredGainDb=desired,
+  compensationDb=delta,linearFactor=factor,voicePcmOrGainChanged=False,musicBoosted=False,
+  reason='When the unchanged voice cannot reach its nominal target, lower only the music by the same shortfall; no hearing/SNR pass is inferred')
+
+def apply_music_compensation(nominal_bed,compensation):
+ """Keep the original music phase/duck/fades and every sample position."""
+ if not isinstance(nominal_bed,np.ndarray)or nominal_bed.dtype!=np.float32 or nominal_bed.ndim!=2 or nominal_bed.shape[1]!=2 or not len(nominal_bed)or not np.isfinite(nominal_bed).all():raise Pending('Finite nonempty FLOAT32 stereo nominal music bed required')
+ expected=music_headroom_compensation(dict(constantGainDb=compensation['voiceConstantGainDb'],desiredGainDb=compensation['voiceDesiredGainDb']))
+ if compensation!=expected:raise Pending('Music-only compensation proof differs from exact finite formula')
+ bed=nominal_bed*compensation['linearFactor']
+ return bed,dict(**compensation,frames=len(bed),channels=2,sampleRate=48000,
+  nominalBedFloat32PcmSHA256=hashlib.sha256(nominal_bed.astype('<f4',copy=False).tobytes()).hexdigest(),
+  effectiveBedFloat32PcmSHA256=hashlib.sha256(bed.astype('<f4',copy=False).tobytes()).hexdigest(),
+  scalarAppliedAfterDuckAndFades=True,phaseOrEnvelopeTimingChanged=False,insertedSamples=0,trimmedSamples=0)
+
+def effective_music_levels(nominal,compensation):
+ result=dict(nominal)
+ for key in ('targetLufs','constantGainDb','desiredGainDb'):
+  value=nominal.get(key)
+  if type(value)not in(int,float)or not math.isfinite(value):raise Pending('Finite nominal music gain/target metadata required')
+  result[key]=value+compensation['compensationDb']
+ result.update(nominalTargetLufs=nominal['targetLufs'],nominalConstantGainDb=nominal['constantGainDb'],
+  nominalDesiredGainDb=nominal['desiredGainDb'],musicOnlyCompensationDb=compensation['compensationDb'],
+  effectiveGainIncludesMusicOnlyCompensation=True)
+ return result
 
 def pin(p):return dict(path=str(Path(p).resolve()),sha256=sha(p))
 def pinned(row):
@@ -96,7 +138,7 @@ def proposal(voice,rows,review,levels,source_pins):
  for left,right in zip(component_rows,component_rows[1:]):
   k=left['destinationSampleRange'][1]
   joins.append(dict(previousScene=left['sceneId'],nextScene=right['sceneId'],boundarySample=k,rawLastSample=float(aggregate[k-1]),rawFirstSample=float(aggregate[k]),normalizedLastSample=float(normalized[k-1]),normalizedFirstSample=float(normalized[k]),normalizedAbsoluteStep=float(abs(normalized[k]-normalized[k-1])),insertedSamples=0,trimmedSamples=0,interpretation='Numerical boundary only; no click/hearing acceptance inferred.'))
- identity=dict(protocol=PROTOCOL,voiceFingerprint=voice['fingerprint'],selectedComponentCount=len(voice['identity']['scenes']),canonicalWavSHA256=voice['aggregateWav']['sha256'],canonicalPcmSHA256=voice['aggregateWav']['pcmSHA256'],timingSHA256=voice['timing']['sha256'],components=component_rows,joins=joins,levelFlags=levels['flags'],profile=PROFILE,sourcePins=source_pins,processorSHA256=sha(__file__),baseProcessorSHA256=BASE_SHA,numpyVersion=np.__version__,soundfileVersion=sf.__version__,libsndfileVersion=sf.__libsndfile_version__,scipyVersion=scipy.__version__)
+ identity=dict(protocol=PROTOCOL,voiceFingerprint=voice['fingerprint'],selectedComponentCount=len(voice['identity']['scenes']),canonicalWavSHA256=voice['aggregateWav']['sha256'],canonicalPcmSHA256=voice['aggregateWav']['pcmSHA256'],timingSHA256=voice['timing']['sha256'],components=component_rows,joins=joins,levelFlags=levels['flags'],profile=PROFILE,musicBalancePolicy=MUSIC_BALANCE_POLICY,sourcePins=source_pins,processorSHA256=sha(__file__),baseProcessorSHA256=BASE_SHA,numpyVersion=np.__version__,soundfileVersion=sf.__version__,libsndfileVersion=sf.__libsndfile_version__,scipyVersion=scipy.__version__)
  return dict(schemaVersion='07-04-scalar-audio-proposal-v1',identity=identity,fingerprint=digest(identity),joinsReviewedSHA256=digest(joins),acknowledgedLevelFlagsSHA256=digest(levels['flags']),automaticSpeechPass=False,actualListening=False,audioWritten=False)
 
 def accepted_review(proposed,path,asr_pin,level_pin):
@@ -135,7 +177,7 @@ def prepare(asr_path=None,level_path=None,component_path=None):
  context=dict(voice=voice,rows=rows,proposal=proposed,binding=binding,asrPin=asr_pin,levelPin=level_pin)
  if not component_path:return context,None
  decision=accepted_review(proposed,component_path,asr_pin,level_pin)
- identity=dict(proposalFingerprint=proposed['fingerprint'],acceptedReview=pin(component_path),musicSHA256=base.MUSIC_SHA,profile=PROFILE,processorSHA256=sha(__file__),ffmpegPath=str(base.FF))
+ identity=dict(proposalFingerprint=proposed['fingerprint'],acceptedReview=pin(component_path),musicSHA256=base.MUSIC_SHA,profile=PROFILE,musicBalancePolicy=MUSIC_BALANCE_POLICY,processorSHA256=sha(__file__),ffmpegPath=str(base.FF))
  return context,dict(identity=identity,fingerprint=digest(identity),acceptedReview=decision)
 
 def artifact(folder,name):
@@ -205,14 +247,17 @@ def execute(asr_path,level_path,component_path):
   data=base.run([base.FF,'-v','error','-i',base.MUSIC,'-map','0:a:0','-ar','48000','-ac','2','-f','f32le','pipe:1']).stdout
   music=np.frombuffer(data,dtype='<f4').reshape(-1,2).copy()
   if not np.isfinite(music).all():raise Pending('Nonfinite music decode')
-  music_gain,music_levels=base.fixed_gain(music,base.loud(base.MUSIC),PROFILE['musicTargetLufs'],PROFILE['musicSamplePeakCeilingDbfs'])
-  bed=base.music_bed(music,len(stem),48000,music_gain,base.duck_curve(stem,48000,PROFILE),PROFILE)
-  combined=stem+bed;overall=min(1.,10**((PROFILE['mixSamplePeakCeilingDbfs']-base.db(np.max(np.abs(combined))))/20))
+  music_gain,nominal_music_levels=base.fixed_gain(music,base.loud(base.MUSIC),PROFILE['musicTargetLufs'],PROFILE['musicSamplePeakCeilingDbfs'])
+  nominal_bed=base.music_bed(music,len(stem),48000,music_gain,base.duck_curve(stem,48000,PROFILE),PROFILE)
+  compensation=music_headroom_compensation(voice_levels);bed,music_compensation=apply_music_compensation(nominal_bed,compensation)
+  music_levels=effective_music_levels(nominal_music_levels,compensation)
+  combined=stem+bed;overall=1.
+  if base.db(np.max(np.abs(combined)))>PROFILE['mixSamplePeakCeilingDbfs']:raise Pending('Music-only mix exceeds sample-peak limit; preserve unchanged voice and hold without common-gain fallback')
   measured=None
   for attempt in range(2):
    trial=work/f'mix-measurement-{attempt+1}.wav';sf.write(trial,combined*overall,48000,subtype='FLOAT');measured=base.loud(trial)
    if float(measured['input_tp'])<=PROFILE['mixTruePeakMaximumDbtp']:break
-   overall*=10**((PROFILE['mixTruePeakMaximumDbtp']-float(measured['input_tp'])-.35)/20)
+   raise Pending('Music-only mix exceeds true-peak limit; preserve unchanged voice and hold without common-gain fallback')
   else:raise Pending('Actual true-peak blocker; preserve work, no compressor/limiter fallback')
   for name,values in [('narration-stem.wav',stem*overall),('music-stem.wav',bed*overall),('final-mix.wav',combined*overall)]:
    if not np.isfinite(values).all():raise Pending('Nonfinite processed audio')
@@ -220,7 +265,7 @@ def execute(asr_path,level_path,component_path):
   if prepare(asr_path,level_path,component_path)[1]['fingerprint']!=recipe['fingerprint']:raise Pending('Selected inputs changed during preparation; preserve work')
   names=[p.name for p in work.iterdir()if p.is_file()];artifacts={name:dict(file=name,sha256=sha(work/name))for name in names}
   mix=artifact(work,'final-mix.wav');mix['path']=str(folder/'final-mix.wav')
-  result=dict(schemaVersion='07-04-audio-build-v1',topicId='07.04',status='audio-prepared-mixed-ASR-and-listening-pending',fingerprint=recipe['fingerprint'],output=str(folder),artifacts=artifacts,mixWav=mix,selectedComponentCount=len(voice['identity']['scenes']),rawVoice=voice['aggregateWav'],rawVoiceFingerprint=voice['fingerprint'],canonicalTiming=voice['timing'],normalizedVoiceFrames=frames,normalizedVoiceRate=rate,mixFrames=len(stem),mixRate=48000,durationSeconds=frames/rate,videoFrameTarget=dict(fps=60,totalFrames=math.ceil(frames*60/rate),noAudioTailPadding=True),voiceGlobalGain=voice_levels,musicGain=music_levels,musicNativeStream=native_info,musicAttribution=base.LICENSE.read_text(encoding='utf-8').split('Credit for the description:\n\n')[-1].strip(),musicContinuousExcerpt=True,musicLoops=0,musicPlaybackRate=1.,musicSourceStartSeconds=0.,musicFadeSeconds=.45,musicSpeechDuckDb=4.,compressorUsed=False,voiceSideDuck=False,uniformMixGainDb=base.db(overall),measuredPcmMix=measured,originalRawFilesUnchanged=True,wordBoundariesShifted=False,voiceOffsetSeconds=0.,insertedSamples=0,trimmedSamples=0,historicalEngineAggregatePreserved=True,acceptedComponentsReview=pin(component_path),rawVoiceAsr=ctx['asrPin'],rawNumericalLevelReview=ctx['levelPin'],actualListening=False,automaticSpeechPass=False,finalMixedAsr='pending-exact-selected-mix-windows',encodedAacTruePeak='pending',encodedAlignedLevelReview='pending',finalMovieComplete=False,humanApproval=False)
+  result=dict(schemaVersion='07-04-audio-build-v1',topicId='07.04',status='audio-prepared-mixed-ASR-and-listening-pending',fingerprint=recipe['fingerprint'],output=str(folder),artifacts=artifacts,mixWav=mix,selectedComponentCount=len(voice['identity']['scenes']),rawVoice=voice['aggregateWav'],rawVoiceFingerprint=voice['fingerprint'],canonicalTiming=voice['timing'],normalizedVoiceFrames=frames,normalizedVoiceRate=rate,mixFrames=len(stem),mixRate=48000,durationSeconds=frames/rate,videoFrameTarget=dict(fps=60,totalFrames=math.ceil(frames*60/rate),noAudioTailPadding=True),voiceGlobalGain=voice_levels,musicNominalGain=nominal_music_levels,musicGain=music_levels,musicOnlyCompensation=music_compensation,musicNativeStream=native_info,musicAttribution=base.LICENSE.read_text(encoding='utf-8').split('Credit for the description:\n\n')[-1].strip(),musicContinuousExcerpt=True,musicLoops=0,musicPlaybackRate=1.,musicSourceStartSeconds=0.,musicFadeSeconds=.45,musicSpeechDuckDb=4.,compressorUsed=False,voiceSideDuck=False,uniformMixGainDb=base.db(overall),measuredPcmMix=measured,originalRawFilesUnchanged=True,wordBoundariesShifted=False,voiceOffsetSeconds=0.,insertedSamples=0,trimmedSamples=0,historicalEngineAggregatePreserved=True,acceptedComponentsReview=pin(component_path),rawVoiceAsr=ctx['asrPin'],rawNumericalLevelReview=ctx['levelPin'],actualListening=False,automaticSpeechPass=False,finalMixedAsr='pending-exact-selected-mix-windows',encodedAacTruePeak='pending',encodedAlignedLevelReview='pending',finalMovieComplete=False,humanApproval=False)
   save(work/'audio-build.json',result)
   if folder.exists():raise Pending('Final version appeared; preserve both outputs')
   work.rename(folder);return result

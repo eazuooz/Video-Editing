@@ -138,7 +138,7 @@ export default makeScene2D(function* (view) {
   vault.add(route);
   // Undiscovered approach is withheld as map information. The same route is
   // progressively exposed through its actual bends, with the position dot on it.
-  const unknown = new Rect({x: 760, y: 285, width: 220, height: 60, fill: C.black, opacity: () => p6() ? 1 - ramp(phase(), 0.58, 0.73) : 1});
+  const unknown = new Rect({x: 760, y: 285, width: 220, height: 42, fill: C.black, opacity: () => p6() ? 1 - ramp(phase(), 0.58, 0.73) : 1});
   vault.add(unknown);
   vault.add(txt(() => p6() && phase() >= 0.9 ? '도달 방법을 발견' : '가는 길은?', 750, 710, 31, C.muted));
 
@@ -187,7 +187,7 @@ export default makeScene2D(function* (view) {
   // Introduce the marker before movement, then remove its text before upper/
   // right bends so it cannot cover the reward label or protected platform rail.
   positionLabel.opacity(() => p6() ? 1 - ramp(walk(), 0.30, 0.40)
-    : p7() ? 1 - ramp(walk(), 0.15, 0.30) : 1);
+    : p7() ? (walk() === 0 ? 1 : 0) : 1);
   positionLabel.position(() => player().add(p7() ? [-140 * walk(), lerp(47, -50, walk())]
     : p6() ? [-120 * ramp(walk(), 0.75, 1), 47 * (1 - ramp(walk(), 0.75, 1))] : [0, 47]));
   stage.add(positionLabel);

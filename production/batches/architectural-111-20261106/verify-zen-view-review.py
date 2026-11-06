@@ -59,6 +59,31 @@ class ReviewTests(unittest.TestCase):
     def test_exact_seven_paragraphs_allow_different_translation_cue_counts(self):
         timeline,tracks,authored=self.caption_fixture();result=review.caption_contract(timeline,tracks,authored)
         self.assertEqual((result['koCues'],result['enCues']),(7,14));self.assertTrue(result['allSevenAuthoredKoEnParagraphsRetained']);self.assertFalse(result['humanListening'])
+    def test_unwrapped_srt_exact_text_with_two_burnin_lines_accepted(self):
+        timeline,tracks,authored=self.caption_fixture()
+        timeline['captions']['ko'][0]['lines']=['문단 1','전체.']
+        self.assertEqual(tracks['ko'][0]['text'],timeline['captions']['ko'][0]['text'])
+        self.assertEqual(review.caption_contract(timeline,tracks,authored)['koCues'],7)
+    def test_exact_two_line_wrapped_srt_accepted(self):
+        timeline,tracks,authored=self.caption_fixture()
+        timeline['captions']['ko'][0]['lines']=['문단 1','전체.']
+        tracks['ko'][0]['text']='문단 1\n전체.'
+        self.assertEqual(review.caption_contract(timeline,tracks,authored)['koCues'],7)
+    def test_srt_changed_glyph_or_punctuation_rejected(self):
+        for changed in ('문단 1 전채.','문단 1 전체!'):
+            with self.subTest(changed=changed):
+                timeline,tracks,authored=self.caption_fixture();tracks['ko'][0]['text']=changed
+                with self.assertRaisesRegex(ValueError,'exact authored display literal'):review.caption_contract(timeline,tracks,authored)
+    def test_unwrapped_srt_cannot_hide_changed_burnin_lines(self):
+        for changed in (['문단 1','전채.'],['문단 1','전체!']):
+            with self.subTest(changed=changed):
+                timeline,tracks,authored=self.caption_fixture();timeline['captions']['ko'][0]['lines']=changed
+                with self.assertRaisesRegex(ValueError,'Rendered caption lines'):review.caption_contract(timeline,tracks,authored)
+    def test_empty_or_three_rendered_lines_rejected(self):
+        for changed in ([],['문단','1','전체.']):
+            with self.subTest(changed=changed):
+                timeline,tracks,authored=self.caption_fixture();timeline['captions']['ko'][0]['lines']=changed
+                with self.assertRaisesRegex(ValueError,'Rendered caption lines'):review.caption_contract(timeline,tracks,authored)
     def test_subtitle_timestamp_drift_rejected(self):
         timeline,tracks,authored=self.caption_fixture();tracks['en'][3]['start']+=.01
         with self.assertRaisesRegex(ValueError,'clock'):review.caption_contract(timeline,tracks,authored)

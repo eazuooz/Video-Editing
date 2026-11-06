@@ -18,7 +18,7 @@ def sha(p):
 def digest(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
 def pin(p):return dict(path=str(Path(p).resolve()),sha256=sha(p))
 QA_SHA='65983206f0e0fa81dd5a5780871605fcc2665816a9f21fc3ea3a43781437e2a9'
-AUDIO_SHA='a13607fc78494b0b1ee2941054c5ce977fe08a19a7fdeecf3fa1fe47d5cbd844'
+AUDIO_SHA='363b7e22bd99e1b860d981b12c2d91a965f740b3b77ec00935c74db456f6ed7b'
 if sha(HERE/'run-selected-voice-qa.py')!=QA_SHA or sha(HERE/'prepare-zen-view-audio.py')!=AUDIO_SHA:raise RuntimeError('Reviewed selected raw/audio source changed')
 qa=module('zen_mixed_selected_raw_primitives',HERE/'run-selected-voice-qa.py')
 audio=module('zen_mixed_selected_audio_binding',HERE/'prepare-zen-view-audio.py')

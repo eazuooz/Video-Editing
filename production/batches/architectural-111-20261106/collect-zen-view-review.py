@@ -178,7 +178,8 @@ def caption_contract(timeline,tracks,authored):
             a,b=row['startFrame'],row['endFrameExclusive']
             require(type(a)is int and type(b)is int and previous<=a<b<=timeline['totalFrames'],'Invalid actual subtitle clock');previous=b
             require(cue['index']==i and abs(cue['start']-a/60)<=.001 and abs(cue['end']-b/60)<=.001,'SRT does not retain exact ASR-derived cue clock')
-            require(cue['text']=='\n'.join(row['lines']) and 1<=len(row['lines'])<=2 and fold(cue['text'])==fold(row['text']),'SRT does not retain exact authored display literal')
+            require(1<=len(row['lines'])<=2 and fold('\n'.join(row['lines']))==fold(row['text']),'Rendered caption lines do not retain exact authored display literal')
+            require(cue['text'] in (row['text'],'\n'.join(row['lines'])) and fold(cue['text'])==fold(row['text']),'SRT does not retain exact authored display literal')
         for n,p in enumerate(paragraphs,1):
             selected=[r for r in rows if r['paragraph']==n]
             require(selected and fold(' '.join(r['text'] for r in selected))==fold(authored[field][n-1]),'Authored paragraph omitted/reordered/rewritten')
