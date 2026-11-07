@@ -229,7 +229,20 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
         footage=('실제 장면 선택·확인' if row.get('footageStatus')=='selected-source-reviewed' else
                  '후보 장면 확인 · 채택 전' if row.get('footageStatus')=='candidate-reviewed-not-adopted' else '실제 장면 확보·검토 예정')
         stages=[footage]
-        if row.get('nativeCaptureVerified'):
+        pilot=row.get('nativePilot')
+        pilot_revision=(ident=='11.05' and isinstance(pilot,dict)
+                        and not any(row.get(key) for key in ('nativeCaptureVerified','voiceGenerated','productionComplete'))
+                        and pilot.get('capturedModes')==['construction']
+                        and pilot.get('capturedCount')==1 and pilot.get('totalRequiredModes')==8
+                        and pilot.get('structuralValidationPassed') is True
+                        and pilot.get('allModesComplete') is False
+                        and pilot.get('actualVisualReviewPassed') is False
+                        and pilot.get('voicePreparationAllowed') is False
+                        and all(isinstance(pilot.get(key),dict) and pilot[key].get('path')
+                                and pilot[key].get('sha256') for key in ('evidence','sampledVisualReview')))
+        if pilot_revision:
+            stages.append('Unity 파일럿 1/8모드 촬영 · 구조 검증 복구')
+        elif row.get('nativeCaptureVerified'):
             stages.append('Unity 캡처 완료 · 표본 화면 확인' if row.get('nativeVisualQa') else 'Unity 캡처 완료 · 화면 검수 전')
         stage=str(row.get('status',''))
         repair=cp.get('firstS03LevelRepair',{}) if ident=='03.02' else {}
@@ -243,6 +256,8 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
             stages.append('로컬 완성본 제작 기록 있음')
         elif row.get('voiceGenerated'):
             stages.append('음성 생성 · 최종 편집·전체 청취 전')
+        elif pilot_revision:
+            stages.append('보행·시야 가림·테마 대비 보완 필요 · 음성·최종 편집 전')
         elif row.get('nativePreparation'):
             stages.append('Unity 소스 준비 · 실제 촬영·화면 검수 대기')
         elif row.get('nativeCaptureVerified'):

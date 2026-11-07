@@ -155,10 +155,17 @@ def planned(c,g,frame):
  a,b=[center(g['mandatoryRoute'][i])for i in(segment,segment+1)];t=f32(f32(length/c['cellSize'])-segment);return[f32(x+f32(f32(y-x)*t))for x,y in zip(a,b)]
 def projection(anchor,state,camera):
  world=vec(anchor['world']);v=vec(anchor[camera+'Viewport']);matrix=state[camera+'VP'];need(len(matrix)==16 and all(type(x)in(int,float)and math.isfinite(x)for x in matrix),'Finite actual VP matrix required')
- clip=[sum(matrix[r*4+k]*([*world,1][k])for k in range(4))for r in range(4)]
+ # Match the captured Unity float matrix/vector arithmetic. Float64 dot products
+ # amplify cancellation at small positive w for offscreen points; keep every
+ # original tolerance and check, rather than skipping those anchors.
+ point=[*world,1.];clip=[]
+ for r in range(4):
+  value=f32(matrix[r*4]*point[0])
+  for k in range(1,4):value=f32(value+f32(matrix[r*4+k]*point[k]))
+  clip.append(value)
  depth=clip[3]if camera=='player'else vec(state['observerCameraPosition'])[1]-world[1];need(abs(v[2]-depth)<=.0003,'Actual camera-space depth differs')
  if .04<v[2]<100:
-  need(abs(clip[3])>1e-10 and close([(clip[0]/clip[3]+1)/2,(clip[1]/clip[3]+1)/2],v[:2]),'Projection does not come from actual camera matrix')
+  need(abs(clip[3])>1e-10 and close([f32(f32(f32(clip[k]/clip[3])+1.)*.5)for k in(0,1)],v[:2]),'Projection does not come from actual camera matrix')
  ray=anchor[camera+'Ray'];need(close(vec(ray['origin']),vec(state[camera+'CameraPosition']))and close(vec(ray['target']),world),'Ray is not anchored to actual camera/object')
  distance=math.dist(vec(ray['origin']),world);need(abs(ray['targetDistance']-distance)<=.0003,'Actual ray target distance differs')
  need(type(ray['hit'])is bool and type(ray['hitBeforeTarget'])is bool,'Actual ray flags required')
