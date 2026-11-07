@@ -263,7 +263,12 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
             stages.append('세 번째 문단 음량 보완 중')
             stages.append('새 음성 대조·최종 편집·전체 청취 전')
         elif row.get('voiceRepairQueued'):
-            stages.append('원본 음성 보존 · 짧은 의미 단위로 음성 보완 작업 대기/진행')
+            selected_repair=row.get('currentProduction',{})
+            if (ident=='11.05' and selected_repair.get('exactReuseSceneCount')==42
+                    and selected_repair.get('newSynthesisSceneCount')==6):
+                stages.append('원본 42개 보존 · 6문장 음성 보완 대기/진행')
+            else:
+                stages.append('원본 음성 보존 · 짧은 의미 단위로 음성 보완 작업 대기/진행')
             stages.append('새 음성 대조·최종 편집·전체 청취 전')
         elif row.get('productionComplete'):
             stages.append('로컬 완성본 제작 기록 있음')
