@@ -13,7 +13,7 @@ import soundfile as sf
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2]
 MEDIA=Path('C:/Users/1/Videos/YamyamProduction/architectural-111-20261106');TOPIC=MEDIA/'shorts-leveldesign-06-02'
 DEST=TOPIC/'encoded-audio-review-v1';SCHEMA='06-02-encoded-audio-numerical-review-v1'
-PINS={'review-zen-view-audio-levels.py':'240c9bfe5e3baf5133fbcd39ec7e45e4739737a63ba594f220265c4b795a2388','first-level-continuity-review.py':'545104df16cf26af0c0637faa76750bea1e5b70f424cc13820f13baa8b773544','render-prospect-refuge-film-v2.py':'a2e91fbacabdde119b11eaefd95947190fed56f2e3ef832e79c53c8e420a504c','verified-prospect-refuge-audio-build-v3.py':'db521babf1848861979a7580cd0a045540575f945909d99d2a7055433344f3b4'}
+PINS={'review-zen-view-audio-levels.py':'240c9bfe5e3baf5133fbcd39ec7e45e4739737a63ba594f220265c4b795a2388','first-level-continuity-review.py':'545104df16cf26af0c0637faa76750bea1e5b70f424cc13820f13baa8b773544','render-prospect-refuge-film-v2.py':'3ba569d8b8340e338f5ab58e2be1c0944af58e6466bca8b1b69f8d75b421abe9','verified-prospect-refuge-audio-build-v3.py':'db521babf1848861979a7580cd0a045540575f945909d99d2a7055433344f3b4'}
 NUMERIC_PEER=ROOT/'projects/shorts-leveldesign-06-02/audio-actual-numerical-peer-v3.json'
 NUMERIC_PEER_SHA='f50b92af52d4294cba642d5f2b32154be6515ca96fa956be247c122ed0b0d86b'
 MIX_SHA='16823497fd0241b8c48b5fa1f607b076ebffc10dd600f5d388e26757d2bbcc17'

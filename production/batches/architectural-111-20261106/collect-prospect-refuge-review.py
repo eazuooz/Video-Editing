@@ -19,9 +19,9 @@ SLUG='shorts-leveldesign-06-02';PROJECT=ROOT/'projects'/SLUG;BASE=MEDIA/SLUG
 METADATA=PROJECT/'publishing-draft-v4.json';WORKER=MEDIA/'06-02-review-worker.json'
 METADATA_SHA='53eb604a620bd88e4cf332d4d676484b1d940cb26cf96e60b2e30e8abd886374'
 BUILDER_SHA='eba41b08c40d88eff7aca81ce2f0c714614f638ef15ea544ef51cb48d93030e7'
-RENDERER_SHA='a2e91fbacabdde119b11eaefd95947190fed56f2e3ef832e79c53c8e420a504c'
+RENDERER_SHA='3ba569d8b8340e338f5ab58e2be1c0944af58e6466bca8b1b69f8d75b421abe9'
 MIXED_SHA='566155e4164f6884366de2141fdfa480b84d1df39c65dd876836d8f97a9ff3db'
-ENCODED_AUDIO_SHA='3bee4c3f4f89848224700b42c06c2e6f691a1d030e38a37880e49c385b013b0d'
+ENCODED_AUDIO_SHA='904d72a386255033bfc99592e3cdca8eb463bf958cbc181f38270266f425e783'
 COLLECTOR=ROOT/'scripts/collect-video-output.cjs'
 BIN=Path('C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin')
 FF=Path(os.environ.get('YAMYAM_FFMPEG',str(BIN/'ffmpeg.exe')));PROBE=FF.with_name('ffprobe.exe')
@@ -302,11 +302,19 @@ def probe_video(path,total_frames):
     return result,packets
 
 
+def selection_expression(frames):
+    """Same exact frame membership with logarithmic arithmetic-parser depth."""
+    require(frames and frames==sorted(set(frames))and all(type(f)is int and f>=0 for f in frames),'Exact sorted unique integer frame selection required')
+    level=[f'eq(n\\,{n})'for n in frames]
+    while len(level)>1:level=['('+level[i]+'+'+level[i+1]+')'if i+1<len(level)else level[i]for i in range(0,len(level),2)]
+    return level[0]
+
+
 def mobile_samples(source,frames,folder,master_sha,timeline):
     from PIL import Image
     require(frames==sorted(set(frames)) and 0<len(frames)<=512 and all(type(f)is int and 0<=f<timeline['totalFrames'] for f in frames),'Finite exact unique decoded frames required')
     require(not any(folder.glob('1080-*.png')) and not any(folder.glob('375-*.png')),'Preserve previous samples; use a new empty sample destination')
-    expression='+'.join(f'eq(n\\,{n})' for n in frames)
+    expression=selection_expression(frames)
     graph=f'[0:v]select={expression},split[full][small];[small]scale=375:-1[mobile]'
     run([FF,'-v','error','-n','-threads','2','-hwaccel','none','-i',source,'-filter_complex_threads','1','-filter_complex',graph,
         '-map','[full]','-fps_mode','passthrough',folder/'1080-%03d.png',

@@ -1,5 +1,5 @@
 """CPU-only06.02 four-output collector faults; no FFmpeg/models/staging."""
-import copy,contextlib,importlib.util,io,json,sys,tempfile,unittest
+import copy,contextlib,importlib.util,io,json,math,os,re,subprocess,sys,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -85,6 +85,24 @@ class ReviewTests(unittest.TestCase):
   t,_,_=self.caption_fixture();t.update(sections=[dict(kind='gameplay',startFrame=0,endFrameExclusive=100),dict(kind='native',startFrame=100,endFrameExclusive=30000)],catCues=[dict(startFrame=200,endFrameExclusive=300)],guideCues=[dict(startFrame=500,endFrameExclusive=600)],paragraphs=[dict(startFrame=0,endFrameExclusive=30000)]);counts,frames=review.section_contract(t);self.assertEqual(sum(counts.values()),30000);self.assertLessEqual(len(frames),512)
   for r in t['captions']['ko']:self.assertIn((r['startFrame']+r['endFrameExclusive']-1)//2,frames)
   for f in [0,29999,49,15049,249,549]:self.assertIn(f,frames)
+ def test_balanced_selection_retains_membership_and_logarithmic_depth(self):
+  for count in[384,512]:
+   frames=[2*i for i in range(count)];expression=review.selection_expression(frames);depth=0;maximum=0
+   for ch in expression:
+    depth+=1 if ch=='('else-1 if ch==')'else 0;maximum=max(maximum,depth)
+   self.assertEqual(depth,0);self.assertLessEqual(maximum,math.ceil(math.log2(count))+1)
+   python_expr=re.sub(r'eq\(n\\,(\d+)\)',r'(n==\1)',expression);code=compile(python_expr,'synthetic-balanced-selection','eval');self.assertEqual([n for n in range(count*2)if eval(code,{'__builtins__':{}},{'n':n})],frames)
+ def test_selection_rejects_duplicates_order_and_noninteger_frames(self):
+  for frames in[[],[1,1],[2,1],[False,1],[0,1.5]]:
+   with self.assertRaisesRegex(ValueError,'sorted unique integer'):review.selection_expression(frames)
+ def tiny_ffmpeg_selection(self,count):
+  frames=[2*i for i in range(count)];expression=review.selection_expression(frames)
+  command=[str(review.FF),'-hide_banner','-nostdin','-v','error','-threads','2','-hwaccel','none','-f','lavfi','-i','color=c=black:s=16x16:r=60:d=18','-filter_threads','1','-vf','select='+expression,'-fps_mode','passthrough','-threads:v','2','-f','framemd5','-']
+  result=subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30,creationflags=review.CREATE|getattr(subprocess,'BELOW_NORMAL_PRIORITY_CLASS',0));self.assertEqual(result.returncode,0,result.stderr.decode(errors='replace')[-2000:]);text=result.stdout.decode();rows=[line for line in text.splitlines()if line and not line.startswith('#')];self.assertEqual(len(rows),count);self.assertEqual([int(line.split(',')[2].strip())for line in rows],frames);self.assertIn('#tb 0: 1/60',text)
+ @unittest.skipUnless(os.environ.get('YAMYAM_RUN_TINY_FFMPEG_TESTS')=='1','Explicit tiny16x16 software fixture only')
+ def test_actual_tiny_16x16_384_balanced_select_count_andPTS(self):self.tiny_ffmpeg_selection(384)
+ @unittest.skipUnless(os.environ.get('YAMYAM_RUN_TINY_FFMPEG_TESTS')=='1','Explicit tiny16x16 software fixture only')
+ def test_actual_tiny_16x16_512_balanced_select_count_andPTS(self):self.tiny_ffmpeg_selection(512)
  def test_picture_gap_and_invalidcat_fail_closed(self):
   t=dict(totalFrames=60,sections=[dict(kind='gameplay',startFrame=0,endFrameExclusive=59)],captions=dict(ko=[]))
   with self.assertRaises(ValueError):review.section_contract(t)

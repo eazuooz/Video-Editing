@@ -406,7 +406,7 @@ class FrameRouter:
     if p.get('mode')in('baseline','shifted'):
      mode='기본 엄폐 위치'if p['mode']=='baseline'else'옮긴 엄폐 위치';self.text(im,mode,(dest[0]+dest[2]-112,dest[1]-32),30,'#e8cf83')
    if s['paragraph']in(5,6):self.text(im,'몸·이동 명령·카메라 동일 · 두 번째 엄폐 위치만 변경',(488,320),30,'#e8cf83')
-   if s.get('holdReason'):self.text(im,'설명을 위한 정지 화면',(488,1497),26,'#b8b8b8')
+   if s.get('holdReason'):self.text(im,'설명을 위한 정지 화면',(220,1497),26,'#b8b8b8')
   term=s.get('term')
   if term:
    self.text(im,term['english']+' ('+term['korean']+')',(488,315),40,'#e8cf83')

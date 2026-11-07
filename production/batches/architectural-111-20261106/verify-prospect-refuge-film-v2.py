@@ -1,5 +1,5 @@
 """Synthetic CPU-only routing/provenance fixtures. No media/model processes."""
-import contextlib,copy,hashlib,importlib.util,io,json,pathlib,sys,tempfile,unittest
+import ast,contextlib,copy,hashlib,importlib.util,io,json,pathlib,sys,tempfile,unittest
 from unittest.mock import patch
 from types import SimpleNamespace
 HERE=pathlib.Path(__file__).resolve().parent
@@ -132,6 +132,15 @@ class SeparateMixClockBridge(unittest.TestCase):
   with self.assertRaisesRegex(builder.Pending,'103/2x'):self.accept()
 
 class ProjectionAndVisibility(unittest.TestCase):
+ def test_held_note_source_is_only_fixed_left_center_26px(self):
+  tree=ast.parse(pathlib.Path(renderer.__file__).read_text(encoding='utf8'));calls=[n for n in ast.walk(tree)if isinstance(n,ast.Call)and isinstance(n.func,ast.Attribute)and n.func.attr=='text'and len(n.args)>4 and isinstance(n.args[1],ast.Constant)and n.args[1].value=='설명을 위한 정지 화면'];self.assertEqual(len(calls),1);self.assertEqual(ast.literal_eval(calls[0].args[2]),(220,1497));self.assertEqual(ast.literal_eval(calls[0].args[3]),26);self.assertEqual(ast.literal_eval(calls[0].args[4]),'#b8b8b8')
+ def test_actual_held_note_font_bbox_and_three_cat_alpha_masks_clear(self):
+  from PIL import Image,ImageDraw,ImageChops
+  style=renderer.primitives().style_adapter();font=style.font(26);text='설명을 위한 정지 화면';box=ImageDraw.Draw(Image.new('L',(1080,1920))).textbbox((220,1497),text,font=font,anchor='mm');self.assertGreaterEqual(box[0],48);self.assertLess(box[2],416);self.assertLess(box[3],style.spec['caption']['maxTwoLineBox'][1]);self.assertEqual(style.spec['caption']['nativeCenter'],[488,1600])
+  new=Image.new('L',(1080,1920));old=Image.new('L',(1080,1920));ImageDraw.Draw(new).text((220,1497),text,font=font,anchor='mm',fill=255);ImageDraw.Draw(old).text((488,1497),text,font=font,anchor='mm',fill=255);layout=style.spec['cat']['layout'];clip=Image.new('L',new.size);x,y,w,h=layout['visibleClipRect'];ImageDraw.Draw(clip).rectangle((x,y,x+w-1,y+h-1),fill=255)
+  for pose in['puzzled','realize','relief']:
+   sprite=style.cat_images[pose].resize(tuple(layout['spriteSize']),Image.Resampling.LANCZOS);alpha=Image.new('L',new.size);alpha.paste(sprite.getchannel('A'),tuple(layout['poseTopLeft'][pose]));alpha=ImageChops.multiply(alpha,clip);self.assertIsNone(ImageChops.multiply(new,alpha).getbbox(),pose)
+   if pose in['puzzled','realize']:self.assertIsNotNone(ImageChops.multiply(old,alpha).getbbox(),pose+' must reproduce actual old note occlusion')
  def badge_font(self):return renderer.primitives().style_adapter().font(32)
  def test_section_badge_is_inside_actual_observer_crop_and_clear_of_headers(self):
   font=self.badge_font();p=dict(camera='observer')
