@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "11.05-caption-timing-adapter-preparation-v6",
+  "topicId": "11.05",
+  "createdUtc": "2026-11-07T13:28:34Z",
+  "status": "source-only-ready-for-critical-peer",
+  "source": {
+    "path": "D:/Github/VideoEditing/production/batches/architectural-111-20261106/build-solution-path-caption-timing-v6.py",
+    "sha256": "11a2765b208427d2f5a4caa8bfa0958f390adaa062ecc95d73b77208747f3421"
+  },
+  "tests": {
+    "path": "D:/Github/VideoEditing/production/batches/architectural-111-20261106/verify-solution-path-caption-timing-v6.py",
+    "sha256": "dc130b8e7b95d9eddaf28ff208484536d42f5a54890ce9637e46cbf01a6bc3c2",
+    "command": [
+      "C:/Anaconda3/envs/pytorch-gpu/python.exe", "-B", "-X", "utf8",
+      "production/batches/architectural-111-20261106/verify-solution-path-caption-timing-v6.py"
+    ],
+    "exitCode": 0,
+    "passed": 24,
+    "elapsedSeconds": 0.282,
+    "scope": "Pure synthetic word/sample clocks; actual current authored text and font-only formatter validation. No actual prepare/profile/model/media/resource calls.",
+    "astParse": "Both new Python files passed.",
+    "coverage": [
+      "Exact literal alignment reproduces the synthetic particle boundary failure.",
+      "Audited whole-word start/end edges rescue only explicitly listed source offsets; exact literal boundaries take precedence.",
+      "Merged ASR words keep internal canonical spacing boundaries Pending until an authored cue reflow.",
+      "Current context, raw WAV/PCM/format, cache, complete canonical/recognized literals and exact observed word records are required.",
+      "Timestamp/sample/index/type tampering, overlap, reversal, internal endpoints and unsupported partial words are rejected.",
+      "Aliases, recognition modification, prompt use, automatic speech approval and human/listening approval are rejected.",
+      "Complete 14-paragraph/48-take/43-group/98-KO/86-EN display build with synthetic clocks passes and retains line-local emphasis.",
+      "Complete display build stays Pending on an unsupported particle boundary and succeeds only with explicit current synthetic word-edge evidence, retaining raw differences.",
+      "Immutable and published voice receipts may differ only outside the explicitly checked raw/profile/repair/engine fields.",
+      "No implicit write or auto-hashed evidence path acceptance."
+    ]
+  },
+  "boundSources": {
+    "narration": {"path": "D:/Github/VideoEditing/projects/shorts-leveldesign-11-05/narration-final-v5.json", "sha256": "e3179da81b2a23135eb6a8907ebb6205c14fc2d66e528a37372d491d0ffeaa91"},
+    "captionClauses": {"path": "D:/Github/VideoEditing/projects/shorts-leveldesign-11-05/caption-clauses-v2.json", "sha256": "b1629be657702b8910cbf4eafafcabbd7452a688ae0b976c04a898aadf47fc0c"},
+    "translatedDisplayBoundaries": {"path": "D:/Github/VideoEditing/projects/shorts-leveldesign-11-05/translated-caption-display-boundaries-v2.json", "sha256": "f3d174651b0af77bf85847f76e53dec8e07c8a5d4143d936fc260f75f12e7be1"},
+    "blindAsrAdapter": {"path": "D:/Github/VideoEditing/production/batches/architectural-111-20261106/run-solution-path-voice-qa-v6.py", "sha256": "59618eb71570190ec78cbae98f94b15078cfd852d3325aab7ac10531400d727e"},
+    "frozenCaptionAncestor": {"path": "D:/Github/VideoEditing/production/batches/architectural-111-20261106/build-solution-path-caption-timing-v5.py", "sha256": "9fbbae07231103f3b11ece20443349005902ce0af87e265555f06a1be91c1ad5"},
+    "fontAndSourceValidator": {"path": "D:/Github/VideoEditing/production/batches/architectural-111-20261106/verify-solution-path-caption-clauses.py", "sha256": "92e7f8e2ad7b57acb3171c38aa415ec8f2381b627a5627b5f14c7521e3bb17d5"}
+  },
+  "publicApi": {
+    "prepare": "prepare(asr_review=None, voice_evidence=None, alignment_evidence=None) -> {ready,fingerprint,output,timing,voice,asr}; raises Pending until actual current inputs and every requested boundary are supported.",
+    "verifyExisting": "verify_existing(path) -> {timing,voice,asr}; freshly reconstructs current timing and compares exact JSON and plain SRT bytes without writes.",
+    "verifiedAsrReview": "verified_asr_review(path) validates only the actual existing current repaired ASR review/cache through the pinned V6 adapter.",
+    "voiceBinding": "voice_binding(voice,review,narration) keeps full raw/profile/repair/PCM/sample-clock checks; only the independently validated repairSelection extends the approved identity.",
+    "literalResolver": "resolve_literal_interval(timing,paragraph,exactUniqueKoPhrase) uses verified canonical word edges and exposes their actual boundary provenance.",
+    "evidenceValidator": "validate_evidence(document,context,sentences,takes,result_pins) is pure; apply_evidence adds only missing audited whole-word endpoints.",
+    "write": "Only explicit --write calls immutable output writing after a fresh exact reconstruction. Default does not write or launch jobs."
+  },
+  "wordEdgeEvidenceContract": {
+    "schemaVersion": "11.05-whole-asr-word-edge-evidence-v1",
+    "reviewScope": "technical-caption-display-whole-word-edges-only",
+    "selection": "Caller supplies an explicit current-project or current-media path AND SHA256; the adapter never discovers or auto-trusts a sidecar.",
+    "contextPins": ["sourceNarration", "voiceEvidence (immutable current D receipt)", "voiceFingerprint", "rawAsrReview", "rawAsrJob"],
+    "rowFields": ["id", "sceneId", "rawWav (complete exact descriptor)", "asrResult", "canonicalTakeLiteral", "recognizedTakeLiteral", "canonicalCharRange", "canonicalLiteral", "actualWordIndices", "recognizedWords", "recognizedLiteral", "reason", "boundaryMappings"],
+    "observedWordFields": ["text", "start", "end", "startSample", "endSample", "sourceWordIndex"],
+    "boundaryMapping": "Explicit canonicalOffset plus actualEdge=start or end; derives only the first selected whole word's startSample or last selected whole word's endSample.",
+    "spacing": "Only equivalent source whitespace immediately adjacent to the complete canonical interval may share its outer edge. No internal merged-word or fractional clock is created.",
+    "unresolved": "Any unsupported requested boundary remains Pending; author a source-exact cue reflow that keeps the complete observed word together if needed.",
+    "rawDifferences": "Canonical and recognized literals, character differences, source word indices and original unsupported boundaries remain available. Display alignment is not a speech-quality pass.",
+    "requiredFalseFlags": ["aliasesApplied", "recognitionModified", "pcmModified", "expectedPromptsUsed", "automaticSpeechPass", "actualListening", "humanApproval"]
+  },
+  "actualReadiness": {
+    "actualPreparePerformed": false,
+    "actualSelectedAsrObservedByAuthor": false,
+    "actualEvidenceRowsWritten": false,
+    "actualTimingMaterialized": false,
+    "actualSidecarPath": null,
+    "actualSidecarSHA256": null,
+    "actualWordOrSampleValuesAuthored": false,
+    "currentRepairedVoiceAnd95TaskAsrRequired": true,
+    "unsupportedWordBoundariesRemainPending": true,
+    "rendererBinding": "Parked until actual repaired voice, ASR, timing and accepted mix are bound.",
+    "nativeOrMediaApproval": false,
+    "automaticSpeechPass": false,
+    "actualListening": false,
+    "humanApproval": false,
+    "modelLoaded": false,
+    "jobLaunched": false,
+    "stagingPerformed": false,
+    "checkpointOrSharedMetadataChanged": false,
+    "gitChanged": false
+  },
+  "preservation": "Old caption V4/V5 helpers, original recognition, all voice inputs/PCM/proofs, authored source JSON, checkpoints and shared metadata were not changed by this source-only task."
+}
