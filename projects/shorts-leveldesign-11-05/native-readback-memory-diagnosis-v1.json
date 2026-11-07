@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "11-05-native-readback-memory-diagnosis-v1",
+  "topicId": "11.05",
+  "actualFailure": {
+    "attempt": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\native-attempts\\20261107-184203-83b804522b",
+    "unityExitCode": 1073741845,
+    "inputProvenance": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\native-attempts\\20261107-184203-83b804522b\\input-provenance.json",
+      "sha256": "3ef34e9dd671ac460b24f4b0620cdb1d55224947c0f968eafcbd1896a32599a1",
+      "bytes": 11756
+    },
+    "log": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\native-attempts\\20261107-184203-83b804522b\\unity.log",
+      "sha256": "ef432d87e820a19ffb279fda12cd5343c15c35a3c16dc4e2315db48f84335cb1",
+      "bytes": 1300332
+    },
+    "rawJpegFileCounts": {
+      "player": 3118,
+      "observer": 3118
+    },
+    "diagnostics": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\native-attempts\\20261107-184203-83b804522b\\capture\\construction\\animation-diagnostics.jsonl",
+      "sha256": "8b4eae90f083116da362fe5804b9017146d5544b2bbd1f960bfbcfba411be584",
+      "bytes": 1363968
+    },
+    "diagnosticPhysicalLines": 140,
+    "completeDiagnosticJsonRecords": 139,
+    "truncatedDiagnosticLines": 1,
+    "modeCompleteExists": false,
+    "nativeCaptureComplete": false
+  },
+  "observedLogValues": {
+    "failedScratchBytes": 8294400,
+    "resourceErrorCode": "8007000e",
+    "releaseQueueBytes": 51903037440,
+    "localBudgetBytes": 15966666752,
+    "localCurrentUsageBytes": 2233073664,
+    "nonLocalBudgetBytes": 49765068785,
+    "nonLocalCurrentUsageBytes": 50051547136,
+    "nonLocalOverBudgetBytes": 286478351,
+    "failureStackContains": "D3D12UploadOperation -> UploadTexture2D -> Texture2D::Apply"
+  },
+  "scaleCalculation": {
+    "observedJpegWrites": 6236,
+    "loggedScratchBytesPerOperation": 8294400,
+    "productBytes": 51723878400,
+    "meaning": "Order-of-magnitude gross repeated upload/scratch traffic, not a separately measured retained allocation or proof of exact per-frame memory ownership."
+  },
+  "primaryApiEvidence": [
+    {
+      "url": "https://docs.unity.com/en-us/engine/6000.0/script-reference/unityengine/texture2d/readpixels",
+      "finding": "ReadPixels writes active GPU render-target pixels to the readable CPU texture. Its example says Apply is unnecessary when the changed texture will not be rendered."
+    },
+    {
+      "url": "https://docs.unity.com/en-us/engine/6000.0/script-reference/unityengine/texture2d/apply",
+      "finding": "Apply transfers changed CPU texture data to GPU memory; this capture only encodes its CPU texture to JPEG."
+    }
+  ],
+  "sourceInference": {
+    "status": "Supported narrow repair hypothesis, not confirmed V4 fix",
+    "reason": "The actual fatal upload stack reaches Apply and the non-local/release queues are exhausted. The source redundantly uploads each CPU readback before JPEG encoding. Removing Apply eliminates that specific upload path; this report does not rule out other graphics/driver allocation causes."
+  },
+  "sourceOnlyV4": {
+    "namespace": "Yamyam.Architectural111.SolutionPathV4",
+    "folder": "Assets/VideoScenes/architectural-111-20261106/11-05-SolutionPathV4",
+    "files": {
+      "GraphModel.cs": {
+        "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v4\\GraphModel.cs",
+        "sha256": "7c3652dea5e25492ce421a55aaef1afa9ef90867af559233573777e1ea5c3fa8",
+        "bytes": 4732
+      },
+      "Experiment.cs": {
+        "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v4\\Experiment.cs",
+        "sha256": "54b8b0fde634352ffc5f41e7451da20198db212394b7ebbe5ac14aab26be43d1",
+        "bytes": 12407
+      },
+      "Editor/EditorBuilder.cs": {
+        "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v4\\Editor\\EditorBuilder.cs",
+        "sha256": "cdce00c43b0879af90a797b627059f436eb88c8054b9bc35748c020a19b43aa5",
+        "bytes": 39955
+      },
+      "config.json": {
+        "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v4\\config.json",
+        "sha256": "499f48570d6b2d94a7ecf8be9028d30b04591e3f0dd95d98494d116fa8612997",
+        "bytes": 4924
+      }
+    },
+    "logicDelta": "Remove only image.Apply() after ReadPixels; namespace/folder/menu changed for coexistence. ReadPixels, no-mipmap RGB24 texture, EncodeToJPG, physics, speed, camera, clock, palette, catalog, warmup and diagnostic data formats unchanged.",
+    "exactReverseMatchesV3": true
+  },
+  "preservedV3Source": {
+    "GraphModel.cs": {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v3\\GraphModel.cs",
+      "sha256": "060bead8c4ac9f3861c3a3fced0ecc8202e3f68361a974ba234eef68041399ee",
+      "bytes": 4732
+    },
+    "Experiment.cs": {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v3\\Experiment.cs",
+      "sha256": "978d0440caf7510ba3d90a563d1cb9f0ea386a71127a784e0ffcb0e5c2b0ac09",
+      "bytes": 12407
+    },
+    "Editor/EditorBuilder.cs": {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v3\\Editor\\EditorBuilder.cs",
+      "sha256": "9570ac1bf8170e4b15383a2fc7144777d5cd7992dcb196c32d864dfe05c05228",
+      "bytes": 39969
+    },
+    "config.json": {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\solution-path-unity-source-v3\\config.json",
+      "sha256": "499f48570d6b2d94a7ecf8be9028d30b04591e3f0dd95d98494d116fa8612997",
+      "bytes": 4924
+    }
+  },
+  "sourceCompileRunByThisAgent": false,
+  "newUnityCaptureRunByThisAgent": false,
+  "fixConfirmedByActualCapture": false,
+  "actualVisualMotionApproved": false,
+  "voicePreparationAllowed": false,
+  "humanApproval": false,
+  "remainingReview": [
+    "Root API compile and strict V4 controller/proof checks",
+    "Actual new complete native capture, memory outcome and source-bound diagnostics",
+    "1080/375 pixel and motion review; actual hearing remains separate"
+  ]
+}
