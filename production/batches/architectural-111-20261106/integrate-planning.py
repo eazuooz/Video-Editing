@@ -269,14 +269,16 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
             stages.append('로컬 완성본 제작 기록 있음')
         elif row.get('voiceGenerated'):
             stages.append('음성 생성 · 최종 편집·전체 청취 전')
+        elif row.get('voiceControllerActive') is True:
+            stages.append('음성 제작 작업 대기/진행 · 최종 편집 전')
         elif pilot_revision:
             stages.append('남은 7모드 제작 중 · 음성·최종 편집 전' if remaining_modes_running
                           else '남은 7모드 제작 전 · 음성·최종 편집 전' if pilot['actualVisualReviewPassed']
                           else '보행·시야 가림·테마 대비 보완 필요 · 음성·최종 편집 전')
-        elif row.get('nativePreparation'):
-            stages.append('Unity 소스 준비 · 실제 촬영·화면 검수 대기')
         elif row.get('nativeCaptureVerified'):
             stages.append('음성·최종 편집 진행 전')
+        elif row.get('nativePreparation'):
+            stages.append('Unity 소스 준비 · 실제 촬영·화면 검수 대기')
         else:
             stages.append('대본 초안 · 시연·음성·완성본 제작 전')
         stages.append('사용자 검수 승인 기록 있음' if row.get('humanApproval') else '사용자 영상 검수 전')

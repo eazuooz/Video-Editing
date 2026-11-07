@@ -1,0 +1,560 @@
+{
+  "schemaVersion": "11-05-internally-finalized-narration-v4",
+  "topicId": "11.05",
+  "titleKo": "매번 바뀌는 던전, 출구까지 길은 누가 만들까?",
+  "titleEn": "Who connects the exit in an ever-changing dungeon?",
+  "scriptStatus": "source-and-current-eight-mode-sampled-QA-finalized-for-TTS;actual-speech-and-final-composition-pending",
+  "preservedOriginalDraft": {
+    "path": "projects/shorts-leveldesign-11-05/narration-draft.json",
+    "sha256": "1faa8be1e7a424584e2d99925686a3835f0f38f6851b8133cf1ac5cab7bbc0de"
+  },
+  "sourceLearningReview": {
+    "path": "projects/shorts-leveldesign-11-05/source-learning-review-v1.json",
+    "sha256": "2b4cef23815017572191ff26730578eecd6aa4819829a4dbfc79bccab5617b7f"
+  },
+  "narrationKo": [
+    "스펠렁키 HD에서 캐릭터가 입구를 나와 발판을 따라 동굴 아래로 내려갑니다. 매번 달라지는 동굴에 출구로 이어지는 구조는 어떻게 만드는 걸까요? 이 질문은 원작 스펠렁키 클래식의 공개 코드와 우리 모형으로 살펴보겠습니다. 먼저 사람이 만든 작은 방을 보고, 방들이 이어지는 과정과 적이 더해지는 순서를 펼쳐 보죠.",
+    "컴퓨터가 바닥 하나부터 전부 아무렇게나 뽑는 건 아닙니다. 사람이 먼저 돌아서 지나갈 공간이나 발판처럼, 플레이할 작은 장면을 설계합니다. 이런 방 크기의 묶음을 레벨 조각이라고 하죠. 생성기는 이 조각들을 고르고 이어 붙입니다.",
+    "그러면 같은 방을 다시 만나서 지루해지지 않을까요? 조각 안에 익힐 행동이 담겨 있으면, 익숙한 구조를 다시 읽고 활용할 수 있습니다. 중요한 건 같은 모양을 반복했느냐보다, 그 모양에서 무엇을 하게 만드느냐입니다.",
+    "같은 조각이라도 적이 서 있는 자리, 옆에 이어지는 지형, 지역의 분위기가 바뀌면 보이는 상황이 달라집니다. 여기서는 한 번에 하나씩 바꾸겠습니다. 테마만 바꿀 때는 지형과 이동 규칙을 그대로 두고, 모습이 달라진다는 것만 비교하죠.",
+    "이제 이 방들을 어떤 순서로 이을지 보겠습니다. 방의 연결 관계를 위에서 보도록 펼쳐 놓은 우리 모형입니다. 방 칸을 격자로 놓고, 맨 위 줄에서 입구가 될 방을 고릅니다. 출구 자리는 아직 정하지 않습니다.",
+    "입구에서 시작한 길은 옆으로 가거나 한 줄 아래로 내려갑니다. 표시된 화살표는 플레이어에게 보이는 안내선이 아니라, 생성기가 방을 잇는 과정을 보여 주는 겁니다. 길을 그렸다고 끝난 건 아니죠. 두 방 사이에 실제로 통하는 구멍이 있어야 합니다.",
+    "옆방으로 갈 때는 맞닿은 양쪽에 출입구가 필요합니다. 이 모형에서 아래 칸으로 이어질 때도 두 칸이 맞닿은 경계에 통로를 맞춰 줍니다. 어느 방향으로 통할 수 있는지를 정하는 것이 방 연결 유형입니다.",
+    "이렇게 길을 이어 가다가 맨 아래 줄에서 다시 내려가려는 지점이 나오면, 그 끝을 출구 방으로 정합니다. 처음부터 출구 좌표를 고정하고 길을 찾은 게 아니라, 내려오며 만든 경로의 끝에 출구가 놓이는 순서입니다.",
+    "필수 경로가 정해지면 남은 칸에도 방을 채웁니다. 다만 경로 밖 방은 어느 방향으로든 통한다고 보장하지 않습니다. 이 방은 옆길로 들어갈 수 있지만, 저 방은 벽에 막혀 있죠. 경로 밖 방을 전부 연결된 곁길이라고 보면 안 됩니다.",
+    "연결 방향이 정해져도 방 안의 구체적인 모양은 여러 가지일 수 있습니다. 양쪽 출입구는 그대로 두고, 방 안의 구조만 다른 설계안으로 바꿔 보죠. 이런 내부 설계안이 방 템플릿입니다. 연결 조건을 지키면서도 다른 장면을 고를 수 있는 겁니다.",
+    "방 안에는 더 작은 장애물 조각이나, 추첨 결과에 따라 바뀌는 타일도 들어갈 수 있습니다. 여기 가시는 방 내부를 만드는 과정에서 이미 생겼습니다. 그래서 위험요소가 전부 마지막 한 단계에서만 추가된다고 설명하면 실제 순서를 놓치게 됩니다.",
+    "그다음 적 같은 구성요소가 더해지면, 같은 지형에도 새로운 위협이 놓입니다. 여기서는 지형과 이동 입력을 고정하고 적의 위치만 옮기겠습니다. 화면에는 실제로 겹친 위치와 접촉 결과를 표시해서, 무엇이 바뀌었는지 함께 확인하죠.",
+    "HD 화면에서도 보물을 든 캐릭터가 출구 근처에서 굴러오는 바위에 쓰러지죠. 출구까지 방이 이어졌다는 검사와, 적이나 가시에 닿지 않고 통과했다는 검사는 다릅니다. 연결선만 확인해서는 위협을 어떻게 지나갈지 알 수 없죠. 길의 뼈대, 방 안의 구조, 그 안에 놓이는 위협을 나누어 보는 이유입니다.",
+    "랜덤 던전의 변화는 무작위 선택 하나에서만 나오지 않습니다. 사람이 설계한 작은 도전과, 그 조각들을 연결하고 채우는 규칙이 함께 작동합니다. 익숙한 방을 다시 만나도 주변과 구성요소를 다시 읽게 만드는 것, 그게 반복과 변화를 함께 쓰는 방법입니다."
+  ],
+  "paragraphsEn": [
+    "In Spelunky HD, the character leaves the entrance and descends along the cave’s ledges. How does an ever-changing cave get a structure that leads to the exit? We will investigate that question using Spelunky Classic’s publicly released code and our own model. First we will look inside a handmade room, then unfold how rooms are connected and enemies are added.",
+    "The computer does not choose every floor tile without structure. A designer first builds a small playable situation, such as space to move around an obstacle. The generator selects and arranges these level chunks.",
+    "Would a familiar room become boring? A well-designed repeated chunk lets players recognize and use an action they have learned. What the space asks players to do matters more than repetition alone.",
+    "Enemy positions, neighboring terrain, and the area's theme can change the situation around the same chunk. We will vary one factor at a time. Changing only the theme demonstrates appearance while geometry and movement rules stay fixed.",
+    "Now unfold the room connections into our top-down model. Begin with a room grid and choose an entrance in the top row. The exit position has not been selected yet.",
+    "Extend the route sideways or down a row. These arrows visualize construction rather than a guide shown to players. A line alone does not connect rooms: there must be actual openings between them.",
+    "Sideways neighbors need matching openings. Connecting to the next row in this model also requires matching ports on the shared boundary. A room type specifies which directions must connect.",
+    "When the path attempts another downward step from the bottom row, that endpoint becomes the exit room. In this process, the exit follows the generated route rather than being fixed in advance.",
+    "Fill cells outside the solution path too, but do not assume that they have openings. One may form an accessible side route while another is sealed. Off-route rooms are not all guaranteed branches.",
+    "The required connections still allow different interiors. Keep both side openings and change the interior layout. These designs are room templates: they vary a scene while respecting its connection requirements.",
+    "Smaller obstacle structures and probabilistic tiles can vary the interior further. Spikes can already appear during this stage. Describing every hazard as part of one final pass would miss that distinction.",
+    "Later components such as enemies add threats to the same terrain. Hold geometry and movement input fixed, changing only enemy positions. The demonstration will show actual overlaps and contact results.",
+    "Back in the HD footage, the character carrying treasure is crushed by a rolling boulder near the exit. Connected rooms and a traversal without touching enemies or spikes are different checks. Connection lines alone do not show how to pass those threats. Separate the route, the interior structure, and the threats within it.",
+    "A random dungeon's variety comes from more than random choices. Handmade challenges work together with rules that connect and populate them. Familiar rooms can ask players to read new surroundings and components."
+  ],
+  "paragraphRoles": [
+    {
+      "paragraph": 1,
+      "role": "actual-game abstract",
+      "teachingAndEvidence": "Adopted official publisher-origin SpelunkyHD cutA shows entrance/descent/ledge choices only; Classic1.1 publiccode and our separate model supply mechanism explanation. NoHDhidden-path inference."
+    },
+    {
+      "paragraph": 2,
+      "role": "handmade scene/chunk prerequisite",
+      "teachingAndEvidence": "Book context01/02 and learning01/03/04; define a playable chunk before assembly."
+    },
+    {
+      "paragraph": 3,
+      "role": "purpose of repetition",
+      "teachingAndEvidence": "Book learning02; preserve player needs and learned actions."
+    },
+    {
+      "paragraph": 4,
+      "role": "same chunk, changed context",
+      "teachingAndEvidence": "Book learning05/06; enemy, surrounding geometry, theme. Theme-only is not evidence of changed mechanics."
+    },
+    {
+      "paragraph": 5,
+      "role": "route construction begins",
+      "teachingAndEvidence": "Source correction01: top-row entrance; no preselected exit."
+    },
+    {
+      "paragraph": 6,
+      "role": "route progression",
+      "teachingAndEvidence": "Side/down progression and observer-only arrows; no copied commercial map."
+    },
+    {
+      "paragraph": 7,
+      "role": "room type and actual matching ports",
+      "teachingAndEvidence": "Define input/output connection meanings beside visible doorways."
+    },
+    {
+      "paragraph": 8,
+      "role": "exit derived from bottom endpoint",
+      "teachingAndEvidence": "Primary-source correction01; no invented original exit coordinate."
+    },
+    {
+      "paragraph": 9,
+      "role": "off-route cells and sealed room",
+      "teachingAndEvidence": "Primary-source correction02; type0 is not guaranteed accessible or a graph dead end."
+    },
+    {
+      "paragraph": 10,
+      "role": "template inside connection type",
+      "teachingAndEvidence": "Fig11.10 visual role; own template variations; fixed connector contract."
+    },
+    {
+      "paragraph": 11,
+      "role": "layout-embedded hazards",
+      "teachingAndEvidence": "Primary-source correction03; template/obstacle stage can contain spikes."
+    },
+    {
+      "paragraph": 12,
+      "role": "later components and one-variable comparison",
+      "teachingAndEvidence": "Book learning08; actual Unity contact result must be checked before retaining the result claim."
+    },
+    {
+      "paragraph": 13,
+      "role": "connectivity versus no-hit traversal",
+      "teachingAndEvidence": "AdoptedHD cutB shows idolcarrying/boulder collision near lowerdoorway; no successful exit. Preserve ownconnectivity-versus-contact-free traversal explanation without treating owntrigger as commercialdamage logic."
+    },
+    {
+      "paragraph": 14,
+      "role": "return to handmade experiences plus composition",
+      "teachingAndEvidence": "Book context03 and learning02/05/06; familiar structure with changed situation."
+    }
+  ],
+  "unresolvedBeforeFinalNarration": [],
+  "glossary": [
+    {
+      "english": "Level Chunk",
+      "korean": "레벨 조각",
+      "plainMeaning": "작은 플레이 상황을 담은 방 규모의 묶음",
+      "firstParagraph": 2
+    },
+    {
+      "english": "Solution Path",
+      "korean": "출구 연결 경로",
+      "plainMeaning": "생성기가 입구에서 출구로 이어지게 준비하는 경로",
+      "firstParagraph": 6
+    },
+    {
+      "english": "Room Type",
+      "korean": "방 연결 유형",
+      "plainMeaning": "어느 방향 출입구를 지켜야 하는지 정하는 구분",
+      "firstParagraph": 7
+    },
+    {
+      "english": "Room Template",
+      "korean": "방 템플릿",
+      "plainMeaning": "연결 조건 안에서 고르는 내부 설계안",
+      "firstParagraph": 10
+    },
+    {
+      "english": "Connectivity",
+      "korean": "연결성",
+      "plainMeaning": "방과 통로가 서로 이어진 성질",
+      "firstParagraph": 13
+    },
+    {
+      "english": "Probabilistic Tile",
+      "korean": "확률 타일",
+      "plainMeaning": "추첨 결과에 따라 배치가 달라지는 타일 규칙",
+      "firstParagraph": 11
+    }
+  ],
+  "displaySpellingAndPronunciation": {
+    "Spelunky": {
+      "display": "Spelunky Classic (스펠렁키 클래식)",
+      "speech": "스펠렁키 클래식",
+      "role": "Classic mechanism-source version"
+    },
+    "terms": "Prominent heading English (Korean), concise object-bound plain meaning; no numerical substitution drills.",
+    "Spelunky HD": {
+      "display": "Spelunky (HD) · 스펠렁키 HD",
+      "speechGuide": "스펠렁키 에이치디",
+      "role": "Actualpublisher-origin recordedgame version; pronunciationguide only, not an appliedASR alias."
+    }
+  },
+  "sourceKinds": {
+    "bookAndKazemi": "research-reference-only",
+    "unity": "own-implementation and schematic; not commercial runtime",
+    "candidateGameplay": "actual-recording: official publisher-origin SpelunkyHD gameplay; selected in source-footage-v2; finalmoving/mobileQA pending",
+    "classicCode": "research/mechanism evidence: officialClassic1.1 publicsource; not theHDsource and not a productiongameplayrecording"
+  },
+  "narrationReadthrough": {
+    "performedBy": "Codex root and independent agentA",
+    "scope": "All14 KO/EN paragraphs in order without headings, source role and continuity; unchanged text checked against V4 actual source outcomes",
+    "humanListening": false,
+    "realizedTimingVerified": false,
+    "humanApproval": false
+  },
+  "narrationFinalized": true,
+  "ttsReady": true,
+  "voiceGenerated": false,
+  "rendered": false,
+  "humanApproval": false,
+  "platformActions": [],
+  "preservedPreviousDraft": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\narration-expanded-draft-v3.json",
+    "sha256": "c2aa6bea7c9cdda1ebfb44e817b5349536ee1799b63b0ae1653e05b0420574e6"
+  },
+  "sourceFootage": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\source-footage-v2.json",
+    "sha256": "e25b04358a68ceff2ce671d20515f81f474d730a3797620e20b2177399908e24"
+  },
+  "sourceFootageSelected": true,
+  "previousNarrationReadthrough": {
+    "performedBy": "root, heading-free KO/EN text read",
+    "scope": "draft flow and source corrections only",
+    "humanListening": false,
+    "realizedTimingVerified": false
+  },
+  "sourceVersionConformance": {
+    "schemaVersion": "11-05-HD-observation-Classic-code-conformance-v1",
+    "reviewedAt": "2026-11-07T06:41:37.113345+00:00",
+    "previousDraft": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\narration-expanded-draft-v2.json",
+      "sha256": "92fa120c7b3ceb83a93d40bdef6c62e342de662f7c144ebebef1189f26b70500"
+    },
+    "readInputs": [
+      {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\scene-plan-v2.json",
+        "sha256": "9811c568be3db4cf9469ae4bdddbaf3f437127ec0a8a42757c6a7fef400178d0"
+      },
+      {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\source-learning-review-v1.json",
+        "sha256": "2b4cef23815017572191ff26730578eecd6aa4819829a4dbfc79bccab5617b7f"
+      },
+      {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\footage-research-v2.json",
+        "sha256": "f7451f2a4a7ec0a8f8acbfe7746fb83ee868de1f7c809b5f3d8b2334033af35c"
+      },
+      {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\source-footage-v2.json",
+        "sha256": "e25b04358a68ceff2ce671d20515f81f474d730a3797620e20b2177399908e24"
+      }
+    ],
+    "sourceFootageSelected": true,
+    "recordedGameVersion": "Spelunky (HD) · Nintendo Switch official trailer2021",
+    "sourceMedia": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v2\\i0QyS6m7c5w-source3-29-video.mp4",
+      "sha256": "7de8f879f3f33f551ee704c7b54264f3325084292d4db90a37c1018f7ffefcbb",
+      "bytes": 15718151
+    },
+    "sourceRef": "S-HD",
+    "sourceUrl": "https://www.youtube.com/watch?v=i0QyS6m7c5w",
+    "mechanismVersion": "SpelunkyClassic1.1 official publicsource; authoredroom/template and initialization order evidence, notHDruntimeinternals",
+    "classicEvidence": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\official-source-extraction.json",
+      "sha256": "9446ec6446a782b733a629ccf74bf255ef29de3019ede74c92f7a6701d6a5d18"
+    },
+    "classicClaimMappings": [
+      {
+        "id": "classic-topology",
+        "claimKo": "공식 클래식1.1의 일반 경로 생성은 윗줄의 임의 시작 방에서 좌우·아래 방향으로 진행한다. 바닥줄 아래로 내려가려 할 때 마지막 방을 출구 방으로 기록한다. 출구를 먼저 고정한다고 설명하지 않는다.",
+        "source": {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrLevelGen.gml",
+          "sha256": "9600347409f12b0bcc86cf4eacb313986ed8996ba17cef7a14eec7c4a87fe269",
+          "bytes": 8437
+        },
+        "lineRanges": [
+          [
+            25,
+            33
+          ],
+          [
+            89,
+            133
+          ]
+        ],
+        "limit": "Special cases such as Black Market, lake, snake pits and other branches exist; not a complete all-biome simulator. The original source comment describes the route as intended to work without bombs/rope in theory; this is not an observed guarantee of enemy safety or a formally verified gameplay solution."
+      },
+      {
+        "id": "classic-template-expansion",
+        "claimKo": "경로 방 종류와 지역에 맞는 방 템플릿을 선택한 뒤, 방 안의 작은 장애물 조각과 타일을 확장한다. 경로 바깥 Type0는 별도 곁방 템플릿을 쓴다. 모든 곁방이 길에 연결되거나 반드시 막다른길이라는 보장은 이 코드에서 확인되지 않는다.",
+        "source": {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrRoomGen.gml",
+          "sha256": "59644c99da4454bcca129b19f44a541ecfa3ef3776689d68539f8e9c0ffe2669",
+          "bytes": 22413
+        },
+        "lineRanges": [
+          [
+            27,
+            44
+          ],
+          [
+            48,
+            120
+          ],
+          [
+            122,
+            171
+          ],
+          [
+            240,
+            343
+          ]
+        ],
+        "limit": "Room10×8 tiles and obstacle5×3 chunks are Classic source values; our demonstration can simplify only when explicitly labelled."
+      },
+      {
+        "id": "classic-population-order",
+        "claimKo": "초기화에서는 경로 생성, 지역별 방 생성, 개체·보물 생성 호출 순서가 구분된다. 그러나 가시는 방 장애물·타일 확장 중에도 생성되므로 모든 위험물을 마지막에 놓는다고 단정하면 틀리다.",
+        "sources": [
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrInitLevel.gml",
+            "sha256": "e4fcabbd4f8b55126cd342795f7016e048359a77d93b486abf61c5d06ba3f7d5",
+            "bytes": 8726
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrRoomGen.gml",
+            "sha256": "59644c99da4454bcca129b19f44a541ecfa3ef3776689d68539f8e9c0ffe2669",
+            "bytes": 22413
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrEntityGen.gml",
+            "sha256": "f07723a8cea5a6999ec59a311e2901d79637efbc864df0cab120c12fe694f16d",
+            "bytes": 21342
+          }
+        ],
+        "sourceMap": [
+          {
+            "script": "scrInitLevel.gml",
+            "lines": [
+              [
+                145,
+                165
+              ],
+              [
+                194,
+                198
+              ]
+            ]
+          },
+          {
+            "script": "scrRoomGen.gml",
+            "lines": [
+              [
+                265,
+                284
+              ],
+              [
+                317,
+                355
+              ]
+            ]
+          }
+        ],
+        "limit": "No claim of universal PCG pipeline, guaranteed hazard safety, or identical HD/Spelunky2 source."
+      }
+    ],
+    "classicEvidenceReviewScope": "Uses C’s actually extracted/read officialcode report; no source script or game executed by this revision.",
+    "ownImplementationVersion": "Independentflat3D4x4 room/door model and owncontacttriggers; not commercialplatformer movement or damage code.",
+    "selectedCuts": [
+      {
+        "id": "S-HD-A",
+        "sourceId": "spelunky-hd-official-mossmouth-i0QyS6m7c5w",
+        "startFrame": 60,
+        "endFrameExclusive": 480,
+        "displayedFrameCount": 420,
+        "startPTS": {
+          "numerator": 60060,
+          "denominator": 60000,
+          "seconds": 1.001
+        },
+        "endPTSExclusive": {
+          "numerator": 480480,
+          "denominator": 60000,
+          "seconds": 8.008
+        },
+        "duration": {
+          "numerator": 420420,
+          "denominator": 60000,
+          "seconds": 7.007
+        },
+        "frameClock": "Pinned local displayed video frames, not container packet count or rounded60fps",
+        "plannedParagraph": 1,
+        "teachingRole": "actual-game-opener",
+        "observableMeaning": "Upper entrance→descent and ledge choices→dog/idol area. The phrase about levels being generated each run is supported by Classic code, not proven by this single HD recording.",
+        "playbackSpeed": 1.0,
+        "loop": false,
+        "repeatOtherSelectedFrames": false,
+        "fullOriginalAspect": true,
+        "imageCrop": null,
+        "audioAdopted": false
+      },
+      {
+        "id": "S-HD-B",
+        "sourceId": "spelunky-hd-official-mossmouth-i0QyS6m7c5w",
+        "startFrame": 480,
+        "endFrameExclusive": 961,
+        "displayedFrameCount": 481,
+        "startPTS": {
+          "numerator": 480480,
+          "denominator": 60000,
+          "seconds": 8.008
+        },
+        "endPTSExclusive": {
+          "numerator": 961961,
+          "denominator": 60000,
+          "seconds": 16.032683333333335
+        },
+        "duration": {
+          "numerator": 481481,
+          "denominator": 60000,
+          "seconds": 8.024683333333334
+        },
+        "frameClock": "Pinned local displayed video frames, not container packet count or rounded60fps",
+        "plannedParagraph": 13,
+        "teachingRole": "connectivity-versus-hazard-confirmation",
+        "observableMeaning": "Idol taken/carried, boulder/debris approaches lower doorway; player is crushed near doorway. A visible route and surviving it are different. Do not claim successful exit or next-level transition.",
+        "playbackSpeed": 1.0,
+        "loop": false,
+        "repeatOtherSelectedFrames": false,
+        "fullOriginalAspect": true,
+        "imageCrop": null,
+        "audioAdopted": false
+      }
+    ],
+    "sourceTimingMeaning": "60000/1001 displayedsourceframes/localPTS. Sourcewindow durations are availability/selectednative1x durations, NOT measuredPCM timings.",
+    "plannedPictureSpeechRouting": [
+      {
+        "paragraph": 1,
+        "cutId": "S-HD-A",
+        "sourceFrames": [
+          60,
+          480
+        ],
+        "role": "Actualentrance/descent phenomenon and question; ownUnity overview continues afterward as naturalvoice requires.",
+        "actualPcmAligned": false
+      },
+      {
+        "paragraph": 13,
+        "cutId": "S-HD-B",
+        "sourceFrames": [
+          480,
+          961
+        ],
+        "role": "Idolcarrying/boulder/debris/fatalnear-doorway confirmation; retain existing conceptualcheck explanation across subsequentownmodel picture as needed.",
+        "actualPcmAligned": false
+      },
+      {
+        "paragraph": 14,
+        "role": "OwnUnityclosing; no reuse ofHDselectedframes as a success proof.",
+        "actualPcmAligned": false
+      }
+    ],
+    "sourcePlayedOnceEach": true,
+    "disjointSourceFrames": true,
+    "sourceLoopOrRetimeAllowed": false,
+    "selectedSourceAudioAdopted": false,
+    "sourceCreditsAndPolicy": "Retain exact source-footage-v2 descriptioncredits/rightsconditions; thisdraft grants no newlicense and adds no on-screen source stripe.",
+    "successfulExitClaimed": false,
+    "nextLevelTransitionClaimed": false,
+    "allRoomsPathMeasuredFromHD": false,
+    "commercialGeneratorInferredFromVideo": false,
+    "HDAlgorithmIdentityWithClassicClaimed": false,
+    "unityTriggerLabelledAsCommercialDamage": false,
+    "directStillViews": [
+      {
+        "frame": 60,
+        "sourceImage": {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v2\\official-hd-samples\\native-02.png",
+          "sha256": "39cbde07b22995d22637d6ec8265caf82854d6de56982d51657878597a0d43e7"
+        },
+        "directlyViewedByThisRevision": true,
+        "scope": "ExistingFHDstill only; no newdecode orwholemovingview."
+      },
+      {
+        "frame": 540,
+        "sourceImage": {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v2\\official-hd-samples\\native-10.png",
+          "sha256": "bdd0e8b2f043aa4866b666a172ce780dc6d403a0e62fb502c6c5d8bd49dd1046"
+        },
+        "directlyViewedByThisRevision": true,
+        "scope": "ExistingFHDstill only; no newdecode orwholemovingview."
+      },
+      {
+        "frame": 870,
+        "sourceImage": {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v2\\official-hd-boundary-samples\\native-04.png",
+          "sha256": "403e9788e89c91673ccfda256a5e3af8bc2196e177dbc2d357f31661aa418faa"
+        },
+        "directlyViewedByThisRevision": true,
+        "scope": "ExistingFHDstill only; no newdecode orwholemovingview."
+      }
+    ],
+    "actualMovingViewByThisRevision": false,
+    "changedParagraphs": [
+      {
+        "paragraph": 1,
+        "oldKoSHA256": "238bd87898090fedbf76fbb9e9f079f25969896eac25d407cdd027580020682f",
+        "newKoSHA256": "17c7eb34baf9e2b096ac73712a975bbcb9d983751a934bb6be592cf4e87bf394",
+        "oldEnSHA256": "4391e62ad76f072da1dc73f4a7f2c75fcb35d70ec693fdd9c8ba02f095802177",
+        "newEnSHA256": "f6acd7d15a8b911c1706a737a9355ddd4c4cf44150908679d775b7ad762db5a3",
+        "reason": "HDobservableopener +Classic-code scope distinction"
+      },
+      {
+        "paragraph": 13,
+        "oldKoSHA256": "69a8e9249a5dec7a164865e7e478ccbeddb014205dce308a6967e7ff44eb886f",
+        "newKoSHA256": "d1dc993ed516f7a116d5e224556c09ad9f7f6c2adf38155879066a08cfa8c363",
+        "oldEnSHA256": "91be7fe71fe79bcb3ae272e4c78c40f6180ae0f6891579bc5740a3964092faac",
+        "newEnSHA256": "f5f66e1ffbd06d7f72173321a147faf7b367960cf257a39c2b2f0e4b11b4df82",
+        "reason": "ObservedHDfailedapproach beside existingconnection-versus-contact explanation; no sourcealgorithm inference."
+      }
+    ],
+    "unchangedParagraphs": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      14
+    ],
+    "unchangedParagraphBytesVerified": true,
+    "titleAndGlossaryPreserved": true,
+    "sourceOrderAndCoreTeachingRolesRetained": true,
+    "finalNativeQaPassed": false,
+    "finalMovingMobileQaPassed": false,
+    "humanApproval": false
+  },
+  "readyForDraftIntegration": true,
+  "preTtsEligibility": true,
+  "nativeQaComplete": true,
+  "actualListening": false,
+  "actualFullRealtimePlayback": false,
+  "nextProductionStage": "approved-Qwen-voice;then-independent-ASR-and-actual-PCM-timing",
+  "remainingPostTtsFitReview": [
+    "ActualnaturalQwenPCM andindependentASR wordclocks determine speech-to-native1xsource/camera/annotationcuts; sourcewindowdurationsarenot narrateddurations.",
+    "CarryP1overview intoownUnitypicture asneeded; sourceA/B onceeach, no addedsilence/loop/retime tofit.",
+    "Actualencoded1080/375caption/cat/markclearance, movingoutput, fullhearing andhumanfinalreview remainfuturechecks.",
+    "Use actual contact45frames[1658,1703), early blocked-port[1540,1601); exclude late broken player[2880,3120); reviewed observer1560 surface-only exception does not establish orthographic point visibility"
+  ],
+  "nativeQaCompleteScope": "All8 source-mode structure and sampled1080/375; not continuous gait, final captions or human review",
+  "internalFinalizedAt": "2026-11-07T19:44:36.070317+09:00",
+  "sourceTextUnchanged": true,
+  "currentScenePlan": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\scene-plan-v4.json",
+    "sha256": "76aa4137264f65fd34fef41154d8b4990c07c420831d529650dceb04c3d2cc48"
+  },
+  "currentNativePresentationPlan": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\native-presentation-plan-v4.json",
+    "sha256": "0fa402e73a812fa28d55670104df7ef83af09f47f995f7ca3853006ab0fdd3b4"
+  },
+  "sourceBilingualReadthrough": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\narration-finalization-review-v4.json",
+    "sha256": "0eb1b500246ee2791c310ebd429fbc26c5e814c3c11ef13fcbf1292de4357867"
+  },
+  "nativeRootReview": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\native-eight-root-review-v4.json",
+    "sha256": "9c29450865fe5385e71df70d0e562a3362917f441b619c2d86e78e175ea7ff77"
+  },
+  "nativeVisualQa": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\native-visual-qa-v4.json",
+    "sha256": "e87d17a0704997a8efa5fcfebacd7b046078a449dc91309b335bc7bbde4ab762"
+  },
+  "resolvedFinalityRequirements": [
+    "All8 current V4 native captures and94 strict source/mobile sample pairs verified",
+    "All14KO/EN continuous source-order review; unchanged canonical text",
+    "HD source cuts and Classic code/self-authored model version boundaries retained"
+  ]
+}
