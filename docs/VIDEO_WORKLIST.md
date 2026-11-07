@@ -1,12 +1,13 @@
 <!-- ARCHITECTURAL-111-20261106-START -->
 ## 레벨 디자인 111편 제작 현황
 
-2026-11-06 사용자 요청 “111개 전체 제작 들어가줘”의 정확한 111편만 로컬 최종 검수본까지 제작한다. [전체 제작·대본 현황](../production/batches/architectural-111-20261106/worklist.html) · [제작 상태 JSON](../production/batches/architectural-111-20261106/worklist.json).
+2026-11-06 사용자 요청의 정확한 111편을 순서대로 제작한다. [전체 제작 현황](../production/batches/architectural-111-20261106/worklist.html) · [제작 상태 JSON](../production/batches/architectural-111-20261106/worklist.json).
 
-111편 한영 대본 초안·원문 연결·장면 계획을 준비했다. 첫 편 TF2 수레/터널 수정본 v2는 **111편 중 1편 로컬 검수본 준비 완료**다. 독립 FHD 게임 장면과 Unity 두 카메라 비교를 사용했고, 1080×1920·60fps 두 MP4와 한영 선택형 자막을 보존했다. 전체 디코딩·시간·오디오 동일성 및 인코딩 모바일 표본을 확인했다. 전체 실제 청취·실시간 재생·사용자 최종 검수는 남아 있다.
+**3/111편 로컬 검수본 전달 완료**: [03.02 TF2 수레·터널](../output/shorts-leveldesign-03-02/shorts-leveldesign-03-02.captioned.mp4) · [07.04 젠뷰](../output/shorts-leveldesign-07-04/shorts-leveldesign-07-04.captioned.mp4) · [06.02 전망과 은신처](../output/shorts-leveldesign-06-02/shorts-leveldesign-06-02.captioned.mp4).
 
-[첫 편 전체 자막 MP4](../output/shorts-leveldesign-03-02/shorts-leveldesign-03-02.captioned.mp4) · [출력 폴더](../output/shorts-leveldesign-03-02/index.html) · [검수 모음](<C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/delivery/shorts-leveldesign-03-02-v2.html>).
-수정본 v2 SHA256: `1e4e570c440ce07a81ce08b65417ebfd1159c52e313b51a8633c284ebfaf1d57`. 다음 선택 주제는 07.04이며, 이 상태 갱신으로 추가 제작·게시 작업을 실행하지 않는다. YouTube/Drive 업로드·공개·예약·삭제는 실행하지 않았다.
+현재 선택은 **11.05 스펠렁키 생성 경로**다. 자체 Unity 8모드와 원본 음성 48개·14문단을 확보했다. 현재 음성의 독립 ASR V6는 6시간 자원 대기를 정상 종료했고 **0/95 작업·모델 실행 전**이다. 활성 GPU 작업 큐를 새로 시작하지 않고 실제 자원 변화 후 검증된 재시도를 준비한다. 기존 앱·GPU 기준과 동결된 입력을 보존한다.
+
+전체 실제 청취·실시간 재생·사용자 최종 검수는 남아 있다. 이 현황 갱신은 추가 작업 실행이나 사람의 검수·YouTube/Drive 업로드·공개·예약·삭제를 뜻하지 않는다.
 <!-- ARCHITECTURAL-111-20261106-END -->
 
 <!-- MATH-PUBLISHING-20261026-START -->
