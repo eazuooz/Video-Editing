@@ -38,8 +38,9 @@ def main():
         assert next(f['sha256'] for f in files if f['kind']=='captioned.mp4')==digest
         ledger=dict(episode=ep,revision='real-clips-v2' if revised else e['baselineRevision'],status='local-combined-review-ready',checkedAt=now,captionedMasterSha256=digest,durationSeconds=duration,directory=relative(directory),files=files,changeSummary=description,changedExplanationCuts=changed,technicalQA=proof,visualQA=qa[ep],humanReviewedThisHash=False,actualWholeListeningThisRevision=False,unchangedAudioReviewEvidenceReused=revised,platformMutation=False)
         dest=p/'production/real-clips-v2/checkpoint.json';write(dest,ledger)
+        write(dest.with_name('rebuild-plan.json'),dict(episode=ep,revision=ledger['revision'],visualOnlyRevision=revised,baselineRevision=e['baselineRevision'],batchPlan=relative(H/'revision-plan.json'),producer=relative(H/'assemble_revision.py') if revised else None,nativeDefinitionProducer=relative(H/'prepare_all.py') if revised else None,nativeBuild=relative(H/'build_studies.py') if revised else None,sourceMotionRequest=relative(H/'source-motion-request.json'),sourceCatalog=relative(H/'source-motion-catalog.json'),assetRights=relative(H/'asset-use.json'),editableNativeAssets=relative(H/'editable-assets.json'),deliveryLedger=relative(dest),audioPolicy='Reuse baseline audio and captions; no new TTS',productionBoundary='Local final review; no automatic upload',prerequisites=['User-owned imported UE 5.8 packs in GameAnimationSample','Original baseline media and voice retained locally','Python numpy scipy Pillow, FFmpeg NVENC, UE 5.8 Python commandlets']))
         e.update(status='revised-local-review-ready' if revised else 'retained-specific-study-reviewed',selectedDelivery=relative(directory),captionedSha256=digest,changeSummary=description,ledger=relative(dest),finalHumanReview='pending')
-        records.append(dict(id=ep,slug=e['slug'],title=read(p/'project.json')['title'],revision=ledger['revision'],revised=revised,description=description,durationSeconds=duration,captionedSha256=digest,directory=relative(directory),files=files,ledger=relative(dest)))
+        records.append(dict(id=ep,slug=e['slug'],title=read(p/'project.json')['title'],revision=ledger['revision'],revised=revised,description=description,reviewFocus=e['teachingPurpose'],durationSeconds=duration,captionedSha256=digest,directory=relative(directory),files=files,ledger=relative(dest)))
     plan.update(status='combined-local-review-ready',revisedVideos=sum(r['revised'] for r in records),retainedVideos=sum(not r['revised'] for r in records),humanReview='pending',platformMutation=False)
     write(H/'revision-plan.json',plan)
     write(H/'review-manifest.json',dict(createdAt=now,status='ready-for-human-review',records=records,totalSeconds=sum(r['durationSeconds'] for r in records),nativeAssetCount=len(native['files']),uploadAuthorized=False))
@@ -52,10 +53,11 @@ def main():
         for key,value in changes.items():raw=patch(raw,['rows',index,key],value)
         fields.append(dict(id=rec['id'],fields=changes))
     wp.write_bytes(raw);write(H/'worklist-overlay.json',fields)
-    md=R/'docs/VIDEO_WORKLIST.md';text=md.read_text('utf-8-sig');lines=text.splitlines(keepends=True)
+    md=R/'docs/VIDEO_WORKLIST.md';raw=md.read_bytes();text=raw.decode('utf-8-sig');lines=text.splitlines(keepends=True)
     for rec in records:
         i=next(i for i,line in enumerate(lines) if line.startswith('| '+rec['id']+' | '));line=lines[i];last=line.rfind('|');before=line.rfind('|',0,last)
-        lines[i]=line[:before+1]+' '+('실제 클립 수정본' if rec['revised'] else '전용 시연 유지')+' · 통합 검수 대기 |'+('\n' if line.endswith('\n') else '')
-    md.write_text(''.join(lines),'utf-8')
+        newline='\r\n' if line.endswith('\r\n') else '\n' if line.endswith('\n') else ''
+        lines[i]=line[:before+1]+' '+('실제 클립 수정본' if rec['revised'] else '전용 시연 유지')+' · 통합 검수 대기 |'+newline
+    md.write_bytes((b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'')+''.join(lines).encode('utf-8'))
     print('Bound review records:',len(records),flush=True)
 if __name__=='__main__':main()

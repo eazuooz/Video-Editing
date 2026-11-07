@@ -64,7 +64,7 @@ for key,cancel in [('attack',None),('cancel36',36),('cancel48',48),('noinput',No
                           hit=clock>=contact,bladeStart=a.tolist(),bladeEnd=b.tolist(),target=target.tolist(),
                           classification='computed contact and authored input timing in our demonstration'))
     dest=L/'studies'/('A03-'+key+'.json')
-    save_study(dest,attack,poses,dict(settings,kind=key,trace=trace,weapon=True))
+    save_study(dest,attack,poses,dict(settings,kind=key,trace=trace,weapon=True,secondaryClips=[walk.data['sourceClip']] if 'cancel' in key else []))
     jobs.append(dict(key='A03-'+key,file=str(dest)))
 (L/'study-build-request.json').write_text(json.dumps(jobs,indent=2),'utf-8')
 print('A03 genuine motion studies',len(jobs))

@@ -187,6 +187,9 @@ def a02_images(s):
         cached=im;last=identity;yield im
 def series_images(ep,s,study,visual):
     key=ep+'-'+s['key'];last=None;cached=None
+    strength_only=ep=='A10' and s['key']=='height' and s['cue']==41
+    matrix=ep=='A10' and s['key']=='height' and s['cue'] in (38,39,40,42)
+    if strength_only:key='A10-recoil';study=study_data(key)
     for f in range(s['frames']):
         index,mode=state_index(f,s['frames'],study)
         if key in ('A04-anticipation','A11-kick'):
@@ -199,16 +202,32 @@ def series_images(ep,s,study,visual):
         if ep=='A16' and s['key']=='path':im.paste(frame('A16-overhead',index).crop((960,0,1920,1080)),(960,0))
         if ep=='A13' and s['key']=='direction':im.paste(frame('A13-observer',index).crop((960,0,1920,1080)),(960,0))
         im=guides(ep,s['key'],study,index,im);d=ImageDraw.Draw(im)
+        if matrix:
+            im=Image.blend(im,Image.new('RGB',im.size,'#101713'),.84);d=ImageDraw.Draw(im)
+            text(d,(70,55),'맞는 높이 × 반응 크기',60,'#f2d787')
+            text(d,(1430,75),'분류 예시 · 아홉 조합',30,'#b9d2c3')
+            for col,name in enumerate(('작게','중간','크게')):text(d,(525+col*365,210),name,40)
+            for row,name in enumerate(('상단','중단','하단')):
+                y=310+row*152;text(d,(270,y+44),name,42)
+                for col in range(3):
+                    x=470+col*365;active=s['cue']==40 or (s['cue']==39 and row==min(2,int(f*3/max(1,s['frames']))))
+                    d.rounded_rectangle((x,y,x+300,y+125),radius=8,fill='#34483c' if active else '#1b2d23',outline='#e8ca7f' if active else '#678276',width=3)
+                    radius=13+col*10;cx=x+150;cy=y+62;d.ellipse((cx-radius,cy-radius,cx+radius,cy+radius),fill='#f2d787' if active else '#b7d8c9')
+            text(d,(580,809),'3개 높이 × 3개 크기 = 9개 조합',42,'#f2d787')
+            cached=im;last=identity;yield im;continue
         d.line((960,112,960,794),fill='#98a69f',width=3)
         if s['key']=='outline':
             a=np.array(im);region=a[210:795,960:]
             mask=binary_fill_holes(binary_closing(region.mean(axis=2)<160,iterations=6))
             components,count=connected_labels(mask);sizes=np.bincount(components.ravel());sizes[0]=0
             region[components==sizes.argmax()]=[21,30,26];im=Image.fromarray(a);d=ImageDraw.Draw(im)
-        d.rectangle((42,37,690,104),fill='#14261f');text(d,(64,52),'언리얼 · 실제 클립 기반 비교',34,'#e7efe7')
+        compact=ep in ('A06','A14')
+        d.rectangle((42,37,410 if compact else 690,104),fill='#14261f');text(d,(64,52),'언리얼 · 클립 비교' if compact else '언리얼 · 실제 클립 기반 비교',34,'#e7efe7')
         labels=visual['studyLabels'][s['key']]
         if ep=='A07':labels=['작은 몸짓','큰 몸짓'] if s['key']=='gesture' else ['같은 동작','같은 동작']
         if ep=='A08' and s['key']=='flow':labels=['상체를 고정','머리·어깨·골반의 흐름']
+        if strength_only:labels=['같은 높이 · 작은 반응','같은 높이 · 큰 반응']
+        if ep=='A10' and s['key']=='turn':labels=['원래 몸통 방향','몸통 방향만 회전']
         for side,label in enumerate(labels):
             x=75+side*960;w=d.textlength(label,font=font(37))+40
             d.rounded_rectangle((x,130,x+w,199),radius=8,fill='#28443a');text(d,(x+17,143),label,37)
@@ -222,16 +241,16 @@ def series_images(ep,s,study,visual):
             length=(1 if not side else 14) if s['key']=='blend' else 24
             for side in (0,1):
                 length=(1 if not side else 14) if s['key']=='blend' else (6 if not side else 24)
-                z=np.clip((index-42)/length,0,1);weight=z*z*(3-2*z);x=70+960*side
-                d.rectangle((x,690,x+340,766),fill='#172721');text(d,(x+12,704),f'걷기 가중치 {weight:.2f}',29)
+                z=np.clip((index-42)/length,0,1);weight=z*z*(3-2*z);x=430+700*side
+                d.rectangle((x,37,x+440,104),fill='#172721');text(d,(x+12,52),f'걷기 가중치 {weight:.2f}',29)
         if ep=='A06':
             clock=min(60,max(0,index-12))
             for side in (0,1):
-                x=75+960*side;value=min(clock,15) if s['key']=='timing' and not side else clock
-                d.rectangle((x,699,x+530,773),fill='#172721')
+                x=430+700*side;value=min(clock,15) if s['key']=='timing' and not side else clock
+                d.rectangle((x,37,x+440,104),fill='#172721')
                 state='준비' if value<15 else '타격' if value==15 else '후속 동작'
                 if s['key']=='control' and value>=(42 if side else 60):state='다음 행동 가능'
-                text(d,(x+12,714),f'{value} / 60 F   ·   '+state,30)
+                text(d,(x+12,52),f'{value} F · '+state,30)
         cached=im;last=identity;yield im
 def main(ep):
     pending=NATIVE/'pending-native-updates.json'
@@ -268,7 +287,8 @@ def main(ep):
         # This older edit uses B-frames and a different video time base.
         # Preserve every picture in its order and assign a new exact 60 Hz PTS.
         body=l/'body-normalized.mp4'
-        ff(['-threads','2','-i',l/'body.mp4','-vf','settb=1/60,setpts=N','-an',*ENC,body],l/'body-normalize.log')
+        ff(['-threads','2','-i',l/'body.mp4','-vf','settb=1/60,setpts=N','-an',*ENC[2:],'-enc_time_base','1:60','-fps_mode','passthrough',body],l/'body-normalize.log')
+        regular_packets(body,sum(c['frames'] for c in timeline['cuts']))
     branding=base/'edit' if ep=='A02' else R/'projects/animation-assigning/production/local/grid-v1/edit'
     n=timeline['totalFrames'];inputs=[normalized_endcard(branding/'branding.mp4',120),body,normalized_endcard(branding/'membership.mp4',600)]
     # Preserve the already encoded pictures in the clean master. Only caption

@@ -125,7 +125,7 @@ def run():
                 w=motion('MM_Walk_Fwd');p=mapped(m,w,sample(w,((c-(42 if side else 60))/60)%w.seconds))
             return p
         return f
-    for key in ('timing','ending','control'):add('A06',key,'AS_Spear_Attack_06',a06(key),'Observed swing; recovery and input transition isolated',observationFrames=[27,58])
+    for key in ('timing','ending','control'):add('A06',key,'AS_Spear_Attack_06',a06(key),'Observed swing; recovery and input transition isolated',observationFrames=[27,58],secondaryClips=[motion('MM_Walk_Fwd').data['sourceClip']] if key=='control' else [])
     # A07: a real startled/excited reaction carries the information-loss comparison.
     def a07(key):
         def f(m,side,n):
@@ -157,15 +157,14 @@ def run():
                 # Preserve the take's actual ~105 cm root displacement; the
                 # left comparison locks that same root at the initial point.
                 i=m.names.index('root');p['p'][i]=m.sample(t)['p'][i]-m.sample(21.4)['p'][i]
-            if key=='turn' and not side:
-                for bone in ('pelvis','spine_01','spine_02'):p['q'][m.names.index(bone)]=origin['q'][m.names.index(bone)]
-            if key in ('recoil','turn') and not side:
+            if key=='turn' and side:world_rotation(m,p,'spine_01',[0,0,35])
+            if key=='recoil' and not side:
                 # Rotation isolation must not leave the comparison hovering.
                 wp,_=m.world(p);op,_=m.world(origin);feet=[m.names.index('foot_l'),m.names.index('foot_r')]
                 p['p'][m.names.index('root')][2]+=min(op[i,2] for i in feet)-min(wp[i,2] for i in feet)
             return p
         return f
-    for key in ('recoil','root','turn'):add('A10',key,'am_Ready_Fight_01_Knockdown_A',a10(key),'Actual struck participant; isolate '+key+'; keep isolated comparison foot on the floor; root study compares the genuine root translation with a locked root',cameraWidth=780,cameraHeight=75,observationFrames=[35,85])
+    for key in ('recoil','root','turn'):add('A10',key,'am_Ready_Fight_01_Knockdown_A',a10(key),'Actual struck participant; isolate '+key+'; root compares genuine translation with locked root; turn preserves pelvis/legs and changes only upper-torso orientation',cameraWidth=780,cameraHeight=75,observationFrames=[35,85])
     # A11: a kick is finally demonstrated with the imported kicking action.
     def a11(key):
         def f(m,side,n):
@@ -201,7 +200,7 @@ def run():
             length=(1 if not side else 14) if key=='blend' else (6 if not side else 24)
             return mix(attack,walking,smooth((n-42)/length))
         return f
-    for key in ('blend','duration'):add('A14',key,combo,a14(key),'Actual combat and walk clips; '+key+' controls, both compatible Manny hierarchies',observationFrames=[45,66])
+    for key in ('blend','duration'):add('A14',key,combo,a14(key),'Actual combat and walk clips; '+key+' controls, both compatible Manny hierarchies',observationFrames=[45,66],secondaryClips=[motion('MM_Walk_Fwd').data['sourceClip']])
     (L/'series-study-build-request.json').write_text(json.dumps(jobs,indent=2),'utf-8')
     print('Prepared distinct genuine-motion studies',len(jobs),flush=True)
 if __name__=='__main__':run()
