@@ -1,4 +1,5 @@
 """Verify browser-downloaded Fab sources without starting editors or executing assets."""
+import argparse
 import collections
 import hashlib
 import json
@@ -91,10 +92,15 @@ def fbx_probe(path):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--indices', nargs='+', type=int, help='Inspect only changed catalog items')
+    args = parser.parse_args()
     record = json.loads(RECORD.read_text(encoding='utf-8-sig'))
     root = Path(record['storageRoot']).resolve()
     root.mkdir(parents=True, exist_ok=True)
     for item in record['items']:
+        if args.indices is not None and item['index'] not in args.indices:
+            continue
         for download in item['downloads']:
             source = Path(download['browserPath'])
             if not source.is_file():
