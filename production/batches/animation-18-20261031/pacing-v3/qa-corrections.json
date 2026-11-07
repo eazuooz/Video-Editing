@@ -1,0 +1,40 @@
+{
+  "scope": "Changed intervals in the explicitly authorized A01-A18 pacing revision",
+  "humanFullReview": false,
+  "findings": [
+    {
+      "episodes": ["A01", "A03"],
+      "finding": "Six legal subtitle-cue boundaries split a sentence or an enumeration before a long observation insert.",
+      "correction": "Use manually inspected complete Korean sentence boundaries: A01 12.88s, 125.72s and 344.73s; A03 19.06s, 154.49s and 288.30s. Preserve all source PCM and bilingual cue text. Reuse the verified unchanged picture; rebuild audio, subtitle timing and captioned master. Audit complete-sentence boundaries across all 17 revisions."
+    },
+    {
+      "episodes": ["A01", "A03"],
+      "finding": "Aligning picture insertion to a nearby speech boundary briefly exposed the following shot before its observation replay.",
+      "correction": "Insert picture at the exact existing shot boundary; pause audio only at its aligned bilingual clause boundary. Preserve all original frames and PCM samples in order."
+    },
+    {
+      "episodes": ["A04", "A11"],
+      "finding": "The jab and uppercut previews used a different mannequin from their deliberately retained baseline comparison.",
+      "correction": "Use jab-baseline-matched.mp4 and upper-baseline-matched.mp4, preserving the same character, action and camera across preview and analysis."
+    },
+    {
+      "episodes": ["A12"],
+      "finding": "Replay tails included a book shot and a different Cuphead boss.",
+      "correction": "Replay the first 300 frames of the continuous Clock Tower face shot and first 120 frames of the continuous Cuphead facial action. Retain the entire original baseline passage.",
+      "evidence": "projects/animation-facial-animations/production/local/pacing-v3/qa/cut-check-game-clock.jpg; cut-check-game-cup.jpg"
+    },
+    {
+      "episodes": ["A15"],
+      "finding": "The repeated hand-grip example continued into the item-description popup.",
+      "correction": "End the additional replay at frame 330, after the visible grip/rotation and before the popup. Preserve the popup in the original passage.",
+      "evidence": "projects/animation-portraying-fingers/production/local/pacing-v3/qa/botw-cut-check.jpg"
+    },
+    {
+      "episodes": ["A18"],
+      "finding": "The goose replay tail reached an unrelated shop shot.",
+      "correction": "Use the first 210 frames of the bench action. The Clock Tower replay uses the first 150 frames of the continuous head turn. Preserve all original baseline footage.",
+      "evidence": "projects/animation-rotation-on-two-axes/production/local/pacing-v3/qa/goose-cut-check.jpg"
+    }
+  ],
+  "verification": "Each final review record is tied to the current captioned-master SHA256; stale renders are rejected. Four temporal samples per insertion inspect the before, inside, end and following frames at 375px width. This is not a claim of whole-video human viewing or listening."
+}
