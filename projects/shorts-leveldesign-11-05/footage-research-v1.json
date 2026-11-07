@@ -1,0 +1,575 @@
+{
+  "schemaVersion": "11.05-footage-research-v1",
+  "topicId": "11.05",
+  "slug": "shorts-leveldesign-11-05",
+  "createdUtc": "2026-11-07T05:23:37.896287+00:00",
+  "scope": "Primary algorithm research plus bounded independently uploaded gameplay candidate; no narration finalization or production cut adoption.",
+  "status": "primary-code-verified-footage-rights-blocked",
+  "primarySourceExtraction": {
+    "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\official-source-extraction.json",
+    "sha256": "9446ec6446a782b733a629ccf74bf255ef29de3019ede74c92f7a6701d6a5d18",
+    "bytes": 4252
+  },
+  "primaryTechnicalClaims": [
+    {
+      "id": "classic-topology",
+      "claimKo": "공식 클래식1.1의 일반 경로 생성은 윗줄의 임의 시작 방에서 좌우·아래 방향으로 진행한다. 바닥줄 아래로 내려가려 할 때 마지막 방을 출구 방으로 기록한다. 출구를 먼저 고정한다고 설명하지 않는다.",
+      "source": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrLevelGen.gml",
+        "sha256": "9600347409f12b0bcc86cf4eacb313986ed8996ba17cef7a14eec7c4a87fe269",
+        "bytes": 8437
+      },
+      "lineRanges": [
+        [
+          25,
+          33
+        ],
+        [
+          89,
+          133
+        ]
+      ],
+      "limit": "Special cases such as Black Market, lake, snake pits and other branches exist; not a complete all-biome simulator. The original source comment describes the route as intended to work without bombs/rope in theory; this is not an observed guarantee of enemy safety or a formally verified gameplay solution."
+    },
+    {
+      "id": "classic-template-expansion",
+      "claimKo": "경로 방 종류와 지역에 맞는 방 템플릿을 선택한 뒤, 방 안의 작은 장애물 조각과 타일을 확장한다. 경로 바깥 Type0는 별도 곁방 템플릿을 쓴다. 모든 곁방이 길에 연결되거나 반드시 막다른길이라는 보장은 이 코드에서 확인되지 않는다.",
+      "source": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrRoomGen.gml",
+        "sha256": "59644c99da4454bcca129b19f44a541ecfa3ef3776689d68539f8e9c0ffe2669",
+        "bytes": 22413
+      },
+      "lineRanges": [
+        [
+          27,
+          44
+        ],
+        [
+          48,
+          120
+        ],
+        [
+          122,
+          171
+        ],
+        [
+          240,
+          343
+        ]
+      ],
+      "limit": "Room10×8 tiles and obstacle5×3 chunks are Classic source values; our demonstration can simplify only when explicitly labelled."
+    },
+    {
+      "id": "classic-population-order",
+      "claimKo": "초기화에서는 경로 생성, 지역별 방 생성, 개체·보물 생성 호출 순서가 구분된다. 그러나 가시는 방 장애물·타일 확장 중에도 생성되므로 모든 위험물을 마지막에 놓는다고 단정하면 틀리다.",
+      "sources": [
+        {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrInitLevel.gml",
+          "sha256": "e4fcabbd4f8b55126cd342795f7016e048359a77d93b486abf61c5d06ba3f7d5",
+          "bytes": 8726
+        },
+        {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrRoomGen.gml",
+          "sha256": "59644c99da4454bcca129b19f44a541ecfa3ef3776689d68539f8e9c0ffe2669",
+          "bytes": 22413
+        },
+        {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\scrEntityGen.gml",
+          "sha256": "f07723a8cea5a6999ec59a311e2901d79637efbc864df0cab120c12fe694f16d",
+          "bytes": 21342
+        }
+      ],
+      "sourceMap": [
+        {
+          "script": "scrInitLevel.gml",
+          "lines": [
+            [
+              145,
+              165
+            ],
+            [
+              194,
+              198
+            ]
+          ]
+        },
+        {
+          "script": "scrRoomGen.gml",
+          "lines": [
+            [
+              265,
+              284
+            ],
+            [
+              317,
+              355
+            ]
+          ]
+        }
+      ],
+      "limit": "No claim of universal PCG pipeline, guaranteed hazard safety, or identical HD/Spelunky2 source."
+    },
+    {
+      "id": "gdc-developer-summary",
+      "claimKo": "제작자 GDC 설명은 4×4 방 격자에서 경로를 표시하고, 지역·경로에 맞는 템플릿과 내부 무작위 조각을 고른 뒤 개체를 더한다는 큰 순서를 설명한다.",
+      "sourceUrl": "https://www.youtube.com/watch?v=RiDy6CgBKqs",
+      "creator": "Derek Yu and Andy Hull, official GDC upload",
+      "sourceRole": "research-reference-only",
+      "researchTranscript": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\gdc-RiDy6CgBKqs.en.json3",
+        "sha256": "fee2fb40fce54f36d4b542139679e1767ddc5b0004d8dd5faa042278bcf9a22e",
+        "bytes": 502402
+      },
+      "timeRangeSeconds": [
+        373.52,
+        444.68
+      ],
+      "observedEvidence": "Official-channel metadata and English auto captions inspected; no claim of human listening or full video viewing. Auto-caption spelling errors retained in saved JSON; used as locator and broad summary, specific implementation claims grounded in official code.",
+      "productionUseAllowed": false
+    }
+  ],
+  "candidates": [
+    {
+      "sourceId": "spelunky-classic-segajam-CwJyt9klm1o",
+      "sourceRef": "S",
+      "sourceRole": "independent-gameplay",
+      "sourceUrl": "https://www.youtube.com/watch?v=CwJyt9klm1o",
+      "title": "Spelunky Classic - City of Gold clear - PC gameplay",
+      "recorder": "SegaJAM",
+      "channelId": "UCsDfdX9fInHYsD-8LjC0zmQ",
+      "channelUrl": "https://www.youtube.com/channel/UCsDfdX9fInHYsD-8LjC0zmQ",
+      "uploadDate": "20250722",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\CwJyt9klm1o.info.json",
+        "sha256": "147fd61e22c6d8e479cfa150c58500d7bf094ab654e51dce0000a9e0333df3d2",
+        "bytes": 622856
+      },
+      "recorderLicenseObserved": "Creative Commons Attribution license (reuse allowed)",
+      "recorderLicenseURL": null,
+      "licenseURLNote": "Exact watch-page CC licence-version URL was not directly retrieved; do not infer a version from the generic yt-dlp label. Preserve metadata label as observed and verify the exact licence URL before adoption.",
+      "recorderAuthorshipBasis": "Original channel upload with gameplay-completion description and timed level chapters; no external written recording-authorship permission beyond uploader CC metadata inspected.",
+      "publisherPolicy": {
+        "officialLandingUrl": "https://www.spelunkyworld.com/info.html",
+        "permissionLinkUrl": "https://mossmouth.tumblr.com/post/59786950104/mossmouth-video-monetization-policy",
+        "publishedDate": "2013-08-30",
+        "accessedDate": "2026-11-07",
+        "publisher": "Mossmouth",
+        "linkVerifiedFromOfficialGameInfo": true,
+        "permittedScopeParaphrase": "Monetized videos of Mossmouth games on YouTube/Twitch/similar sites, including Lets Plays, reviews and guides; explicitly names Spelunky and Spelunky Classic.",
+        "restrictionExcerpt": "You may not, however, sell the footage, license the footage to someone else",
+        "conditionsParaphrase": [
+          "Do not sell or claim ownership of the games/art/music/code.",
+          "Link to the game website appreciated."
+        ],
+        "unresolvedScope": "A third-party CC label grants only rights its uploader can grant. The publisher policy separately prohibits licensing footage to another person; no clarification was found that resolves whether this recorded gameplay can be sublicensed to us. This is unresolved, not a legal guarantee or a claim that all third-party reuse is categorically prohibited.",
+        "rawHtmlFetch": "Official policy readable via web tool; separate urllib fetch returned403, no fabricated local page archive.",
+        "requiredCreditDraft": "Spelunky / Spelunky Classic © Derek Yu and Mossmouth, LLC — https://spelunkyworld.com/",
+        "rightsVerifiedForThirdPartyCut": false
+      },
+      "rightsReviewed": true,
+      "rightsVerified": false,
+      "selectedForCut": false,
+      "adoptionStatus": "research-candidate-held-rights-and-version",
+      "localVideo": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\CwJyt9klm1o-source45-121-video.mp4",
+        "sha256": "411e552556e028f3bd9389369ba5b4ab76f817fef072678874e1889e69281859",
+        "bytes": 16934248
+      },
+      "downloadJob": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\download-job.json",
+        "sha256": "0eefdbb686ca2dbc7799cf21d3aaf75aee1b985c82ec19b424ff68f72b069a26",
+        "bytes": 1397
+      },
+      "sourceRequestedRangeSeconds": [
+        45,
+        121
+      ],
+      "sourceOffsetSeconds": 45,
+      "sourceOffsetStatus": "yt-dlp requested section origin; exact local decoded PTS are pinned, manual source chapter timestamps remain locators rather than verified cut boundaries.",
+      "formatId": "299",
+      "decodedDimensionsVerified": true,
+      "width": 1920,
+      "height": 1080,
+      "fpsNumerator": 60,
+      "fpsDenominator": 1,
+      "sampleAspectRatio": "1:1",
+      "displayAspectRatio": "16:9",
+      "codec": "h264",
+      "durationSeconds": 76.016667,
+      "decodedFrameCount": 4561,
+      "decodedFirstPTS": 0.0,
+      "decodedLastPTS": 76.0,
+      "containerFrameCount": 4761,
+      "containerFrameCountLimit": "Container packet/frame count includes preroll that does not appear in the displayed decoded stream; displayed4561/PTS used for samples, not nominal4761.",
+      "probe": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\candidate-probe.json",
+        "sha256": "f9fbf35724953545dee70a0caa80a4141b69729e802a96b270050da43d737215",
+        "bytes": 621382
+      },
+      "originalAspectRatioPreserved": true,
+      "gameVersionObserved": "Title screen visibly says Spelunky 60 FPS Widescreen, hence Classic-based modified build; exact fork/version is unverified. Not claimed identical vanilla1.1 code.",
+      "visualSequenceInspected": true,
+      "inspectionScope": "17 sampled decoded stills in2contacts;4 of those opened at1920×1080. No continuous playback, full motion or hearing claim.",
+      "sampleManifest": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\samples.json",
+        "sha256": "542fd6876dbb8addb6eab6c344d2452d12c1db3443d60c75a941b4f3897c66f6",
+        "bytes": 9236
+      },
+      "viewedFrames": [
+        {
+          "decodedFrameIndex": 0,
+          "localPtsSeconds": 0.0,
+          "originalSourceSeconds": 45.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-01.png",
+          "sha256": "5e4f4fa9fe416bfb91dc8c67696040b014dc365c727880a657959ada5714f8ad",
+          "rgbSHA256": "3bfea5380419fde49001dc303cb81005ca822d01bf1b5351cf3eb28c2cb69364",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 180,
+          "localPtsSeconds": 3.0,
+          "originalSourceSeconds": 48.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-02.png",
+          "sha256": "b70960bc899b5a4d8e79daec8e217d12b27233fbdc7787c7606e35153050e29b",
+          "rgbSHA256": "f318312b5c48ef8b1fe90c2de37e0dca8b9b1017e5a3c149ca526bc517a0ef30",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 300,
+          "localPtsSeconds": 5.0,
+          "originalSourceSeconds": 50.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-03.png",
+          "sha256": "d60715ab3713ab9f81b47dec4cee324b6c762ebe8719f127a54b8e898b4ca266",
+          "rgbSHA256": "66b3d39b50f0bc2c12559a58a3d2bae43ac2100fc59436da02b154620e1c55c5",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "direct-full-FHD-image",
+          "observation": "Initial cave/player doorway visible with HUD timer0:00; not a generation visualization."
+        },
+        {
+          "decodedFrameIndex": 600,
+          "localPtsSeconds": 10.0,
+          "originalSourceSeconds": 55.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-04.png",
+          "sha256": "80183f3e50c2cf046a27277a0461859adf10ada9f1e4057e3e68ebfc724c4b85",
+          "rgbSHA256": "a72f93e93ca5f6ea6ecdd16903ccbada522a37d67e6a1ab4a110cb0f4484ed5e",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Player explores upper platform; money and bomb counters changed compared with initial frame."
+        },
+        {
+          "decodedFrameIndex": 900,
+          "localPtsSeconds": 15.0,
+          "originalSourceSeconds": 60.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-05.png",
+          "sha256": "4a6d5c1450b33f835d0469a630f82671c75df97eba5e843913c344a3417dbe83",
+          "rgbSHA256": "33dad97100daa4a12930f05718511076e5a2e024dad31d2866ac660f350199b7",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Treasure container interaction result; on-screen more-ropes text and changed rope count."
+        },
+        {
+          "decodedFrameIndex": 1200,
+          "localPtsSeconds": 20.0,
+          "originalSourceSeconds": 65.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-06.png",
+          "sha256": "6e6e638d4a6749e17cc4ca31b4f03b5303a2f221ddc50f6095ed505cdd3318d9",
+          "rgbSHA256": "6e5e02383cf893c6ebd2dd4ceea731ed8141032dcad8220ca40cf31c09c9c7b6",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 1500,
+          "localPtsSeconds": 25.0,
+          "originalSourceSeconds": 70.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-07.png",
+          "sha256": "1aa8210b3a6267ae462cadfe788b7eb1e617c337e2e60708c35e7b4d2c91bd70",
+          "rgbSHA256": "34e8b9b50a306b72241a2aabf6e27c2866f802fd5d0738c2eddbbc5e78cdec66",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 1800,
+          "localPtsSeconds": 30.0,
+          "originalSourceSeconds": 75.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-08.png",
+          "sha256": "4bdfbcc75fa1df3c12c65d08dbfbc42bedfcce4e2c0a51b4d875e89b2eb11c1f",
+          "rgbSHA256": "f9e60de28faaa2de748f5ea541a3d6e976a205f70eb51ba6ffbe10d58e2e2ff4",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "direct-full-FHD-image",
+          "observation": "Player beside ladder descending into lower cave; multiple ledges/ladder routes visible."
+        },
+        {
+          "decodedFrameIndex": 2100,
+          "localPtsSeconds": 35.0,
+          "originalSourceSeconds": 80.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-09.png",
+          "sha256": "18d9ec98c8e1ae99ca519a6b0f903f4683454e099d97058aff0b8badf5380e1c",
+          "rgbSHA256": "4b1d3f752e121001450aa0d600f6dacf6e35266e738fb839f2e7bce2832d079c",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 2400,
+          "localPtsSeconds": 40.0,
+          "originalSourceSeconds": 85.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-10.png",
+          "sha256": "737dbe02946f70616872624a6d0b388b891522333ba910656dfd6e71a4ddb2e1",
+          "rgbSHA256": "3c8591d25ee71d7abb8d92498add83846b1ba14f0922f3da4caf1cb9e4eed303",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 2700,
+          "localPtsSeconds": 45.0,
+          "originalSourceSeconds": 90.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-11.png",
+          "sha256": "256c74d65862d09c4ee32e96cdb277f4bfbdbf6db235008f76cec9eb16a46790",
+          "rgbSHA256": "bd5ad38153b8d09b6a3469ea75417413cf7bba8f106434a1749e095d4e7b024d",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 3000,
+          "localPtsSeconds": 50.0,
+          "originalSourceSeconds": 95.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-12.png",
+          "sha256": "a9541e5b73455f18c0fc0a5b70a393beea1b8d9550bbacad776ff87ca9360ab2",
+          "rgbSHA256": "50c16e11c0a7b9b954e8d4079a6b7e57e39c616aee077ad379b6ee7e5a6c1ff6",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Explosion and nearby cave contents visible; this is player gameplay, not generation ordering evidence."
+        },
+        {
+          "decodedFrameIndex": 3300,
+          "localPtsSeconds": 55.0,
+          "originalSourceSeconds": 100.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-13.png",
+          "sha256": "465a3ce74ba038383b9e69c56457b8a04951880036eb916eea4661bad176f8ea",
+          "rgbSHA256": "e23822b805c832fee8f3a58780b81369b4890b1c27a77432423a844d033f9eb0",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 3600,
+          "localPtsSeconds": 60.0,
+          "originalSourceSeconds": 105.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-14.png",
+          "sha256": "fc1ef74ce1a5e7b02e752d2e96a245b8ebb608fc379cbf784de144579dfd7eb5",
+          "rgbSHA256": "6b9d547642a4508e22d4eeb1c3bc10807a16b3058feaf27ca528357d3e35b84a",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 3900,
+          "localPtsSeconds": 65.0,
+          "originalSourceSeconds": 110.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-15.png",
+          "sha256": "e6701c48fba55db7f1610b6ba5545f5fde4be23b1266860450f0102448cd148c",
+          "rgbSHA256": "982b7d28a6a08befe7938deb693fe4da8079bd96ecc8c25f2f20d34fafd3756b",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "480px-wide cell in inspected contact sheet",
+          "observation": "Context sample in the same recorded cave; no internal generator/AI inference."
+        },
+        {
+          "decodedFrameIndex": 4200,
+          "localPtsSeconds": 70.0,
+          "originalSourceSeconds": 115.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-16.png",
+          "sha256": "09f697d8e210ba9688e6fefa0fc699bdaa05e214858612bc946f5c18fbaf2f18",
+          "rgbSHA256": "e065aed1bfa310015ef44423f7f6d71b5df84a1bec203471e40abfaf9780c05b",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "direct-full-FHD-image",
+          "observation": "Lower-cave movement with held rock; spikes/snakes and skulls in surrounding structure visible."
+        },
+        {
+          "decodedFrameIndex": 4500,
+          "localPtsSeconds": 75.0,
+          "originalSourceSeconds": 120.0,
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\native-17.png",
+          "sha256": "9f39b8e0f914bc132b3ad99483b8cb65e7a9ec437b0ed2dc5e23f7c384ed4ed3",
+          "rgbSHA256": "cb5cd6fee0b29a680f56891818882a36c4274377ca10951f96ba0f3fdf6374a6",
+          "width": 1920,
+          "height": 1080,
+          "inspection": "direct-full-FHD-image",
+          "observation": "Player approaches a dark doorway; bat nearby. Exit transition is NOT verified."
+        }
+      ],
+      "contactSheets": [
+        {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\contact-0.png",
+          "sha256": "331d0d68ce054e14babec01a1eb26f561288aef0e334c32d348d7bb3656257b7",
+          "bytes": 1995246
+        },
+        {
+          "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\classic-first-level-samples\\contact-1.png",
+          "sha256": "b89f476fe8c8539ccced587bedd50a998beb16db0a36236d94a671c900246145",
+          "bytes": 1794098
+        }
+      ],
+      "observableBeforeActionResult": {
+        "before": "Player begins inside upper cave with entrance-like doorway and branching ledges visible.",
+        "action": "Sampled later positions show exploration across ledges/ladders, collecting treasure/ropes, descending and using bombs.",
+        "result": "Near end of bounded clip player approaches another dark doorway in the lower cave; exit entry/next-level transition is not verified.",
+        "limits": [
+          "No whole-map or generator state is present.",
+          "No observed path is labelled the mandatory algorithmic path.",
+          "Gameplay does not prove template choice, hazard placement order, every-side-room connectivity or universal safety.",
+          "Candidate visibly contains player destruction; do not label all opened spaces pre-generated."
+        ]
+      },
+      "audio": {
+        "downloadedStreamCount": 1,
+        "downloadedAudioStreams": 0,
+        "audioAdopted": false,
+        "sourceMusicOrCommentaryRightsVerified": false,
+        "productionPlan": "Keep gameplay video silent; use our approved narration and independently rights-cleared music only if footage is later adopted."
+      },
+      "draftRecorderCredit": "Spelunky Classic gameplay recorded by SegaJAM, https://www.youtube.com/watch?v=CwJyt9klm1o, uploader CC Attribution label; excerpted and source audio omitted. Rights conflict remains unresolved, not ready to publish."
+    }
+  ],
+  "otherCandidatesAndRejections": [
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=em8cU6qcUkw",
+      "reason": "No permissive recorder license found; availablevideo1440×1080/60 with4:3aspect requires separate consideration, not1920wide.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\em8cU6qcUkw.info.json",
+        "sha256": "58c29d243e75ef8b2763bdcf67b2dd2143022ac86d242e137b80824e2635ab7a",
+        "bytes": 63086
+      },
+      "selectedForCut": false
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=1z3zQkyxxU0",
+      "reason": "No permissive recorder license found; explicitly ClassicHDfork, not vanilla1.1.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\1z3zQkyxxU0.info.json",
+        "sha256": "fd47ef9c009f429430c6039f6bca408bf6b7ea589ff4a338f5987f4d11e03b1e",
+        "bytes": 603170
+      },
+      "selectedForCut": false
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=kHfF9jhZt4k",
+      "reason": "Recorder CC label present but no1080pvideoformat; reject FHD selection.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\kHfF9jhZt4k.info.json",
+        "sha256": "6e9b76311d82b428fd27976bd402f7374d0d23d794973f8bbf03f0bb4ecae917",
+        "bytes": 58428
+      },
+      "selectedForCut": false
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=Z_yRl23BPpQ",
+      "reason": "HD/CC/FHD metadata found but not downloaded or viewed; version mismatch and publisher conflict not resolved.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\Z_yRl23BPpQ.info.json",
+        "sha256": "ff43fbd1234ad0b66c2f22e043bab49b613d4d8d8549e5cb333f1d40b67f9eb4",
+        "bytes": 650245
+      },
+      "selectedForCut": false
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=DSycvOCEOVg",
+      "reason": "Officialpublisher trailer; maximum720p inYouTube metadata andcurrentSteamDASH, no FHD selection.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\DSycvOCEOVg.info.json",
+        "sha256": "34e0f8fe30ab247b4015df09d5200183b8bc2e0683905679fc54ed475c340d06",
+        "bytes": 567778
+      },
+      "selectedForCut": false
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=TCswu85rJYY",
+      "reason": "Officialpublisher XBLA debut trailer; noFHDformat; not adopted.",
+      "metadata": {
+        "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\TCswu85rJYY.info.json",
+        "sha256": "8e1c4baa91fe66aff57df9da62be30459480336274489645279af4179a034906",
+        "bytes": 562240
+      },
+      "selectedForCut": false
+    }
+  ],
+  "officialSteamEvidence": {
+    "appDetails": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\steam239350-appdetails.json",
+      "sha256": "f4414848011c014833504b32e51e3094b4271cfdab9bc33ebdadd6aeaa66c500",
+      "bytes": 15673
+    },
+    "DASH": {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\architectural-111-20261106\\shorts-leveldesign-11-05\\footage-candidates-v1\\primary\\steam239350-trailer-dash-h264.mpd",
+      "sha256": "a61c83bab8ce2ead625fcb6f65cd02a36a43ec7063d6768e29434f4d3f90705c",
+      "bytes": 2907
+    },
+    "appId": 239350,
+    "maxVideoDimensions": [
+      1280,
+      720
+    ],
+    "onlyAudioAndThumbnailRepresentationsExcluded": true,
+    "downloadedVideo": false,
+    "reason": "Do not upscale720p publisher trailer into a supposedly FHD source."
+  },
+  "blockers": [
+    {
+      "id": "third-party-recorder-vs-publisher-sublicense",
+      "detail": "CC label and direct publisher video permission are distinct; explicit publisher no-sublicense condition unresolved. No selected-for-cut or rights-verified flag set."
+    },
+    {
+      "id": "classic-build-identity",
+      "detail": "Downloadedfirstlevel is Classic-based60FPSWidescreen build; exact fork unverified. Algorithm claims must use official1.1source and own labelled illustration, not assume this recording is byte-identical."
+    },
+    {
+      "id": "exit-transition-not-inspected",
+      "detail": "Doorway approach visible; actual exit/next-level transition not yet inspected. Metadata chapter time is not visual proof."
+    }
+  ],
+  "nextSafeActions": [
+    "Root may choose an officially permitted independent FHD recording route without treating another recorder CC label as sublicensing the game IP; resolve the explicit publisher restriction first.",
+    "If source is later cleared, inspect a tiny exit-transition boundary and actual moving cut, preserve native1x/aspect/HUD, then finalize observable opener only.",
+    "Keep developer/GDC teaching material research-only and use our own clearly labelled mechanism visualization."
+  ],
+  "notExecuted": {
+    "gameOrUnity": true,
+    "gpu": true,
+    "tts": true,
+    "asr": true,
+    "render": true,
+    "platformMutation": true,
+    "git": true,
+    "sharedCheckpointMutation": true
+  },
+  "reviewLimits": {
+    "humanListening": false,
+    "fullRealtimePlayback": false,
+    "humanApproval": false,
+    "narrationFinalized": false,
+    "rightsCleared": false
+  }
+}
