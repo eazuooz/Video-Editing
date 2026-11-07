@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "06.02-correction-wrapper-initial-source-findings-v1",
+  "topicId": "06.02",
+  "scope": "Independent read-only code audit; actual38fixture receipt read, not rerun. Root chose minimal CPUvalidator tightening before anyGPU.",
+  "observedAtUtc": "2026-11-06T23:27:41.924631+00:00",
+  "observedSourceHashes": {
+    "prepare-prospect-refuge-corrections.py": "7e1bcfced6c00b452e3f69465143fc163bcb40eebec10441a130228e7036e2dd",
+    "run-prospect-refuge-corrections-native.py": "cab0a7ad3fc9d2a9dced366db20e12ca6e8dc0240b0fbb14da334fd6ab2fbbda",
+    "verify-prospect-refuge-corrections-native.py": "85e372bf25a5e3eb9267e4126f9c306dee29c69816d7b9e12a41324f3cedcd60"
+  },
+  "actualReadReceipt": {
+    "path": "C:/Users/1/Videos/YamyamProduction/architectural-111-20261106/shorts-leveldesign-06-02/corrections-cpu-validation-v1.json",
+    "observedSHA256": "cc7d4f61c2755be1eb6315939f97f994d9937480317c7815b6d6ef16079763e0",
+    "syntheticCPUChecksPassed": 38,
+    "actualResourceQueryPerformed": false,
+    "physicalCaptureFingerprint": "5a9d4c2c54d00865ce21877a5a4df99ee8014c7c0d593cda908cf06c6fd184c3",
+    "validatorFingerprint": "e932d8c11bd72f615f17b239f63e03004ea516a4f600d7ea57d53f8c5d64d3ae"
+  },
+  "findings": [
+    {
+      "id": "runtime-script-metadata-required",
+      "scope": "validate_scene_record requiredset",
+      "fact": "Current producer snapshots old Experiment.cs/.meta and newly generated CorrectionDriver.cs.meta, but validator requiredset does not require them. A malformed snapshot could be accepted without an essential runtime script/GUID.",
+      "rootDecision": "Require/pin beforeadoption; no C# producerchange."
+    },
+    {
+      "id": "independent-new-scene-guid",
+      "scope": "new scene .unity.meta +combinedexport",
+      "fact": "New scene meta is hashed but canonical GUID is not parsed/distinct from original or unique across4selectednewscenes.",
+      "rootDecision": "Validate canonical/distinct/unique GUIDs beforeadoption."
+    },
+    {
+      "id": "original-overhang-bounds",
+      "scope": "refuge scene-record additiveGeometry",
+      "fact": "Original exterioroverhang bounds are only separated from new ceiling bydistance>1. Source geometry predicts min(-3.3,2.575,.6),max(3.3,2.825,3.0).",
+      "rootDecision": "Pin exactoldbounds withfloat tolerance; original3Dsource unchanged."
+    }
+  ],
+  "producerOrLaunchDefectFound": false,
+  "status": "awaiting-root-selected-CPU-proof-tightening",
+  "remainingReview": "Read final validator delta +negativefixture source and hashpins, then write finalpeerreceipt.",
+  "actualStageExecutedByReviewer": false,
+  "modelsStarted": false,
+  "gpuStarted": false,
+  "mediaProduced": false,
+  "actualVisualPass": false,
+  "listeningReviewed": false,
+  "humanApproval": false
+}

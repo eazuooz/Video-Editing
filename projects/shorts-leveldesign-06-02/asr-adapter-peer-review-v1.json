@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "06.02-asr-adapter-peer-review-v1",
+  "topicId": "06.02",
+  "reviewedBy": "independent-agent read-only CPU source audit",
+  "source": {
+    "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-prospect-refuge-voice-qa.py",
+    "sha256": "65755e9bf90bbfa52e8cad3ae8b6d2ed053a99a5efe12435a4fe05f666247980"
+  },
+  "fixtureSource": {
+    "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\verify-prospect-refuge-voice-qa.py",
+    "sha256": "41d06ce6258dceada1b69e7543add9c99ed5b53bc5c6f657dce431c5b8566b02"
+  },
+  "reusedLibrary": {
+    "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-selected-voice-qa.py",
+    "sha256": "65983206f0e0fa81dd5a5780871605fcc2665816a9f21fc3ea3a43781437e2a9"
+  },
+  "relatedPrimitives": [
+    {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-selected-voice.py",
+      "sha256": "55ec247dafdef34bf2f31e9054e5a9fd3629ea2f220847b19694c48b59e26a99"
+    },
+    {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-first-asr.py",
+      "sha256": "7e38f2565fcf44b45ff6a94c68c7a359a497515c28ed462c729a36c7d1e6864e"
+    },
+    {
+      "path": "D:\\Github\\VideoEditing\\production\\batches\\architectural-111-20261106\\run-first-native.py",
+      "sha256": "a38205dac134e58da35a772290f0a151c7377b115b89910585277de76983a1f9"
+    }
+  ],
+  "sourceCriticalAuditPassed": true,
+  "blockingIssues": [],
+  "checks": [
+    {
+      "area": "isolated-module-and-child-entry",
+      "finding": "PASS",
+      "evidence": "A new importlib module instance receives fixed06 SLUG/TOPIC/PROTOCOL/OWNER, proof/state/worker paths and raw.SLUG. qa.__file__ is rebound only in that instance; inherited execute/recognize child argv, adapter source snapshot and source pin therefore refer to the new adapter. Old07 source bytes remain pinned65983206."
+    },
+    {
+      "area": "completed-current-voice-barrier",
+      "finding": "PASS",
+      "evidence": "exact_voice requires completed06 state, no live/unknown recorded Qwen child and no exact project render_narration child before returning a voice. Proof topic/output parent/fingerprint prefix/state identity all match fixed06."
+    },
+    {
+      "area": "identity-pcm-and-current-authored-mapping",
+      "finding": "PASS",
+      "evidence": "Unicode digest matches existing generic voice identity semantics. verify_complete checks actual selected WAV hashes/PCM/24000monoPCM16/timing. Current narration and semantic component plan rebuild exactly96 scenes and25KO/EN paragraphs; scene mapping/order must equal that rebuild. All96 raw PCM payloads are concatenation-hashed against aggregate PCM and total frames; per-take task windows are derived from exact sample counts."
+    },
+    {
+      "area": "job-and-source-provenance",
+      "finding": "PASS",
+      "evidence": "The original pure prepare_job is retained, then deep-copied. In the private globals its adapterSHA256/sourcePins already refer to the wrapper. pinnedSelectedAsrLibrarySHA25665983206 and an explicit library source pin are then added; fingerprint/output are recomputed. Existing raw cache records remain bound to literal/raw/word/timestamp/provenance through unchanged cached/recognition_record/summary."
+    },
+    {
+      "area": "single-worker-and-child-preservation",
+      "finding": "PASS-with-inherited-runtime-scope",
+      "evidence": "Fixed06 singleton/STATE/WORKER/owner are distinct from07. child_processes conservatively preserves matching old or new --recognize entrypoints and raises Pending on AccessDenied. The unchanged finite factory preserves a live registered child, waits for resources, distinguishes pre-model temporary75 receipts from actual model failures, and never terminates user apps or foreign jobs."
+    },
+    {
+      "area": "blind-model-and-shared-lease",
+      "finding": "PASS",
+      "evidence": "The approved Whisper model/tokenizer hashes/profile and trusted recognizer source/guard pins remain unchanged. Existing recognize calls trusted.recognize only with actual PCM and24000Hz, never expected text/hotwords/aliases. raw.SLUG is06 for the pre-model guard; the guard remains sole GPU lease owner. No new parent-owned GPU lease or foreign lease deletion is introduced."
+    },
+    {
+      "area": "summary-readiness-boundary",
+      "finding": "PASS-with-explicit-caller-condition",
+      "evidence": "summary is an immutable-artifact writer when invoked by the explicit existing execute/levels path. The new default calls prepare_job only and cannot create ASR results. Downstream caption/audio read-only verification must require the exact already-existing review and every cache before comparing summary; source-only readiness is not recognition or approval."
+    },
+    {
+      "area": "fixture-coverage",
+      "finding": "reviewed-source-only",
+      "evidence": "Read the nine CPU fixtures for synthetic96PCM/25paragraph binding, missing/incomplete voice,07 path rejection, reordered mapping, raw PCM mismatch, shifted clock, separate wrapper/library pins, old+new child detection and fixed06 context. The fixture verify_complete dependency is mocked, so these fixtures do not replace actual completed-voice verification. Root reported9PASS; this reviewer did not rerun tests or jobs."
+    }
+  ],
+  "reportedRootCPUFixturePasses": 9,
+  "fixturesExecutedByThisReviewer": false,
+  "actualModelLoaded": false,
+  "actualAsrPerformed": false,
+  "actualCurrentVoiceDecoded": false,
+  "rawPcmEdited": false,
+  "gpuUsed": false,
+  "workerOrProcessMutation": false,
+  "leaseMutation": false,
+  "actualListening": false,
+  "humanApproval": false,
+  "automaticSpeechPass": false,
+  "limits": "This is a source/lifecycle/provenance audit. Actual96 takes/95 joins, full blind literals, raw numerical levels and final mixed/AAC/listening review remain future work after the sole current Qwen job completes."
+}
