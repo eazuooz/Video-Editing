@@ -5,7 +5,7 @@ from motion import Motion, save_study, L
 from scipy.spatial.transform import Rotation
 
 attack=Motion('AS_Spear_Attack_02')
-walk=Motion('MM_Walk_Fwd')
+walk=Motion('MM_Run_Fwd')
 origin=attack.sample(1.62)
 root=attack.names.index('root')
 base_position=origin['p'][root].copy()
@@ -38,7 +38,7 @@ def distance(frame):
 contact=next(f for f in range(12,19) if distance(f)<=13)
 settings['contactEvidence']={'target':target.tolist(),'targetRadius':12,'bladeRadius':1,'firstContactFrame':contact,
     'distances':[distance(f) for f in range(49)],'classification':'computed capsule-to-sphere contact in our demonstration'}
-settings['targetLocation']=[float(target[0]),float(target[1]),float(target[2]-132)]
+settings['targetLocation']=[float(target[0]),float(target[1]),0.]
 settings['cameraWidth']=550
 jobs=[]
 for key,cancel in [('attack',None),('cancel36',36),('cancel48',48),('noinput',None)]:

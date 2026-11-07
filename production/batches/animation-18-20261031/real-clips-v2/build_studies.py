@@ -1,6 +1,6 @@
 """Build editable copies of genuine clip studies without writing vendor content."""
 from pathlib import Path
-import json,traceback
+import json,traceback,hashlib
 import unreal as u
 H=Path(__file__).resolve().parent;L=H.parent/'local/real-clips-v2'
 assert Path(u.Paths.convert_relative_path_to_full(u.Paths.project_dir())).resolve()==(L/'unreal-worker').resolve()
@@ -11,6 +11,11 @@ def owned(folder,name,kind,factory):
 def animation(key,d,row):
     factory=u.AnimSequenceFactory();factory.target_skeleton=u.load_asset(row.get('skeleton',d['skeleton']))
     clip=owned(d['episode']+'/Animations',key,u.AnimSequence,factory)
+    if clip.get_editor_property('skeleton') != factory.target_skeleton:
+        # A corrected clip may use a different vendor rig. Preserve the previous
+        # prototype and create a correctly bound sequence instead of retargeting it.
+        suffix=hashlib.sha256(factory.target_skeleton.get_path_name().encode()).hexdigest()[:8]
+        clip=owned(d['episode']+'/Animations',key+'_'+suffix,u.AnimSequence,factory)
     con=clip.controller;con.open_bracket('Source-derived animation, original clip preserved',False)
     con.set_frame_rate(u.FrameRate(60,1),False);con.set_number_of_frames(u.FrameNumber(d['frames']),False);con.remove_all_bone_tracks(False)
     for bone,track in row['tracks'].items():
@@ -41,6 +46,16 @@ def build(job):
         if isinstance(a,u.SkeletalMeshActor) or a.get_actor_label().startswith(('Study weapon ','Study target ')):u.EditorLevelLibrary.destroy_actor(a)
     assert camera;camera.set_actor_location(u.Vector(0,900,d.get('cameraHeight',100)),False,False)
     camera.camera_component.ortho_width=d.get('cameraWidth',500)
+    camera.set_actor_rotation(u.Rotator(pitch=0,yaw=-90,roll=0),False)
+    if d.get('cameraView')=='top':
+        camera.set_actor_location(u.Vector(0,35,720),False,False);camera.set_actor_rotation(u.Rotator(pitch=-88,yaw=-90,roll=0),False)
+    if 'cameraLocation' in d:
+        camera.set_actor_location(u.Vector(*d['cameraLocation']),False,False)
+        camera.set_actor_rotation(u.Rotator(pitch=d.get('cameraPitch',0),yaw=d.get('cameraYaw',-90),roll=0),False)
+    for xyz in d.get('sphereTargets',[]):
+        target=u.EditorLevelLibrary.spawn_actor_from_class(u.StaticMeshActor,u.Vector(*xyz),u.Rotator())
+        target.set_actor_label('Study target hurt volume');target.static_mesh_component.set_static_mesh(u.load_asset('/Engine/BasicShapes/Sphere'))
+        target.set_actor_scale3d(u.Vector(*([d['targetRadius']*.02]*3)))
     seq=owned(folder+'/Sequences',key,u.LevelSequence,u.LevelSequenceFactoryNew())
     seq.set_display_rate(u.FrameRate(60,1));seq.set_playback_start(0);seq.set_playback_end(d['frames'])
     for b in seq.get_bindings():b.remove()
@@ -49,7 +64,7 @@ def build(job):
     bid=u.MovieSceneObjectBindingID();bid.set_editor_property('guid',cb.get_id());cut.set_camera_binding_id(bid)
     rows=d.get('animations',[dict(tracks=d['tracks'])] if 'tracks' in d else [])
     for i,row in enumerate(rows):
-        clip=animation(key+'_'+str(i),d,row);xyz=row.get('location',[0,0,0]);yaw=row.get('yaw',d.get('yaw',-65))
+        clip=animation(key+'_'+str(i),d,row);xyz=d['actorLocations'][i] if 'actorLocations' in d else row.get('location',[0,0,0]);yaw=row.get('yaw',d.get('sideYaws',[d.get('yaw',-65)]*2)[i])
         a=u.EditorLevelLibrary.spawn_actor_from_class(u.SkeletalMeshActor,u.Vector(*xyz),u.Rotator(pitch=0,yaw=yaw,roll=0))
         a.set_actor_label('Genuine motion '+key+' '+str(i));c=a.skeletal_mesh_component;c.set_skeletal_mesh(u.load_asset(row.get('mesh',d['mesh'])))
         c.set_editor_property('animation_mode',u.AnimationMode.ANIMATION_SINGLE_NODE)
@@ -58,6 +73,11 @@ def build(job):
         section=child.add_track(u.MovieSceneSkeletalAnimationTrack).add_section();section.set_range(0,d['frames'])
         params=u.MovieSceneSkeletalAnimationParams();params.animation=clip;section.params=params
         if d.get('weapon'):weapon(c,d)
+        if d.get('handSockets'):
+            a=u.EditorLevelLibrary.spawn_actor_from_class(u.StaticMeshActor,u.Vector(),u.Rotator());a.set_actor_label('Study weapon handle')
+            a.static_mesh_component.set_mobility(u.ComponentMobility.MOVABLE);a.static_mesh_component.set_static_mesh(u.load_asset('/Engine/BasicShapes/Cylinder'))
+            rule=u.AttachmentRule.SNAP_TO_TARGET;a.attach_to_component(c,d['handSockets'][i],rule,rule,rule,False)
+            a.set_actor_relative_scale3d(u.Vector(.06,.06,.3))
     if 'targetLocation' in d:
         target=u.EditorLevelLibrary.spawn_actor_from_class(u.SkeletalMeshActor,u.Vector(*d['targetLocation']),u.Rotator(pitch=0,yaw=110,roll=0))
         target.set_actor_label('Study target mannequin');component=target.skeletal_mesh_component
