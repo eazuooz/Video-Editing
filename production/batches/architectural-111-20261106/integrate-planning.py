@@ -286,6 +286,10 @@ def build_html(batch,rows,plans,cp,*,write_delivery=True):
             stages.append('Unity 소스 준비 · 실제 촬영·화면 검수 대기')
         else:
             stages.append('대본 초안 · 시연·음성·완성본 제작 전')
+        current_production=row.get('currentProduction',{})
+        if (ident=='11.05' and current_production.get('shortsEligibleUnderVerifiedCurrentLimit') is False
+                and isinstance(row.get('voiceDurationSeconds'),(int,float))):
+            stages.append(f'음성 {row["voiceDurationSeconds"]:.2f}초 · 3분 초과 세로 전체본 (Shorts 길이 기준 초과)')
         stages.append('사용자 검수 승인 기록 있음' if row.get('humanApproval') else '사용자 영상 검수 전')
         status=' · '.join(stages);current_status[ident]=status
         cards.append(f'<article data-ready="{int(bool(e))}" data-topic="{esc(ident)}"><p class="meta">제작 {row["order"]:03} · {ident} · {esc(row["chapterName"])} · 책 {esc(row["printPages"])}쪽</p><h2>{esc(row["title"])}</h2><p class="status">{esc(status)}</p>{body}</article>')
