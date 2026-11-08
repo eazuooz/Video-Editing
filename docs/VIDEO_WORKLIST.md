@@ -441,7 +441,7 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 
 | 편 | 내용 | 제작 | 검수 | 플랫폼 |
 |---|---|---|---|---|
-| S-AI2D | ComfyUI·LoRA +8도구 실사용·방 게임 확장 | 1080p60·20분55초 v6게임 반영 | room-v4-video 사용자 검수 대기 | 새판 미업로드 · 이전 비공개 초안 보존 · 웹 v6 공개 |
+| S-AI2D | ComfyUI·LoRA +8도구 실사용·방 게임 확장 | 1080p60·20분55초 v6게임 반영 | 같은 SHA256 사용자 확인 완료 | 새 영상 비공개 초안·광고평가 대기·제목/실제게임 썸네일 적용 |
 
 [전체 영상 검수](http://127.0.0.1:9286/) · [직접 플레이](https://yamyam-cartographers-room.eazuooz.chatgpt.site) · [전체 대본](../projects/ai-2d-game-assets/production/room-v3/full-narration.ko.txt)
 <!-- AI2D-WEBSITE-20261108 -->
