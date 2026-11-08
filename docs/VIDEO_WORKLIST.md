@@ -445,3 +445,11 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 
 [전체 대본](../projects/ai-2d-game-assets/script/full-script.md) · [제작 계획](../projects/ai-2d-game-assets/planning/production-plan.json)
 <!-- AI2D-20261108-END -->
+
+<!-- ANIMATION-CONTENT-AUDIT-20261108 -->
+## 애니메이션18편 원본 대비 전달력 검수
+
+2026-11-08: 원본/현재 대본 전체 대조와 최종 인코딩144장 표본 확인. 핵심 내용은 대체로 유지. **A06·A08·A14 핵심 시연 우선 보완**, 나머지는 도입 연결·확대·중복 설명 정리. 전체 사람 청취 완료를 뜻하지 않으며 기존 파일·게시·예약은 유지.
+
+[18편 검수표](../production/batches/animation-18-20261031/review-20261108/REVIEW.md) · [현재 검수 영상](http://127.0.0.1:9277/)
+<!-- ANIMATION-CONTENT-AUDIT-20261108-END -->
