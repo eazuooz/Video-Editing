@@ -1,0 +1,954 @@
+{
+  "schemaVersion": "architectural111-preproduction-v2",
+  "topicId": "11.05",
+  "batchOrder": 4,
+  "titleKo": "매번 바뀌는 던전, 출구까지 길은 누가 만들까?",
+  "centralQuestionKo": "매번 달라지는 동굴에서 입구와 출구의 구조적 연결은 어떻게 만들고, 왜 그것이 안전한 성공 플레이를 보장하지 않을까?",
+  "thesisKo": "사람이 설계한 방과 연결 규칙을 조합하고 내부 위험·적을 구분해야 하며, Classic코드의 연결성·자체구현 접촉·HD실제 결과는 서로 다른 근거이다.",
+  "preservation": {
+    "mode": "preserved-current-production",
+    "selectedNarration": "projects/shorts-leveldesign-11-05/narration-final-v5.json",
+    "selectedScenePlan": "projects/shorts-leveldesign-11-05/scene-plan-v5.json",
+    "originalInputsChanged": false,
+    "notesKo": "현재 승인된14문단48논리문장과 정확한KO/EN을 그대로 추출했다. 새로운 대본·TTS·캡처를 만들지 않고 기존 원본/보류/진행 이력을 보존한다.",
+    "selectedNarrationPin": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\narration-final-v5.json",
+      "sha256": "e3179da81b2a23135eb6a8907ebb6205c14fc2d66e528a37372d491d0ffeaa91"
+    },
+    "selectedScenePlanPin": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\scene-plan-v5.json",
+      "sha256": "359e1319f550edd370b686da1e2444edeea000a42d8abf8238f2f3252484d517"
+    },
+    "sourceFootage": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\source-footage-v2.json",
+      "sha256": "e25b04358a68ceff2ce671d20515f81f474d730a3797620e20b2177399908e24"
+    },
+    "movingGuides": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\footage-moving-guides-v1.json",
+      "sha256": "4d23ed0a3a3cc26471a4aac6be8b465a1a0ff07d687f993b9570fdac1e759425"
+    },
+    "currentRawVoice": {
+      "path": "D:\\Github\\VideoEditing\\shared\\output\\architectural-111-20261106\\11-05\\voice-attempts\\6691614beecda682a8130136\\voice-complete-proof.json",
+      "sha256": "8e35b93926dc82eb80ba2abe238b76d8079d6187024ae2779139f06d9bc270c8"
+    },
+    "pendingRepairPlan": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\voice-subset-repair-plan-v3.json",
+      "sha256": "3a2b6890f4607c17249b6f5c08004334fad2f908a37bc0d33bb9c9fa7d590fca"
+    },
+    "checkpoint": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\checkpoint.json",
+      "sha256": "7123b2dffc7203700a296b2ceac45c23b3dece912d0da6887f3ee09e8a2512bb"
+    }
+  },
+  "sourceReview": {
+    "sourceTextPath": "C:/Users/1/AppData/Local/Temp/yamyam-leveldesign-review-20261106/book-layout.txt",
+    "sourceTextSHA256": "dc77c83a0807bb9d0c8b0c2f81eaf34ed29e59d72129f521a33d38402219c919",
+    "printPages": "485–487",
+    "pdfPages": [
+      531,
+      533
+    ],
+    "wholeAssignedPassageRead": true,
+    "figureInspection": "text-and-figure-captions-only in this CPU task; existing actual native/source image reviews retained by pin",
+    "coverageNotesKo": "원문의 방장면/반복/조각/맥락→solution path와곁방→위험계층 순서를 실제Classic1.1 코드 정정과 연결했다. 출구는 최하단 하강 시도에서 파생되고 Type0옆방은 닫힐 수 있으며 가시는 템플릿 확장에도 포함될 수 있다."
+  },
+  "narrationKo": [
+    "스펠렁키 HD에서 캐릭터가 입구를 나와 발판을 따라 동굴 아래로 내려갑니다. 매번 달라지는 동굴에 출구로 이어지는 구조는 어떻게 만드는 걸까요? 이 질문은 원작 스펠렁키 클래식의 공개 코드와 우리 모형으로 살펴보겠습니다. 먼저 사람이 만든 작은 방을 보고, 방들이 이어지는 과정과 적이 더해지는 순서를 펼쳐 보죠.",
+    "컴퓨터가 바닥 하나부터 전부 아무렇게나 뽑는 건 아닙니다. 사람이 먼저 돌아서 지나갈 공간이나 발판처럼, 플레이할 작은 장면을 설계합니다. 이런 방 크기의 묶음을 레벨 조각이라고 하죠. 생성기는 이 조각들을 고르고 이어 붙입니다.",
+    "그러면 같은 방을 다시 만나서 지루해지지 않을까요? 조각 안에 익힐 행동이 담겨 있으면, 익숙한 구조를 다시 읽고 활용할 수 있습니다. 중요한 건 같은 모양을 반복했느냐보다, 그 모양에서 무엇을 하게 만드느냐입니다.",
+    "같은 조각이라도 적이 서 있는 자리, 옆에 이어지는 지형, 지역의 분위기가 바뀌면 보이는 상황이 달라집니다. 여기서는 한 번에 하나씩 바꾸겠습니다. 테마만 바꿀 때는 지형과 이동 규칙을 그대로 두고, 모습이 달라진다는 것만 비교하죠.",
+    "이제 이 방들을 어떤 순서로 이을지 보겠습니다. 방의 연결 관계를 위에서 보도록 펼쳐 놓은 우리 모형입니다. 방 칸을 격자로 놓고, 맨 위 줄에서 입구가 될 방을 고릅니다. 출구 자리는 아직 정하지 않습니다.",
+    "입구에서 시작한 길은 옆으로 가거나 한 줄 아래로 내려갑니다. 표시된 화살표는 플레이어에게 보이는 안내선이 아니라, 생성기가 방을 잇는 과정을 보여 주는 겁니다. 길을 그렸다고 끝난 건 아니죠. 두 방 사이에 실제로 통하는 구멍이 있어야 합니다.",
+    "옆방으로 갈 때는 맞닿은 양쪽에 출입구가 필요합니다. 이 모형에서 아래 칸으로 이어질 때도 두 칸이 맞닿은 경계에 통로를 맞춰 줍니다. 어느 방향으로 통할 수 있는지를 정하는 것이 방 연결 유형입니다.",
+    "이렇게 길을 이어 가다가 맨 아래 줄에서 다시 내려가려는 지점이 나오면, 그 끝을 출구 방으로 정합니다. 처음부터 출구 좌표를 고정하고 길을 찾은 게 아니라, 내려오며 만든 경로의 끝에 출구가 놓이는 순서입니다.",
+    "필수 경로가 정해지면 남은 칸에도 방을 채웁니다. 다만 경로 밖 방은 어느 방향으로든 통한다고 보장하지 않습니다. 이 방은 옆길로 들어갈 수 있지만, 저 방은 벽에 막혀 있죠. 경로 밖 방을 전부 연결된 곁길이라고 보면 안 됩니다.",
+    "연결 방향이 정해져도 방 안의 구체적인 모양은 여러 가지일 수 있습니다. 양쪽 출입구는 그대로 두고, 방 안의 구조만 다른 설계안으로 바꿔 보죠. 이런 내부 설계안이 방 템플릿입니다. 연결 조건을 지키면서도 다른 장면을 고를 수 있는 겁니다.",
+    "방 안에는 더 작은 장애물 조각이나, 추첨 결과에 따라 바뀌는 타일도 들어갈 수 있습니다. 여기 가시는 방 내부를 만드는 과정에서 이미 생겼습니다. 그래서 위험요소가 전부 마지막 한 단계에서만 추가된다고 설명하면 실제 순서를 놓치게 됩니다.",
+    "그다음 적 같은 구성요소가 더해지면, 같은 지형에도 새로운 위협이 놓입니다. 여기서는 지형과 이동 입력을 고정하고 적의 위치만 옮기겠습니다. 화면에는 실제로 겹친 위치와 접촉 결과를 표시해서, 무엇이 바뀌었는지 함께 확인하죠.",
+    "HD 화면에서도 보물을 든 캐릭터가 발판을 지나 출구 근처까지 내려오지만, 굴러오는 큰 바위에 부딪혀 쓰러지죠. 출구까지 방이 이어졌다는 검사와, 적이나 가시에 닿지 않고 통과했다는 검사는 다릅니다. 연결선만 확인해서는 위협을 어떻게 지나갈지 알 수 없죠. 길의 뼈대, 방 안의 구조, 그 안에 놓이는 위협을 나누어 보는 이유입니다.",
+    "랜덤 던전의 변화는 무작위 선택 하나에서만 나오지 않습니다. 사람이 설계한 작은 도전과, 그 조각들을 연결하고 채우는 규칙이 함께 작동합니다. 익숙한 방을 다시 만나도 주변과 구성요소를 다시 읽게 만드는 것, 그게 반복과 변화를 함께 쓰는 방법입니다."
+  ],
+  "paragraphsEn": [
+    "In Spelunky HD, the character leaves the entrance and descends along the cave’s ledges. How does an ever-changing cave get a structure that leads to the exit? We will investigate that question using Spelunky Classic’s publicly released code and our own model. First we will look inside a handmade room, then unfold how rooms are connected and enemies are added.",
+    "The computer does not choose every floor tile without structure. A designer first builds a small playable situation, such as space to move around an obstacle. The generator selects and arranges these level chunks.",
+    "Would a familiar room become boring? A well-designed repeated chunk lets players recognize and use an action they have learned. What the space asks players to do matters more than repetition alone.",
+    "Enemy positions, neighboring terrain, and the area's theme can change the situation around the same chunk. We will vary one factor at a time. Changing only the theme demonstrates appearance while geometry and movement rules stay fixed.",
+    "Now unfold the room connections into our top-down model. Begin with a room grid and choose an entrance in the top row. The exit position has not been selected yet.",
+    "Extend the route sideways or down a row. These arrows visualize construction rather than a guide shown to players. A line alone does not connect rooms: there must be actual openings between them.",
+    "Sideways neighbors need matching openings. Connecting to the next row in this model also requires matching ports on the shared boundary. A room type specifies which directions must connect.",
+    "When the path attempts another downward step from the bottom row, that endpoint becomes the exit room. In this process, the exit follows the generated route rather than being fixed in advance.",
+    "Fill cells outside the solution path too, but do not assume that they have openings. One may form an accessible side route while another is sealed. Off-route rooms are not all guaranteed branches.",
+    "The required connections still allow different interiors. Keep both side openings and change the interior layout. These designs are room templates: they vary a scene while respecting its connection requirements.",
+    "Smaller obstacle structures and probabilistic tiles can vary the interior further. Spikes can already appear during this stage. Describing every hazard as part of one final pass would miss that distinction.",
+    "Later components such as enemies add threats to the same terrain. Hold geometry and movement input fixed, changing only enemy positions. The demonstration will show actual overlaps and contact results.",
+    "In the HD footage, the character carrying treasure passes the ledges and descends near the exit, but is struck by a large rolling boulder. Connected rooms and a traversal without touching enemies or spikes are different checks. Connection lines alone do not show how to pass those threats. Separate the route, the interior structure, and the threats within it.",
+    "A random dungeon's variety comes from more than random choices. Handmade challenges work together with rules that connect and populate them. Familiar rooms can ask players to read new surroundings and components."
+  ],
+  "sourceMapping": [
+    {
+      "paragraph": 1,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "HD 입구와 하강의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-03"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 1,
+        "role": "actual-game abstract",
+        "teachingAndEvidence": "Adopted official publisher-origin SpelunkyHD cutA shows entrance/descent/ledge choices only; Classic1.1 publiccode and our separate model supply mechanism explanation. NoHDhidden-path inference."
+      }
+    },
+    {
+      "paragraph": 2,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "작은 방 조각의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "context-01",
+        "context-02",
+        "learning-01",
+        "learning-04",
+        "learning-09"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 2,
+        "role": "handmade scene/chunk prerequisite",
+        "teachingAndEvidence": "Book context01/02 and learning01/03/04; define a playable chunk before assembly."
+      }
+    },
+    {
+      "paragraph": 3,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "반복 장면의 학습의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-02",
+        "context-03"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 3,
+        "role": "purpose of repetition",
+        "teachingAndEvidence": "Book learning02; preserve player needs and learned actions."
+      }
+    },
+    {
+      "paragraph": 4,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "적·주변 연결·테마의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-05",
+        "learning-06"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 4,
+        "role": "same chunk, changed context",
+        "teachingAndEvidence": "Book learning05/06; enemy, surrounding geometry, theme. Theme-only is not evidence of changed mechanics."
+      }
+    },
+    {
+      "paragraph": 5,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "아직 출구 없는 격자의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-04",
+        "learning-07"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 5,
+        "role": "route construction begins",
+        "teachingAndEvidence": "Source correction01: top-row entrance; no preselected exit."
+      }
+    },
+    {
+      "paragraph": 6,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "인접 방 경계 연결의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-07"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 6,
+        "role": "route progression",
+        "teachingAndEvidence": "Side/down progression and observer-only arrows; no copied commercial map."
+      }
+    },
+    {
+      "paragraph": 7,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "닫힌 필수 포트의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-07"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 7,
+        "role": "room type and actual matching ports",
+        "teachingAndEvidence": "Define input/output connection meanings beside visible doorways."
+      }
+    },
+    {
+      "paragraph": 8,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "경로 끝과 출구 표식의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-07"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 8,
+        "role": "exit derived from bottom endpoint",
+        "teachingAndEvidence": "Primary-source correction01; no invented original exit coordinate."
+      }
+    },
+    {
+      "paragraph": 9,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "곁방과 닫힌 방의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-07"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 9,
+        "role": "off-route cells and sealed room",
+        "teachingAndEvidence": "Primary-source correction02; type0 is not guaranteed accessible or a graph dead end."
+      }
+    },
+    {
+      "paragraph": 10,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "방 내부 템플릿의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-09"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 10,
+        "role": "template inside connection type",
+        "teachingAndEvidence": "Fig11.10 visual role; own template variations; fixed connector contract."
+      }
+    },
+    {
+      "paragraph": 11,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "템플릿 안의 위험의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-08"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 11,
+        "role": "layout-embedded hazards",
+        "teachingAndEvidence": "Primary-source correction03; template/obstacle stage can contain spikes."
+      }
+    },
+    {
+      "paragraph": 12,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "적 오프셋과 접촉의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-05",
+        "learning-08"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 12,
+        "role": "later components and one-variable comparison",
+        "teachingAndEvidence": "Book learning08; actual Unity contact result must be checked before retaining the result claim."
+      }
+    },
+    {
+      "paragraph": 13,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "HD 보물 운반과 거석 충돌의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "learning-08"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 13,
+        "role": "connectivity versus no-hit traversal",
+        "teachingAndEvidence": "AdoptedHD cutB shows idolcarrying/boulder collision near lowerdoorway; no successful exit. Preserve ownconnectivity-versus-contact-free traversal explanation without treating owntrigger as commercialdamage logic."
+      }
+    },
+    {
+      "paragraph": 14,
+      "sourcePrintedPages": "485–487",
+      "sourceSectionOrFigure": "Scenes as Patterns / Spelunky; Fig11.9–11.10 + verified Classic1.1 code corrections",
+      "retainedLogicKo": "조각과 연결·내용물 규칙의 기존 sourceRoleMapping과 canonicalNarration을 정확히 보존한다.",
+      "adaptation": "NarV5의 정확한 문단·번역과scene5 매핑을 보존. Classic기제와HD관찰/자체구현을 분리; 인용서의 층 순서 개괄은 검증된 코드 한계로 교정.",
+      "sourceRoleIds": [
+        "context-01",
+        "learning-02",
+        "learning-06",
+        "context-03"
+      ],
+      "preservedSourceRole": {
+        "paragraph": 14,
+        "role": "return to handmade experiences plus composition",
+        "teachingAndEvidence": "Book context03 and learning02/05/06; familiar structure with changed situation."
+      }
+    }
+  ],
+  "sceneBeats": [
+    {
+      "sceneId": "11-05-P01",
+      "paragraph": 1,
+      "kind": "preserved-existing-scene",
+      "renderer": "actual HD gameplay then Unity overview",
+      "spokenCueKo": "스펠렁키 HD에서 캐릭터가 입구를 나와 발판을 따라 동굴 아래로 내려갑니다.",
+      "visualTargetKo": "HD 입구와 하강",
+      "before": "S-HD-A의 채택 시작 프레임",
+      "action": "입구에서 내려가는 실제 행동과 출구 질문 → HD 화면에서 Classic 공개 코드에 근거한 자체 모형으로 연결",
+      "result": "내려가는 실제 행동에서 생성 구조의 질문으로 연결",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "관찰 자료이므로 통제된 실험으로 표현하지 않는다.",
+      "annotationPlanKo": "발화 큐: «스펠렁키 HD에서 캐릭터가 입구를 나와 발판을 따라 동굴 아래로 내려갑니다.» 표시 대상: «HD 입구와 하강». 표식 지침: HD 입구와 하강는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «입구에서 내려가는 실제 행동과 출구 질문 → HD 화면에서 Classic 공개 코드에 근거한 자체 모형으로 연결». 확인할 결과: «내려가는 실제 행동에서 생성 구조의 질문으로 연결». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 1,
+        "renderer": "actual HD gameplay then Unity overview",
+        "nativeOrSource": "S-HD-A local displayedframes[60,480), then own room overview",
+        "speechVisualAction": "입구에서 내려가는 실제 행동과 출구 질문 → HD 화면에서 Classic 공개 코드에 근거한 자체 모형으로 연결",
+        "oneChangedVariable": "None; observed result only",
+        "limitsAndVerification": "Recording is HD; generation claim comes from Classic1.1 code. Actual source duration7.007s is not a measured speech duration; continue remaining overview over Unity rather than stretch gameplay.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "스펠렁키 HD에서 캐릭터가 입구를 나와 발판을 따라 동굴 아래로 내려갑니다. 매번 달라지는 동굴에 출구로 이어지는 구조는 어떻게 만드는 걸까요? 이 질문은 원작 스펠렁키 클래식의 공개 코드와 우리 모형으로 살펴보겠습니다. 먼저 사람이 만든 작은 방을 보고, 방들이 이어지는 과정과 적이 더해지는 순서를 펼쳐 보죠.",
+        "canonicalNarrationEn": "In Spelunky HD, the character leaves the entrance and descends along the cave’s ledges. How does an ever-changing cave get a structure that leads to the exit? We will investigate that question using Spelunky Classic’s publicly released code and our own model. First we will look inside a handmade room, then unfold how rooms are connected and enemies are added.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 1,
+        "toParagraph": 2,
+        "carry": "exit question → room chunk"
+      }
+    },
+    {
+      "sceneId": "11-05-P02",
+      "paragraph": 2,
+      "kind": "preserved-existing-scene",
+      "renderer": "Unity player + selected-room observer crop",
+      "spokenCueKo": "컴퓨터가 바닥 하나부터 전부 아무렇게나 뽑는 건 아닙니다.",
+      "visualTargetKo": "작은 방 조각",
+      "before": "templates-a의 기존 방",
+      "action": "인물의 이동과 돌아갈 공간 → 해당 방 경계 강조 → Level Chunk 정의",
+      "result": "돌아갈 공간과 방 경계가 묶음임을 설명",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "같은 기준 장면 ‘templates-a의 기존 방’에서 작은 방 조각의 실행 단계나 관계를 설명한다. 통제된 A/B 인과 비교가 아니며, 표식 공개·관찰 대상·행동 단계 변화 자체를 가짜 실험 변수로 쓰지 않는다.",
+      "annotationPlanKo": "발화 큐: «컴퓨터가 바닥 하나부터 전부 아무렇게나 뽑는 건 아닙니다.» 표시 대상: «작은 방 조각». 표식 지침: 작은 방 조각는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «인물의 이동과 돌아갈 공간 → 해당 방 경계 강조 → Level Chunk 정의». 확인할 결과: «돌아갈 공간과 방 경계가 묶음임을 설명». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 2,
+        "renderer": "Unity player + selected-room observer crop",
+        "nativeOrSource": "templates-a",
+        "speechVisualAction": "인물의 이동과 돌아갈 공간 → 해당 방 경계 강조 → Level Chunk 정의",
+        "oneChangedVariable": "Show one chunk boundary",
+        "limitsAndVerification": "No jump/ladder or commercial-generator execution claim.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "컴퓨터가 바닥 하나부터 전부 아무렇게나 뽑는 건 아닙니다. 사람이 먼저 돌아서 지나갈 공간이나 발판처럼, 플레이할 작은 장면을 설계합니다. 이런 방 크기의 묶음을 레벨 조각이라고 하죠. 생성기는 이 조각들을 고르고 이어 붙입니다.",
+        "canonicalNarrationEn": "The computer does not choose every floor tile without structure. A designer first builds a small playable situation, such as space to move around an obstacle. The generator selects and arranges these level chunks.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 2,
+        "toParagraph": 3,
+        "carry": "room chunk → repeated action"
+      }
+    },
+    {
+      "sceneId": "11-05-P03",
+      "paragraph": 3,
+      "kind": "preserved-existing-scene",
+      "renderer": "same Unity room",
+      "spokenCueKo": "그러면 같은 방을 다시 만나서 지루해지지 않을까요? 조각 안에 익힐 행동이 담겨 있으면, 익숙한 구조를 다시 읽고 활용할 수 있습니다.",
+      "visualTargetKo": "반복 장면의 학습",
+      "before": "같은 templates-a 방",
+      "action": "같은 공간을 다시 읽을 수 있는 행동을 보여 주며 반복의 목적 설명",
+      "result": "재방문한 같은 지형의 읽기를 설명",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "방과 카메라는 동일하고 설명 초점만 옮긴다.",
+      "annotationPlanKo": "발화 큐: «그러면 같은 방을 다시 만나서 지루해지지 않을까요? 조각 안에 익힐 행동이 담겨 있으면, 익숙한 구조를 다시 읽고 활용할 수 있습니다.» 표시 대상: «반복 장면의 학습». 표식 지침: 반복 장면의 학습는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «같은 공간을 다시 읽을 수 있는 행동을 보여 주며 반복의 목적 설명». 확인할 결과: «재방문한 같은 지형의 읽기를 설명». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 3,
+        "renderer": "same Unity room",
+        "nativeOrSource": "templates-a",
+        "speechVisualAction": "같은 공간을 다시 읽을 수 있는 행동을 보여 주며 반복의 목적 설명",
+        "oneChangedVariable": "Same scene retained",
+        "limitsAndVerification": "Design rationale, not measured human learning.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "그러면 같은 방을 다시 만나서 지루해지지 않을까요? 조각 안에 익힐 행동이 담겨 있으면, 익숙한 구조를 다시 읽고 활용할 수 있습니다. 중요한 건 같은 모양을 반복했느냐보다, 그 모양에서 무엇을 하게 만드느냐입니다.",
+        "canonicalNarrationEn": "Would a familiar room become boring? A well-designed repeated chunk lets players recognize and use an action they have learned. What the space asks players to do matters more than repetition alone.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 3,
+        "toParagraph": 4,
+        "carry": "repeated chunk → variable surroundings"
+      }
+    },
+    {
+      "sceneId": "11-05-P04",
+      "paragraph": 4,
+      "kind": "preserved-existing-scene",
+      "renderer": "same-frame A/B and short theme reveal",
+      "spokenCueKo": "같은 조각이라도 적이 서 있는 자리, 옆에 이어지는 지형, 지역의 분위기가 바뀌면 보이는 상황이 달라집니다.",
+      "visualTargetKo": "적·주변 연결·테마",
+      "before": "기존 세 비교 쌍",
+      "action": "고정된 방을 두고 적 위치 → 주변 연결 → 테마를 각각 따로 비교",
+      "result": "각 쌍에서 하나의 요인만 따로 달라짐",
+      "oneChangedVariable": "Exactly one factor per pair; same input policy",
+      "heldConditionsKo": "각각의 동일입력·물리기준을 보존하며 여러변수를 한 비교로 합치지 않는다.",
+      "annotationPlanKo": "발화 큐: «같은 조각이라도 적이 서 있는 자리, 옆에 이어지는 지형, 지역의 분위기가 바뀌면 보이는 상황이 달라집니다.» 표시 대상: «적·주변 연결·테마». 표식 지침: 적·주변 연결·테마는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «고정된 방을 두고 적 위치 → 주변 연결 → 테마를 각각 따로 비교». 확인할 결과: «각 쌍에서 하나의 요인만 따로 달라짐». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 4,
+        "renderer": "same-frame A/B and short theme reveal",
+        "nativeOrSource": "threats-a/threats-b; branches-a/branches-b; construction ending",
+        "speechVisualAction": "고정된 방을 두고 적 위치 → 주변 연결 → 테마를 각각 따로 비교",
+        "oneChangedVariable": "Exactly one factor per pair; same input policy",
+        "limitsAndVerification": "Theme is appearance-only; follow-camera policy fixed, observer matrix fixed; actual follow matrices may differ after divergence.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "같은 조각이라도 적이 서 있는 자리, 옆에 이어지는 지형, 지역의 분위기가 바뀌면 보이는 상황이 달라집니다. 여기서는 한 번에 하나씩 바꾸겠습니다. 테마만 바꿀 때는 지형과 이동 규칙을 그대로 두고, 모습이 달라진다는 것만 비교하죠.",
+        "canonicalNarrationEn": "Enemy positions, neighboring terrain, and the area's theme can change the situation around the same chunk. We will vary one factor at a time. Changing only the theme demonstrates appearance while geometry and movement rules stay fixed.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 4,
+        "toParagraph": 5,
+        "carry": "same chunk → its connections"
+      }
+    },
+    {
+      "sceneId": "11-05-P05",
+      "paragraph": 5,
+      "kind": "preserved-existing-scene",
+      "renderer": "Unity observer central square",
+      "spokenCueKo": "이제 이 방들을 어떤 순서로 이을지 보겠습니다.",
+      "visualTargetKo": "아직 출구 없는 격자",
+      "before": "construction0..59",
+      "action": "빈 격자·상단 입구 → 연결 관계를 위에서 펼친 자체 모형 → 아직 없는 출구 표시",
+      "result": "상단 입구와 펼쳐질 연결 관계를 제시",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "동일한 생성 그래프/카메라·입력·표시 시계.",
+      "annotationPlanKo": "발화 큐: «이제 이 방들을 어떤 순서로 이을지 보겠습니다.» 표시 대상: «아직 출구 없는 격자». 표식 지침: 아직 출구 없는 격자는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «빈 격자·상단 입구 → 연결 관계를 위에서 펼친 자체 모형 → 아직 없는 출구 표시». 확인할 결과: «상단 입구와 펼쳐질 연결 관계를 제시». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 5,
+        "renderer": "Unity observer central square",
+        "nativeOrSource": "construction 0..59",
+        "speechVisualAction": "빈 격자·상단 입구 → 연결 관계를 위에서 펼친 자체 모형 → 아직 없는 출구 표시",
+        "oneChangedVariable": "Visible stage only",
+        "limitsAndVerification": "Exit visual and label inactive before frame240; actual pixel verification pending.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "이제 이 방들을 어떤 순서로 이을지 보겠습니다. 방의 연결 관계를 위에서 보도록 펼쳐 놓은 우리 모형입니다. 방 칸을 격자로 놓고, 맨 위 줄에서 입구가 될 방을 고릅니다. 출구 자리는 아직 정하지 않습니다.",
+        "canonicalNarrationEn": "Now unfold the room connections into our top-down model. Begin with a room grid and choose an entrance in the top row. The exit position has not been selected yet.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 5,
+        "toParagraph": 6,
+        "carry": "entrance → growing route"
+      }
+    },
+    {
+      "sceneId": "11-05-P06",
+      "paragraph": 6,
+      "kind": "preserved-existing-scene",
+      "renderer": "Unity observer with object-bound arrows",
+      "spokenCueKo": "입구에서 시작한 길은 옆으로 가거나 한 줄 아래로 내려갑니다.",
+      "visualTargetKo": "인접 방 경계 연결",
+      "before": "construction60..239",
+      "action": "경로가 이웃 칸으로 늘어남 → 해당 경계 연결선·화살촉 → 연결 구조",
+      "result": "경로가 이웃 칸으로 확장되는 과정",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "이미 기록된 같은 그래프의 활성 연결만 사용.",
+      "annotationPlanKo": "발화 큐: «입구에서 시작한 길은 옆으로 가거나 한 줄 아래로 내려갑니다.» 표시 대상: «인접 방 경계 연결». 표식 지침: 인접 방 경계 연결는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «경로가 이웃 칸으로 늘어남 → 해당 경계 연결선·화살촉 → 연결 구조». 확인할 결과: «경로가 이웃 칸으로 확장되는 과정». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 6,
+        "renderer": "Unity observer with object-bound arrows",
+        "nativeOrSource": "construction 60..239",
+        "speechVisualAction": "경로가 이웃 칸으로 늘어남 → 해당 경계 연결선·화살촉 → 연결 구조",
+        "oneChangedVariable": "Visible connector count on same generated graph",
+        "limitsAndVerification": "Arrows visualize construction, not player UI.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "입구에서 시작한 길은 옆으로 가거나 한 줄 아래로 내려갑니다. 표시된 화살표는 플레이어에게 보이는 안내선이 아니라, 생성기가 방을 잇는 과정을 보여 주는 겁니다. 길을 그렸다고 끝난 건 아니죠. 두 방 사이에 실제로 통하는 구멍이 있어야 합니다.",
+        "canonicalNarrationEn": "Extend the route sideways or down a row. These arrows visualize construction rather than a guide shown to players. A line alone does not connect rooms: there must be actual openings between them.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 6,
+        "toParagraph": 7,
+        "carry": "route line → matching boundary"
+      }
+    },
+    {
+      "sceneId": "11-05-P07",
+      "paragraph": 7,
+      "kind": "preserved-existing-scene",
+      "renderer": "same boundary close crop and isolated negative",
+      "spokenCueKo": "옆방으로 갈 때는 맞닿은 양쪽에 출입구가 필요합니다.",
+      "visualTargetKo": "닫힌 필수 포트",
+      "before": "branches-a/broken-link1540..1600",
+      "action": "맞닿은 양쪽 출입구 강조 → 한 경계를 막음 → 실제 이동·그래프 단절 비교",
+      "result": "한 경계의 차단으로 이동과 그래프의 차이를 비교",
+      "oneChangedVariable": "One mandatory port open/closed",
+      "heldConditionsKo": "동일 명령테이프·지형을 유지하고 해당 포트 조건만 비교. 늦은 검은 프레임 제외.",
+      "annotationPlanKo": "발화 큐: «옆방으로 갈 때는 맞닿은 양쪽에 출입구가 필요합니다.» 표시 대상: «닫힌 필수 포트». 표식 지침: 닫힌 필수 포트는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «맞닿은 양쪽 출입구 강조 → 한 경계를 막음 → 실제 이동·그래프 단절 비교». 확인할 결과: «한 경계의 차단으로 이동과 그래프의 차이를 비교». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 7,
+        "renderer": "same boundary close crop and isolated negative",
+        "nativeOrSource": "branches-a/broken-link same current frames1540..1600; optional clearly-labelled held1560 inspection",
+        "speechVisualAction": "맞닿은 양쪽 출입구 강조 → 한 경계를 막음 → 실제 이동·그래프 단절 비교",
+        "oneChangedVariable": "One mandatory port open/closed",
+        "limitsAndVerification": "Broken graph is disconnected; native green arrows show intended reference inputs. Use same-frame observer; red closed-port guide only exact reviewed held1560 rule. Exclude late broken-link player2880..3119; no successful exit claim.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "옆방으로 갈 때는 맞닿은 양쪽에 출입구가 필요합니다. 이 모형에서 아래 칸으로 이어질 때도 두 칸이 맞닿은 경계에 통로를 맞춰 줍니다. 어느 방향으로 통할 수 있는지를 정하는 것이 방 연결 유형입니다.",
+        "canonicalNarrationEn": "Sideways neighbors need matching openings. Connecting to the next row in this model also requires matching ports on the shared boundary. A room type specifies which directions must connect.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 7,
+        "toParagraph": 8,
+        "carry": "matching boundary → derived exit"
+      }
+    },
+    {
+      "sceneId": "11-05-P08",
+      "paragraph": 8,
+      "kind": "preserved-existing-scene",
+      "renderer": "same observer world",
+      "spokenCueKo": "이렇게 길을 이어 가다가 맨 아래 줄에서 다시 내려가려는 지점이 나오면, 그 끝을 출구 방으로 정합니다.",
+      "visualTargetKo": "경로 끝과 출구 표식",
+      "before": "construction239이전/240이후",
+      "action": "맨 아래 경로 끝 강조 → 출구 표식 등장 → 입구부터 만든 경로의 끝이라는 결론",
+      "result": "최하단 진행의 끝에서 출구가 드러남",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "원본 생성 경로와 표시단계만 사용. 미리 출구부터 정했다는 주장 금지.",
+      "annotationPlanKo": "발화 큐: «이렇게 길을 이어 가다가 맨 아래 줄에서 다시 내려가려는 지점이 나오면, 그 끝을 출구 방으로 정합니다.» 표시 대상: «경로 끝과 출구 표식». 표식 지침: 경로 끝과 출구 표식는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «맨 아래 경로 끝 강조 → 출구 표식 등장 → 입구부터 만든 경로의 끝이라는 결론». 확인할 결과: «최하단 진행의 끝에서 출구가 드러남». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 8,
+        "renderer": "same observer world",
+        "nativeOrSource": "construction frame240 boundary",
+        "speechVisualAction": "맨 아래 경로 끝 강조 → 출구 표식 등장 → 입구부터 만든 경로의 끝이라는 결론",
+        "oneChangedVariable": "Exit display stage",
+        "limitsAndVerification": "Model graph is generated before visualization; these are teaching stages, not measured commercial generation timings.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "이렇게 길을 이어 가다가 맨 아래 줄에서 다시 내려가려는 지점이 나오면, 그 끝을 출구 방으로 정합니다. 처음부터 출구 좌표를 고정하고 길을 찾은 게 아니라, 내려오며 만든 경로의 끝에 출구가 놓이는 순서입니다.",
+        "canonicalNarrationEn": "When the path attempts another downward step from the bottom row, that endpoint becomes the exit room. In this process, the exit follows the generated route rather than being fixed in advance.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 8,
+        "toParagraph": 9,
+        "carry": "mandatory path → off-route cells"
+      }
+    },
+    {
+      "sceneId": "11-05-P09",
+      "paragraph": 9,
+      "kind": "preserved-existing-scene",
+      "renderer": "same graph side cells",
+      "spokenCueKo": "필수 경로가 정해지면 남은 칸에도 방을 채웁니다.",
+      "visualTargetKo": "곁방과 닫힌 방",
+      "before": "branches-a/branches-b",
+      "action": "필수 경로 고정 → 연결된 곁방과 닫힌 방 각각 연결선 추적 → 접근 보장 구별",
+      "result": "접근 가능한 곁방과 닫힌 방을 구분",
+      "oneChangedVariable": "Side connector selection only",
+      "heldConditionsKo": "필수 경로·동일입력 고정, 곁 연결만 비교. 모든 옆방 접근 보장 금지.",
+      "annotationPlanKo": "발화 큐: «필수 경로가 정해지면 남은 칸에도 방을 채웁니다.» 표시 대상: «곁방과 닫힌 방». 표식 지침: 곁방과 닫힌 방는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «필수 경로 고정 → 연결된 곁방과 닫힌 방 각각 연결선 추적 → 접근 보장 구별». 확인할 결과: «접근 가능한 곁방과 닫힌 방을 구분». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 9,
+        "renderer": "same graph side cells",
+        "nativeOrSource": "branches-a/branches-b and construction 240..359",
+        "speechVisualAction": "필수 경로 고정 → 연결된 곁방과 닫힌 방 각각 연결선 추적 → 접근 보장 구별",
+        "oneChangedVariable": "Side connector selection only",
+        "limitsAndVerification": "Do not call every off-route cell reachable or a graph dead end.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "필수 경로가 정해지면 남은 칸에도 방을 채웁니다. 다만 경로 밖 방은 어느 방향으로든 통한다고 보장하지 않습니다. 이 방은 옆길로 들어갈 수 있지만, 저 방은 벽에 막혀 있죠. 경로 밖 방을 전부 연결된 곁길이라고 보면 안 됩니다.",
+        "canonicalNarrationEn": "Fill cells outside the solution path too, but do not assume that they have openings. One may form an accessible side route while another is sealed. Off-route rooms are not all guaranteed branches.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 9,
+        "toParagraph": 10,
+        "carry": "connection type → room interior"
+      }
+    },
+    {
+      "sceneId": "11-05-P10",
+      "paragraph": 10,
+      "kind": "preserved-existing-scene",
+      "renderer": "same room A/B detail",
+      "spokenCueKo": "연결 방향이 정해져도 방 안의 구체적인 모양은 여러 가지일 수 있습니다.",
+      "visualTargetKo": "방 내부 템플릿",
+      "before": "templates-a/templates-b",
+      "action": "같은 경계 출입구 → 방 내부 기둥·발판 위치만 변경 → Room Template 정의",
+      "result": "같은 출입구 안의 기둥/발판 배치 차이",
+      "oneChangedVariable": "Interior arrangement only",
+      "heldConditionsKo": "방 경계와 입력·카메라를 유지, 내부 배치만 비교.",
+      "annotationPlanKo": "발화 큐: «연결 방향이 정해져도 방 안의 구체적인 모양은 여러 가지일 수 있습니다.» 표시 대상: «방 내부 템플릿». 표식 지침: 방 내부 템플릿는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «같은 경계 출입구 → 방 내부 기둥·발판 위치만 변경 → Room Template 정의». 확인할 결과: «같은 출입구 안의 기둥/발판 배치 차이». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 10,
+        "renderer": "same room A/B detail",
+        "nativeOrSource": "templates-a/templates-b",
+        "speechVisualAction": "같은 경계 출입구 → 방 내부 기둥·발판 위치만 변경 → Room Template 정의",
+        "oneChangedVariable": "Interior arrangement only",
+        "limitsAndVerification": "No central obstacle or jump-mechanics claim; preserve corridor and border ports.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "연결 방향이 정해져도 방 안의 구체적인 모양은 여러 가지일 수 있습니다. 양쪽 출입구는 그대로 두고, 방 안의 구조만 다른 설계안으로 바꿔 보죠. 이런 내부 설계안이 방 템플릿입니다. 연결 조건을 지키면서도 다른 장면을 고를 수 있는 겁니다.",
+        "canonicalNarrationEn": "The required connections still allow different interiors. Keep both side openings and change the interior layout. These designs are room templates: they vary a scene while respecting its connection requirements.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 10,
+        "toParagraph": 11,
+        "carry": "room interior → layout-embedded spikes"
+      }
+    },
+    {
+      "sceneId": "11-05-P11",
+      "paragraph": 11,
+      "kind": "preserved-existing-scene",
+      "renderer": "Unity template reveal + MC region marks",
+      "spokenCueKo": "방 안에는 더 작은 장애물 조각이나, 추첨 결과에 따라 바뀌는 타일도 들어갈 수 있습니다.",
+      "visualTargetKo": "템플릿 안의 위험",
+      "before": "construction360..449",
+      "action": "방 조각·내부 장애물 구역 강조 → 템플릿 가시를 먼저 표시 → 후속 적 배치와 분리",
+      "result": "가시의 템플릿 확장을 적 계층과 분리",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "기존 기록의 활성 단계만 표시, 위험이 전부 마지막에 생성된다는 주장 금지.",
+      "annotationPlanKo": "발화 큐: «방 안에는 더 작은 장애물 조각이나, 추첨 결과에 따라 바뀌는 타일도 들어갈 수 있습니다.» 표시 대상: «템플릿 안의 위험». 표식 지침: 템플릿 안의 위험는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «방 조각·내부 장애물 구역 강조 → 템플릿 가시를 먼저 표시 → 후속 적 배치와 분리». 확인할 결과: «가시의 템플릿 확장을 적 계층과 분리». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 11,
+        "renderer": "Unity template reveal + MC region marks",
+        "nativeOrSource": "construction 360..449",
+        "speechVisualAction": "방 조각·내부 장애물 구역 강조 → 템플릿 가시를 먼저 표시 → 후속 적 배치와 분리",
+        "oneChangedVariable": "Visible teaching layer",
+        "limitsAndVerification": "Spike geometry is our authored illustration; do not display copied original templates or fabricated probability outcomes.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "방 안에는 더 작은 장애물 조각이나, 추첨 결과에 따라 바뀌는 타일도 들어갈 수 있습니다. 여기 가시는 방 내부를 만드는 과정에서 이미 생겼습니다. 그래서 위험요소가 전부 마지막 한 단계에서만 추가된다고 설명하면 실제 순서를 놓치게 됩니다.",
+        "canonicalNarrationEn": "Smaller obstacle structures and probabilistic tiles can vary the interior further. Spikes can already appear during this stage. Describing every hazard as part of one final pass would miss that distinction.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 11,
+        "toParagraph": 12,
+        "carry": "template hazards → later enemy component"
+      }
+    },
+    {
+      "sceneId": "11-05-P12",
+      "paragraph": 12,
+      "kind": "preserved-existing-scene",
+      "renderer": "same-input threat A/B",
+      "spokenCueKo": "그다음 적 같은 구성요소가 더해지면, 같은 지형에도 새로운 위협이 놓입니다.",
+      "visualTargetKo": "적 오프셋과 접촉",
+      "before": "threats-a/threats-b1658..1702",
+      "action": "참조 경로에 수직인 적 오프셋만 변경 → 실제 겹침 위치 표시 → 접촉 기록 비교",
+      "result": "같은 입력에서 적의 오프셋에 따른 실제 접촉 차이",
+      "oneChangedVariable": "Enemy perpendicular offset1.8 versus0; same patrol phase/amplitude",
+      "heldConditionsKo": "순찰위상/속도/입력 고정. 접촉은 공격·피해 판정이 아니다.",
+      "annotationPlanKo": "발화 큐: «그다음 적 같은 구성요소가 더해지면, 같은 지형에도 새로운 위협이 놓입니다.» 표시 대상: «적 오프셋과 접촉». 표식 지침: 적 오프셋과 접촉는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «참조 경로에 수직인 적 오프셋만 변경 → 실제 겹침 위치 표시 → 접촉 기록 비교». 확인할 결과: «같은 입력에서 적의 오프셋에 따른 실제 접촉 차이». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 12,
+        "renderer": "same-input threat A/B",
+        "nativeOrSource": "threats-a/threats-b same current command frames; contact window1658..1702",
+        "speechVisualAction": "참조 경로에 수직인 적 오프셋만 변경 → 실제 겹침 위치 표시 → 접촉 기록 비교",
+        "oneChangedVariable": "Enemy perpendicular offset1.8 versus0; same patrol phase/amplitude",
+        "limitsAndVerification": "Actual enemy-trigger overlap count A0/B45frames1658–1702 is proven in current traces. Labels describe own contact only, never attack/damage/AI or no-hit safety. Final source-visible annotation/caption fit remains pending.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "그다음 적 같은 구성요소가 더해지면, 같은 지형에도 새로운 위협이 놓입니다. 여기서는 지형과 이동 입력을 고정하고 적의 위치만 옮기겠습니다. 화면에는 실제로 겹친 위치와 접촉 결과를 표시해서, 무엇이 바뀌었는지 함께 확인하죠.",
+        "canonicalNarrationEn": "Later components such as enemies add threats to the same terrain. Hold geometry and movement input fixed, changing only enemy positions. The demonstration will show actual overlaps and contact results.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 12,
+        "toParagraph": 13,
+        "carry": "enemy contact → different checks"
+      }
+    },
+    {
+      "sceneId": "11-05-P13",
+      "paragraph": 13,
+      "kind": "preserved-existing-scene",
+      "renderer": "actual HD gameplay then same-world checks",
+      "spokenCueKo": "HD 화면에서도 보물을 든 캐릭터가 발판을 지나 출구 근처까지 내려오지만, 굴러오는 큰 바위에 부딪혀 쓰러지죠.",
+      "visualTargetKo": "HD 보물 운반과 거석 충돌",
+      "before": "S-HD-B 채택 시작 프레임",
+      "action": "보물을 든 인물이 발판을 지나 출구 근처로 내려오는 실제 행동 → 거석에 쓰러지는 결과 → 연결 검사와 위협 접촉 검사를 구별",
+      "result": "발판 하강 후 거석에 쓰러짐; 연결 검사와 위협 검사의 차이",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "원본 시간순의 HD관찰이며 동일 생성기·AI·성공 출구를 입증하지 않는다.",
+      "annotationPlanKo": "발화 큐: «HD 화면에서도 보물을 든 캐릭터가 발판을 지나 출구 근처까지 내려오지만, 굴러오는 큰 바위에 부딪혀 쓰러지죠.» 표시 대상: «HD 보물 운반과 거석 충돌». 표식 지침: HD 보물 운반과 거석 충돌는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «보물을 든 인물이 발판을 지나 출구 근처로 내려오는 실제 행동 → 거석에 쓰러지는 결과 → 연결 검사와 위협 접촉 검사를 구별». 확인할 결과: «발판 하강 후 거석에 쓰러짐; 연결 검사와 위협 검사의 차이». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "기존 경계의 대상·직전 결과를 다음 문단의 대상에 이어 주며 실제 음성 시각은 새로 만들지 않는다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 13,
+        "renderer": "actual HD gameplay then same-world checks",
+        "nativeOrSource": "S-HD-B displayedframes[480,961), then own branches/broken-link/threat comparisons",
+        "speechVisualAction": "보물을 든 인물이 발판을 지나 출구 근처로 내려오는 실제 행동 → 거석에 쓰러지는 결과 → 연결 검사와 위협 접촉 검사를 구별",
+        "oneChangedVariable": "Compare different checks, not a new variable",
+        "limitsAndVerification": "Keep complete native-speed HD cutB[480,961) once, including failure near the doorway. OldP13c01 lasted4.64s while sourceimpact lies6.006..6.5065s intoB; the expanded natural sentence needs NEW PCM/ASR and actual word/action fit. No success, loop, slowdown, extra commercial freeze or old-fit approval.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "HD 화면에서도 보물을 든 캐릭터가 발판을 지나 출구 근처까지 내려오지만, 굴러오는 큰 바위에 부딪혀 쓰러지죠. 출구까지 방이 이어졌다는 검사와, 적이나 가시에 닿지 않고 통과했다는 검사는 다릅니다. 연결선만 확인해서는 위협을 어떻게 지나갈지 알 수 없죠. 길의 뼈대, 방 안의 구조, 그 안에 놓이는 위협을 나누어 보는 이유입니다.",
+        "canonicalNarrationEn": "In the HD footage, the character carrying treasure passes the ledges and descends near the exit, but is struck by a large rolling boulder. Connected rooms and a traversal without touching enemies or spikes are different checks. Connection lines alone do not show how to pass those threats. Separate the route, the interior structure, and the threats within it.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      },
+      "preservedBoundary": {
+        "fromParagraph": 13,
+        "toParagraph": 14,
+        "carry": "separate checks → handmade plus procedural conclusion"
+      }
+    },
+    {
+      "sceneId": "11-05-P14",
+      "paragraph": 14,
+      "kind": "preserved-existing-scene",
+      "renderer": "same Unity world closing",
+      "spokenCueKo": "랜덤 던전의 변화는 무작위 선택 하나에서만 나오지 않습니다.",
+      "visualTargetKo": "조각과 연결·내용물 규칙",
+      "before": "기존 자체 세계의 결론 화면",
+      "action": "사람이 설계한 방 조각 + 연결·구성요소 규칙을 같은 장면에 모아 처음 질문에 답함",
+      "result": "사람의 설계와 생성 제약을 같은 장면에 모음",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "기존 구현 장면을 유지, 가상의 성공률·추가 측정을 만들지 않는다.",
+      "annotationPlanKo": "발화 큐: «랜덤 던전의 변화는 무작위 선택 하나에서만 나오지 않습니다.» 표시 대상: «조각과 연결·내용물 규칙». 표식 지침: 조각과 연결·내용물 규칙는 기존scene-plan-v5/native-presentation-plan-v5/footage-moving-guides-v1의 실제 프레임·대상·가림 근거만 사용한다. 의미 큐의 실제 음성 타이밍과 최종합성은 아직 미확정. 동작 계획: «사람이 설계한 방 조각 + 연결·구성요소 규칙을 같은 장면에 모아 처음 질문에 답함». 확인할 결과: «사람의 설계와 생성 제약을 같은 장면에 모음». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "기존 portrait 레이아웃·고정 자막·고양이 영역을 유지한다. 추가 표식은 해당 표면의 실제 투영/가림과 최종375합성으로 검수해야 한다.",
+      "transitionToNextKo": "처음의 생성 구조 질문에 기존 자체 세계에서 답한다.",
+      "evidenceStatus": "existing raw-native/source evidence retained; final speech fit/mobile/motion pending",
+      "sourceBeat": {
+        "paragraph": 14,
+        "renderer": "same Unity world closing",
+        "nativeOrSource": "retained own world",
+        "speechVisualAction": "사람이 설계한 방 조각 + 연결·구성요소 규칙을 같은 장면에 모아 처음 질문에 답함",
+        "oneChangedVariable": "No fabricated measurement",
+        "limitsAndVerification": "No gameplay reuse as an exit-success proof. Retain the book teaching conclusion and useful repetition.",
+        "speechCue": "natural final speech clause/word anchors to be measured after final Qwen PCM and independent ASR",
+        "holdSeconds": 0,
+        "holdReason": null,
+        "actualRendered": false,
+        "actualPixelReviewed": false,
+        "canonicalNarrationKo": "랜덤 던전의 변화는 무작위 선택 하나에서만 나오지 않습니다. 사람이 설계한 작은 도전과, 그 조각들을 연결하고 채우는 규칙이 함께 작동합니다. 익숙한 방을 다시 만나도 주변과 구성요소를 다시 읽게 만드는 것, 그게 반복과 변화를 함께 쓰는 방법입니다.",
+        "canonicalNarrationEn": "A random dungeon's variety comes from more than random choices. Handmade challenges work together with rules that connect and populate them. Familiar rooms can ask players to read new surroundings and components.",
+        "actualRawNativeAvailable": true,
+        "finalSpeechFrames": null
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "english": "Level Chunk",
+      "korean": "레벨 조각",
+      "plainMeaningKo": "작은 플레이 상황을 담은 방 규모의 묶음"
+    },
+    {
+      "english": "Solution Path",
+      "korean": "출구 연결 경로",
+      "plainMeaningKo": "생성기가 입구에서 출구로 이어지게 준비하는 경로"
+    },
+    {
+      "english": "Room Type",
+      "korean": "방 연결 유형",
+      "plainMeaningKo": "어느 방향 출입구를 지켜야 하는지 정하는 구분"
+    },
+    {
+      "english": "Room Template",
+      "korean": "방 템플릿",
+      "plainMeaningKo": "연결 조건 안에서 고르는 내부 설계안"
+    },
+    {
+      "english": "Connectivity",
+      "korean": "연결성",
+      "plainMeaningKo": "방과 통로가 서로 이어진 성질"
+    },
+    {
+      "english": "Probabilistic Tile",
+      "korean": "확률 타일",
+      "plainMeaningKo": "추첨 결과에 따라 배치가 달라지는 타일 규칙"
+    }
+  ],
+  "gameCandidates": [
+    {
+      "game": "Spelunky (HD remake)",
+      "teachingRoleKo": "HD 실제 화면에서 입구 하강과 출구 근처 거석 충돌의 관찰 결과만 보여 준다.",
+      "beforeActionResultToAcquireKo": "기존 채택 A[60,480)·B[480,961) 시간순 원본16:9, 무속도변경·무루프·원음미사용. 기존 움직이는 표식은 실제inspect217활성/684off 행과 연결한다.",
+      "sourceStatus": "preserved-verified-source; exact source-footage-v2 linked",
+      "rightsStatus": "publisher-origin gameplay and direct scoped Mossmouth guide policy basis retained in unchanged source record; not blanket CC/trailer reuse",
+      "fhdStatus": "existing genuine1920x1080 source evidence retained, no new decode",
+      "observationStatus": "existing sampled source/target inspection; final composited375/fullmotion/hearing not approved",
+      "selectionReasonKo": "공개Classic기제의 상용HD재현을 주장하지 않고 실제관찰의 비교 역할을 유지한다.",
+      "sourceUrl": "https://www.youtube.com/watch?v=i0QyS6m7c5w",
+      "sourceFootageRecord": {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\source-footage-v2.json",
+        "sha256": "e25b04358a68ceff2ce671d20515f81f474d730a3797620e20b2177399908e24"
+      }
+    }
+  ],
+  "claimLimits": [
+    "HD 영상 한 번으로 무작위성·Classic 알고리즘·성공출구를 입증하지 않는다.",
+    "모든 옆방 연결·모든 위험 마지막 생성·연결성=안전성 주장을 하지 않는다.",
+    "자체구현 접촉은 공격/피해가 아니다. Broken-link의 초록 화살표는 의도된 입력이며 실제 연결 성공으로 표시하지 않는다.",
+    "6691 raw와0fe ASR/levels의 p008두 문장·p013첫문장 수치HOLD는 유지한다. e14 후보/QA7는 전체대본선행 새지시로 실행하지 않는다.",
+    "실제 소스검수와 네이티브표본검수는 최종375합성·전체움직임·청취·사람승인이 아니다."
+  ],
+  "publishingPlan": {
+    "titleOptionsKo": [
+      "매번 바뀌는 던전, 출구까지 길은 누가 만들까?",
+      "랜덤 던전의 연결과 안전은 왜 다른 검사일까?"
+    ],
+    "selectedTitleKo": "매번 바뀌는 던전, 출구까지 길은 누가 만들까?",
+    "selectionReasonKo": "기존 확정 질문과14문단 학습 순서를 보존한다.",
+    "thumbnailConceptKo": "입구에서 아래로 이어지는 방 연결과 별도로 거석위험을 표시. 성공률·원작내부 검출표식 없음.",
+    "descriptionDraftKo": "손으로 만든 방 조각과 연결 규칙이 절차적 던전을 만드는 방식을 Classic공개코드·자체구현·HD실제관찰로 나누어 살펴봅니다. 최종 게시 크레딧은 기존 실제 선택 소스의 권리기록을 유지합니다."
+  },
+  "readthrough": {
+    "performed": true,
+    "scope": "text-only exact retained14KO/EN and current scene5 joins; previous fullreadthrough evidence retained",
+    "findingsKo": "기존 확정문장을 새로 쓰지 않았으며P13 보물 운반→발판 하강→거석 충돌의 설명과 화면 관찰 한계를 유지했다. NarV5에 상속된 과거V4플랜은 역사값이고 현재operative 계획은scene5로 명시했다.",
+    "remainingKo": "실제3문장 재후보·새ASR/levels·말/영상 사건 맞춤·최종자막/움직임/청취는 아직 승인되지 않았다."
+  },
+  "readiness": {
+    "scriptAndStructureComplete": true,
+    "scriptLockedForTts": false,
+    "independentFootageStatus": "preserved-verified-source",
+    "gpuProductionStarted": false,
+    "actualNewAudio": false,
+    "actualNewRender": false,
+    "humanApproval": false,
+    "remainingProductionTasks": [
+      "전체111대본·구성 우선 준비 후 root의현재제작 재개선택",
+      "현6691음성의 수치HOLD처리와실제새후보 검증",
+      "실제단어/샘플 기반 KO/EN자막·게임행동 타이밍",
+      "표식·구조도·게임을 합친1080/375및전체움직임/청취",
+      "완성4파일과로컬사용자검수"
+    ]
+  },
+  "preservedCurrentProduction": {
+    "actualExistingNativeAll8": true,
+    "existingNativeEvidence": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-11-05\\native-evidence-v4.json",
+      "sha256": "acbaa5d35763b3f20c5c6d4075bcb10275517ae125b729e0b765ed738dcd7087"
+    },
+    "actualExistingVoice": true,
+    "current6691Preserved": true,
+    "newPreproductionTriggeredNoSynthesis": true,
+    "logicalSentences": 48,
+    "paragraphs": 14,
+    "actualSourceRewrite": false
+  }
+}

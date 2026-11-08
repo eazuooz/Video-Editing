@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "architectural111-preproduction-v2",
+  "topicId": "04.05",
+  "batchOrder": 38,
+  "titleKo": "마리오 카트의 지름길을 선 몇 개로 찾는 법",
+  "centralQuestionKo": "도식의 짧은 연결은 어떤 조건에서 실제 지름길이 될까?",
+  "thesisKo": "몰리큘 도식은 중요한 공간의 관계를 읽는 도구이며, 시각 연결·이동 방향·실제 실행 조건을 구분해야 지름길을 검증할 수 있다.",
+  "preservation": {
+    "mode": "new-preproduction",
+    "selectedNarration": null,
+    "selectedScenePlan": null,
+    "originalInputsChanged": false,
+    "notesKo": "기존 초안·프로젝트·체크포인트는 변경하지 않고 유용한 설명을 새 패킷 안에 보존·확장했다.",
+    "originalInputs": {
+      "project.json": {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\project.json",
+        "sha256": "85f28b0408969b556e5641bbc4a010a7d0fb3aced2800284246ab899469dad5f"
+      },
+      "checkpoint.json": {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\checkpoint.json",
+        "sha256": "f5705a5217356864b52b5d8aaf106887f46e1f65c9e0067ec854b35f37b62cae"
+      },
+      "narration-draft.json": {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\narration-draft.json",
+        "sha256": "41366caa291080d40e5db64cb7ac01ed4f4b373e65b6785bb0d32cd2b8237c92"
+      },
+      "scene-plan-draft.json": {
+        "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\scene-plan-draft.json",
+        "sha256": "fb45c9343bc68e06599cdce6e23d32d15f027bc1ee92a00a4a7970eaada0c2b0"
+      }
+    }
+  },
+  "sourceReview": {
+    "sourceTextPath": "C:\\Users\\1\\AppData\\Local\\Temp\\yamyam-leveldesign-review-20261106\\book-layout.txt",
+    "sourceTextSHA256": "dc77c83a0807bb9d0c8b0c2f81eaf34ed29e59d72129f521a33d38402219c919",
+    "printPages": "168-174",
+    "pdfPages": [
+      214,
+      220
+    ],
+    "wholeAssignedPassageRead": true,
+    "figureInspection": "text-and-figure-captions-only",
+    "coverageNotesKo": "168–174 전체의노드/간선→시각/이동/일방범례→추상도와평면차이→Steiner지름길비유→노드/전이규모와높이방향을 보완했다.",
+    "omittedNoninstructionalMaterialKo": "저자의 개인 경험·헌사·전기·직접 인용문·출판사 목록은 시청자 내레이션에 옮기지 않았다. 관련 개념·예시의 학습 역할과 필요한 한계는 보존한다."
+  },
+  "narrationKo": [
+    "레이싱 게임에서 지름길을 찾을 때, 트랙의 모든 곡선을 그릴 필요가 있을까요? 중요한 지점을 점으로 바꾸면 멀리 돌아가던 길이 어디에서 가까워지는지 더 쉽게 보일 수 있습니다.",
+    "몰리큘 다이어그램에서는 중요한 공간이 노드, 그 사이의 이동이 연결선입니다. 서로 가까운 두 구간 사이에 새로운 연결을 만들면 기존 경로의 일부를 건너뛸 수 있죠. 이 그림은 게임이 내부적으로 어떤 알고리즘을 쓰는지 설명하는 것이 아니라, 경로를 분석하는 방법입니다.",
+    "연결선을 한 종류로만 그리면 오해가 생깁니다. 저쪽 공간이 보인다는 선과 실제로 갈 수 있다는 선은 다르죠. 방향이 있는 낙하와 양쪽으로 오갈 수 있는 통로도 구분해야 합니다. 먼저 범례를 정하고 그 의미를 실제 화면의 같은 지점에 붙입니다.",
+    "이 점들의 배치가 실제 지형의 축척은 아닙니다. 같은 관계도를 서로 다른 높이와 굽이를 가진 공간으로 만들 수도 있죠. 도식에서 선이 짧아졌다는 것만으로 실제 시간이 줄었다고 말하지 않고, 출발과 합류 사이의 물리 경로를 따로 시험합니다.",
+    "같은 트랙과 이동 능력에서 구간 사이 연결 하나만 열어 보겠습니다. 닫혀 있으면 긴 바깥길을 따라갑니다. 열면 짧은 길이 생기지만, 실제로 지나가려면 필요한 점프나 위험 조건을 만족해야 합니다. 점의 그래프와 캐릭터의 실제 이동을 같은 진행선으로 이어 줍니다.",
+    "위에서 아래로 떨어지는 길은 돌아갈 때 같은 지름길이 아닐 수 있습니다. 올라가야 할 때는 발판을 놓치면 이전 지점으로 돌아오고, 내려올 때는 여러 단계를 건너뛸 수도 있죠. 지름길에는 어느 방향에서 어떤 능력으로 쓸 수 있는지까지 함께 적어야 합니다.",
+    "이렇게 보면 지름길은 단순히 가까워 보이는 틈이 아닙니다. 연결 가능성, 실행 조건, 얻는 이득이 함께 있어야 하죠. 원래 길과 대안을 비교하면, 실력이 좋은 플레이어에게 어떤 선택을 허용할지 설계할 수 있습니다. 그래프의 짧은 선은 그 선택을 시험하는 출발점입니다."
+  ],
+  "paragraphsEn": [
+    "Finding a racing shortcut does not require drawing every curve. Reducing important locations to points can reveal where distant parts of a route come close together.",
+    "In a molecule diagram, significant spaces are nodes and travel between them is represented by edges. A new connection can bypass part of the original journey. This analyzes the route; it does not claim the game uses that graph algorithm internally.",
+    "A single line type can hide important differences. Being able to see another space is not the same as reaching it. A one-way drop also differs from a passage traversable both ways. Define the legend first and attach its meanings to the same locations in the scene.",
+    "Node positions are not a scale plan. The same relationship diagram can produce spaces with different heights and turns. A shorter drawn line does not establish shorter travel time; test the physical route between departure and rejoining points separately.",
+    "Keep the track and movement abilities, opening only one connection between sections. Closed, the player follows the longer route. Open, a shortcut exists, but any jump or risk requirement still has to be satisfied. Synchronize graph progress with actual movement.",
+    "A drop from above may not function as the same shortcut in reverse. Climbing can return a player to an earlier point after a missed platform, while descending may skip several steps. Record which direction and abilities make the shortcut usable.",
+    "A shortcut requires more than a nearby-looking gap. Connectivity, execution conditions and benefit all matter. Comparing the ordinary route with its alternative helps design a skilled player’s choice. The graph’s shorter line is the beginning of that test, not proof that traversal works."
+  ],
+  "sourceMapping": [
+    {
+      "paragraph": 1,
+      "sourcePrintedPages": "168-169",
+      "sourceSectionOrFigure": "Molecule Level Spaces; Fig4.27–4.33",
+      "retainedLogicKo": "중요 장소와 연결로 레벨의 관계를 추상화하는 방법을 보존한다.",
+      "adaptation": "기존 유용한 설명을 보존하고 앞뒤의 신규 전제·중간 단계를 연결함."
+    },
+    {
+      "paragraph": 2,
+      "sourcePrintedPages": "169-172",
+      "sourceSectionOrFigure": "Molecule Level Spaces; Fig4.27–4.33",
+      "retainedLogicKo": "지름길을 기존 경로 사이 추가 연결로 읽는 분석 관점을 보존하며 내부 알고리즘과 구분한다.",
+      "adaptation": "기존 유용한 설명을 보존하고 앞뒤의 신규 전제·중간 단계를 연결함."
+    },
+    {
+      "paragraph": 3,
+      "sourcePrintedPages": "168–170",
+      "sourceSectionOrFigure": "Visual/spatial edges / Fig4.27",
+      "retainedLogicKo": "보임/이동/일방연결의 원인·중간 관계를 풀어 원문의 다음 논점으로 연결.",
+      "adaptation": "원문 논리를 독립 문장과 새 설명용 공간으로 확장; 원문 문장/도판을 복제하지 않음."
+    },
+    {
+      "paragraph": 4,
+      "sourcePrintedPages": "169–172",
+      "sourceSectionOrFigure": "Abstract molecule / Steiner shortcut analogy",
+      "retainedLogicKo": "관계도와실제지형의 원인·중간 관계를 풀어 원문의 다음 논점으로 연결.",
+      "adaptation": "원문 논리를 독립 문장과 새 설명용 공간으로 확장; 원문 문장/도판을 복제하지 않음."
+    },
+    {
+      "paragraph": 5,
+      "sourcePrintedPages": "172",
+      "sourceSectionOrFigure": "Molecule Level Spaces; Fig4.27–4.33",
+      "retainedLogicKo": "연결 하나만 열어 기본 경로와 대안을 비교하되 실제 기술·통과 조건을 별도로 확인한다.",
+      "adaptation": "기존 유용한 설명을 보존하고 앞뒤의 신규 전제·중간 단계를 연결함."
+    },
+    {
+      "paragraph": 6,
+      "sourcePrintedPages": "172–174",
+      "sourceSectionOrFigure": "Vertical shortcuts and obstacles / Fig4.30–4.33",
+      "retainedLogicKo": "높이와진행방향의 원인·중간 관계를 풀어 원문의 다음 논점으로 연결.",
+      "adaptation": "원문 논리를 독립 문장과 새 설명용 공간으로 확장; 원문 문장/도판을 복제하지 않음."
+    },
+    {
+      "paragraph": 7,
+      "sourcePrintedPages": "172-174",
+      "sourceSectionOrFigure": "Molecule Level Spaces; Fig4.27–4.33",
+      "retainedLogicKo": "연결이 짧다는 것과 실행 가능한 경로라는 것이 다르다는 적용 조건을 명시한다.",
+      "adaptation": "기존 유용한 설명을 보존하고 앞뒤의 신규 전제·중간 단계를 연결함."
+    }
+  ],
+  "sceneBeats": [
+    {
+      "sceneId": "04-05-P01",
+      "paragraph": 1,
+      "kind": "independent-gameplay-candidate",
+      "renderer": "Motion Canvas",
+      "spokenCueKo": "레이싱 게임에서 지름길을 찾을 때, 트랙의 모든 곡선을 그릴 필요가 있을까요? 중요한 지점을 점으로 바꾸면 멀리 돌아가던 길이 어디에서 가까워지는지 더 쉽게 보일 수 있습니다.",
+      "visualTargetKo": "지름길 출발과 합류",
+      "before": "실제 트랙 지름길",
+      "action": "출발·합류 지점 표시",
+      "result": "곡선 밖의 연결 질문",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "확보할 지름길 출발과 합류의 실제 녹화를 관찰하는 장면이다. 카메라·입력·상대 행동이 같은 조건의 통제실험이라고 주장하지 않고 같은 전후 맥락을 확인한 뒤 채택한다.",
+      "annotationPlanKo": "발화 큐: «레이싱 게임에서 지름길을 찾을 때, 트랙의 모든 곡선을 그릴 필요가 있을까요? 중요한 지점을 점으로 바꾸면 멀리 돌아가던 길이 어디에서 가까워지는지 더 쉽게 보일 수 있습니다.» 표시 대상: «지름길 출발과 합류». 표식 지침: 길의 시작·합류에는 빈 원을, 확인할 실제 경로에는 가는 방향선과 명시적인 범례를 붙인다. 시각 연결 점선과 이동 실선, 일방향 화살표를 섞지 않는다. 동작 계획: «출발·합류 지점 표시». 확인할 결과: «곡선 밖의 연결 질문». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "몰리큘 다이어그램에서는 중요한 공간이 노드, 그 사이의 이동이 연결선입니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P02",
+      "paragraph": 2,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity",
+      "spokenCueKo": "몰리큘 다이어그램에서는 중요한 공간이 노드, 그 사이의 이동이 연결선입니다.",
+      "visualTargetKo": "노드와 연결의 범례",
+      "before": "같은 트랙을 노드·선으로 축약",
+      "action": "기본 경로와 후보 연결 표시",
+      "result": "분석 도구 정의",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "기준은 ‘같은 트랙을 노드·선으로 축약’의 같은 상태다. 노드와 연결의 범례의 관계를 설명하는 공개이며 실제 물리조건이나 사람의 반응을 바꾼 비교가 아니다.",
+      "annotationPlanKo": "발화 큐: «몰리큘 다이어그램에서는 중요한 공간이 노드, 그 사이의 이동이 연결선입니다.» 표시 대상: «노드와 연결의 범례». 표식 지침: 길의 시작·합류에는 빈 원을, 확인할 실제 경로에는 가는 방향선과 명시적인 범례를 붙인다. 시각 연결 점선과 이동 실선, 일방향 화살표를 섞지 않는다. 동작 계획: «기본 경로와 후보 연결 표시». 확인할 결과: «분석 도구 정의». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "연결선을 한 종류로만 그리면 오해가 생깁니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P03",
+      "paragraph": 3,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity own demonstration + Motion Canvas object-attached labels",
+      "spokenCueKo": "연결선을 한 종류로만 그리면 오해가 생깁니다.",
+      "visualTargetKo": "보임/이동/일방연결",
+      "before": "같은트랙노드도",
+      "action": "점선·실선·방향표식을실제대상에대응",
+      "result": "서로다른연결의의미",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "기준은 ‘같은트랙노드도’의 같은 상태다. 보임/이동/일방연결의 관계를 설명하는 공개이며 실제 물리조건이나 사람의 반응을 바꾼 비교가 아니다.",
+      "annotationPlanKo": "발화 큐: «연결선을 한 종류로만 그리면 오해가 생깁니다.» 표시 대상: «보임/이동/일방연결». 표식 지침: 길의 시작·합류에는 빈 원을, 확인할 실제 경로에는 가는 방향선과 명시적인 범례를 붙인다. 시각 연결 점선과 이동 실선, 일방향 화살표를 섞지 않는다. 동작 계획: «점선·실선·방향표식을실제대상에대응». 확인할 결과: «서로다른연결의의미». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "이 점들의 배치가 실제 지형의 축척은 아닙니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P04",
+      "paragraph": 4,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity own demonstration + Motion Canvas object-attached labels",
+      "spokenCueKo": "이 점들의 배치가 실제 지형의 축척은 아닙니다.",
+      "visualTargetKo": "관계도와실제지형",
+      "before": "같은노드연결",
+      "action": "평면/단면의다른배치와동일관계도를연결",
+      "result": "도식축척과실제거리구분",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "같은 기준 장면 ‘같은노드연결’에서 관계도와실제지형의 실행 단계나 관계를 설명한다. 통제된 A/B 인과 비교가 아니며, 표식 공개·관찰 대상·행동 단계 변화 자체를 가짜 실험 변수로 쓰지 않는다.",
+      "annotationPlanKo": "발화 큐: «이 점들의 배치가 실제 지형의 축척은 아닙니다.» 표시 대상: «관계도와실제지형». 표식 지침: 대상 외곽의 빈 원/괄호와 짧은 개념 라벨만 두어 관계도와실제지형의 관계를 연결한다. 실제 대상을 덮는 채움은 사용하지 않는다. 동작 계획: «평면/단면의다른배치와동일관계도를연결». 확인할 결과: «도식축척과실제거리구분». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "같은 트랙과 이동 능력에서 구간 사이 연결 하나만 열어 보겠습니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P05",
+      "paragraph": 5,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity",
+      "spokenCueKo": "같은 트랙과 이동 능력에서 구간 사이 연결 하나만 열어 보겠습니다.",
+      "visualTargetKo": "지름길 연결과 실제 통과",
+      "before": "고정 트랙·능력",
+      "action": "지름길 연결 하나만 개방",
+      "result": "기본 길과 대안 진행",
+      "oneChangedVariable": "지름길 연결 허용",
+      "heldConditionsKo": "기준은 ‘고정 트랙·능력’이다. 트랙의 나머지 지형·출발과 합류점, 캐릭터 이동능력, 기본 경로와 관찰 카메라를 유지하고 지름길 연결 허용만 별도로 비교한다. 후보 게임의 내부 수치나 실제 사람의 선택으로 표시하지 않는다.",
+      "annotationPlanKo": "발화 큐: «같은 트랙과 이동 능력에서 구간 사이 연결 하나만 열어 보겠습니다.» 표시 대상: «지름길 연결과 실제 통과». 표식 지침: 길의 시작·합류에는 빈 원을, 확인할 실제 경로에는 가는 방향선과 명시적인 범례를 붙인다. 시각 연결 점선과 이동 실선, 일방향 화살표를 섞지 않는다. 동작 계획: «지름길 연결 하나만 개방». 확인할 결과: «기본 길과 대안 진행». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "위에서 아래로 떨어지는 길은 돌아갈 때 같은 지름길이 아닐 수 있습니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P06",
+      "paragraph": 6,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity own demonstration + Motion Canvas object-attached labels",
+      "spokenCueKo": "위에서 아래로 떨어지는 길은 돌아갈 때 같은 지름길이 아닐 수 있습니다.",
+      "visualTargetKo": "높이와진행방향",
+      "before": "위아래로연결된두노드",
+      "action": "상승/하강을별도경로로검수할계획",
+      "result": "일방지름길과왕복이동구분",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "같은 기준 장면 ‘위아래로연결된두노드’에서 높이와진행방향의 실행 단계나 관계를 설명한다. 통제된 A/B 인과 비교가 아니며, 표식 공개·관찰 대상·행동 단계 변화 자체를 가짜 실험 변수로 쓰지 않는다.",
+      "annotationPlanKo": "발화 큐: «위에서 아래로 떨어지는 길은 돌아갈 때 같은 지름길이 아닐 수 있습니다.» 표시 대상: «높이와진행방향». 표식 지침: 같은 월드 대상에 높이 끝점/카메라 원점/시선선 중 필요한 것만 붙이고, 다른 시점에도 같은 대상 색을 유지한다. 몸 시야와 화면 시야를 별도 라벨로 구분한다. 동작 계획: «상승/하강을별도경로로검수할계획». 확인할 결과: «일방지름길과왕복이동구분». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "이렇게 보면 지름길은 단순히 가까워 보이는 틈이 아닙니다의 대상/상태를 현재 화면에서 이어 공개한다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    },
+    {
+      "sceneId": "04-05-P07",
+      "paragraph": 7,
+      "kind": "self-authored-demonstration",
+      "renderer": "Unity",
+      "spokenCueKo": "이렇게 보면 지름길은 단순히 가까워 보이는 틈이 아닙니다.",
+      "visualTargetKo": "거리와 실행 조건",
+      "before": "실제 통과 조건을 연결선에 붙임",
+      "action": "성공·실패 경로 비교",
+      "result": "거리와 실행 조건 결합",
+      "oneChangedVariable": null,
+      "heldConditionsKo": "기준은 ‘실제 통과 조건을 연결선에 붙임’의 같은 상태다. 거리와 실행 조건의 관계를 설명하는 공개이며 실제 물리조건이나 사람의 반응을 바꾼 비교가 아니다.",
+      "annotationPlanKo": "발화 큐: «이렇게 보면 지름길은 단순히 가까워 보이는 틈이 아닙니다.» 표시 대상: «거리와 실행 조건». 표식 지침: 대상 외곽의 빈 원/괄호와 짧은 개념 라벨만 두어 거리와 실행 조건의 관계를 연결한다. 실제 대상을 덮는 채움은 사용하지 않는다. 동작 계획: «성공·실패 경로 비교». 확인할 결과: «거리와 실행 조건 결합». 대상이 가려지거나 화면 밖으로 나가면 해당 표식을 숨기고, 컷 전환에서는 제거한다. 실제 대상 좌표·투영·가림·음성 시각과 최종1080/375 합성은 자료/구현 후 검증할 항목이다.",
+      "captionClearanceKo": "고정 자막과 고양이 영역을 비우고 대상의 핵심 윤곽을 덮지 않게 리더선을 바깥에 둔다. 실제1080/375 합성 검수는 미실행.",
+      "transitionToNextKo": "성공/실패의실제조건을같은연결선의주석으로남긴다.",
+      "evidenceStatus": "planned-text-only; footage/runtime/pixel verification pending",
+      "savedSceneExists": false
+    }
+  ],
+  "glossary": [
+    {
+      "english": "Molecule Diagram",
+      "korean": "몰리큘 다이어그램",
+      "plainMeaningKo": "주요 플레이 공간과 그 사이의 시각·이동 관계를 노드와 선으로 표현하는 분석 도식."
+    },
+    {
+      "english": "Node",
+      "korean": "노드",
+      "plainMeaningKo": "중요한 만남·획득·도전 등 플레이 상황이 일어나는 공간을 도식에서 나타내는 점."
+    },
+    {
+      "english": "Edge",
+      "korean": "연결선",
+      "plainMeaningKo": "분자도식에서 공간 사이의 이동이나 시각 관계를 나타내는 선. 도시경계 의미와 구분한다."
+    }
+  ],
+  "gameCandidates": [
+    {
+      "game": "Mario Kart 64",
+      "teachingRoleKo": "분자형 레벨 그래프는 장소를 노드, 이동을 간선으로 표현한다. 보조 접속점이나 우회선이 지름길을 만든다.",
+      "beforeActionResultToAcquireKo": "독립 Wario Stadium 또는 Rainbow Road 지름길 실제 시도. 버전·기술·성공 조건을 원본 영상에서 확인 후 채택.",
+      "sourceStatus": "candidate; independent original recording not acquired for this packet",
+      "rightsStatus": "pending publisher AND recorder evidence; reference lesson not adoptable",
+      "fhdStatus": "pending actual native1080p+ decode verification",
+      "observationStatus": "not viewed/adopted; no claimed before/action/result observation",
+      "selectionReasonKo": "원문의 분자형 레벨 그래프는 장소를 노드, 이동을 간선으로 표현한다. 보조 접속점이나 우회선이 지름길을 만든다. 역할을 확인할 우선 후보. 실제 장면이 성립하지 않으면 채택하지 않는다."
+    }
+  ],
+  "claimLimits": [
+    "Steiner-point analogy does not mean Mario Kart runs a Steiner optimization algorithm.",
+    "Do not fabricate time savings or apply a shortcut across versions without verification.",
+    "원문의Steiner tree 설명은 비형식적인 지름길 비유로만 다루며 수학적 최적해를 증명하는 과정으로 재현하지 않는다."
+  ],
+  "publishingPlan": {
+    "titleOptionsKo": [
+      "마리오 카트의 지름길을 선 몇 개로 찾는 법",
+      "가까운 길과 실제로 건널 수 있는 지름길은 다르다"
+    ],
+    "selectedTitleKo": "마리오 카트의 지름길을 선 몇 개로 찾는 법",
+    "selectionReasonKo": "질문이 도식의 짧은 연결은 어떤 조건에서 실제 지름길이 될까?를 직접 겨냥하며 관찰될 대상과 원인 설명을 함께 예고한다.",
+    "thumbnailConceptKo": "원래곡선경로와후보간선을같은출발/합류점에연결, 시간절약숫자없음.",
+    "descriptionDraftKo": "몰리큘 도식은 중요한 공간의 관계를 읽는 도구이며, 시각 연결·이동 방향·실제 실행 조건을 구분해야 지름길을 검증할 수 있다. 경로도를 실제 이동과 연결하며 지름길의 방향과 위험을 따로 확인한다."
+  },
+  "readthrough": {
+    "performed": true,
+    "scope": "text-only complete KO/EN narration and paragraph joins",
+    "findingsKo": "Steiner최적화알고리즘구현이라고주장하지않았다. 도식의거리와트랙의거리,보이는연결과실제이동을구별했다. 장면별 기준과 단일 비교 변수를 분리하고 설명도/실제녹화의 변수는 null로 두었다. 표면 윤곽·경로 범례·몸/카메라선·탄환 노출점 표식을 대상별로 구분했다.",
+    "remainingKo": "후보 게임의 실제 대상·전후 동작·권리·원본FHD를 확보해 표현과 화면을 대조해야 한다. 모든 발화 큐는 실제 PCM/단어 시각 이전의 의미 단위이며 초 단위 시각은 만들지 않았다."
+  },
+  "readiness": {
+    "scriptAndStructureComplete": true,
+    "scriptLockedForTts": false,
+    "independentFootageStatus": "acquisition-pending",
+    "gpuProductionStarted": false,
+    "actualNewAudio": false,
+    "actualNewRender": false,
+    "humanApproval": false,
+    "remainingProductionTasks": [
+      "독립 후보 영상 확보·직접 관찰·권리/오디오/nativeFHD 확인",
+      "계획한 실제 동작과 한 변수 비교 구현·독립 편집 가능 씬 저장",
+      "전체 대본-실제 화면 의미 대응 확정 후 승인된 음성 준비",
+      "실제 PCM/단어에 맞춘 KO/EN 자막과 표식·구성 타이밍",
+      "원본속도·가림·고정자막·1080/375·전체영상/음성 검수와4출력"
+    ]
+  },
+  "editorialAudit": {
+    "originalParagraphCount": 4,
+    "expandedParagraphCount": 7,
+    "addedExplanationCount": 3,
+    "fixedRuntimeTarget": null,
+    "sourceOrderPreserved": true,
+    "bookArtworkAdopted": false,
+    "actualGameplayAbstractRequired": true,
+    "screenTimeRatioIsNotTextPreparationCompletion": true,
+    "sourceDraftPin": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\narration-draft.json",
+      "sha256": "41366caa291080d40e5db64cb7ac01ed4f4b373e65b6785bb0d32cd2b8237c92"
+    },
+    "sourcePlanPin": {
+      "path": "D:\\Github\\VideoEditing\\projects\\shorts-leveldesign-04-05\\scene-plan-draft.json",
+      "sha256": "fb45c9343bc68e06599cdce6e23d32d15f027bc1ee92a00a4a7970eaada0c2b0"
+    }
+  }
+}
