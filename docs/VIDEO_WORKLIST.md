@@ -413,24 +413,24 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 
 | 번호 | 원본 주제 | 제작 제목 초안 | 현재 상태 |
 |---|---|---|---|
-| A01 | [애니메이션 제작 지시](https://www.youtube.com/watch?v=fV8xIP480qk) | 애니메이션 제작 지시 \| “멋지게 움직여 주세요”로는 원하는 동작이 안 나오는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 동작의 과장 \| 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
+| A01 | [애니메이션 제작 지시](https://www.youtube.com/watch?v=fV8xIP480qk) | 애니메이션 제작 지시 \| “멋지게 움직여 주세요”로는 원하는 동작이 안 나오는 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 동작의 과장 \| 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
 | A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 공격 동작의 단계 \| 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | contrast-v5 · 네 단계 자세·궤적 비교 보강 / 사용자 검수 대기 |
-| A04 | [빠르고 강한 준비 동작](https://www.youtube.com/watch?v=E8DKndKkHw8) | 빠르고 강한 준비 동작 \| 공격의 준비 동작을 짧고 강하게 만드는 방법 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A05 | [공격 자세](https://www.youtube.com/watch?v=99gdMDF7V2E) | 공격 자세 \| 같은 공격인데 왜 어떤 자세가 더 세게 느껴질까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A06 | [공격 이후의 후속 동작](https://www.youtube.com/watch?v=cIB0BUe6Ihk) | 공격 이후의 후속 동작 \| 공격이 끝난 뒤의 동작이 타격감을 만드는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A07 | [정보 손실을 보완하는 과장](https://www.youtube.com/watch?v=Ivwt37x-2EU) | 정보 손실을 보완하는 과장 \| 게임 화면에서 동작의 느낌이 약해지는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A08 | [포즈 만들기](https://www.youtube.com/watch?v=LsSF_H-W-w8) | 포즈 만들기 \| 캐릭터 포즈가 어색할 때, 피규어를 꺼내는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A09 | [압축·크기 변화](https://www.youtube.com/watch?v=Sm0LAm4sJKc) | 압축·크기 변화 \| 캐릭터를 눌렀다 늘리면 왜 더 생동감이 날까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A10 | [피격 애니메이션](https://www.youtube.com/watch?v=0xHE3ypX96U) | 피격 애니메이션 \| 캐릭터는 맞았다는 사실을 어떻게 보여줄까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A11 | [보간의 함정](https://www.youtube.com/watch?v=oFwamE6Hy04) | 보간의 함정 \| 자세도 타이밍도 맞는데, 동작이 느려 보이는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A12 | [표정 애니메이션](https://www.youtube.com/watch?v=TUHL7Ex-RH8) | 표정 애니메이션 \| 게임 캐릭터는 어떻게 표정을 바꿀까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A13 | [좌우 반전 애니메이션](https://www.youtube.com/watch?v=TJDMDxnWU5g) | 좌우 반전 애니메이션 \| 방향이 바뀌어도 캐릭터의 포즈가 잘 보이는 비밀 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A14 | [애니메이션 블렌딩](https://www.youtube.com/watch?v=HYHajZ0wBfU) | 애니메이션 블렌딩 \| 서로 다른 두 동작을 자연스럽게 잇는 방법 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A15 | [손가락 표현](https://www.youtube.com/watch?v=nCvdmQKrjf8) | 손가락 표현 \| 게임 속 손가락 하나에 계산이 많이 필요한 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A16 | [공격 판정과 동작 설계](https://www.youtube.com/watch?v=rwwF_4blK-o) | 공격 판정과 동작 설계 \| 공격 동작과 판정은 왜 함께 설계해야 할까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A17 | [스켈레톤의 표현 한계](https://www.youtube.com/watch?v=q77TZaISg1Y) | 스켈레톤의 표현 한계 \| 캐릭터의 뼈대만으로는 만들 수 없는 움직임 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A18 | [두 축 회전](https://www.youtube.com/watch?v=Mh7nTn9_r40) | 두 축 회전 \| 회전 동작을 덜 기계적으로 보이게 하는 방법 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
+| A04 | [빠르고 강한 준비 동작](https://www.youtube.com/watch?v=E8DKndKkHw8) | 빠르고 강한 준비 동작 \| 공격의 준비 동작을 짧고 강하게 만드는 방법 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A05 | [공격 자세](https://www.youtube.com/watch?v=99gdMDF7V2E) | 공격 자세 \| 같은 공격인데 왜 어떤 자세가 더 세게 느껴질까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A06 | [공격 이후의 후속 동작](https://www.youtube.com/watch?v=cIB0BUe6Ihk) | 공격 이후의 후속 동작 \| 공격이 끝난 뒤의 동작이 타격감을 만드는 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A07 | [정보 손실을 보완하는 과장](https://www.youtube.com/watch?v=Ivwt37x-2EU) | 정보 손실을 보완하는 과장 \| 게임 화면에서 동작의 느낌이 약해지는 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A08 | [포즈 만들기](https://www.youtube.com/watch?v=LsSF_H-W-w8) | 포즈 만들기 \| 캐릭터 포즈가 어색할 때, 피규어를 꺼내는 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A09 | [압축·크기 변화](https://www.youtube.com/watch?v=Sm0LAm4sJKc) | 압축·크기 변화 \| 캐릭터를 눌렀다 늘리면 왜 더 생동감이 날까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A10 | [피격 애니메이션](https://www.youtube.com/watch?v=0xHE3ypX96U) | 피격 애니메이션 \| 캐릭터는 맞았다는 사실을 어떻게 보여줄까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A11 | [보간의 함정](https://www.youtube.com/watch?v=oFwamE6Hy04) | 보간의 함정 \| 자세도 타이밍도 맞는데, 동작이 느려 보이는 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A12 | [표정 애니메이션](https://www.youtube.com/watch?v=TUHL7Ex-RH8) | 표정 애니메이션 \| 게임 캐릭터는 어떻게 표정을 바꿀까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A13 | [좌우 반전 애니메이션](https://www.youtube.com/watch?v=TJDMDxnWU5g) | 좌우 반전 애니메이션 \| 방향이 바뀌어도 캐릭터의 포즈가 잘 보이는 비밀 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A14 | [애니메이션 블렌딩](https://www.youtube.com/watch?v=HYHajZ0wBfU) | 애니메이션 블렌딩 \| 서로 다른 두 동작을 자연스럽게 잇는 방법 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A15 | [손가락 표현](https://www.youtube.com/watch?v=nCvdmQKrjf8) | 손가락 표현 \| 게임 속 손가락 하나에 계산이 많이 필요한 이유 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A16 | [공격 판정과 동작 설계](https://www.youtube.com/watch?v=rwwF_4blK-o) | 공격 판정과 동작 설계 \| 공격 동작과 판정은 왜 함께 설계해야 할까? | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A17 | [스켈레톤의 표현 한계](https://www.youtube.com/watch?v=q77TZaISg1Y) | 스켈레톤의 표현 한계 \| 캐릭터의 뼈대만으로는 만들 수 없는 움직임 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
+| A18 | [두 축 회전](https://www.youtube.com/watch?v=Mh7nTn9_r40) | 두 축 회전 \| 회전 동작을 덜 기계적으로 보이게 하는 방법 | 기존 완성본 보존 · 게임·캐릭터 후보 검수 대기 |
 
 진행 기록: [제작 배치](../production/batches/animation-18-20261031/batch.json), [체크포인트](../production/batches/animation-18-20261031/checkpoint.json), [제목·원본 대응](../production/planning/sakurai-animation-20261031/plan.json). 완성 영상·검수·게시 상태는 실제 결과가 생긴 뒤 갱신합니다.
 
