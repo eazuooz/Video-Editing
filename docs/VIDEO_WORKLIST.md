@@ -415,7 +415,7 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 |---|---|---|---|
 | A01 | [애니메이션 제작 지시](https://www.youtube.com/watch?v=fV8xIP480qk) | 애니메이션 제작 지시 \| “멋지게 움직여 주세요”로는 원하는 동작이 안 나오는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
 | A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 동작의 과장 \| 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
-| A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 공격 동작의 단계 \| 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
+| A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 공격 동작의 단계 \| 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | contrast-v5 · 네 단계 자세·궤적 비교 보강 / 사용자 검수 대기 |
 | A04 | [빠르고 강한 준비 동작](https://www.youtube.com/watch?v=E8DKndKkHw8) | 빠르고 강한 준비 동작 \| 공격의 준비 동작을 짧고 강하게 만드는 방법 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
 | A05 | [공격 자세](https://www.youtube.com/watch?v=99gdMDF7V2E) | 공격 자세 \| 같은 공격인데 왜 어떤 자세가 더 세게 느껴질까? | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
 | A06 | [공격 이후의 후속 동작](https://www.youtube.com/watch?v=cIB0BUe6Ihk) | 공격 이후의 후속 동작 \| 공격이 끝난 뒤의 동작이 타격감을 만드는 이유 | 관계도 보강본 · 로컬 완성 / 통합 검수 대기 |
@@ -444,6 +444,9 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 | S-AI2D | ComfyUI·LoRA +8도구 실사용·방 게임 확장 | 1080p60 완성 | room-v3 사용자 검수 대기 | 영상 미업로드 · 웹 게임 공개 |
 
 [전체 영상 검수](http://127.0.0.1:9286/) · [직접 플레이](https://yamyam-cartographers-room.eazuooz.chatgpt.site) · [전체 대본](../projects/ai-2d-game-assets/production/room-v3/full-narration.ko.txt)
+<!-- AI2D-WEBSITE-20261108 -->
+웹 게임 v6: 화면 앞쪽 중앙의 독립 책상·앉기 깊이 순서·게임 화면 안 라디오·브라우저 로컬 500자 메모를 반영했습니다. 동작·모바일 UI 검수 기록은 [웹 검수표](../projects/ai-2d-game-assets/production/room-v4/website-qa.json)에 있습니다. 기존 room-v3 영상과 검수 링크는 그대로 유지합니다.
+<!-- AI2D-WEBSITE-20261108-END -->
 <!-- AI2D-20261108-END -->
 
 <!-- ANIMATION-CONTENT-AUDIT-20261108 -->
