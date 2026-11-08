@@ -435,3 +435,13 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 진행 기록: [제작 배치](../production/batches/animation-18-20261031/batch.json), [체크포인트](../production/batches/animation-18-20261031/checkpoint.json), [제목·원본 대응](../production/planning/sakurai-animation-20261031/plan.json). 완성 영상·검수·게시 상태는 실제 결과가 생긴 뒤 갱신합니다.
 
 <!-- ANIMATION-PLAN-20261031-END -->
+
+<!-- AI2D-20261108 -->
+## AI로 2D 게임 리소스 제작
+
+| 편 | 내용 | 제작 | 검수 | 플랫폼 |
+|---|---|---|---|---|
+| S-AI2D | ComfyUI·LoRA 픽셀아트 + 공개 도구8종 | 8도구·원문 확인 / 실제 생성·후처리 시연 / 음성·화면 제작 중 | 제작 중 | 업로드 미승인 |
+
+[전체 대본](../projects/ai-2d-game-assets/script/full-script.md) · [제작 계획](../projects/ai-2d-game-assets/planning/production-plan.json)
+<!-- AI2D-20261108-END -->
