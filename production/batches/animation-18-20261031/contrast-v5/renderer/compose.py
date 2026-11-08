@@ -198,7 +198,8 @@ def frame(ep,key,source_frame,mode='compare',pass_index=None,caption=None,legend
             paste_panel(im,ep,key,sample,side,(x,227,width,545),True)
             d=ImageDraw.Draw(im);d.line((x,796,x+width,796),fill=col,width=7)
             txt(d,(x,821),f'시연 {sample}F',32,MUTED)
-        txt(d,(64,880),'같은 동작에서 판정 구간만 변경'if ep=='A16'and key=='active'else'같은 시연의 서로 다른 실제 자세',30,MUTED)
+        # The phase labels and actual frame indices already convey this relation.
+        # Keep the fixed caption-safe area clear; no redundant footer at y880.
     elif c['guide']=='distance':
         # The comparison is screen occupancy, explicitly not altered animation.
         use='near'if ep=='A07'else key

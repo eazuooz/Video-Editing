@@ -11,6 +11,14 @@ def validate(s):
  paths=s['ownedPaths'];assert len(paths)==len(set(paths))
  manifest=m.load((H/'renderer/owned-files.json').read_bytes());asset={x['path']:x for x in manifest['files'] if Path(x['path']).suffix in {'.uasset','.umap'}}
  allowedProjects={f"projects/{r['slug']}/production/contrast-v5/final.{lang}.json" for r in m.load((H/'baseline-review-manifest.json').read_bytes())['records'] if r['id'] in a.IDS for lang in ['ko','en']}
+ projectOwned=R/'projects/animation-always-keep-attack-collision-in-mind/production/contrast-v5/changed-files.json'
+ if projectOwned.exists():
+  owned=m.load(projectOwned.read_bytes())
+  for q in owned['ownedSourceAndMetadata']:
+   assert q['path'].startswith('projects/animation-always-keep-attack-collision-in-mind/production/contrast-v5/')
+   assert hashlib.sha256((R/q['path']).read_bytes()).hexdigest()==q['sha256']
+   allowedProjects.add(q['path'])
+  allowedProjects.add(projectOwned.relative_to(R).as_posix())
  for name in paths:
   p=PurePosixPath(name);assert not p.is_absolute() and '..' not in p.parts and '/local/' not in name and '__pycache__' not in name
   assert name.startswith('production/batches/animation-18-20261031/contrast-v5/') or name in allowedProjects
