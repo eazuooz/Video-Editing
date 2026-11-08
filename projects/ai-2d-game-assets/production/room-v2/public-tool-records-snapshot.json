@@ -1,0 +1,94 @@
+[
+  {
+    "name": "2dimg2motion",
+    "status": "실제 실행 완료 · 이미지 생성 + 로컬 검증",
+    "use": "같은 캐릭터로 지도 읽기 키포즈 4장과 중간 자세 8장을 생성했습니다. 기준 자세와 끝 자세를 더해 14프레임으로 조립하고, 발 기준점·첫끝 일치·키포즈 보존을 공식 검증기로 검사했습니다. 화면 왼손이 경로를 짚고 오른손이 지도를 받칩니다.",
+    "prompt": "Create FOUR full-body intermediate animation poses for the EXACT cartographer in the two supplied reference images. This is part of the 2dimg2motion 14-frame reading-map loop. Reference1 is the accepted four KEYPOSE sheet in reading order: key02 holding map head down, key05 pointing to map centre, key08 tracing to screen-right, key11 holding map again. Reference2 is the original baseline pose. Preserve this exact character and map, not a redesign.\n\nOutput ONE 1536x1024 transparent PNG, 2 columns x 2 rows of equal768x512cells, four sprites in row-major chronological order. No labels, no props outside hands, no background. Character physical height450pixels, feet y480, pelvis centre x384 within each cell. Fixed three-quarter front/right view. Same chestnut bob/gold triangle hair clip, mustard scarf, teal jacket/cream cuffs, navy trousers, brown boots and satchel on screen-left hip. Preserve same proportions and exact colors. Feet stay planted throughout. Keep map position in front of torso.\n\nIMPORTANT limb lock from ACCEPTED VISUALS: SCREEN-RIGHT hand supports the right edge of the map continuously. SCREEN-LEFT hand is the active pointing hand. Do not swap hands. Near hand connects visibly to the screen-left shoulder.\n\nFrame01 (top-left): between original baseline and key02: both hands hold map, head tilted only halfway down, neutral shoulders.\nFrame03 (top-right): just after key02: screen-left hand begins lifting away from map left edge, elbow bends, index finger begins to extend; screen-right hand still supports the map.\nFrame04 (bottom-left): almost key05: screen-left index finger moves close to map centre, but has not reached the final point; head follows this movement subtly.\nFrame06 (bottom-right): just after key05: finger points to a place slightly to the right of map centre, halfway toward key08's tracing position; small head nod begins.\n\nThese are actual DIFFERENT full-character inbetweens on the same motion path, not duplicated keyposes. No new facial expression, scale, silhouette redesign or camera movement. Pixel-art clean contours, true alpha transparent margins.\n\n\nMake the remaining FOUR full-body in-between poses of the SAME map-reading animation, based on the accepted four-keypose reference sheet and the original map-holding baseline. Same exact woman cartographer: chestnut bob/gold triangular clip, mustard scarf, teal jacket with rolled cream cuffs, navy trousers, brown boots, brown bag at screen-left hip. Preserve camera, face, proportions, palette and map design.\n\nOutput 1536x1024 transparent PNG, 2x2 equal768x512cells, four sprites row-major. Character height450pixels, root x384 and foot baseline y480 per cell. Both feet planted in the identical stance. Do not mirror, rescale, redesign or introduce furniture. No labels, background, ground shadow or motion lines.\n\nAccepted limb role: SCREEN-RIGHT hand continuously supports right edge of map. SCREEN-LEFT hand points then returns to left edge. Maintain anatomically connected arms.\n\nFour poses in output order:\nFrame07: approaching key08, active screen-left index finger points almost to the map's right-side route, head gently down following finger, map steady.\nFrame09: after key08, finger starts withdrawing away from the route toward the map's left side, elbow loosens, head begins lifting.\nFrame10: midway back to holding, screen-left hand nearly reaches left map edge with index finger relaxing, head mostly returns to neutral.\nFrame12: after key11 and before original baseline, both hands grip the two map edges again, head and shoulders almost exactly in baseline pose with only tiny settling.\n\nThese four poses must be smooth small intermediates on the SAME single loop, not repeated keyframes. Full boots, elbows and map remain inside each cell. Pixel-art contours and actual alpha transparency outside sprites.\n",
+    "command": "python validate_14frame_pattern.py --baseline baseline.png --keyframes-dir keyframe --fullframes-dir fullframe --preview preview.gif --prefix map",
+    "output": "지도 읽기 14프레임 / 6.25fps / 128×176 / 첫 프레임과 마지막 프레임 동일",
+    "image": "assets/process/map-14-contact.png",
+    "url": "https://github.com/WU-HAOTIAN34/2dimg2motion"
+  },
+  {
+    "name": "sprite-gen",
+    "status": "실제 실행 완료 · 시트 분할·알파 정리",
+    "use": "생성 시트를 동작별 PNG로 분리하고 반투명 배경 잔여물을 제거했습니다. 한 시트에 공통 배율을 적용한 다음, 각 그림의 외곽이 아니라 원래 셀의 몸통 기준점으로 정렬했습니다.",
+    "command": "sprite-gen slice-sheet --sheet hero-walk-eight-source.png --out-dir walk-eight --chroma-key none --alpha-floor 128 --alpha-edge 0 --grid 4x2 --names 00,01,02,03,04,05,06,07 --prefix walk- --cell-width 128 --cell-height 176 --baseline-y 166 --target-height 152 --scale sheet --fit contain",
+    "output": "걷기·앉기·책 꺼내기·지도 펼치기·창문 보기 PNG와 기준점 기록",
+    "image": "assets/process/sprite-gen-idle.png",
+    "url": "https://github.com/aldegad/sprite-gen"
+  },
+  {
+    "name": "pixelfx",
+    "status": "실제 실행 완료 · 코드 기반 픽셀 효과",
+    "use": "방 안 횃불과 창밖 비·눈을 실제 라이브러리로 렌더했습니다. 창문 마스크 안에서 재생하며 원래 창틀이 앞에 남도록 합성합니다. AI 이미지 모델로 날씨를 생성한 결과가 아니라, AI가 선택·설정한 효과 코드의 실행 결과입니다.",
+    "command": "node tools/render.mjs fire/torch weather/rain weather/snow --sheet --no-actor --bg none --seed 42 --out room-v2/pixelfx",
+    "output": "torch 60프레임·rain 240프레임·snow 360프레임 / 원본 30fps",
+    "image": "assets/pixelfx/torch.png",
+    "url": "https://github.com/patch-gg/pixelfx"
+  },
+  {
+    "name": "PixelOE",
+    "status": "실제 실행 완료 · 배경 픽셀 후처리",
+    "use": "처음 만든 같은 작업실 이미지를 426×240 픽셀 규격으로 처리했습니다. 윤곽 보강 뒤 축소하는 결과를 일반 축소와 비교합니다. colors=64는 중간 양자화 설정이며 이후 색상 매칭 때문에 최종 고유색은 12,059개로 측정됐습니다. 설정 숫자를 최종 색 개수라고 표시하지 않았습니다.",
+    "command": "pixelize(image, mode=\"contrast\", target_size=[426,240], patch_size=4, thickness=1, colors=64, color_matching=True, no_upscale=True)",
+    "output": "426×240 작업실 비교본; 게임은 기존 승인된 PixelOE 배경 유지",
+    "image": "assets/process/pixeloe-comparison.png",
+    "url": "https://github.com/KohakuBlueleaf/PixelOE"
+  },
+  {
+    "name": "Agent Sprite Forge",
+    "status": "실제 실행 완료 · 기존 프레임 조립",
+    "use": "같은 걷기 8프레임을 공식 assemble_frames 도구에 넣어 시간 정보·아틀라스·무손실 WebP를 묶었습니다. 외부 영상 생성 API는 사용하지 않았으며, 이 예시는 기존 프레임을 게임용 클립으로 포장하는 기능입니다.",
+    "command": "python assemble_frames.py --input walk-00.png walk-01.png walk-02.png walk-03.png walk-04.png walk-05.png walk-06.png walk-07.png --duration 100 --pixel-art --output-dir forge-walk",
+    "output": "8프레임 / 800ms / animation.json·atlas.png·animation.webp",
+    "image": "assets/process/forge-walk-atlas.png",
+    "url": "https://github.com/0x0funky/agent-sprite-forge"
+  },
+  {
+    "name": "Codixel",
+    "status": "실제 실행 완료 · 관절 리깅",
+    "use": "책을 읽는 최종 자세의 목 위치를 눈금 그림에서 확인해 머리 뼈를 연결했습니다. 책과 발을 고정한 채 고개만 작게 움직이는 24프레임을 만들었습니다. 아래 색 구분은 실제 뼈가 소유한 픽셀 영역입니다.",
+    "command": "P.Rig(sprite).bone(\"body\",null,64,84,64,160).bone(\"head\",\"body\",65,45,65,18).bind({joint:1,...}); headAngle=sin(t)*0.035; headY=sin(t)*0.5; P.pack(frames,{cols:6});",
+    "output": "책 읽기 24프레임 / 8fps / 목 회전 ±0.035rad",
+    "image": "assets/process/codixel-owners.png",
+    "url": "https://github.com/mankidev/codixel"
+  },
+  {
+    "name": "Pixelbolt",
+    "status": "실제 실행 완료 · JSON 레시피 렌더",
+    "use": "오픈소스 forest-spirit 레시피를 렌더하고 비·눈·밤의 동행 정령 색상 변형을 만들었습니다. 표정과 위아래 움직임은 같은 레시피를 유지하며 각 프레임의 원래 재생 시간을 사용합니다.",
+    "command": "node bin/pixelbolt.js render spirit-rain.pixel.json --out pixelbolt/rain\nnode bin/pixelbolt.js render spirit-snow.pixel.json --out pixelbolt/snow\nnode bin/pixelbolt.js render spirit-night.pixel.json --out pixelbolt/night",
+    "output": "24×24 정령 / 6개 원본 프레임 / idle·bob·blink 애니메이션",
+    "image": "assets/pixelbolt/spirit-rain.png",
+    "url": "https://github.com/skulitom/Pixelbolt"
+  },
+  {
+    "name": "Sprite-Sheet-Diffusion",
+    "status": "실제 설치 검증 완료 · 추론 재현 미완료",
+    "use": "공식 코드와 공개 모델 파일을 실제로 확인했습니다. 세 체크포인트는 확보했지만 공식 코드가 요구하는 다중 스케일 PoseGuider 가중치가 배포 목록에 없었습니다. 별도 호환 경로의 이미지 인코더 URL도 HTTP 404를 반환했습니다. 이번 확인 시점의 공개 파일로는 추론을 완성하지 못했으며, 이 게임에는 이 모델이 생성한 프레임이 없습니다.",
+    "command": "python ssd_preflight.py  # 로컬 필수 파일 점검: 누락 감지, 추론 전 중단",
+    "output": "공식 UNet 2개 + motion module 다운로드·SHA256 기록 / PoseGuider 누락·호환 CLIP 다운로드 404 / 생성 프레임 0",
+    "url": "https://github.com/chenganhsieh/Sprite-Sheet-Diffusion",
+    "evidenceUrl": "https://github.com/chenganhsieh/Sprite-Sheet-Diffusion/issues/3"
+  },
+  {
+    "name": "ChatGPT 이미지 생성",
+    "status": "실제 실행 완료 · 캐릭터 동작 원화",
+    "use": "같은 캐릭터 참조로 걷기, 앉기, 책 꺼내기, 지도 펼치기와 창문 보기의 중간 자세를 생성했습니다. 기존 두 걷기 자세가 거의 같아 8단계 걷기로 교체했고, 잘린 책 가장자리는 별도 수정했습니다.",
+    "prompt": "Create a production-ready 8-frame WALK CYCLE sprite sheet for a tiny browser game, based exactly on the provided character reference. This is an animation asset, not a character lineup. Use 4 columns x 2 rows, in chronological row-major order, transparent background, equal 384 x 512 cells on a 1536 x 1024 canvas, no labels, borders, shadows or ground.\n\nIdentity: same adult young woman cartographer, chestnut short bob with gold triangular hair clip, mustard scarf, dark teal explorer jacket with rolled cream sleeves, navy trousers, brown lace-up ankle boots, small brown crossbody satchel on near hip. Keep exact head size, clothes, body proportions, colors and pixel-art rendering throughout. Full body always visible. Strict right-facing SIDE VIEW, camera fixed, no perspective change. Walk in place: root pelvis remains centered at x=192 within each cell. Feet touch one common floor y=480. Standing height about 430 pixels. Only small natural 4-pixel vertical bob, never rescale individual poses.\n\nANATOMICAL CONTINUITY: nearer leg is the same lighter foreground leg in every frame. Far leg is slightly darker, occluded by near leg when crossing. Do not reverse the body or mirror the character between frames. Arms counter-swing smoothly. The satchel is attached to the same hip, scarf follows subtly. This is walking not running; at least one foot is always grounded.\n\nFrame 1 top-left CONTACT: near leg extends forward to screen-right, heel touching floor; far leg extends back to screen-left, toe touching floor. Near arm swings back.\nFrame 2 DOWN: near foot planted forward, weight lowers slightly, rear far heel lifts and knee begins forward swing.\nFrame 3 PASSING: near leg straight planted beneath pelvis; far knee bends and crosses FORWARD beside near knee, far boot raised.\nFrame 4 UP: near foot rolls onto toe behind pelvis; far leg unfolds forward in air before next contact.\nFrame 5 opposite CONTACT: FAR leg now extends forward to screen-right, heel down; NEAR leg extends back to screen-left, toe down. Near arm swings forward. This MUST be opposite leg configuration from frame 1.\nFrame 6 opposite DOWN: far front foot planted, near rear knee bends and swings forward.\nFrame 7 opposite PASSING: far leg planted straight beneath pelvis; NEAR knee crosses forward with near boot raised. Opposite leg occlusion from frame 3.\nFrame 8 opposite UP: far planted foot on toe behind pelvis; near leg unfolds forward to lead seamlessly into frame 1.\n\nShow eight clearly different successive walk phases, not repeated contact poses. Closed hands, empty hands, no book/map or furniture. Clean crisp pixel clusters and limited palette, not a smooth illustration. True transparent alpha outside character, no colored haze or checkerboard baked into image.\n",
+    "output": "동일 캐릭터의 동작별 투명 시트; 도구 가공과 게임 검수를 거쳐 사용",
+    "image": "assets/process/imagegen-eight-poses.png",
+    "url": "https://openai.com/index/introducing-4o-image-generation/"
+  },
+  {
+    "name": "ComfyUI + ILXL + 스타일 LoRA",
+    "status": "실제 실행 완료 · 스타일 비교 / 캐릭터 LoRA 학습 미실행",
+    "use": "동일한 캐릭터 설명과 seed로 기본 ILXL과 SakuLike 스타일 LoRA 0.8을 비교 생성했습니다. 스타일 적용 시연이며 게임 캐릭터 전용 LoRA를 학습했다는 뜻은 아닙니다. 게임의 동일 캐릭터 동작은 위 참조 이미지 경로로 만들었습니다.",
+    "prompt": "masterpiece, best quality, full body, solo, adult woman, standing, auburn bob haircut, yellow hairclip, teal jacket, ochre scarf, navy pants, brown boots, brown shoulder bag, simple grey background, game character design",
+    "command": "Illustrious-XL-v0.1 + SakuLike_ILXL(model/clip strength0.8); 768×1344; seed20261108; 24steps; CFG6; euler_ancestral; normal; denoise1.0",
+    "output": "기본 모델 / 스타일 LoRA 실제 비교 이미지. NovelAI·kohya_ss·OneTrainer·Aseprite·Pixel Snapper는 이번 실습에서 실행하지 않은 대안입니다.",
+    "image": "assets/process/comfy-style08.png",
+    "url": "https://github.com/Comfy-Org/ComfyUI"
+  }
+]
