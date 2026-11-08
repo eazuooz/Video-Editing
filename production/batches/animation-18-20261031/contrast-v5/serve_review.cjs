@@ -1,0 +1,33 @@
+// Read-only local review. Start only after all17 final delivery hashes are ready.
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../../..'),port=Number(process.argv[2]||9294);
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'review-manifest.json'),'utf8'));
+const expected=Array.from({length:18},(_,i)=>'A'+String(i+1).padStart(2,'0')).filter(x=>x!=='A03');
+if(manifest.records.length!==17||expected.some(id=>!manifest.records.some(r=>r.id===id)))throw Error('Exactly17 final review records required');
+const files=new Map(),esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
+const sha=f=>{const hash=crypto.createHash('sha256'),fd=fs.openSync(f,'r'),buf=Buffer.alloc(1024*1024);let n;try{while((n=fs.readSync(fd,buf,0,buf.length,null)))hash.update(buf.subarray(0,n));}finally{fs.closeSync(fd)}return hash.digest('hex')};
+for(const r of manifest.records){
+ if(!r.localFinalFilesReady||r.humanReviewed===true)throw Error('Review status must distinguish file readiness from human viewing: '+r.id);
+ for(const f of r.files){const file=path.isAbsolute(f.path)?f.path:path.join(root,f.path),stat=fs.statSync(file);if(sha(file)!==f.sha256)throw Error('Final file hash mismatch: '+r.id+' '+f.kind);files.set('/'+r.id+'/'+f.kind,{file,size:stat.size,mtime:stat.mtimeMs});}
+}
+const style='<style>body{margin:0;background:#090e0b;color:#f2f3ed;font:17px/1.65 system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:28px 20px}h1{color:#f2d787;font-size:clamp(23px,4vw,34px);line-height:1.4}h2{font-size:22px}a{color:#a7dfbf}button{font:inherit;color:#f2f3ed;background:#18241c;border:1px solid #536a5b;padding:8px 14px;cursor:pointer}button[aria-pressed=true]{border-color:#f2d787;color:#f2d787}video{display:block;width:100%;max-height:75vh;background:#000;margin:18px 0}nav,.tools{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0}.episode{border-top:1px solid #354b3d;padding:20px 0}.episode h2{margin:0 0 8px}.meta,small{color:#b5c4b8}small{display:block}footer{margin-top:30px;border-top:1px solid #354b3d;padding-top:18px}</style>';
+const shell=(title,body)=>'<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'+style+'<main>'+body+'</main></html>';
+const duration=n=>Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');
+const index=()=>shell('애니메이션17편 · 통합 검수','<p class="meta">YAMYAM CODING · 얌얌코딩</p><h1>애니메이션17편 통합 검수</h1><p>편별 게임 예시와 비교 시연을 보완한 전체 영상입니다. 각 편에서 자막 영상·무자막 영상·한영 자막을 함께 확인할 수 있습니다.</p><nav><a href="/'+manifest.records[0].id+'/">첫 편부터 보기 →</a><a href="http://127.0.0.1:9284/A03/">A03 기존 검수본</a></nav>'+manifest.records.map(r=>'<section class="episode"><h2><a href="/'+r.id+'/">'+r.id+' · '+esc(r.title)+'</a></h2><p>'+esc(r.description)+'</p><small>'+duration(r.durationSeconds)+' · 1920×1080 · 60fps · 사용자 검수 대기</small>'+(r.gameExamples?.length?'<small>게임 예시: '+r.gameExamples.map(esc).join(' · ')+'</small>':'')+'</section>').join('')+'<footer>이번17편은 로컬 검수용입니다. A03은 기존 검수본으로 연결됩니다.</footer>');
+function episode(r,idx,seek){
+ const nav=[idx?'<a href="/'+manifest.records[idx-1].id+'/">← 이전 편</a>':'','<a href="/">전체 목록</a>',idx+1<manifest.records.length?'<a href="/'+manifest.records[idx+1].id+'/">다음 편 →</a>':''].join('');
+ const cues=(r.reviewPoints||[]).map(c=>'<a href="?t='+c.seconds+'">'+esc(c.label)+' · '+duration(c.seconds)+'</a>').join('');
+ return shell(r.id+' '+r.title,'<nav>'+nav+'</nav><h1>'+r.id+' · '+esc(r.title)+'</h1><p>'+esc(r.description)+'</p><nav>'+cues+'</nav><div class="tools"><button data-kind="captioned.mp4" aria-pressed="true">한국어 자막 영상</button><button data-kind="clean.mp4" aria-pressed="false">무자막 영상</button></div><video controls playsinline preload="metadata" src="captioned.mp4'+(seek?'#t='+seek:'')+'"></video><nav>'+['captioned.mp4','clean.mp4','ko.srt','en.srt'].map((k,i)=>'<a href="'+k+'" download>'+['자막 MP4','무자막 MP4','한국어 SRT','영어 SRT'][i]+'</a>').join('')+'</nav><p class="meta">'+duration(r.durationSeconds)+' · 1080p60 · 사용자 검수 대기</p><nav>'+nav+'</nav><script>const v=document.querySelector("video");document.querySelectorAll("button[data-kind]").forEach(b=>b.onclick=()=>{const t=v.currentTime,p=!v.paused;v.src=b.dataset.kind;v.addEventListener("loadedmetadata",()=>{v.currentTime=t;if(p)v.play()},{once:true});document.querySelectorAll("button[data-kind]").forEach(x=>x.setAttribute("aria-pressed",x===b))});</script>');
+}
+const server=http.createServer((req,res)=>{
+ if(!['GET','HEAD'].includes(req.method))return res.writeHead(405).end();if(!['127.0.0.1:'+port,'localhost:'+port].includes(req.headers.host))return res.writeHead(403).end();
+ let u;try{u=new URL(req.url,'http://localhost')}catch{return res.writeHead(400).end()};let html;
+ if(u.pathname==='/')html=index();const match=u.pathname.match(/^\/(A\d{2})\/$/);
+ if(match){const idx=manifest.records.findIndex(r=>r.id===match[1]);if(idx<0)return res.writeHead(404).end();const r=manifest.records[idx],s=Number(u.searchParams.get('t')||0);html=episode(r,idx,Number.isFinite(s)&&s>=0&&s<r.durationSeconds?s:0);}
+ if(html){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});return res.end(req.method==='HEAD'?undefined:html)}
+ const f=files.get(u.pathname);if(!f)return res.writeHead(404).end();const stat=fs.statSync(f.file);if(stat.size!==f.size||stat.mtimeMs!==f.mtime)return res.writeHead(409).end('File changed; revalidate review delivery.');
+ let a=0,b=f.size-1,status=200;const h={'Content-Type':u.pathname.endsWith('.mp4')?'video/mp4':'application/x-subrip; charset=utf-8','Accept-Ranges':'bytes','Cache-Control':'no-cache'};
+ if(req.headers.range){const m=req.headers.range.match(/^bytes=(\d*)-(\d*)$/);if(!m||(!m[1]&&!m[2]))return res.writeHead(416).end();a=m[1]?Number(m[1]):Math.max(0,f.size-Number(m[2]));b=m[1]&&m[2]?Math.min(f.size-1,Number(m[2])):f.size-1;if(a>b||a>=f.size)return res.writeHead(416).end();status=206;h['Content-Range']=`bytes ${a}-${b}/${f.size}`;}
+ h['Content-Length']=b-a+1;res.writeHead(status,h);if(req.method==='HEAD')return res.end();fs.createReadStream(f.file,{start:a,end:b}).on('error',()=>res.destroy()).pipe(res);
+});
+server.listen(port,'127.0.0.1',()=>{fs.mkdirSync(path.join(__dirname,'local'),{recursive:true});fs.writeFileSync(path.join(__dirname,'local/review-server.json'),JSON.stringify({pid:process.pid,port,readOnly:true,hashPinned:true,episodes:17,startedAt:new Date().toISOString()},null,2));console.log('http://127.0.0.1:'+port+'/')});
