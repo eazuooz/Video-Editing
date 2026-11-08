@@ -1,0 +1,94 @@
+AI 그림 한 장을 실제로 클릭하며 노는 작은 게임으로 만들었습니다. 같은 캐릭터와 작업실을 유지하며, 픽셀 정리부터 걷기·앉기·지도 읽기·깃털펜 필기까지 실제 요청문과 설정, 수정 과정을 보여드립니다.
+
+▶ 직접 플레이 / 설치·로그인 없이 실행
+https://yamyam-cartographers-room.eazuooz.chatgpt.site/
+의자 앉기 · 지도 읽기 · 책 꺼내 읽기 · 창밖 보기 · 필기, 날씨 4종과 CC0 로파이 20곡 라디오를 체험할 수 있습니다. 영상과 공개 웹 게임 모두 전경 중앙 책상, 화면 안 라디오와 메모 기능을 반영했습니다.
+
+7개 오픈소스 도구의 실제 결과와 ComfyUI 실습을 담았습니다. 8번째 도구의 재현 실패도 구분해 기록했습니다. 각 도구의 역할·링크·실행 범위는 설명 맨 아래에서 확인하세요.
+
+챕터
+00:00 AI 그림을 게임으로 만들려면
+00:20 직접 플레이할 작은 작업실
+00:59 캐릭터 디자인과 일관된 설정화
+02:05 학습 데이터·LoRA·실제 제작 경로
+03:37 ComfyUI와 스타일 LoRA 비교
+04:53 픽셀 격자·팔레트·투명도 정리
+06:29 배경 확장과 의자 접촉점 맞추기
+07:41 걷기와 행동 사이의 중간 동작
+08:26 보폭을 실제 이동 거리와 연결
+08:57 2dimg2motion: 지도 읽기 14프레임
+09:48 sprite-gen: 시트 분할과 기준점
+10:41 pixelfx: 비·눈·불꽃과 조명
+11:47 PixelOE: 실제 표시 크기로 정리
+13:05 Agent Sprite Forge: 프레임 조립
+13:54 Codixel: 관절로 책 읽기·필기
+15:08 Pixelbolt: 픽셀 레시피와 소품
+15:54 Sprite-Sheet-Diffusion 재현 시도
+16:45 내 작업에 맞는 도구 고르기
+17:10 Unity 적용과 웹 게임 연결
+18:00 게임 안에서 동작·가독성 검수
+18:52 무료 코드와 생성 비용의 차이
+19:18 완성한 작업실과 로파이 라디오
+20:05 화면 안 메모와 브라우저 저장
+20:29 직접 실행하고 제작 기록 보기
+
+🎮 게임 개발은 '따라 치기'가 아니라 직접 만드는 실력입니다.
+얌얌코딩은 DirectX, Unity, Unreal, Computer Graphics를 기반으로 실무에서 통하는 개발 역량을 기르는 게임 프로그래밍 채널입니다.
+
+🚀 프리미엄 1:1 코칭
+실무 과제 중심으로 직접 설계하고 구현하는 개발 습관을 만들어드립니다.
+DirectX11/12 · Unity/Unreal · Computer Graphics & PBR · Shader/Rendering · 게임 엔진 개발 · 최신 Graphics 논문 리뷰 및 구현
+https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328
+
+💬 얌얌코딩 커뮤니티
+질문, 코드 리뷰, 피드백, 수업 자료를 함께 공유합니다.
+Discord: https://discord.gg/wZuqe7fqkR
+YouTube 멤버십: https://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join
+
+자료·도구 출처
+실제 실행한 도구
+2dimg2motion — 지도 읽기 14프레임·검증
+https://github.com/WU-HAOTIAN34/2dimg2motion
+sprite-gen — 시트 분할·투명도·기준점 정리
+https://github.com/aldegad/sprite-gen
+pixelfx — 불꽃·비·눈 효과
+https://github.com/patch-gg/pixelfx
+PixelOE — 배경·캐릭터 픽셀 규격 정리
+https://github.com/KohakuBlueleaf/PixelOE
+Agent Sprite Forge — 기존 프레임 조립(외부 영상 생성 API 미사용)
+https://github.com/0x0funky/agent-sprite-forge
+Codixel — 책 읽기·깃털펜 관절 동작
+https://github.com/mankidev/codixel
+Pixelbolt — 정령·펼친 장부 레시피
+https://github.com/skulitom/Pixelbolt
+ChatGPT 이미지 생성 — 같은 참조로 캐릭터·방·동작 원화 제작
+https://chatgpt.com/
+ComfyUI — ILXL와 기존 스타일 LoRA 비교 실행
+https://github.com/Comfy-Org/ComfyUI
+Illustrious XL v0.1
+https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0
+PixelArt SakuLike ILXL
+https://civitai.com/models/1788100/pixelart-sakulikeilxl
+
+실제 설치·재현 시도: Sprite-Sheet-Diffusion
+확인 시점의 공식 공개 파일에 필수 PoseGuider 가중치가 없어 추론 미완료. 게임에 이 모델의 생성 프레임은 사용하지 않았습니다.
+https://github.com/chenganhsieh/Sprite-Sheet-Diffusion
+https://github.com/chenganhsieh/Sprite-Sheet-Diffusion/issues/3
+
+소개한 대안(이번 제품 제작에는 미사용)
+NovelAI: https://docs.novelai.net/en/image/tutorial-charactercreation/
+kohya_ss: https://github.com/bmaltais/kohya_ss
+OneTrainer: https://github.com/Nerogar/OneTrainer
+Aseprite: https://www.aseprite.org/docs/sprite-sheet/
+Pixel Snapper: https://www.spritefusion.com/pixel-snapper
+새 캐릭터 전용 LoRA 학습은 진행하지 않았습니다.
+
+기술·제작 과정 참고
+https://docs.comfy.org/tutorials/basic/lora
+https://github.com/microsoft/LoRA
+https://gall.dcinside.com/mgallery/board/view/?id=game_dev&no=214752
+
+실습 캐릭터·방·시트는 이번 제작의 이미지 생성 및 직접 편집 결과이며, 게임·도구 화면은 자체 실행 캡처입니다. pixelfx의 제3자 고지는 배포 소스·라이선스 기록에 보존했습니다.
+웹 게임 라디오 음악: HoliznaCC0 — Lo-Fi and Chill Collection (CC0)
+https://opengameart.org/content/lo-fi-and-chill-collection
+https://creativecommons.org/publicdomain/zero/1.0/
