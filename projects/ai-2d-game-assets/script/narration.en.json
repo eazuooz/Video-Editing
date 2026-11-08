@@ -4,210 +4,210 @@
       "id": "01",
       "title": "그림에서 게임 리소스로",
       "lines": [
-        "Imagine putting this character into a game. A nice standing image is not enough if the bag changes sides or the face changes during motion. We will follow the process of preserving the design, matching pixels and backgrounds, and preparing animations and effects."
+        "Imagine putting this character image into a game. A nice standing image is hard to use if its bag changes sides or its face changes whenever it moves. We will preserve the character, match its pixel scale and background, then prepare animation and effects."
       ]
     },
     {
       "id": "02",
       "title": "생성·정리·검수",
       "lines": [
-        "It helps to separate generation, processing, and validation. Image models propose artwork. Processing tools normalize size, color, and transparency. The engine reveals how the assets work at their actual display size. The eight public tools serve different steps; you do not need all of them at once."
+        "Dividing the work into three stages makes tool selection easier. Image models propose artwork, while processing tools organize size, colors, and transparency. Finally, check the assets at their actual size in an engine. The eight public tools also serve different parts of this process. You do not need to install every tool at once."
       ]
     },
     {
       "id": "03",
       "title": "Character Design (캐릭터 디자인)",
       "lines": [
-        "Start by fixing the character design. List the hairstyle, clothing colors, accessories, and bag position that must remain unchanged. Our reference uses a yellow hair clip, a teal jacket, and a brown bag. Whether using NovelAI or another image tool, select one design before collecting more variations."
+        "Start by fixing the character design. List the hairstyle, clothing colors, accessories, and bag position that must stay unchanged. Our reference uses a yellow hair clip, a teal jacket, and a brown bag. Even with a tool like NovelAI, choose one design before endlessly collecting attractive variations."
       ]
     },
     {
       "id": "04",
       "title": "Turnaround Sheet (방향별 설정화)",
       "lines": [
-        "A turnaround sheet shows the front, side, and back of one character. A reference image can guide an image generator to preserve clothing and proportions while changing the view. Still inspect the sheet: compare the hair clip, the strap across the back, the shoes, and the sleeves."
+        "Next, make a turnaround sheet showing the front, side, and back of the same character. Give a reference image to ChatGPT image generation and request new views while retaining clothing and proportions. Generating a sheet does not finish the inspection. Compare the hair clip, the strap across the back, and the shoes and sleeves side by side."
       ]
     },
     {
       "id": "05",
       "title": "Dataset (학습 데이터)",
       "lines": [
-        "If you need repeated poses, use the sheet as the standard for your training set. Front views alone do not teach the side or back. Combine varied NovelAI poses with ChatGPT turnaround views, correcting or excluding inconsistent details. Twenty to fifty curated images can be an experimental starting point, but coverage and accuracy matter more than a fixed count."
+        "If you need many poses of the same design, use this sheet as the standard for your training data. Collecting only front views leaves too little information about the side and back. Combine varied NovelAI poses with ChatGPT turnaround views, correcting or excluding wrong accessories and clothing first. Twenty to fifty curated images can be a starting experiment, but varied poses and accurate design matter more than the count."
       ]
     },
     {
       "id": "06",
       "title": "LoRA (저랭크 적응)",
       "lines": [
-        "LoRA is not the image folder itself. It is an adapter that learns a low-rank weight update instead of retraining the entire base model. It adds learned character or style information to the model's existing capabilities. Images and captions are training inputs; the LoRA file is a learned result."
+        "LoRA is not the name of a small image folder. Instead of retraining the whole base model, this adapter learns a weight update using small matrices. It adds learned character or style information to the base model's existing drawing ability. Images and captions are training materials; the trained LoRA file is the result."
       ]
     },
     {
       "id": "07",
       "title": "Style + Character (스타일과 캐릭터)",
       "lines": [
-        "Pixel style and character identity have different roles. A style LoRA shapes how an image looks, while a character LoRA helps specify who appears. Tools such as kohya_ss and OneTrainer must be configured for the base model you intend to use. Adapters from unrelated model families are not freely interchangeable."
+        "Pixel style and character identity serve different roles. You can separate how to draw into a style LoRA and whom to draw into a character LoRA. When training with kohya_ss or OneTrainer, choose a setup compatible with the base model you will generate with. Files from unrelated model families are not interchangeable merely because they are called LoRAs."
       ]
     },
     {
       "id": "08",
       "title": "ComfyUI (노드 기반 생성)",
       "lines": [
-        "In ComfyUI, start with a checkpoint: the base image model. Load an Illustrious XL model and a compatible pixel-style LoRA. If you have trained a character LoRA, chain another LoRA node after it. Connect both MODEL and CLIP so the appropriate model and text-encoding changes reach the rest of the graph."
+        "Now connect the generation flow in ComfyUI. A checkpoint contains the base image model. Load an Illustrious XL model and connect a compatible pixel-style LoRA. If a character LoRA is ready, chain its node after that. Pass both MODEL and CLIP connections so the image model and text encoder receive the appropriate changes."
       ]
     },
     {
       "id": "09",
       "title": "같은 조건에서 강도 비교",
       "lines": [
-        "Hold the prompt, resolution, and seed constant when comparing LoRA strengths. The seed controls the starting randomness. A weak style influence may look more like an illustration; too much may damage small details. Change one strength at a time and inspect the features that need to survive. A fixed seed does not lock the pose or accessories, so inspect those changes too."
+        "Keep the prompt, resolution, and seed fixed when comparing LoRA strengths. The seed sets the starting point for randomness. A weak style can resemble an illustration, while excessive strength can damage small accessories or faces. Change one strength at a time and inspect the features you need to preserve. Even a fixed seed does not lock poses and accessories, so inspect those changes too."
       ]
     },
     {
       "id": "10",
       "title": "생성에서 저장까지",
       "lines": [
-        "The graph continues beyond the model and adapters. Text is encoded, a sampler denoises the latent, and the VAE decoder turns it into visible pixels. Resizing and saving follow. Keeping these stages separate lets you retain an image while comparing reduction methods and palettes. Add a character adapter once its trained file is available."
+        "The graph continues beyond the base model and LoRA. Text is encoded, the sampler progressively denoises a latent image, and the VAE decoder turns it into visible pixels. Resizing and saving follow. Separating these stages makes it easier to retain an image while comparing reduction methods and palettes. Add a character LoRA once its trained file is available."
       ]
     },
     {
       "id": "11",
       "title": "Pixel Grid (픽셀 격자)",
       "lines": [
-        "An image that looks pixelated is not automatically a usable pixel-art asset. Zoom in and the apparent blocks may be uneven or blurred. Pixel art needs a consistent logical pixel grid. Decide the asset's native game resolution, then normalize the generated image to that grid."
+        "An image that looks pixelated is not automatically usable game pixel art. Zooming in may reveal uneven blocks or blurry colors along edges. Pixel art needs to read one cell at a time on a small logical grid. Choose the native pixel dimensions used in the game, then normalize the generated image to that grid."
       ]
     },
     {
       "id": "12",
       "title": "768×1344 → 96×168",
       "lines": [
-        "PixelArt SakuLike ILXL is described as producing pixels enlarged roughly eightfold. For that setup, 768 by 1344 can be reduced to 96 by 168. The point is matching the generated structure to the game's logical grid, not memorizing a universal reduction factor. Other models and images may need a different scale."
+        "PixelArt SakuLike ILXL is described as generating pixels enlarged roughly eightfold. For that setup, compare reducing 768 by 1344 to 96 by 168. The goal is not to memorize the numbers. It is to match the generated pixel structure to the game's grid. Do not force the same reduction factor onto other models and images."
       ]
     },
     {
       "id": "13",
       "title": "Palette Quantization (색상 수 제한)",
       "lines": [
-        "Next, inspect the palette: the set of colors used by the asset. Too many near-identical shades can add noise. Quantizing each frame independently can cause flickering. Use a consistent character palette and check whether key details remain legible. Fewer colors are useful when they clarify the form."
+        "After fixing the grid, inspect the palette. A palette is the set of colors used by the asset. Too many near-identical browns add noise, and separately quantizing each frame can make clothing flicker. Use one palette across the character and check that eyes and accessories remain legible. The purpose is clearer shapes, not simply the fewest possible colors."
       ]
     },
     {
       "id": "14",
       "title": "Alpha + Retouch (투명도와 리터칭)",
       "lines": [
-        "A checkerboard painted into an image is different from real transparency in its alpha channel. Place the sprite over light and dark backgrounds to reveal fringes and leftover colors. Clean edges and stray pixels in an editor such as Aseprite, then inspect the native game size as well as the zoomed image."
+        "Visually inspect transparency too. A checkerboard painted into the picture is different from an empty background represented by alpha values. Alternating light and dark backgrounds reveals white fringes and leftover background colors. Clean contours and stray pixels in an editor like Aseprite, then inspect both the zoomed image and its game display size."
       ]
     },
     {
       "id": "15",
       "title": "Outpainting (배경 확장)",
       "lines": [
-        "Independently generated characters and backgrounds can disagree in color and object scale. One approach is outpainting a scene that already contains the character, extending its surroundings while retaining visual context. Remove the character from the background layer so a separate sprite can occupy that space."
+        "Now place a background alongside the prepared character. Generating them independently can produce mismatched colors and furniture proportions. One approach is outpainting: expand the surroundings of a scene that already contains the character. Continue the existing colors and object scale, then remove the character from the background layer to make room for a separate sprite."
       ]
     },
     {
       "id": "16",
       "title": "배경과 캐릭터의 기준 맞추기",
       "lines": [
-        "After expansion, compare pixel scale again. A one-pixel character outline can clash with much chunkier furniture edges. Choose a reduction scale from the actual grid, then match character and object proportions. Repair broken boundaries such as floor seams and chair legs rather than regenerating the whole scene unnecessarily."
+        "Inspect the pixel scale of the expanded background again. A one-pixel character outline clashes with furniture edges that appear three pixels thick. Choose the reduction from the actual grid and match the character's height to the chair. Repair broken boundaries such as walls, floors, and chair legs. This stage fixes specific mismatches instead of regenerating the whole background."
       ]
     },
     {
       "id": "17",
       "title": "정지 이미지와 연속 동작",
       "lines": [
-        "These steps already support still assets for dialogue games and visual novels. Walking and attacking introduce temporal requirements: consistent identity, grounded feet, stable scale, and connected starts and endings. The eight tools address different parts of this remaining work."
+        "So far, we have prepared still assets. These already have many uses in dialogue games and visual novels. Walking and attacking require additional checks. Faces must stay consistent, feet must remain grounded, scale must stay stable, and action endpoints must connect. Now let us see how eight tools divide this remaining work."
       ]
     },
     {
       "id": "18",
       "title": "01 · 2dimg2motion",
       "lines": [
-        "2dimg2motion organizes key-pose redraws and in-between frames from a character reference. Establish anticipation, the main action, and recovery first. Its default pattern uses fourteen frames, but a frame count alone does not guarantee good motion. Inspect identity, limbs, baseline, and scale before packaging transparent frames and a sheet."
+        "2dimg2motion redraws key poses from a reference character and fills in the frames between them. It establishes preparation, the main action, and recovery first. Its default pattern includes fourteen frames, but the number alone does not guarantee natural motion. Check weapons, hands, baseline, and body scale before packaging transparent images and a sheet."
       ]
     },
     {
       "id": "19",
       "title": "02 · sprite-gen",
       "lines": [
-        "sprite-gen supports image-based rows and video-derived loops. It connects generation with keying, frame extraction, loop selection, and atlas packaging. An atlas combines images on a texture with their locations recorded as metadata. Distinguish the generation provider from the tools that process its output."
+        "sprite-gen supports both image and video routes. You can assemble pose images into a sheet or extract frames from a short image-generated video. It connects background removal, frame extraction, loop selection, and atlas construction. An atlas combines several images on one texture and records their locations. Distinguishing generation from processing makes the workflow easier to understand."
       ]
     },
     {
       "id": "20",
       "title": "03 · pixelfx",
       "lines": [
-        "pixelfx is useful for flames, explosions, and sword trails. Code draws the pixels over time instead of asking an image model for every new frame. Keep the motion while changing a palette, then run the effect directly or export transparent frames for playback in a game engine."
+        "pixelfx fits effects such as fire, explosions, and sword trails. Code draws pixels over time instead of asking an image model to redraw every frame. This flame can retain its motion while changing only its palette. Run the effect directly or export a transparent sprite sheet for sequential playback in the engine."
       ]
     },
     {
       "id": "21",
       "title": "04 · PixelOE",
       "lines": [
-        "PixelOE helps with cleanup by reinforcing important outlines before reduction and palette processing. Pixel Snapper is another option for regularizing messy pixel structure and colors. Neither should be confused with motion generation. Compare their actual results, especially thin lines and facial features."
+        "PixelOE belongs to the pixel cleanup stage. It reinforces important outlines before reducing image size and adjusting colors. Pixel Snapper is another option for correcting irregular pixel grids and palettes. Neither should be mistaken for a tool that generates a new walking motion. Compare actual enlarged results and choose the one that preserves thin lines and faces better."
       ]
     },
     {
       "id": "22",
       "title": "05 · Agent Sprite Forge",
       "lines": [
-        "Agent Sprite Forge packages a master image into multiple actions through per-action video generation, keying, registration, loop selection, and timing. It also includes map and tile workflows. Review transitions between actions: a convincing run still fails if its scale or foot baseline jumps when switching from idle."
+        "Agent Sprite Forge organizes multiple actions from one master image. It creates per-action clips such as idle, walk, run, and attack, then handles keying, alignment, loops, and timing. It also provides map and tile workflows. Inspect transitions too: height and foot position must not suddenly change when switching from idle to running."
       ]
     },
     {
       "id": "23",
       "title": "06 · Codixel",
       "lines": [
-        "Codixel emphasizes references, code, and skeletal motion. A long tail or body can be organized around linked control points. Reusing image parts allows localized motion changes, but it does not invent unseen surfaces during a turn. Those need additional artwork or another generation step."
+        "Codixel uses references, code, and skeletal control to construct motion. For example, a long tail or torso can be divided into parts that follow connected control points. Controlling the same image parts makes targeted motion changes easier. But a turn cannot automatically reveal an unseen back surface that is absent from the artwork. That requires additional images or another generation process."
       ]
     },
     {
       "id": "24",
       "title": "07 · Pixelbolt",
       "lines": [
-        "Pixelbolt describes colors, shapes, and frames in editable JSON recipes. These spirit variants were rendered from the same recipe with a changed palette, not redrawn by an image model. Similar targeted edits can change an eye or a frame. This suits small sprites, icons, and repeatable effects."
+        "Pixelbolt describes colors, shapes, and frames in a JSON text recipe. An image model did not redraw these spirits. They were rendered from the same recipe with only the palette changed. You can make similarly narrow edits to an eye position or a particular frame. This suits small icons, sprites, and repeated effects that need precise revisions and reproducible output."
       ]
     },
     {
       "id": "25",
       "title": "08 · Sprite Sheet Diffusion",
       "lines": [
-        "Sprite Sheet Diffusion is a generative research approach conditioned on a reference character and a sequence of poses. Local inference requires compatible model weights and software, not just source code. Inspect the generated frames for clothing, face, and motion consistency; it is not simply a one-click editor."
+        "Sprite Sheet Diffusion is generative research conditioned on a reference character and ordered poses. It generates character frames for a specified sequence of skeletal poses. Local inference needs compatible weights and an environment as well as code. It is therefore different from an editor installed with one click. Inspect the generated frames for consistent clothing, faces, and motion transitions."
       ]
     },
     {
       "id": "26",
       "title": "내게 필요한 경로 선택",
       "lines": [
-        "Choose a route from the asset you need. Still characters and backgrounds emphasize design and pixel cleanup. Motion requires a choice among key-pose generation, video extraction, and rigging. Code-based methods work well for effects and small assets with precise edits. One model does not have to handle every step."
+        "Choose tools by first deciding which asset you need. For still characters and backgrounds, focus on design and pixel cleanup. For multiple actions, choose among key-pose generation, video frame extraction, and skeletal animation. Code-based methods work well for effects and small icons with precise edit requirements. One generative model does not need to perform every stage."
       ]
     },
     {
       "id": "27",
       "title": "Unity Import (유니티 적용)",
       "lines": [
-        "Import the PNG as a sprite and use Point filtering when you want sharp pixel boundaries. Slice a sheet into frame regions in the correct order. Pixels Per Unit controls the asset's scale in world units; the pivot defines its placement and rotation reference. Keep these conventions consistent across a character's actions."
+        "Import the finished PNG into the engine for a final check. In Unity, import it as a sprite and use Point filtering to retain sharp pixel boundaries. If a sheet contains multiple frames, slice their regions in the correct order. Pixels Per Unit defines scale in world units, while the pivot is the reference for placement and rotation. Keep these conventions consistent across a character's actions."
       ]
     },
     {
       "id": "28",
       "title": "게임 안에서 확인할 것",
       "lines": [
-        "Validation goes beyond opening a file. Check edges on light and dark backgrounds, and proportions beside scenery. Play motion at normal speed, then step through frames to inspect sliding feet, scale changes, and loop seams. Check game timing too: an attractive generated video may still respond poorly as an action."
+        "Validation goes beyond checking whether a file opens. Inspect contours on light and dark backgrounds, and compare character scale with scenery. Play animation at normal speed, then step through frames to find sliding feet, scale changes, and loop seams. Check whether the action length fits the game too. An attractive generated clip is not automatically a responsive game action."
       ]
     },
     {
       "id": "29",
       "title": "무료 코드와 생성 비용",
       "lines": [
-        "Free code does not mean free generation services. A tool's MIT or Apache license does not replace provider terms or the conditions for the base model, adapter, training images, and output. It also does not clear rights in someone else's character. Record versions, sources, and required notices with the project."
+        "Finally, separate free public code from generation service costs. An MIT or Apache tool license does not make connected image and video services free. Check the base model, LoRA, training images, and output conditions separately. A code license does not clear rights in another person's character used for training. Keep model versions, sources, and required notices with your project."
       ]
     },
     {
       "id": "30",
       "title": "게임에 맞게 완성하기",
       "lines": [
-        "The core is consistent design, normalized pixel and asset conventions, and validation in the actual game context. AI can generate candidates and assist repetitive work. Turning those candidates into usable assets depends on the decisions and checks that follow generation."
+        "There are three central requirements. Preserve recognizable character design, normalize pixels, colors, transparency, and scale, and validate movement and readability in the game context. AI can quickly propose candidates and assist repetitive work. Turning those candidates into assets for our game depends on the process that follows generation."
       ]
     }
   ]

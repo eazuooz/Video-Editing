@@ -24,7 +24,8 @@ while True:
                         known.append({'pid':proc.pid,'name':proc.info['name'],'path':proc.info['exe']})
                 except (psutil.NoSuchProcess,psutil.AccessDenied): pass
             lease=R/'shared/output/GPU_HANDOFF.json'
-            if known and free>=10000 and util<=25 and not lease.exists():
+            owned_comfy=any(p.pid==84768 and '8191' in ' '.join(p.info.get('cmdline') or []) for p in psutil.process_iter(['cmdline']))
+            if (known or owned_comfy) and free>=10000 and util<=25 and not lease.exists():
                 me=psutil.Process();token=str(uuid.uuid4())
                 record={'schemaVersion':1,'token':token,'project':'ai-2d-game-assets','state':'tts_running','requestedAt':time.time(),'queueDir':None,'idleGpu':False,'coordinator':{'pid':me.pid,'createTime':me.create_time()},'gpuBeforeTts':{'freeMiB':free,'utilization':util,'minimumFreeMiB':10000},'concurrentAdmission':{'knownApp':known,'reason':'Identified low-load application, >=10GB free, same batch1/1.7B approved model, successful scoped Comfy comparison under same load; preserve foreign work. Recommended scoped production choice, no change to global guard.'}}
                 try:
@@ -37,5 +38,7 @@ while True:
                 print('Scoped inspected low-load admission',free,util,flush=True)
                 break
         print(e,flush=True);time.sleep(15)
-cmd=[str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8','-u',str(R/'qwen3-tts/render_narration.py'),'--project','ai-2d-game-assets','--batch-size','1']
-raise SystemExit(subprocess.call(cmd,cwd=R,creationflags=subprocess.CREATE_NO_WINDOW))
+cmd=[str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8','-u',str(R/'qwen3-tts/render_narration.py'),'--project','ai-2d-game-assets','--batch-size','1']+sys.argv[1:]
+result=subprocess.run(cmd,cwd=R,capture_output=True,text=True,encoding='utf-8',errors='replace',creationflags=subprocess.CREATE_NO_WINDOW)
+print(result.stdout,result.stderr,flush=True)
+raise SystemExit(result.returncode)

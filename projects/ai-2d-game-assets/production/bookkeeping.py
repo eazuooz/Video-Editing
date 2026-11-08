@@ -11,6 +11,7 @@ checkpoint=read(P/'production/checkpoint.json');checkpoint.update(stage=status,u
  next='Human review of complete local master; no platform mutation' if done else 'Finish30paragraph Qwen takes,60fps scenes,caption alignment,current-audio ASR and final four outputs',
  humanReview='pending' if done else 'not-yet-delivered',youtubeAuthorized=False,driveAuthorized=False)
 if done:checkpoint['delivery']=read(P/'production/delivery-output.json')
+if done:checkpoint['completed']+=['All30 Qwen paragraphs and full current narration/mix ASR readback','30 encoded scenes with final KO/EN captions','1080p60 four-file delivery, full decode and sampled encoded/mobile review','Paragraph15 missing opening repaired; other29 original takes preserved']
 save(P/'production/checkpoint.json',checkpoint)
 row={'id':'S-AI2D','slug':'ai-2d-game-assets','series':'S','seriesOrder':6,'title':read(P/'project.json')['titleKo'],'productionComplete':done,
  'productionStatus':'1080p60 로컬 검수본 완성' if done else '8도구·원문 확인 / 실제 생성·후처리 시연 / 음성·화면 제작 중',
