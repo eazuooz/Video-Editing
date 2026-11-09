@@ -4,7 +4,7 @@ No model, TTS, render, browser, or platform operations. Unknown readback differe
 remain pending; only explicit reviewed aliases in review_readbacks are permitted.
 """
 from pathlib import Path
-import json,hashlib,runpy,traceback
+import json,hashlib,runpy,traceback,importlib,sys
 H=Path(__file__).resolve().parent
 L=H/'local/asr-changed'
 
@@ -13,7 +13,15 @@ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def signature(value):return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 def synchronize(jobs,done,ready):
+    final_module=sys.modules.get('asr_final_aac')
+    if final_module:
+        final_sha=sha(Path(final_module.__file__))
+        if getattr(final_module,'_readinessCodeSha',None)!=final_sha:
+            final_module=importlib.reload(final_module);final_module._readinessCodeSha=final_sha
     import prepare_final_audio as audio
+    audio_code_sha=sha(Path(audio.__file__))
+    if getattr(audio,'_readinessCodeSha',None)!=audio_code_sha:
+        audio=importlib.reload(audio);audio._readinessCodeSha=audio_code_sha
     source_sha=sha(audio.SOURCE)
     state_path=L/'audio-sync-state.json'
     state=read(state_path)if state_path.exists()else{}
@@ -25,7 +33,7 @@ def synchronize(jobs,done,ready):
     readbacks={}
     for d in done:readbacks.setdefault(d['episode'],[]).append({'sentenceId':d['sentenceId'],'audioSha256':d['audioSha256'],'asrSha256':d['asrSha256']})
     signatures={ep:signature({'takes':v,'readbacks':readbacks.get(ep,[]),'reviewRulesSha256':sha(helper)})for ep,v in inputs.items()}
-    fresh_source=state.get('sourceRevisionsSha256')!=source_sha
+    fresh_source=state.get('sourceRevisionsSha256')!=source_sha or state.get('audioCodeSha256')!=audio_code_sha
     changed=[ep for ep,sig in signatures.items()if state.get('episodes',{}).get(ep)!=sig]
     if not fresh_source and not changed:return
     try:
@@ -35,7 +43,7 @@ def synchronize(jobs,done,ready):
             runpy.run_path(str(H/'build_changed_clauses.py'),run_name='__main__')
         audio.prepare(None if fresh_source else changed)
         audio.align_ready()
-        audio.save(state_path,{'sourceRevisionsSha256':source_sha,'episodes':signatures,
+        audio.save(state_path,{'sourceRevisionsSha256':source_sha,'audioCodeSha256':audio_code_sha,'episodes':signatures,
             'mode':'Sequential current-batch sync between ASR jobs; no new TTS/render/model',
             'semanticPolicy':'Only exact text and explicitly reviewed spelling aliases; pending differences retained',
             'humanListening':False})

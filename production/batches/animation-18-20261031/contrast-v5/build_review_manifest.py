@@ -15,11 +15,32 @@ def main():
   d=read(OUT/ep/'delivery.json');assert d['localFinalFilesReady']and not d['humanReviewed']
   assert {f['kind']for f in d['files']}=={'captioned.mp4','clean.mp4','ko.srt','en.srt'}
   for f in d['files']:assert sha(f['path'])==f['sha256'],(ep,f['kind'])
+  master=next(f for f in d['files'] if f['kind']=='captioned.mp4')
+  visual_path=H/'visual-qa'/f'{ep}.json'
+  visual=read(visual_path)
+  assert visual['status']=='sampled-encoded-visual-qa-passed',(ep,'visual QA pending')
+  assert visual['proof']['masterSha256']==master['sha256'],(ep,'stale visual QA')
+  expected_readbacks=sum(len(group['placements']) for group in audio[ep]['groups'])
+  readback_summary={'checkedPassages':expected_readbacks,'transcriptionDifferences':[]}
+  if expected_readbacks:
+   encoded_audio=read(H/'local/asr-final-aac/episodes'/f'{ep}.json')
+   assert encoded_audio['proof']['masterSha256']==master['sha256'],(ep,'stale encoded audio readback')
+   assert encoded_audio['allChangedPassagesReadBack'] and len(encoded_audio['entries'])==expected_readbacks
+   readback_summary['transcriptionDifferences']=[
+    {'sentenceId':entry['sentenceId'],'expected':entry['expected'],'recognized':entry['recognized'],
+     'seconds':entry['startSample']/entry['sampleRate']}
+    for entry in encoded_audio['entries'] if not entry['comparison']['acceptedSemanticReadback']
+   ]
+  d['sampledVisualReview']={'path':str(visual_path),'sha256':sha(visual_path)}
+  d['encodedAudioReadback']=readback_summary
+  d['pictureMetrics']=read(H/'picture-metrics'/f'{ep}.json')
   captionReview=read(H/'local/final-audio'/ep/'captions/review.json');assert not captionReview['fallbackPassages']
   d['gameExamples']=[q['gameAndEdition']for q in actual[ep]['meaningfullyShownUniqueGames']]
   integration=H/'renderer/integration-caption-safe.json'
   if not integration.exists():integration=H/'renderer/integration-manifest.json'
   edl=read(H/'local/explanation-assembly'/ep/'edl.json');assert edl['integrationManifestSHA256']==sha(integration)
+  correction=H/'visual-corrections'/(ep+'.json')
+  if correction.exists():assert (edl.get('visualCorrection')or{}).get('sha256')==sha(correction),'Latest visual correction missing'
   inter=next(e for e in read(integration)['episodes']if e['id']==ep)
   for g in audio[ep]['groups']:
    assert g.get('technicalMixVerified'),(ep,g['id'],'speech verification pending')
@@ -39,6 +60,8 @@ def main():
    q=inter['preservedRelationRegions'][0];points.append({'label':'핵심 관계도','seconds':mapped(q['outputStartFrame'])})
   demo=next((q for q in inter['rows']if q.get('mode')=='analysis'),None)
   if demo:points.append({'label':'비교 시연','seconds':mapped(demo['relationFrameStart'])})
+  for difference in readback_summary['transcriptionDifferences']:
+   points.append({'label':'발음 확인','seconds':difference['seconds']})
   d['reviewPoints']=points;d['sourceSummary']=str(H/'footage/source-summary.json');records.append(d)
  preserved=next(e for e in read(H.parent/'relations-v4/review-manifest.json')['records']if e['id']=='A03')
  for f in preserved['files']:

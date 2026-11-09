@@ -109,7 +109,8 @@ def main():
   print('INDEX',len(done),'/',len(todo),'waiting',len(waiting),flush=True)
   # This stays sequential with recognition, so there is no extra model/worker.
   # A pending semantic difference never becomes accepted just through polling.
-  import sync_changed_audio
+  import sync_changed_audio,importlib
+  importlib.reload(sync_changed_audio)
   sync_changed_audio.synchronize(todo,done,ready)
   raw_complete=len(done)==len(todo)
   if raw_complete and args.final_aac:

@@ -62,6 +62,10 @@ def identity(ep):
     proof, why = aac.proof_for(ep, expected)
     assert proof, why
     edl = read(path(proof['assemblyPath']))
+    correction=H/'visual-corrections'/(ep+'.json')
+    if correction.exists():
+        assert read(correction)['readyForAssembly']
+        assert (edl.get('visualCorrection')or{}).get('sha256')==sha(correction),'Current episode visual correction not assembled'
     delivery = read(OUT / ep / 'delivery.json')
     signature = read(H / 'local/final-encode' / ep / 'signature.json')
     receipt = read(H / 'local/explanation-assembly' / ep / 'captionless/receipt.json')

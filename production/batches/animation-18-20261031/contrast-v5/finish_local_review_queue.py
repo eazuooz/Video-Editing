@@ -14,10 +14,16 @@ def module(name,p):
 def invoke(args,log):
  with Path(log).open('wb')as f:subprocess.run([str(PY),'-X','utf8',*map(str,args)],cwd=R,stdout=f,stderr=f,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--once',action='store_true');ap.add_argument('--episode');v=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--once',action='store_true');ap.add_argument('--episode');ap.add_argument('--episodes',nargs='+');ap.add_argument('--state-key',default='');v=ap.parse_args()
  control=read(R/'shared/publishing/video-production-control.json')['animationContrastRevision20261108'];ids=[e for e in control['episodes']if e!='A16'];assert len(ids)==16 and 'A03'not in ids
  if v.episode:assert v.episode in ids;ids=[v.episode]
- status=L/'local-finish-state.json';state=read(status)if status.exists()else{'completed':{},'failed':{},'waiting':{}};state.update(scope=ids,platformChanged=False,gpuUsed=False)
+ if v.episodes:assert not v.episode and set(v.episodes)<=set(ids)and len(v.episodes)==len(set(v.episodes));ids=[ep for ep in ids if ep in v.episodes]
+ assert not v.state_key or(v.state_key.isalnum()and len(v.state_key)<20)
+ status=L/(f'local-finish-{v.state_key}-state.json'if v.state_key else'local-finish-state.json')
+ prior=status if status.exists()else L/'local-finish-state.json'
+ state=read(prior)if prior.exists()else{'completed':{},'failed':{},'waiting':{}}
+ for k in ['completed','failed','waiting']:state[k]={ep:d for ep,d in state[k].items()if ep in ids}
+ state.update(scope=ids,platformChanged=False,gpuUsed=False)
  while True:
   if(L/'finish-queue-pause.json').exists():state.update(active=None,stage='paused-at-episode-boundary');save(status,state);return
   pending=[];did=False;sourceHash=sha(H/'narration/source-verified-revisions.json')
@@ -28,7 +34,8 @@ def main():
    if(L/'finish-queue-pause.json').exists():state.update(active=None,stage='paused-at-episode-boundary');save(status,state);return
    integration=H/'renderer/integration-caption-safe.json'
    if not integration.exists():integration=H/'renderer/integration-manifest.json'
-   p=plates[ep];a=audio[ep];sig=hashlib.sha256(json.dumps({'plates':p,'audio':a,'sourceHash':sourceHash,'integrationSha256':sha(integration),'codeHashes':{f:sha(H/f)for f in ['build_final_extensions.py','assemble_explanations.py','prepare_final_audio.py','finalize_episode.py']}},sort_keys=True).encode()).hexdigest()
+   correction=H/'visual-corrections'/(ep+'.json')
+   p=plates[ep];a=audio[ep];sig=hashlib.sha256(json.dumps({'plates':p,'audio':a,'sourceHash':sourceHash,'integrationSha256':sha(integration),'visualCorrectionSha256':sha(correction)if correction.exists()else None,'codeHashes':{f:sha(H/f)for f in ['build_final_extensions.py','assemble_explanations.py','prepare_final_audio.py','finalize_episode.py']}},sort_keys=True).encode()).hexdigest()
    if state['completed'].get(ep,{}).get('inputSignature')==sig:continue
    why=[]
    if not p['ready']:why.append('gameplay-plates')

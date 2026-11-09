@@ -28,7 +28,7 @@ BREAKS={
 'A10:003':(['체력 막대를 가려도'],['Even with the health bar hidden,']),
 'A10:053':(['다시 펴지며'],['then extend again']),
 'A11:016':(['휘두를 때는'],['swings a weapon,']),
-'A11:024':(['개발 발표에서도','보간을 사용하지 않고'],['development presentation','between keyframes']),
+'A11:024':(['개발 발표에서도','키 프레임 사이를 자동으로 이어 주는','인터폴레이션 계산을 쓰지 않고'],['development presentation','automatically linking keyframes','through interpolation']),
 'A11:040':(['망치를 내리치면,'],['after a hammer strike']),
 'A11:062':(['몸을 앞으로 둔 뒤,'],['briefly leans forward,']),
 'A12:001':(['동물의 숲에서','몸이 거의 그대로 있어도'],['In Animal Crossing,','Even with the body nearly still,']),
@@ -74,8 +74,8 @@ for e in s['episodes']:
   for i,p in enumerate(pairs):
    if len(''.join(p['ko'].split()))>36 or len(p['en'])>85:flags.append({'key':key,'part':i,**p,'koChars':len(''.join(p['ko'].split())),'enChars':len(p['en'])})
   rows.append({'episode':e['id'],'sentenceId':c['id'],'parts':pairs,
-   'adjacentCueGroup':key in ('A07:045','A12:038','A14:043'),
-   'note':'Adjacent English/Korean phrase order differs; read the linked sentence as a whole.'if key in ('A07:045','A12:038','A14:043')else''})
+   'adjacentCueGroup':key in ('A07:045','A11:024','A12:038','A14:043'),
+   'note':'Adjacent English/Korean phrase order differs; read the linked sentence as a whole.'if key in ('A07:045','A11:024','A12:038','A14:043')else''})
 out={'sourceRevisionsSha256':hashlib.sha256(S.read_bytes()).hexdigest(),'review':{'scope':'Model text semantic review only; not audio listening or word timing','originalNonspaceCharactersPreserved':True,'timingStatus':'pending waveform + later ASR review'},'scenes':rows,'lengthFlags':flags}
 (H/'local/final-audio/caption-clauses.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n','utf8')
 print(len(rows),'passages',sum(len(r['parts'])for r in rows),'paired clauses');print(json.dumps(flags,ensure_ascii=False,indent=2))

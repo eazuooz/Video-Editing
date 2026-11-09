@@ -30,6 +30,19 @@ def context(ep):
  gameManifest=H/'game-plates-caption-safe.json'
  if not gameManifest.exists():gameManifest=H/'game-plates-manifest.json'
  p=next(e for e in read(gameManifest)['episodes']if e['id']==ep);assert p['ready'],'Gameplay plates not complete'
+ correction=H/'visual-corrections'/(ep+'.json')
+ if correction.exists():
+  patch=read(correction);assert patch['episode']==ep and patch['readyForAssembly']
+  p=copy.deepcopy(p)
+  for q in patch['pictureEdits']:
+   x,y=q['startFrame'],q['endFrame'];assert q['newFrames']==y-x and q['sourceVerified']
+   assert sha(path(q['picture']))==q['pictureSha256']
+   keep=[]
+   for r in p['pictureEdits']:
+    for j,(a,b)in enumerate(subtract(r['startFrame'],r['endFrame'],[(x,y)])):
+     s=copy.deepcopy(r);s.update(id=r['id']+f'-visual-fragment{j}',startFrame=a,endFrame=b,newFrames=b-a,sourceStartFrame=r.get('sourceStartFrame',0)+a-r['startFrame']);keep.append(s)
+   p['pictureEdits']=keep+[q]
+  p['visualCorrectionSha256']=sha(correction)
  i=next(e for e in read(assembly.INTEGRATION)['episodes']if e['id']==ep)
  b=next(e for e in read(H/'baseline-review-manifest.json')['records']if e['id']==ep)
  a=next(e for e in read(H/'local/final-audio/audio-preparation.json')['episodes']if e['id']==ep)
@@ -70,8 +83,11 @@ def composite(ep,g,rows,render=False):
   concat=folder/'concat.txt';concat.write_text('\n'.join("file '"+str(x).replace('\\','/').replace("'","'\\''")+"'"for x in parts)+'\n','utf8')
   native=folder/'native.mp4';assembly.run(['ffmpeg','-nostdin','-v','error','-y','-f','concat','-safe','0','-i',concat,'-map','0:v:0','-an','-c','copy',native])
   font='C\\:/Windows/Fonts/malgunbd.ttf';start=nativeFrames/60
-  headerHeight=150 if holdClip['sourceClassification']=='explanation'else 79
-  vf=f"tpad=stop_mode=clone:stop_duration={stillFrames/60:.9f},drawbox=x=1240:y=0:w=680:h={headerHeight}:color=0x080d0a:t=fill:enable='gte(t,{start:.9f})',drawtext=fontfile='{font}':text='정지화면 · 자세 분석':x=1260:y=20:fontsize=34:fontcolor=0xf2d787:enable='gte(t,{start:.9f})'"
+  # Replace only the existing current-picture chip, not the separate source
+  # line or the title. Game imagery starts at80px; own panels start lower.
+  gameHeader=holdClip['sourceClassification']in('game','analysis')
+  boxX,boxH,labelX,labelY=(1410,79,1510,24)if gameHeader else(1618,110,1630,57)
+  vf=f"tpad=stop_mode=clone:stop_duration={stillFrames/60:.9f},drawbox=x={boxX}:y=0:w={1920-boxX}:h={boxH}:color=0x080d0a:t=fill:enable='gte(t,{start:.9f})',drawtext=fontfile='{font}':text='정지 분석':x={labelX}:y={labelY}:fontsize=32:fontcolor=0xf2d787:enable='gte(t,{start:.9f})'"
   log=folder/'render.log'
   with log.open('wb')as f:subprocess.run(['ffmpeg','-nostdin','-v','error','-y','-threads','4','-filter_threads','1','-i',str(native),'-an','-vf',vf,'-frames:v',str(b-a+delta),*assembly.ENC,str(out)],stdout=f,stderr=f,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
   save(folder/'signature.json',sig)
@@ -109,7 +125,9 @@ def build(ep,render=False):
   for r in stem['ranges']:
    for n,(x,y)in enumerate(subtract(r['startSample'],r['endSample'],[(g['startSample'],g['endSample'])for g in groups])):
     sounds.append({'id':r['id']+f'-clean{n}','audioKind':'complete-mix','startSample':x,'endSample':y,'newSamples':y-x,'source':stem['source'],'sourceSha256':stem['sourceSha256'],'sourceStartSample':x,'sourceVerified':True,'verification':'Exact processed voice+sidechained original music stem ancestry; original incompatible game stem removed only in authorized replaced-source ranges. Human listening pending.'})
- out={'schemaVersion':1,'clock':'relations-v4','baselineReviewSHA256':sha(H.parent/'relations-v4/review-manifest.json'),'episodes':[{'id':ep,'pictureEdits':sorted(pictures,key=lambda q:q['startFrame']),'audioEdits':sorted(sounds,key=lambda q:q['startSample'])}],'sourceMetadata':'footage/final-audio-adoption.json','pendingPicture':pending,'pendingTechnicalMix':unverified,'humanReviewed':False,'readyForAssembly':not pending and not unverified}
+ visual=H/'visual-corrections'/(ep+'.json')
+ visualProof={'path':rel(visual),'sha256':sha(visual)}if visual.exists()else None
+ out={'schemaVersion':1,'clock':'relations-v4','baselineReviewSHA256':sha(H.parent/'relations-v4/review-manifest.json'),'episodes':[{'id':ep,'pictureEdits':sorted(pictures,key=lambda q:q['startFrame']),'audioEdits':sorted(sounds,key=lambda q:q['startSample']),'visualCorrection':visualProof}],'sourceMetadata':'footage/final-audio-adoption.json','pendingPicture':pending,'pendingTechnicalMix':unverified,'humanReviewed':False,'readyForAssembly':not pending and not unverified}
  save(L/ep/'extensions.json',out);print(json.dumps({'episode':ep,'pictureEdits':len(pictures),'pendingPicture':len(pending),'pendingTechnicalMix':len(unverified),'readyForAssembly':out['readyForAssembly']}))
  return out
 if __name__=='__main__':

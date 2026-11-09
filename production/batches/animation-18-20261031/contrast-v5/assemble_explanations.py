@@ -70,6 +70,38 @@ def music_window(ep,record,picture):
 def no_overlap(rows,start,end,label):
     rows=sorted(rows,key=lambda r:r[start]);assert all(a[end]<=b[start]for a,b in zip(rows,rows[1:])),label
 
+def protected_map_audio(ep):
+    """Validate each actual map PCM range against its independent picture range."""
+    file=R/'projects'/ep['slug']/'production/local/relations-v4/opening-edl.json'
+    assert sha(file)==ep['relationEdlSHA256'],'Relationship opening EDL changed'
+    opening=read(file)
+    picture=[x for x in opening['pictureEdl']if x['kind']=='map']
+    audio=[x for x in opening['audioEdl']if x['kind']=='map']
+    retained=ep['preservedRelationRegions'];assert all(x['kind']in('map','repair')for x in retained)
+    assert len(picture)==len(audio)==sum(x['kind']=='map'for x in retained)
+    expected=[(x['outputStartFrame'],x['outputEndFrame'])for x in retained if x['kind']=='map']
+    assert [(x['outputStartFrame'],x['outputEndFrame'])for x in picture]==expected
+    result=[]
+    for p,a in zip(picture,audio):
+        assert a['outputEndSample']-a['outputStartSample']==(p['outputEndFrame']-p['outputStartFrame'])*SPF==a['samples']
+        offset=a['outputStartSample']-p['outputStartFrame']*SPF
+        assert abs(offset)<SPF and offset==a['outputEndSample']-p['outputEndFrame']*SPF
+        result.append({'kind':'map','startSample':a['outputStartSample'],'endSample':a['outputEndSample'],
+            'pictureStartFrame':p['outputStartFrame'],'pictureEndFrame':p['outputEndFrame'],
+            'pictureAudioOffsetSamples':offset,'openingEdl':relative(file),'openingEdlSha256':sha(file)})
+    # Body visual repairs keep the pre-existing full frame-aligned PCM guard.
+    # They have no inserted-audio row; their original narration is untouched.
+    for repair in [x for x in retained if x['kind']=='repair']:
+        assert any(x['kind']=='repair'and x['outputStartFrame']==repair['outputStartFrame']and x['outputEndFrame']==repair['outputEndFrame']for x in opening['pictureEdl'])
+        result.append({'kind':'repair','startSample':repair['outputStartFrame']*SPF,'endSample':repair['outputEndFrame']*SPF,
+            'pictureStartFrame':repair['outputStartFrame'],'pictureEndFrame':repair['outputEndFrame'],
+            'method':'Preserve existing frame-aligned body-repair audio guard','openingEdl':relative(file),'openingEdlSha256':sha(file)})
+    return result
+
+def protect_map_pcm(q,maps):
+    for x in maps:
+        assert not overlap(q['startSample'],q['endSample'],x['startSample'],x['endSample']),'Protected map PCM'
+
 def picture_override(epid,q,original,maps):
     """Intentional replacement precedence, bounded by exact IDs and speech proof."""
     for r in maps:
@@ -104,9 +136,12 @@ def audio_edl(total,edits,baseline):
 
 def build_episode(ep,record,extension):
     authorization(ep['id']);clean=next(x for x in record['files']if x['kind']=='clean.mp4')
+    visual=extension.get('visualCorrection')
+    if visual:identity(visual['path'],visual['sha256'])
     baseline=identity(clean['path'],clean['sha256']);total=record['frames'];p=R/'projects'/ep['slug']
     pcm=p/'production/local/relations-v4/mix.wav';identity(pcm,record['audioProof']['mixSha256']);info=sf.info(pcm)
     assert info.samplerate==RATE and info.channels==2 and info.frames==total*SPF
+    protected_audio=protected_map_audio(ep)
     overlays=[];replacements=[];audio=[]
     for r in ep['rows']:
         identity(r['output'],r['sha256'])
@@ -147,8 +182,7 @@ def build_episode(ep,record,extension):
             assert delta==(pic['newFrames']-(pic['endFrame']-pic['startFrame']))*SPF
             assert abs(q['startSample']-pic['startFrame']*SPF)<=SPF and abs(q['endSample']-pic['endFrame']*SPF)<=SPF,'Audio/picture splice boundaries differ by more than one frame'
         else:assert delta==0,'Length-changing speech needs its matching prepared picture edit'
-        for x in ep['preservedRelationRegions']:
-            assert not overlap(q['startSample'],q['endSample'],x['outputStartFrame']*SPF,x['outputEndFrame']*SPF),'Protected map PCM'
+        protect_map_pcm(q,protected_audio)
         q['kind']='replace-complete-mix';audio.append(q)
     for q in replacements:
         if q['kind']in EXTERNAL_PICTURE_KINDS and q['newFrames']!=q['endFrame']-q['startFrame']:assert q['id']in linked,'Length-changing picture lacks matched PCM'
@@ -163,11 +197,11 @@ def build_episode(ep,record,extension):
         'integrationManifestSHA256':sha(INTEGRATION),'editCoreSHA256':sha(H/'edit_core.py'),'assemblyCodeSHA256':sha(Path(__file__)),
         'baselineFrames':total,'frames':frames,'additionalFrames':frames-total,'sampleRate':RATE,'audioSamples':samples,
         'baselinePicture':relative(baseline),'baselinePictureSha256':clean['sha256'],'baselinePcm':relative(pcm),'baselinePcmSha256':sha(pcm),
-        'pictureEdl':picture,'audioEdl':sound,'pictureEdits':overlays+replacements,'audioEdits':audio,
+        'pictureEdl':picture,'audioEdl':sound,'pictureEdits':overlays+replacements,'audioEdits':audio,'protectedMapAudioRanges':protected_audio,
         'captionInputs':[x for x in record['files']if x['kind']in ('ko.srt','en.srt')],
         'captionPolicy':'Keep fixed caption style. Retain and shift unaffected cues using exact audio sample deltas. Replace changed speech cues from reviewed new timings; no stale captions burned here.',
         'pictureOnlyDeltaFrames':sum(x['newFrames']-(x['endFrame']-x['startFrame'])for x in replacements),
-        'stage':'virtual-edl-validated-not-rendered','noAudioStretch':True,'sourceApproval':'Own explanation QA and caller-provided independently reviewed game/mix evidence only.'}
+        'stage':'virtual-edl-validated-not-rendered','noAudioStretch':True,'visualCorrection':visual,'sourceApproval':'Own explanation QA and caller-provided independently reviewed game/mix evidence only.'}
 
 def plan_all(extra=None,selected=None):
     manifest=read(INTEGRATION);assert manifest['status']=='ready-for-parent-final-assembly'and manifest['precedenceResolved']

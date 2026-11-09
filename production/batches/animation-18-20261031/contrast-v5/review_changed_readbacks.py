@@ -18,11 +18,14 @@ RULES={
  ('A05','001'):({'러쉬':'러시'},'Hi-Fi RUSH title has alternate ASR Korean spelling 러쉬; expected canonical display 러시 is retained.'),
  ('A05','002'):({'일키죠':'읽히죠'},'The current regenerated take is transcribed with the standard spoken form 일키죠. National Institute of Korean Language lists 읽히다 pronunciation 일키다: https://krdict.korean.go.kr/eng/dicSearch/SearchView?ParaWordNo=24586 . This rule does not accept the earlier ambiguous 일기죠 take.'),
  ('A05','039'):({'차이에':'차이의'},'Possessive 의 can be spoken 에. The subject is the same opening guitar attack by Chai; no action or meaning changes.'),
+ ('A05','029'):({'일킴니다':'읽힙니다','일킵니다':'읽힙니다'},'Explicit spokenKo phonetic reading only. 읽히다 is pronounced 일키다 and final ㅂ before ㄴ is nasalized; these spellings retain 읽힙니다. The extra-vowel form 일으킵니다 is deliberately not accepted.'),
  ('A07','035'):({'3':'쓰리','전시는':'전신은'},'The game installment number is the same. 전신+은 is pronounced 전시는 by standard liaison (NIKL pronunciation rule13); this is a phonetic spelling, not a missing body-size concept. Primary rule: https://www.korean.go.kr/front/onlineQna/onlineQnaView.do?mn_id=216&pageIndex=1&qna_seq=315088 .'),
- ('A08','001'):({'원을':'I를'},'Current source explicitly gives spokenKo 원을 for the Roman numeral I pose name while preserving canonical display I를. This does not accept the earlier letter-name 아이 take.'),
+ ('A08','001'):({'원을':'I를','1을':'I를'},'Current source explicitly gives spokenKo 원을 for Roman numeral I. ASR 1 is the same first-pose number; canonical display I를 is preserved. This does not accept the earlier letter-name 아이 take.'),
+ ('A08','018'):({'마일이':'마엘이'},'The new take retains both explicit sword-grip clauses and the complete face/arm contrast. ASR spells the unfamiliar Maelle name 마일; the observed character identity is unambiguous, while the name vowel remains a focused-listening uncertainty. This does not accept the old 쥔-to-진 grip difference.'),
  ('A08','066'):({'위에':'위의'},'Possessive 의 can be spoken 에. Both identify the same ring held above the head; the silhouette explanation is unchanged.'),
  ('A09','010'):({'렌처':'랜처','2':'투'},'Slime Rancher title vowel spelling and installment-number notation only. Distance change versus body-outline change is fully retained; ASR does not certify the title vowel pronunciation.'),
  ('A09','017'):({'2':'투'},'Slime Rancher2 and spoken 랜처 투 are the same game installment; no numerical or action change.'),
+ ('A09','041'):({'컵패드의':'컵헤드의'},'Goopy and the complete landing/contour/face contrast identify Cuphead unambiguously despite ASR spelling 컵패드. The new 윤곽과 clause is otherwise exact; no 선-to-성 difference is accepted. Title pronunciation remains uncertain without listening.'),
  ('A12','038'):({'옵스키르':'옵스퀴르','33':'삼십삼','룬에는':'루네는'},'Expedition33 title spelling and digit notation only. 룬에는 is a homophonic liaison spelling of 루네는, preserving the canonical character Lune; no person/action change. The French title vowel remains an ASR ambiguity, not certified perfect pronunciation.'),
  ('A13','009'):({'2':'투','DJ':'디제이'},'Super Street Fighter2 Turbo uses the same installment number. DJ and 디제이 are the same spoken character name Dee Jay; no character or action change.'),
  ('A13','019'):({'DJ':'디제이','앞쪽에':'앞쪽의'},'DJ is the same spoken character name. Possessive 의 can be spoken 에; both identify the white lettering on the front of the trousers, with the facing-direction lesson preserved.'),
@@ -34,6 +37,10 @@ RULES={
  ('A14','046'):({'3':'쓰리'},'Splatoon3 and spoken 스플래툰 쓰리 name the same installment. Movement while aiming two guns and body-part role separation are fully retained.'),
  ('A17','001'):({'암제의':'암즈의'},'ASR spells the unfamiliar ARMS title 암제. Ribbon Girl and the complete extending-arm/outline explanation retain the same game identity. This permits semantic alignment while title pronunciation remains uncertain without listening.'),
  ('A17','024'):({'컵패드에':'컵헤드의','일킵니다':'읽힙니다'},'Cala Maria establishes the same Cuphead identity despite unfamiliar-title ASR spelling 컵패드; title pronunciation remains uncertain. 읽힙니다 has the standard 일킵니다 spoken spelling (읽히다 [일키다]); unlike 일으킵니다, no extra vowel is present. Arm outline, two joints and elbow question are retained.'),
+ ('A18','001'):({'앞에':'앞의'},'Possessive 의 can be spoken 에; both refer to the same goose in front of the bench. Head lowering, body lag and basket-handle interaction remain complete.'),
+ ('A18','003'):({'3':'쓰리'},'Luigis Mansion3 and spoken 루이지 맨션 쓰리 identify the same installment. Seated gaze/head tracking and upper-body difference remain complete.'),
+ ('A18','031'):({'트리코에':'트리코의'},'Possessive 의 can be spoken 에 after Trico. The boy climbing on the body, and coupled arm/shoulder/torso motion, remain complete.'),
+ ('A18','070'):({'눈앞에':'눈앞의'},'Possessive 의 can be spoken 에. The same visible dog motivates the character response; the concluding intent-first then motion-order explanation remains complete.'),
  ('A10','003'):({'6':'식스','줄이는':'주리는'},'Street Fighter6 installment number is equivalent. Juri+는 is recognized as the common verb 줄이는, an equivalent Korean sound sequence in context; the character identity is preserved.'),
 }
 s=read(H/'narration/source-verified-revisions.json');changes={(e['id'],c['id']):c for e in s['episodes']for c in e['changes']+[x for x in s['existingApprovedChanges']if x['episode']==e['id']]};expected={k:c['ko']for k,c in changes.items()}
@@ -56,7 +63,7 @@ for file in sorted((L/'raw').glob('*.json')):
   'reviewScope':'Explicit model text-equivalence review for listed aliases; otherwise exact normalized mechanical comparison. No audio listening.',
   'retakeRequiredFromCurrentEvidence':False,'humanListening':False}
  if not accepted:issues.append(row)
- if key in [('A01','002'),('A01','056'),('A04','012'),('A09','010'),('A12','038'),('A17','001'),('A17','024')]:row['pronunciationUncertainty']='Proper-name vowel/ASR spelling ambiguity; actual voice quality not certified by ASR.'
+ if key in [('A01','002'),('A01','056'),('A04','012'),('A08','018'),('A09','010'),('A09','041'),('A12','038'),('A17','001'),('A17','024')]:row['pronunciationUncertainty']='Proper-name vowel/ASR spelling ambiguity; actual voice quality not certified by ASR.'
  entries.append(row)
 save={'reviewScope':'Full expected text versus independent ASR; no human listening','entries':entries,'pendingDifferences':issues,'humanListening':False}
 (L/'text-review.json').write_text(json.dumps(save,ensure_ascii=False,indent=2)+'\n','utf8')

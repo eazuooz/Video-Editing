@@ -241,10 +241,23 @@ def prepare(selected=None):
             following=int(round(sentences[j+1]['startSeconds']*RATE))if j+1<len(sentences)else (base['frames']-600)*SPF
             start,sv=valley(mix,max(prior+480 if i else prior,a-8640),a,a-2400,a)
             end,ev=valley(mix,b,min(following-480,b+9600),b+2400,b)
+            picture_start=start//SPF
+            if e['id']=='A13'and first['id']=='009':
+                opening_file=p/'production/local/relations-v4/opening-edl.json';opening=read(opening_file)
+                am=next(x for x in opening['audioEdl']if x['kind']=='map')
+                pm=next(x for x in opening['pictureEdl']if x['kind']=='map')
+                assert(am['outputEndSample'],pm['outputEndFrame'])==(4162864,5204)
+                assert start<=am['outputEndSample']<end
+                candidate=start;start=am['outputEndSample'];picture_start=pm['outputEndFrame']
+                assert abs(start-picture_start*SPF)<SPF
+                sv={**sv,'method':'Exact protected map-audio boundary; independent frame-aligned picture boundary',
+                    'originalValleyCandidateSample':candidate,'protectedMapAudioEndSample':start,'protectedMapPictureEndFrame':picture_start,
+                    'pictureAudioBoundaryOffsetSamples':start-picture_start*SPF,'openingEdl':rel(opening_file),'openingEdlSha256':sha(opening_file),
+                    'mapPcmAndPictureFullyPreserved':True,'quietnessAssumed':False}
             assert start>=2*RATE and end<=(base['frames']-600)*SPF,'Protect original branding and membership PCM'
             gid=e['id']+'-speech-'+first['id']+('-'+last['id']if last['id']!=first['id']else'')
             takes=[take_data(take_file(e['id'],x['change']))for x in group]
-            row={'id':gid,'sentenceIds':[x['timing']['id']for x in group],'startSample':start,'endSample':end,'baselineStartFrame':start//SPF,
+            row={'id':gid,'sentenceIds':[x['timing']['id']for x in group],'startSample':start,'endSample':end,'baselineStartFrame':picture_start,
                 'baselineEndFrame':math.ceil(end/SPF),'oldCueStartIndex':first['cueStartIndex'],'oldCueEndIndexExclusive':last['cueEndIndexExclusive'],
                 'boundaryReview':{'start':sv,'end':ev,'status':'waveform-candidates-human-and-ASR-review-pending'},'status':'waiting-for-takes','takes':[]}
             missing=[rel(take_file(e['id'],x['change']))for x,t in zip(group,takes)if t is None]
@@ -260,6 +273,25 @@ def prepare(selected=None):
             oldenv=windows(read_segment(mix,a,b));newenv=windows(voice);oldactive=oldenv[oldenv>=np.percentile(oldenv,60)];newactive=newenv[newenv>=max(.001,float(np.percentile(newenv,60)))]
             target=float(np.median(oldactive));current=float(np.median(newactive));gain=float(np.clip(target/max(current,1e-7),.5,2.))
             output=bed+voice*gain;peak=float(np.max(abs(output)));scale=min(1.,.94/max(peak,.001));output*=scale
+            tail_bridges=[]
+            # The verified A04/030 take ends at a nonzero sample. Retain every
+            # voiced sample, then continue ONLY that final value into the new
+            # music padding for 6ms. This removes a discontinuity, not a phoneme.
+            for place,part in zip(placements,parts):
+                if e['id']!='A04' or place['sentenceId']!='030':continue
+                at=place['offsetSample']+len(part);terminal=part[-1]*gain*scale
+                if float(np.max(abs(terminal)))<=.005:continue
+                length=288
+                assert at+length<=n and not any(at<q['offsetSample']<at+length for q in placements)
+                before=float(np.max(abs(output[at]-output[at-1])))
+                output[at:at+length]+=terminal[None,:]*np.linspace(1.,0.,length)[:,None]
+                after=float(np.max(abs(output[at]-output[at-1])))
+                assert after<before and float(np.max(abs(output)))<.99
+                tail_bridges.append({'sentenceId':place['sentenceId'],'startSampleInGroup':at,'samples':length,
+                    'milliseconds':6,'sourceTakeSha256':place['take']['sha256'],'terminalMixedVoiceValue':terminal.tolist(),
+                    'joinStepBefore':before,'joinStepAfter':after,'fullTakeSamplesUntouched':True,
+                    'method':'Linear terminal-value release after the last complete take sample, inside existing new music-only padding; no cut/fade/stretch of voiced PCM',
+                    'scope':'Click-continuity correction only; not evidence that a clipped phoneme was repaired'})
             # Six-millisecond joins affect the newly made gap/bed only. Full raw
             # takes start60ms later and end at least120ms before the output edge.
             fade=288;ramp=np.linspace(0,1,fade)[:,None]
@@ -273,6 +305,7 @@ def prepare(selected=None):
                 sourceStartSample=0,audioKind='complete-mix',sourceVerified=False,placements=placements,bed=bedproof,voiceGain=gain,peakScale=scale,
                 fullTakeUncut=True,speed=1.0,activeVoiceTargetRmsDbfs=20*math.log10(max(target,1e-9)),asrWordAlignmentConfirmed=False)
             row['newPaddingBoundaryBridge']={'samples':fade,'milliseconds':6,'method':'Linear endpoint-continuity bridge in new music padding only; no voice samples faded','oldAdjacentSamples':[left.tolist(),right.tolist()]}
+            if tail_bridges:row['tailContinuityBridges']=tail_bridges
             row['extensionRequirement']={'oldRelationRangeFrames':[row['baselineStartFrame'],row['baselineEndFrame']],'deltaFrames':delta,
                 'requiredPictureFrames':row['baselineEndFrame']-row['baselineStartFrame']+delta,'audioRangeSamples':[start,end],
                 'note':'Same-length passage if delta0. Otherwise prepare a picture passage; do not speed up narration or assume repeated motion.'}

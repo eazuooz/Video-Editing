@@ -37,6 +37,18 @@ def save(p, value):
 def norm(s):
     return ''.join(c.lower() for c in s if c.isalnum())
 
+def source_readbacks_current(jobs):
+    # Retakes have priority over the longer final-AAC pass. Importing the source
+    # helper loads no model; its ready() checks current final-Rendered evidence.
+    import asr_changed_passages as source
+    if not jobs or sha(source.SOURCE) != jobs[0]['sourceRevisionsSha256']: return False
+    for job in jobs:
+        proof = source.ready(job)
+        if proof is None: return False
+        raw = source.L / 'raw' / (job['key'] + '.' + proof['audioSha256'][:12] + '.json')
+        if not raw.exists(): return False
+    return True
+
 def path(p):
     p = Path(p)
     return p if p.is_absolute() else R / p
@@ -129,14 +141,52 @@ def equivalence(position, text, segment_hash):
         'reviewScope': 'Independent final AAC ASR text compared with expected text and previously reviewed source-take spelling aliases; not human listening',
         'humanListening': False}
 
+def alternate_readbacks(recognize, jobs, stop_requested):
+    """One explicitly requested beam5 read per source hash; no acceptance shortcut."""
+    import asr_changed_passages as source
+    request_path = source.L / 'alternate-decode-requests.json'
+    if not request_path.exists(): return False
+    request = read(request_path); rows = []; progressed = False
+    for target in request['targets']:
+        if stop_requested(): break
+        job = next(j for j in jobs if j['episode'] == target['episode'] and j['sentenceId'] == target['sentenceId'])
+        proof = source.ready(job)
+        if proof is None or proof['audioSha256'] != target['audioSha256']:
+            rows.append(dict(target, state='requested-take-not-current-ready')); continue
+        file = source.L / 'alternate-beam5' / (job['key'] + '.' + proof['audioSha256'][:12] + '.json')
+        if file.exists(): result = read(file)
+        else:
+            print('ALTERNATE BEAM5 ASR', job['episode'], job['sentenceId'], flush=True)
+            raw = recognize(str(job['wav']), generate_kwargs={'language': 'korean', 'task': 'transcribe', 'num_beams': 5, 'do_sample': False},
+                return_timestamps='word', batch_size=1)
+            if sha(job['wav']) != proof['audioSha256']:
+                rows.append(dict(target, state='take-changed-during-alternate-readback')); continue
+            result = {'episode': job['episode'], 'sentenceId': job['sentenceId'], 'key': job['key'],
+                'audio': source.rel(job['wav']), 'audio_sha256': proof['audioSha256'], 'duration': proof['duration'],
+                'text': raw['text'], 'chunks': raw.get('chunks', []), 'model': 'same caller-owned local whisper-large-v3-turbo',
+                'device': 'cpu', 'threads': 2, 'batchSize': 1, 'numBeams': 5, 'doSample': False,
+                'expectedTextPromptSupplied': False, 'humanListening': False,
+                'semanticStatus': 'pending-model-comparison; no automatic approval from alternate decoding'}
+            save(file, result); progressed = True
+            print('ALTERNATE BEAM5 READBACK', job['episode'], job['sentenceId'], result['text'], flush=True)
+        rows.append(dict(target, state='alternate-readback-persisted', expected=job['expected'], recognized=result['text'],
+            asrPath=str(file), asrSha256=sha(file), humanListening=False))
+    save(source.L / 'alternate-beam5-index.json', {'scope': request['scope'], 'entries': rows,
+        'oneExistingCpuModel': True, 'expectedTextPromptSupplied': False, 'humanListening': False})
+    return progressed
+
 def run_once(recognize, jobs, stop_requested=lambda: False):
     """Called after source takes finish; reuses the exact already-loaded model."""
     expected = {(j['episode'], j['sentenceId']): j for j in jobs}
     control = read(R / 'shared/publishing/video-production-control.json')['animationContrastRevision20261108']
     episodes = control['episodes']; assert len(episodes) == 17 and 'A03' not in episodes
-    all_rows, waiting, complete_episodes, progressed = [], {}, [], False
+    progressed = alternate_readbacks(recognize, jobs, stop_requested)
+    all_rows, waiting, complete_episodes = [], {}, []
     for ep in episodes:
         if stop_requested(): break
+        if not source_readbacks_current(jobs):
+            waiting['sourceReadbackPriority'] = 'A source take changed or is active; return the same model to source ASR first'
+            break
         try:
             proof, reason = proof_for(ep, expected)
             if reason: waiting[ep] = reason; continue
@@ -147,6 +197,9 @@ def run_once(recognize, jobs, stop_requested=lambda: False):
             episode_rows = []
             for pos in proof['positions']:
                 if stop_requested(): break
+                if not source_readbacks_current(jobs):
+                    waiting['sourceReadbackPriority'] = 'A source take changed during final AAC review; source ASR resumes at this saved boundary'
+                    break
                 pos = dict(pos, episode=ep)
                 assert pos['fullTakeUncut'] and pos['speed'] == 1.0 and pos['endSample'] <= info.frames
                 samples, rate = sf.read(decoded, start=pos['startSample'], stop=pos['endSample'], dtype='float32', always_2d=True)
