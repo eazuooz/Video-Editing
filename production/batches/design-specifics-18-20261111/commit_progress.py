@@ -14,6 +14,7 @@ CONTROL = 'shared/publishing/video-production-control.json'
 WORKLIST = 'shared/publishing/video-worklist.json'
 TABLE = 'docs/VIDEO_WORKLIST.md'
 IDS = {f'DS{i:02}' for i in range(1, 19)}
+SOURCE_SUFFIXES = {'.json', '.md', '.py', '.tsx', '.ts', '.cjs', '.meta'}
 KEY = 'designSpecifics18Selected20261111'
 START = '<!-- DESIGN-SPECIFICS-18-20261111-START -->'
 END = '<!-- DESIGN-SPECIFICS-18-20261111-END -->'
@@ -50,7 +51,7 @@ def validate(spec):
         path = PurePosixPath(name)
         assert not path.is_absolute() and '..' not in path.parts and 'local' not in path.parts
         assert name.startswith((BATCH + '/', SCENES))
-        assert path.suffix in {'.json', '.md', '.py', '.tsx', '.ts', '.cjs'}
+        assert path.suffix in SOURCE_SUFFIXES or path.name == '.gitignore'
         assert (ROOT / name).is_file()
     return sorted(spec['ownedPaths']) + sorted(scoped.SHARED)
 
@@ -63,8 +64,12 @@ def prepare():
              '| 순서 | 영상 | 제작 상태 | 사용자 검수 | YouTube |', '|---|---|---|---|---|']
     for ep in data['episodes']:
         assert ep['id'] in IDS
-        draft = bool(ep.get('draftOutline'))
-        state = '한영 대본 초안 · 게임 구간 확인 중' if draft else '참고 영상 검수·구성 정리 · 게임 자료 확인 중'
+        languages = ep.get('draftLanguages', [])
+        state = ('한영 대본 초안 · 게임 구간 확인 중' if languages == ['ko', 'en']
+                 else '한국어 대본 초안 · 게임 구간 확인 중' if languages == ['ko']
+                 else '참고 영상 검수·구성 정리 · 게임 자료 확인 중')
+        if ep.get('stage') == 'voice-generated-readback-pending':
+            state = '대본·녹음 생성 · 발음·자막·편집 검수 중'
         ready = bool(ep.get('deliveryManifest'))
         if ready:
             state = '1080p60 로컬 4종 완성'
@@ -81,7 +86,8 @@ def prepare():
         table.append(f"| {row['id']} | {row['title'].replace('|', '/')} | {state} | {status} | 미업로드 |")
     table += ['', END]
     sources = [file for directory in (HERE, ROOT / SCENES) for file in directory.rglob('*')
-               if file.is_file() and file.suffix in {'.json', '.md', '.py', '.tsx', '.ts', '.cjs'}
+               if file.is_file() and (file.suffix in SOURCE_SUFFIXES
+                                      or file.name == '.gitignore')
                and 'local' not in file.relative_to(ROOT).parts]
     spec = {'scope': KEY, 'control': {
         'status': data['status'], 'selectedAt': data['startedAt'], 'scope': data['userSelection'],

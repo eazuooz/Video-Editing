@@ -99,12 +99,21 @@ class ShooterComparison extends Node {
         ctx.arc(contactX, contactY, 30 + 65 * impactAge, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.globalAlpha = 1;
+      } else if (state.hit) {
+        ctx.strokeStyle = palette.heading;
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 7]);
+        ctx.beginPath();
+        ctx.arc(contactX, contactY, 30, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        text('접촉 위치', contactX + 45, contactY, 28, palette.heading);
       }
       ctx.restore();
       text(playTime < start ? '같은 기체 · 같은 적탄' : state.stage, x, y + 248, 34,
         state.hit ? palette.ship : palette.white);
     });
-    text('접촉 위치 고정 · 효과만 순서대로 추가', -850, 361, 39, palette.white);
+    text('접촉 위치는 같고, 효과만 순서대로 추가', -850, 330, 39, palette.white);
   }
 }
 
