@@ -1,12 +1,14 @@
 """Run one authorized episode to the encoded sample check."""
 
 import argparse
+from datetime import datetime
 import os
 import subprocess
 import sys
 import time
 
 from assemble_planned import HERE, common
+from build_review_index import main as build_review_index
 
 
 ROOT = common.ROOT
@@ -55,6 +57,16 @@ def render_voice(episode, local, retake=None):
     run(*command, '--device', 'cpu', env=env | {'CUDA_VISIBLE_DEVICES': '-1'})
 
 
+def checkpoint(episode, stage, next_step):
+    path = HERE / 'batch.json'
+    batch = common.load(path)
+    row = next(item for item in batch['episodes'] if item['id'] == episode)
+    row.update(stage=stage, status=stage, next=next_step)
+    batch['updatedAt'] = datetime.now().astimezone().isoformat()
+    common.save(path, batch)
+    build_review_index()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('episode', choices=[f'DS{number:02}' for number in range(5, 19)])
@@ -77,7 +89,9 @@ def main():
     if not args.use_rendered_inputs:
         run('node', HERE / 'render_motion.cjs', episode)
     if args.retake or not args.use_rendered_inputs:
+        checkpoint(episode, 'tts-in-progress-with-reviewed-footage', 'Generate the selected narration and verify it.')
         render_voice(episode, local, args.retake)
+    checkpoint(episode, 'voice-generated-readback-pending', 'Align captions and inspect the final encoded sample.')
     alignment_env = os.environ | {'OMP_NUM_THREADS': '2', 'MKL_NUM_THREADS': '2', 'CUDA_VISIBLE_DEVICES': '-1'}
     run(VOICE_PYTHON, '-X', 'utf8', '-u', HERE / 'DS01/readback_captions.py', '--episode', episode, env=alignment_env)
     run(sys.executable, '-X', 'utf8', '-u', HERE / 'assemble_planned.py', episode)

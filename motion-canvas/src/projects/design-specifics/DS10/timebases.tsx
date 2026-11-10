@@ -60,7 +60,7 @@ class Timebases extends Node {
           base, 189, 34, ink);
       }
     }
-    text(conclusions[mode], -845, 348, 37);
+    text(conclusions[mode], -845, 320, 37);
   }
 }
 

@@ -55,7 +55,7 @@ class Balance extends Node {
         text(i === 1 ? '기술이 빗나가면 다음 행동까지 여유가 생김' : '서로 같은 거리에서 같은 공격을 씀', x + 82, 200, 35, ink);
       }
     }
-    text(conclusions[mode], -845, 347, 38);
+    text(conclusions[mode], -845, 320, 38);
   }
 }
 

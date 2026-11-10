@@ -59,7 +59,7 @@ class SpeedStudy extends Node {
     const takeaway = view ? '실제로 간 거리는 같습니다. 카메라만 바꿨습니다.'
       : world ? '이동 거리 = 월드 속력 × 경과 시간' : '한 번에 같은 거리만큼 움직여도, 화면 폭이 좁으면 먼저 도착합니다.';
     label(takeaway,
-      -848, 348, 38, color.white);
+      -848, 320, 38, color.white);
   }
 }
 

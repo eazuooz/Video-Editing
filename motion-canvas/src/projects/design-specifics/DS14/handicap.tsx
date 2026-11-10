@@ -58,7 +58,7 @@ class Handicap extends Node {
         }
       }
     }
-    text(conclusions[mode], -845, 346, 36);
+    text(conclusions[mode], -845, 320, 36);
   }
 }
 

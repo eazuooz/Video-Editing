@@ -72,7 +72,7 @@ class WaitingStudy extends Node {
       const canAct = continuousInput || current < marks[1] || current >= marks[4];
       txt(canAct ? '입력 가능' : '다음 입력을 기다림', x + 12, y + 139, 34, canAct ? colors.action : colors.wait);
     }
-    txt(takeaway, x, 346, 40, colors.white);
+    txt(takeaway, x, 320, 40, colors.white);
   }
 }
 

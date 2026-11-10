@@ -81,7 +81,7 @@ class Maps extends Node {
         if (overlay) text('캐릭터와 통로가 함께 보임', x + 78, 216, 34, c.teal);
       }
     }
-    text(conclusions[study], -845, 347, 39);
+    text(conclusions[study], -845, 320, 39);
   }
 }
 

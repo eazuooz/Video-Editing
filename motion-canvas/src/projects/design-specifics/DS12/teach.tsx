@@ -62,7 +62,7 @@ class Tutorial extends Node {
         }
       }
     }
-    text(conclusions[mode], -845, 347, 39);
+    text(conclusions[mode], -845, 320, 39);
   }
 }
 

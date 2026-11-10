@@ -54,7 +54,7 @@ class Updates extends Node {
         }
       }
     }
-    text(explanations[mode], -845, 348, 38);
+    text(explanations[mode], -845, 320, 38);
   }
 }
 

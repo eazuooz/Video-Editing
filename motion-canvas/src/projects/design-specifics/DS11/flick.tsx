@@ -68,7 +68,7 @@ class Flick extends Node {
         text(i === 0 ? '공격 경로 위' : avoid > .5 ? '경로 밖에서 다음 입력' : '빈 쪽으로 조작', x + 100, 192, 38, ink);
       }
     }
-    text(endings[mode], -846, 344, 39);
+    text(endings[mode], -846, 320, 39);
   }
 }
 

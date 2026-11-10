@@ -87,7 +87,7 @@ class Transitions extends Node {
       path([[a + w * phase, 130], [a + w * phase, 225]], c.white, 4);
       text(phase < from || phase >= resume ? '이동 가능' : '입력 제한', x + 16, 269, 35, ink);
     }
-    text(conclusions[mode], -845, 347, 38);
+    text(conclusions[mode], -845, 320, 38);
   }
 }
 

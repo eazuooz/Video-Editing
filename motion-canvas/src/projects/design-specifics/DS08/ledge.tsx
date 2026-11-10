@@ -107,7 +107,7 @@ class LedgeStudy extends Node {
       const resolved = jumping ? jump === 1 : movingPastEdge || (stopped && intentX >= platformEdge - 20);
       txt(resolved ? action.result : action.action, x, 267, 35, ink);
     }
-    txt(takeaway, -844, 347, 40, color.white);
+    txt(takeaway, -844, 320, 40, color.white);
   }
 }
 

@@ -66,7 +66,7 @@ class Pivot extends Node {
         text(mode === 1 ? '물체의 그림 중심' : '검 끝의 경로', x + 330, 185, 37, c.white);
       }
     }
-    text(conclusions[mode], -845, 348, 38);
+    text(conclusions[mode], -845, 320, 38);
   }
 }
 

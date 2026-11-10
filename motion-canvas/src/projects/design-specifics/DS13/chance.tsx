@@ -55,7 +55,7 @@ class Chance extends Node {
         : i === 0 ? '결과 뒤에 행동이 없음' : '결과를 보고 대응할 수 있음';
       text(message, start, 188, 37, ink);
     }
-    text(conclusions[mode], -845, 346, 39);
+    text(conclusions[mode], -845, 320, 39);
   }
 }
 
