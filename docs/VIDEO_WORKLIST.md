@@ -8,6 +8,8 @@
 - 완료본03.02·07.04·06.02와 진행중11.05의 음성·촬영·동결입력은 보존.
 - 새 GPU/모델/촬영/합성/플랫폼 작업 없음.
 
+2026-11-10 사용자 재확인 “쇼츠 전편 제작들어가줘”. 111편의 대본·구성을 전달했고, 남은 108편은 기존 순서대로 최대 10편씩 로컬 검수본까지 제작한다. 첫 묶음의 11.05는 두 문장의 새 녹음과 사용 범위를 기다린다. [묶음 순서](../production/batches/architectural-111-20261106/production-groups-of-10-v1.json) · [11.05 음성 검수 및 필요한 입력](../projects/shorts-leveldesign-11-05/voice-asr-content-peer-review-v10.json).
+
 <!-- ARCHITECTURAL-111-20261106-END -->
 
 <!-- MATH-PUBLISHING-20261026-START -->
