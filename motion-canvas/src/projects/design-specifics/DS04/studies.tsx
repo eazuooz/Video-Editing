@@ -37,11 +37,13 @@ function state(time: number, study: number, side: number, airborne: boolean) {
   const easing = study === 3 && side === 1 ? 1 - Math.min(1, age / hold) : 1;
   const wave = holding ? Math.sin(age * 29) * easing : 0;
   const attackerOffset = study === 0 && holding ? (side === 0 ? 24 : 6) * wave : 0;
-  const defenderOffset = (study === 0 && side === 1 ? 44 : 27) * wave;
+  const defenderAmplitude = study === 0 ? (side === 0 ? 24 : 44) : 27;
+  const defenderOffset = defenderAmplitude * wave;
   const vertical = study === 2 && side === (airborne ? 1 : 0) ? wave * 30 : 0;
   const rawLean = study === 5 && side === 1 ? Math.min(1, age / .63) : Number(hit);
   const sword = study === 6 && side === 1 ? Math.min(1, age / hold) : 0;
-  return {attackerOffset, defenderOffset, vertical, lean: rawLean * 25, sword, hold, holding, hit, age};
+  return {attackerOffset, defenderOffset, defenderRange: defenderAmplitude * easing,
+    vertical, lean: rawLean * 25, sword, hold, holding, hit, age};
 }
 
 class Comparison extends Node {
@@ -128,6 +130,20 @@ class Comparison extends Node {
         ctx.setLineDash([]);
       }
       if (c.holding) {
+        if (index === 0 || index === 3) {
+          const y = feet - 222;
+          const width = c.defenderRange;
+          line([target - width, y], [target + width, y], color.coral, 5);
+          line([target, y - 12], [target, y + 12], color.muted, 3);
+          line([target + c.defenderOffset, y - 8], [target + c.defenderOffset, y + 8], color.gold, 5);
+          if (index === 0) {
+            const origin = x + 336;
+            const width = side === 0 ? 24 : 6;
+            line([origin - width, y], [origin + width, y], color.teal, 5);
+            line([origin, y - 12], [origin, y + 12], color.muted, 3);
+            line([actor, y - 8], [actor, y + 8], color.gold, 5);
+          }
+        }
         ctx.strokeStyle = color.gold;
         ctx.lineWidth = 6;
         ctx.beginPath();

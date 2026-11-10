@@ -11,9 +11,19 @@ const renders = {
   'DS02-controls': {name: 'ds02-control-studies-review', frames: 960, entry: 'controls'},
   DS04: {name: 'ds04-eight-hit-stop-studies', frames: 3360},
   DS05: {name: 'ds05-camera-focus-studies', frames: 1440},
-  DS06: {name: 'ds06-waiting-study', frames: 600},
-  DS07: {name: 'ds07-speed-units-studies', frames: 960},
-  DS08: {name: 'ds08-ledge-study', frames: 600},
+  DS06: {name: 'ds06-waiting-study', frames: 2400},
+  DS07: {name: 'ds07-speed-units-studies', frames: 1440},
+  DS08: {name: 'ds08-ledge-study', frames: 1800},
+  DS09: {name: 'ds09-maps-studies', frames: 1920},
+  DS10: {name: 'ds10-timing-studies', frames: 1920},
+  DS11: {name: 'ds11-flick-studies', frames: 1440},
+  DS12: {name: 'ds12-tutorial-studies', frames: 1440},
+  DS13: {name: 'ds13-chance-studies', frames: 1440},
+  DS14: {name: 'ds14-handicap-studies', frames: 1440},
+  DS15: {name: 'ds15-balance-studies', frames: 1440},
+  DS16: {name: 'ds16-update-studies', frames: 1920},
+  DS17: {name: 'ds17-transition-studies', frames: 1440},
+  DS18: {name: 'ds18-pivot-studies', frames: 1440},
 };
 
 async function main() {

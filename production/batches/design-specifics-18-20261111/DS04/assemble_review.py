@@ -103,8 +103,9 @@ def main():
         if kind == 'game':
             labels = {'finalFight': '파이널 파이트 원', 'armsHelix': 'ARMS', 'armsRibbon': 'ARMS',
                       'iceborne': '몬스터 헌터 월드 아이스본 · 태도'}
+            marks = common.gameplay_marks(part, plan['targets'][key].get('marks', []))
             common.picture(sources[part['source']]['file'], frames, part['offset'], destination, kind,
-                           common.game_badge(labels[part['source']]))
+                           common.game_badge(labels[part['source']]) + marks)
         elif kind == 'explanation':
             diagram(part, plan['targets'][key]['study'], destination)
         else:

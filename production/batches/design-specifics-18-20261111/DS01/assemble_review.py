@@ -107,9 +107,25 @@ def picture(source, frames, offset, destination, kind, suffix=''):
     check_picture(destination, frames)
 
 
-def game_badge(label):
+def game_badge(label, left=False):
+    x = '38' if left else 'w-tw-38'
     return (",drawtext=fontfile='C\\:/Windows/Fonts/malgunbd.ttf':text='" + label + "':"
-            "fontsize=38:fontcolor=0xf5f4ec:box=1:boxborderw=14:boxcolor=0x0a110d@0.85:x=w-tw-38:y=34")
+            f"fontsize=38:fontcolor=0xf5f4ec:box=1:boxborderw=14:boxcolor=0x0a110d@0.85:x={x}:y=34")
+
+
+def gameplay_marks(part, marks):
+    filters = ''
+    for source, start, end, x, y, width, height in marks:
+        if source != part['source']:
+            continue
+        start, end = start - part['offset'], end - part['offset']
+        if end <= 0 or start >= part['frames'] / FPS:
+            continue
+        assert 0 <= x < x + width <= 1920 and 12 <= y < y + height <= 892
+        gate = f"enable='between(t,{max(0, start):.6f},{end:.6f})'"
+        filters += f',drawbox=x={x}:y={y}:w={width}:h={height}:color=0x0a110d:t=12:{gate}'
+        filters += f',drawbox=x={x+2}:y={y+2}:w={width-4}:h={height-4}:color=0xf2d786:t=7:{gate}'
+    return filters
 
 
 def gameplay_focus(part):
