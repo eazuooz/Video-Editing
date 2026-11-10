@@ -86,6 +86,8 @@ def main():
     assert (local / 'tts-manifest.json').is_file(), f'{episode} is missing the voice manifest'
     row = next(item for item in batch['episodes'] if item['id'] == episode)
     assert row['stage'] != 'local-final-review-ready', f'{episode} already has a review'
+    captions = [VOICE_PYTHON, '-X', 'utf8', '-u', HERE / 'DS01/readback_captions.py', '--episode', episode]
+    run(*captions, '--validate-script')
     if not args.use_rendered_inputs:
         run('node', HERE / 'render_motion.cjs', episode)
     if args.retake or not args.use_rendered_inputs:
@@ -93,7 +95,7 @@ def main():
         render_voice(episode, local, args.retake)
     checkpoint(episode, 'voice-generated-readback-pending', 'Align captions and inspect the final encoded sample.')
     alignment_env = os.environ | {'OMP_NUM_THREADS': '2', 'MKL_NUM_THREADS': '2', 'CUDA_VISIBLE_DEVICES': '-1'}
-    run(VOICE_PYTHON, '-X', 'utf8', '-u', HERE / 'DS01/readback_captions.py', '--episode', episode, env=alignment_env)
+    run(*captions, env=alignment_env)
     run(sys.executable, '-X', 'utf8', '-u', HERE / 'assemble_planned.py', episode)
     timings = [item for seconds in args.time for item in ('--time', str(seconds))]
     run(sys.executable, '-X', 'utf8', '-u', HERE / 'sample_final_review.py', episode, *timings)

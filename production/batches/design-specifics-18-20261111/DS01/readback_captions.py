@@ -42,6 +42,7 @@ def units(scene, spellings=None):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--episode', default='DS01')
+    parser.add_argument('--validate-script', action='store_true')
     args = parser.parse_args()
     episode = args.episode
     selected = load(ROOT / 'shared/publishing/video-production-control.json')['designSpecifics18Selected20261111']
@@ -52,6 +53,16 @@ def main():
     script = narration['scenes']
     spellings = narration.get('captionDisplay', {})
     aliases = {display: spoken for spoken, display in spellings.items()}
+    if args.validate_script:
+        noto = Path('C:/Windows/Fonts/NotoSansKR-VF.ttf')
+        font = caption_pipeline.measured_font(noto if noto.is_file() else Path('C:/Windows/Fonts/malgun.ttf'), 500)
+        for scene in script:
+            for pair in units(scene, spellings):
+                for language in ('ko', 'en'):
+                    if caption_pipeline.wrap(pair[language], font) is None:
+                        raise ValueError(f'{episode} scene {scene["id"]} {language} caption does not fit: {pair[language]}')
+        print(f'{episode} Korean and English captions fit the review layout', flush=True)
+        return
     voice = local / 'voice'
     timing_file = voice / (manifest['tts']['filenameStem'] + '.timing.json')
     timing = load(timing_file)
