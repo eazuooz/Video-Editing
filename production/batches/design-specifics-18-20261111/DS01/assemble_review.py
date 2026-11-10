@@ -143,7 +143,7 @@ def explanation(key, frames, destination):
     check_picture(destination, frames)
 
 
-def mix_audio(rows, sources, body_frames, parts, destination):
+def mix_audio(rows, sources, body_frames, parts, destination, voice):
     music = ROOT / 'shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3'
     assert music.is_file() and music.with_suffix('.LICENSE.md').is_file()
     games = []
@@ -152,7 +152,7 @@ def mix_audio(rows, sources, body_frames, parts, destination):
             continue
         duration = part['frames'] / FPS
         wav = parts / f'{index:02d}-ambient.wav'
-        if part['kind'] == 'game':
+        if part['kind'] == 'game' and sources[part['source']].get('useNativeAudio', True):
             source = sources[part['source']]['file']
             ff('-ss', f'{part["offset"]:.8f}', '-i', source, '-map', '0:a:0', '-af',
                f'loudnorm=I=-30:TP=-4:LRA=10,aresample=48000,apad,atrim=duration={duration:.8f}',
@@ -173,9 +173,33 @@ def mix_audio(rows, sources, body_frames, parts, destination):
         f'[2:a]adelay=2000:all=1,apad,atrim=duration={total:.8f}[games];'
         '[voice][under][games]amix=inputs=3:normalize=0,alimiter=limit=0.89:level=false[mix]'
     )
-    ff('-i', VOICE, '-stream_loop', '-1', '-i', music, '-f', 'concat', '-safe', '0', '-i', listing,
+    ff('-i', voice, '-stream_loop', '-1', '-i', music, '-f', 'concat', '-safe', '0', '-i', listing,
        '-filter_complex', graph, '-map', '[mix]', '-t', f'{total:.8f}', '-c:a', 'aac', '-b:a', '256k',
        '-ar', RATE, '-ac', 2, destination)
+
+
+def write_delivery(episode, rows, body, parts, files, mix, captions, output):
+    listing = parts / 'picture.txt'
+    listing.write_text(''.join(f"file '{p.as_posix()}'\n" for p in files), encoding='utf-8')
+    clean, captioned = output / f'{episode}.clean.mp4', output / f'{episode}.captioned.mp4'
+    ff('-f', 'concat', '-safe', '0', '-i', listing, '-i', mix, '-map', '0:v:0', '-map', '1:a:0',
+       '-c', 'copy', '-movflags', '+faststart', clean)
+    ass = (captions / 'captions.ko.ass').resolve().as_posix().replace(':', '\\:')
+    ff('-threads', 2, '-filter_threads', 2, '-i', clean, '-vf', f"ass='{ass}'", *VENC,
+       '-c:a', 'copy', '-movflags', '+faststart', captioned)
+    proof = []
+    for file in (clean, captioned):
+        check_picture(file, body + 720)
+        ff('-threads', 2, '-i', file, '-f', 'null', '-')
+        proof.append({'path': str(file), 'sha256': sha(file), 'fullDecode': 'passed'})
+    for lang in ('ko', 'en'):
+        target = output / f'{episode}.{lang}.srt'
+        shutil.copyfile(captions / f'captions.{lang}.srt', target)
+        proof.append({'path': str(target), 'sha256': sha(target)})
+    save(output / 'delivery.json', {'episode': episode, 'stage': 'encoded-sample-review-pending',
+         'technicalQa': True, 'humanReviewed': False, 'platformChanged': False, 'bodyFrames': body,
+         'gameFrames': sum(part['frames'] for part in rows if part['kind'] == 'game'), 'files': proof})
+    print('Four output files encoded and decoded', output, flush=True)
 
 
 def main():
@@ -222,29 +246,9 @@ def main():
             picture(brand['path'], frames, offset, destination, kind)
         files.append(destination)
         print(index, key, kind, frames, flush=True)
-    listing = parts / 'picture.txt'
-    listing.write_text(''.join(f"file '{p.as_posix()}'\n" for p in files), encoding='utf-8')
     mix = parts / 'final-mix.m4a'
-    mix_audio(rows, sources, body, parts, mix)
-    clean, captioned = OUTPUT / 'DS01.clean.mp4', OUTPUT / 'DS01.captioned.mp4'
-    ff('-f', 'concat', '-safe', '0', '-i', listing, '-i', mix, '-map', '0:v:0', '-map', '1:a:0',
-       '-c', 'copy', '-movflags', '+faststart', clean)
-    ass = (LOCAL / 'captions/captions.ko.ass').resolve().as_posix().replace(':', '\\:')
-    ff('-threads', 2, '-filter_threads', 2, '-i', clean, '-vf', f"ass='{ass}'", *VENC,
-       '-c:a', 'copy', '-movflags', '+faststart', captioned)
-    proof = []
-    for file in (clean, captioned):
-        check_picture(file, body + 720)
-        ff('-threads', 2, '-i', file, '-f', 'null', '-')
-        proof.append({'path': str(file), 'sha256': sha(file), 'fullDecode': 'passed'})
-    for lang in ('ko', 'en'):
-        path = OUTPUT / f'DS01.{lang}.srt'
-        shutil.copyfile(LOCAL / f'captions/captions.{lang}.srt', path)
-        proof.append({'path': str(path), 'sha256': sha(path)})
-    save(OUTPUT / 'delivery.json', {'episode': 'DS01', 'stage': 'encoded-sample-review-pending',
-         'technicalQa': True, 'humanReviewed': False, 'platformChanged': False, 'bodyFrames': body,
-         'gameFrames': sum(part['frames'] for part in rows if part['kind'] == 'game'), 'files': proof})
-    print('Four output files encoded and decoded', OUTPUT, flush=True)
+    mix_audio(rows, sources, body, parts, mix, VOICE)
+    write_delivery('DS01', rows, body, parts, files, mix, LOCAL / 'captions', OUTPUT)
 
 
 if __name__ == '__main__':

@@ -34,8 +34,8 @@ class FeedbackLoop extends Node {
 
   protected draw(ctx: CanvasRenderingContext2D) {
     const stages = [
-      ['1 · 손의 입력', '방향을 누름'], ['2 · 게임의 처리', '다음 위치와 동작을 정함'],
-      ['3 · 화면과 소리', '이동과 착지를 알아챔'], ['4 · 다음 입력', '손을 떼거나 다시 뜀'],
+      ['1 · 손의 입력', '방향을 누름'], ['2 · 게임 처리', '위치와 동작 결정'],
+      ['3 · 화면과 소리', '이동과 착지 확인'], ['4 · 다음 입력', '손을 떼거나 점프'],
     ];
     const time = this.clock();
     const focus = Math.min(3, Math.floor(time / 1.35));
@@ -46,8 +46,8 @@ class FeedbackLoop extends Node {
       ctx.fillRect(x, -125, 377, 222);
       ctx.fillStyle = i === focus ? palette.yellow : active ? palette.teal : palette.line;
       ctx.fillRect(x, -125, 377, 5);
-      label(ctx, name, x + 24, -67, 37, active ? palette.white : palette.muted);
-      label(ctx, action, x + 24, 19, 30, active ? palette.teal : palette.muted);
+      label(ctx, name, x + 20, -67, 41, active ? palette.white : palette.muted);
+      label(ctx, action, x + 20, 19, 36, active ? palette.teal : palette.muted);
       if (i > 0) arrow(ctx, x - 49, -20, x - 13, -20, active ? palette.teal : palette.line);
     }
     if (focus === 3) {

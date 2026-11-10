@@ -70,6 +70,8 @@ def prepare():
                  else '참고 영상 검수·구성 정리 · 게임 자료 확인 중')
         if ep.get('stage') == 'voice-generated-readback-pending':
             state = '대본·녹음 생성 · 발음·자막·편집 검수 중'
+        if ep.get('stage') == 'independent-footage-and-narration-finalized':
+            state = '한영 대본·게임 구간 확정 · 음성·시연 제작 중'
         ready = bool(ep.get('deliveryManifest'))
         if ready:
             state = '1080p60 로컬 4종 완성'
