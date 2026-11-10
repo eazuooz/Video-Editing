@@ -17,7 +17,7 @@ class Flick extends Node {
     const {text, box, path, dot} = board(ctx);
     text(headings[mode], -846, -342, 54, c.gold);
     const titles = mode === 0 ? ['A · 천천히 밀기', 'B · 빠르게 젖히기']
-      : mode === 1 ? ['A · 방향키를 두 번 누름', 'B · 스틱을 한 번 빠르게 젖힘']
+      : mode === 1 ? ['A · 대시 버튼을 누름', 'B · 스틱을 한 번 빠르게 젖힘']
       : ['A · 공격 경로에 남음', 'B · 옆으로 대시'];
     for (const [i, title] of titles.entries()) {
       const x = -845 + i * 873, ink = i === 0 ? c.teal : c.coral;
@@ -45,15 +45,13 @@ class Flick extends Node {
         dot(x + 151 + 59 * pos, 31, 29, ink);
         text(pos < trigger ? '기울이는 중' : i === 0 ? '걷기' : '대시', x + 70, 193, 43, ink);
       } else if (mode === 1) {
-        const taps = i === 0 ? [.23, .48] : [.39];
-        const active = phase >= taps.at(-1)!;
-        for (const [j, tap] of taps.entries()) {
-          const xx = x + 105 + j * 244;
-          box(xx, -105, 183, 116, phase >= tap ? ink : c.grid);
-          text(i === 0 ? '→' : '스틱 ↗', xx + 22, -46, 46, phase >= tap ? c.bg : c.white);
-        }
+        const triggerTime = i === 0 ? .36 : .39;
+        const active = phase >= triggerTime;
+        const xx = x + 105;
+        box(xx, -105, 227, 116, active ? ink : c.grid);
+        text(i === 0 ? 'L 버튼' : '스틱 ↗', xx + 22, -46, 46, active ? c.bg : c.white);
         path([[x + 105, 88], [x + 699, 88]], c.grid, 8);
-        dot(x + 105 + Math.max(0, phase - taps.at(-1)!) * 930, 88, 25, active ? ink : c.muted);
+        dot(x + 105 + Math.max(0, phase - triggerTime) * 930, 88, 25, active ? ink : c.muted);
         text(active ? '대시 시작' : '입력 기다림', x + 105, 180, 38, ink);
       } else {
         const left = x + 111, hitY = 33;
