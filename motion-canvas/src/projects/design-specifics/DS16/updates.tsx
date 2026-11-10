@@ -7,7 +7,7 @@ const headings = ['같은 문에서 만나는 서로 다른 상태', '고친 뒤
 const explanations = ['문 하나를 열어도 그 전에 무엇을 했는지에 따라 저장 상태가 달라집니다.',
   '수정한 문만 통과하면 끝나는지, 연관된 행동이 계속 되는지 확인합니다.',
   '같은 버전, 같은 저장 상태, 같은 직전 행동으로 현상을 재현합니다.',
-  '막혔던 길을 다시 열어 주는 일과 새 행동을 추가하는 일을 나눠 봅니다.'];
+  '스플래툰 3 · 버전 2.0.0 공개 패치 기록'];
 
 class Updates extends Node {
   public constructor(private readonly clock: () => number) { super({}); }
@@ -38,8 +38,8 @@ class Updates extends Node {
         {title: '플레이어의 제보', steps: ['어느 버전이었나', '어디에서 저장했나', '바로 전에 무엇을 했나']},
         {title: '팀의 재현', steps: ['같은 버전에서 실행', '같은 저장 상태 만들기', '같은 입력 후 결과 확인']},
       ] : [
-        {title: 'A · 오류 수정', steps: ['재현 조건 확인', '문제 경로 수정', '원래 하려던 행동 가능']},
-        {title: 'B · 편의 기능 추가', steps: ['불편했던 지점 확인', '선택이나 기능 추가', '플레이 흐름이 달라짐']},
+        {title: 'A · 오류 수정', steps: ['물이 오르기 직전에 발동', '제트팩 종료 후 복귀', '물속으로 돌아가는 문제 수정']},
+        {title: 'B · 콘텐츠 추가', steps: ['빅 런 데이터 추가', '일반 대전 맵을 활용', '해당 기간에 새 무대에서 협력']},
       ];
       for (const [i, variant] of variants.entries()) {
         const x = -844 + 872 * i, ink = i === 0 ? c.teal : c.coral;

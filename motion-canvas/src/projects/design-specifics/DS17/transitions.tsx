@@ -19,7 +19,7 @@ class Transitions extends Node {
     text(headings[mode], -845, -338, 52, c.gold);
     const sides = mode === 0 ? ['A · 느린 페이드', 'B · 짧은 페이드']
       : mode === 1 ? ['A · 즉시 화면 전환', 'B · 옆으로 이어지는 스크롤']
-      : ['A · 직선 와이프', 'B · 출입구를 강조하는 와이프'];
+      : ['A · 직선 와이프', 'B · 열쇠 구멍 와이프'];
     for (const [i, label] of sides.entries()) {
       const x = -845 + i * 874, ink = i === 0 ? c.teal : c.coral;
       const y = -184, width = 810, height = 289;
@@ -47,13 +47,29 @@ class Transitions extends Node {
         drawRoom(-displacement, false);
         drawRoom(width - displacement, true);
       } else if (mode === 2) {
-        drawRoom(0, false);
-        const reveal = clamp((phase - .21) / .53);
-        ctx.beginPath();
-        if (i === 0) ctx.rect(x, y, width * reveal, height);
-        else ctx.arc(x + 232, 25, 650 * reveal, 0, Math.PI * 2);
-        ctx.clip();
-        drawRoom(0, true);
+        if (i === 0) {
+          drawRoom(0, false);
+          const reveal = clamp((phase - .21) / .53);
+          ctx.beginPath();
+          ctx.rect(x, y, width * reveal, height);
+          ctx.clip();
+          drawRoom(0, true);
+        } else if (phase < .22) {
+          drawRoom(0, false);
+        } else if (phase < .72) {
+          box(x, y, width, height, '#070a08');
+          const size = 750 * (1 - clamp((phase - .22) / .46));
+          const cx = x + 497, cy = 8;
+          if (size > 0) {
+            ctx.beginPath();
+            ctx.arc(cx, cy - .18 * size, .63 * size, 0, Math.PI * 2);
+            ctx.rect(cx - .32 * size, cy, .64 * size, .87 * size);
+            ctx.clip();
+            drawRoom(0, false);
+          }
+        } else {
+          drawRoom(0, true);
+        }
       } else {
         drawRoom(0, phase >= .5);
       }

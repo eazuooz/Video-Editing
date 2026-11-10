@@ -52,7 +52,10 @@ def collect(episode, extra_times):
         draw.text((x + 6, y + height + 3), f'{seconds:.2f}s {title}', fill='white')
     grid = qa / 'final-mobile-375.jpg'
     board.save(grid, quality=91)
-    proof = {'stage': 'sample-evidence-visual-check-pending', 'captionPairs': sum(len(x['cues']) for x in alignment),
+    master = next(file for file in delivery['files'] if file['path'] == files['captioned'])
+    assert common.sha(files['captioned']) == master['sha256']
+    proof = {'stage': 'sample-evidence-visual-check-pending', 'masterSha256': master['sha256'],
+             'captionPairs': sum(len(x['cues']) for x in alignment),
              'asrCharacterCoverage': {x['scene']: x['matchingCharacterCoverage'] for x in alignment},
              'aacPayloadSha256': hashes[0].split('=')[1], 'meanDbfs': float(volume['mean']),
              'peakDbfs': float(volume['max']), 'durationSeconds': total, 'finalFrameGrid': str(grid),

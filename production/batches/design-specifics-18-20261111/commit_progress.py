@@ -70,6 +70,10 @@ def prepare():
                  else '참고 영상 검수·구성 정리 · 게임 자료 확인 중')
         if ep.get('stage') == 'voice-generated-readback-pending':
             state = '대본·녹음 생성 · 발음·자막·편집 검수 중'
+        if ep.get('stage') == 'tts-in-progress-with-reviewed-footage':
+            state = '한영 대본·게임 구간 확정 · 내레이션 제작 중'
+        if ep.get('stage') == 'voice-ready-reviewed-gameplay':
+            state = '한영 대본·게임 구간 확정 · 영상 제작 대기'
         if ep.get('stage') == 'independent-footage-and-narration-finalized':
             state = '한영 대본·게임 구간 확정 · 음성·시연 제작 중'
         if ep.get('stage') == 'bilingual-draft-gameplay-and-visuals-in-production':

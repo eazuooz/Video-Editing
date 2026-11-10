@@ -27,13 +27,15 @@ class Chance extends Node {
     const {text, box, path, dot} = board(ctx);
     text(headings[mode], -845, -338, 53, c.gold);
     const sides = mode === 0 ? ['A · 추첨이 결과를 결정', 'B · 추첨 뒤에 선택']
-      : mode === 1 ? ['A · 도구를 먼저 선택', 'B · 나온 기술 중 선택']
+      : mode === 1 ? ['A · 피치가 도구를 먼저 선택', 'B · 용사가 나온 기술 중 선택']
       : ['A · 처음 실행', 'B · 같은 시드로 다시 실행'];
     for (const [i, title] of sides.entries()) {
       const x = -845 + i * 875, ink = i === 0 ? c.teal : c.coral;
       text(title, x, -243, 43, ink);
       box(x, -189, 810, 442);
-      const data = mode === 2 ? drawSequence(722) : i === 0 ? ['이동', '공격', '회복'] : ['방어', '강화', '회피'];
+      const data = mode === 2 ? drawSequence(722)
+        : mode === 1 ? (i === 0 ? ['프라이팬', '골프채', '라켓'] : ['방어', '강화', '회복'])
+        : (i === 0 ? ['이동', '공격', '회복'] : ['방어', '강화', '회피']);
       const step = Math.floor(Math.min(data.length, amount * (data.length + .55)));
       const actions = mode === 0 && i === 0 ? ['추첨', '즉시 결과'] : data;
       const cardW = actions.length === 5 ? 127 : 192;
@@ -43,9 +45,9 @@ class Chance extends Node {
       for (const [j, action] of actions.entries()) {
         const at = start + j * (cardW + gap);
         const shown = mode === 0 && i === 0 ? amount >= .16 + .27 * j : j < step;
-        const selected = mode !== 2 && i === 1 && j === 1 && amount >= .72;
+        const selected = mode !== 2 && j === 1 && amount >= .72 && (i === 1 || mode === 1);
         box(at, -77, cardW, 116, selected ? ink : c.grid);
-        text(shown ? action : '· · ·', at + 16, -16, 41, selected ? c.bg : shown ? c.white : c.muted);
+        text(shown ? action : '· · ·', at + 16, -16, mode === 1 ? 37 : 41, selected ? c.bg : shown ? c.white : c.muted);
         dot(at + cardW / 2, 98, 11, shown ? ink : c.grid);
       }
       const message = mode === 2 ? '같은 시작 상태와 같은 호출 순서'

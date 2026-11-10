@@ -34,6 +34,8 @@ def main():
         receipt = episode.get('deliveryManifest')
         if not receipt:
             stages = {'voice-generated-readback-pending': '내레이션·자막 확인 중',
+                      'tts-in-progress-with-reviewed-footage': '내레이션 제작 중',
+                      'voice-ready-reviewed-gameplay': '한영 대본·게임 장면 확정',
                       'independent-footage-and-narration-finalized': '게임 장면·대본 확정 · 편집 준비',
                       'bilingual-draft-gameplay-and-visuals-in-production': '게임 장면·시연 확인 중'}
             status = stages.get(episode.get('stage'), '한영 대본 초안' if episode.get('draftLanguages') == ['ko', 'en']

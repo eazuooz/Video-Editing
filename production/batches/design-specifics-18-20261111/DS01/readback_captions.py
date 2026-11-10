@@ -24,8 +24,15 @@ def save(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def units(scene):
-    ko = re.split(r'(?<=[.!?])\s+', ' '.join(scene['lines']))
+def display_text(scene, spellings):
+    text = ' '.join(scene['lines'])
+    for spoken, display in spellings.items():
+        text = text.replace(spoken, display)
+    return text
+
+
+def units(scene, spellings=None):
+    ko = re.split(r'(?<=[.!?])\s+', display_text(scene, spellings or {}))
     en = re.split(r'(?<=[.!?])\s+', scene['en'])
     return [{'ko': k, 'en': e,
              'twoLineReason': 'Preserve the complete paired sentence when its own cause or result depends on the preceding words.'}
@@ -41,7 +48,10 @@ def main():
     assert episode in selected['episodes'] and not selected['youtubeAuthorized']
     local = HERE.parent / 'local' / episode
     manifest = load(local / 'tts-manifest.json')
-    script = load(HERE.parent / episode / 'narration.json')['scenes']
+    narration = load(HERE.parent / episode / 'narration.json')
+    script = narration['scenes']
+    spellings = narration.get('captionDisplay', {})
+    aliases = {display: spoken for spoken, display in spellings.items()}
     voice = local / 'voice'
     timing_file = voice / (manifest['tts']['filenameStem'] + '.timing.json')
     timing = load(timing_file)
@@ -72,8 +82,9 @@ def main():
         audio = voice / 'chunks' / f'{name}-scene.wav'
         proof = asr_root / f'{name}.json'
         paragraphs.append({'id': episode + '-' + name, 'scene': name, 'start': 2 + starts[name],
-                           'duration': sf.info(str(audio)).duration, 'ko': ' '.join(row['lines']), 'en': row['en'],
-                           'audioFile': str(audio), 'asrFile': str(proof), 'captionUnits': units(row)})
+                           'duration': sf.info(str(audio)).duration, 'ko': display_text(row, spellings), 'en': row['en'],
+                           'audioFile': str(audio), 'asrFile': str(proof), 'captionUnits': units(row, spellings),
+                           'aliases': aliases})
     output = (local / 'captions').resolve()
 
     def caption_write_path(value):
