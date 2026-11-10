@@ -55,10 +55,14 @@ def main():
             ('ko.srt', '한국어 SRT'), ('en.srt', '영어 SRT')))
         cues = ''.join(f'<a href="{mp4}#t={cue["seconds"]}">{escape(cue["label"])}</a>'
                        for cue in delivery['reviewPoints'])
+        notes = delivery.get('qa', {}).get('auditionNotes', [])
+        audition = ('<details><summary>음성 확인 지점</summary><ul>'
+                    + ''.join(f'<li>{escape(note)}</li>' for note in notes)
+                    + '</ul></details>') if notes else ''
         content = (f'<nav><a href="../index.html">전체 목록</a></nav><h1>{episode_id} · {title}</h1>'
                    f'<p>{duration} · 1080p 60fps · 실제 영상 60% / 설명 40%</p>'
                    f'<video controls playsinline preload="metadata" src="{mp4}"></video>'
-                   f'<nav>{controls}</nav><nav>{cues}</nav>')
+                   f'<nav>{controls}</nav><nav>{cues}</nav>{audition}')
         (folder / 'index.html').write_text(page(episode['workingTitle'], content), encoding='utf-8')
         rows.append(f'<li><a href="{episode_id}/index.html">{episode_id} · {title}</a> <small>검수 가능</small></li>')
     ready = sum(bool(episode.get('deliveryManifest')) for episode in batch['episodes'])
