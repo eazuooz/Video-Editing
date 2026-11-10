@@ -44,7 +44,8 @@ class Chance extends Node {
       path([[start, 98], [x + 753, 98]], c.grid, 7);
       for (const [j, action] of actions.entries()) {
         const at = start + j * (cardW + gap);
-        const shown = mode === 0 && i === 0 ? amount >= .16 + .27 * j : j < step;
+        const shown = i === 0 && mode === 1
+          || (mode === 0 && i === 0 ? amount >= .16 + .27 * j : j < step);
         const selected = mode !== 2 && j === 1 && amount >= .72 && (i === 1 || mode === 1);
         box(at, -77, cardW, 116, selected ? ink : c.grid);
         text(shown ? action : '· · ·', at + 16, -16, mode === 1 ? 37 : 41, selected ? c.bg : shown ? c.white : c.muted);
