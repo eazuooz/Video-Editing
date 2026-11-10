@@ -1,7 +1,9 @@
 // Read-only local review. Start only after all17 final delivery hashes are ready.
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'../../../..'),port=Number(process.argv[2]||9294);
-const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'review-manifest.json'),'utf8'));
+const manifestPath=process.argv[3]?path.resolve(process.argv[3]):path.join(__dirname,'review-manifest.json');
+const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+const receiptName=port===9294?'review-server.json':`review-server-${port}.json`;
 const expected=Array.from({length:18},(_,i)=>'A'+String(i+1).padStart(2,'0')).filter(x=>x!=='A03');
 if(manifest.records.length!==17||expected.some(id=>!manifest.records.some(r=>r.id===id)))throw Error('Exactly17 final review records required');
 const files=new Map(),esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
@@ -18,7 +20,8 @@ const index=()=>shell('애니메이션17편 · 통합 검수','<p class="meta">Y
 function episode(r,idx,seek){
  const nav=[idx?'<a href="/'+manifest.records[idx-1].id+'/">← 이전 편</a>':'','<a href="/">전체 목록</a>',idx+1<manifest.records.length?'<a href="/'+manifest.records[idx+1].id+'/">다음 편 →</a>':''].join('');
  const cues=(r.reviewPoints||[]).map(c=>'<a href="?t='+c.seconds+'">'+esc(c.label)+' · '+duration(c.seconds)+'</a>').join('');
- return shell(r.id+' '+r.title,'<nav>'+nav+'</nav><h1>'+r.id+' · '+esc(r.title)+'</h1><p>'+esc(r.description)+'</p><nav>'+cues+'</nav><div class="tools"><button data-kind="captioned.mp4" aria-pressed="true">한국어 자막 영상</button><button data-kind="clean.mp4" aria-pressed="false">무자막 영상</button></div><video controls playsinline preload="metadata" src="captioned.mp4'+(seek?'#t='+seek:'')+'"></video><nav>'+['captioned.mp4','clean.mp4','ko.srt','en.srt'].map((k,i)=>'<a href="'+k+'" download>'+['자막 MP4','무자막 MP4','한국어 SRT','영어 SRT'][i]+'</a>').join('')+'</nav><p class="meta">'+duration(r.durationSeconds)+' · 1080p60 · 사용자 검수 대기</p><nav>'+nav+'</nav><script>const v=document.querySelector("video");document.querySelectorAll("button[data-kind]").forEach(b=>b.onclick=()=>{const t=v.currentTime,p=!v.paused;v.src=b.dataset.kind;v.addEventListener("loadedmetadata",()=>{v.currentTime=t;if(p)v.play()},{once:true});document.querySelectorAll("button[data-kind]").forEach(x=>x.setAttribute("aria-pressed",x===b))});</script>');
+ const credits=(r.sourceCredits||[]).map(c=>'<p class="meta">'+esc(c.description)+' <a href="'+esc(c.url)+'">'+esc(c.label)+'</a></p>').join('');
+ return shell(r.id+' '+r.title,'<nav>'+nav+'</nav><h1>'+r.id+' · '+esc(r.title)+'</h1><p>'+esc(r.description)+'</p><nav>'+cues+'</nav><div class="tools"><button data-kind="captioned.mp4" aria-pressed="true">한국어 자막 영상</button><button data-kind="clean.mp4" aria-pressed="false">무자막 영상</button></div><video controls playsinline preload="metadata" src="captioned.mp4'+(seek?'#t='+seek:'')+'"></video><nav>'+['captioned.mp4','clean.mp4','ko.srt','en.srt'].map((k,i)=>'<a href="'+k+'" download>'+['자막 MP4','무자막 MP4','한국어 SRT','영어 SRT'][i]+'</a>').join('')+'</nav><p class="meta">'+duration(r.durationSeconds)+' · 1080p60 · 사용자 검수 대기</p>'+credits+'<nav>'+nav+'</nav><script>const v=document.querySelector("video");document.querySelectorAll("button[data-kind]").forEach(b=>b.onclick=()=>{const t=v.currentTime,p=!v.paused;v.src=b.dataset.kind;v.addEventListener("loadedmetadata",()=>{v.currentTime=t;if(p)v.play()},{once:true});document.querySelectorAll("button[data-kind]").forEach(x=>x.setAttribute("aria-pressed",x===b))});</script>');
 }
 const server=http.createServer((req,res)=>{
  if(!['GET','HEAD'].includes(req.method))return res.writeHead(405).end();if(!['127.0.0.1:'+port,'localhost:'+port].includes(req.headers.host))return res.writeHead(403).end();
@@ -31,4 +34,4 @@ const server=http.createServer((req,res)=>{
  if(req.headers.range){const m=req.headers.range.match(/^bytes=(\d*)-(\d*)$/);if(!m||(!m[1]&&!m[2]))return res.writeHead(416).end();a=m[1]?Number(m[1]):Math.max(0,f.size-Number(m[2]));b=m[1]&&m[2]?Math.min(f.size-1,Number(m[2])):f.size-1;if(a>b||a>=f.size)return res.writeHead(416).end();status=206;h['Content-Range']=`bytes ${a}-${b}/${f.size}`;}
  h['Content-Length']=b-a+1;res.writeHead(status,h);if(req.method==='HEAD')return res.end();fs.createReadStream(f.file,{start:a,end:b}).on('error',()=>res.destroy()).pipe(res);
 });
-server.listen(port,'127.0.0.1',()=>{fs.mkdirSync(path.join(__dirname,'local'),{recursive:true});fs.writeFileSync(path.join(__dirname,'local/review-server.json'),JSON.stringify({pid:process.pid,port,readOnly:true,hashPinned:true,episodes:17,startedAt:new Date().toISOString()},null,2));console.log('http://127.0.0.1:'+port+'/')});
+server.listen(port,'127.0.0.1',()=>{fs.mkdirSync(path.join(__dirname,'local'),{recursive:true});fs.writeFileSync(path.join(__dirname,'local',receiptName),JSON.stringify({pid:process.pid,port,readOnly:true,hashPinned:true,episodes:manifest.records.length,startedAt:new Date().toISOString()},null,2));console.log('http://127.0.0.1:'+port+'/')});
