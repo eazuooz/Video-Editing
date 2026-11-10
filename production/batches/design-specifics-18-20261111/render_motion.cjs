@@ -9,6 +9,11 @@ const renders = {
   DS01: {name: 'ds01-effect-comparison-review', frames: 480},
   DS02: {name: 'ds02-button-response-preview', frames: 1080},
   'DS02-controls': {name: 'ds02-control-studies-review', frames: 960, entry: 'controls'},
+  DS04: {name: 'ds04-eight-hit-stop-studies', frames: 3360},
+  DS05: {name: 'ds05-camera-focus-studies', frames: 1440},
+  DS06: {name: 'ds06-waiting-study', frames: 600},
+  DS07: {name: 'ds07-speed-units-studies', frames: 960},
+  DS08: {name: 'ds08-ledge-study', frames: 600},
 };
 
 async function main() {

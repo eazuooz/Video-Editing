@@ -27,7 +27,7 @@ def cuts(timing, plan):
     fixed, mixed = plan['fullGameplay'], plan['mixedGameplay']
     native = {key: round(window['preferred'] * FPS) for key, window in mixed.items()}
     remaining = round(body * .6) - sum(durations[key] for key in fixed) - sum(native.values())
-    for key in ('04', '10', '02', '09', '07', '08'):
+    for key in ('09', '10', '04', '02', '07', '08'):
         window = mixed[key]
         floor = round(window['minimum'] * FPS)
         ceiling = min(round(window['maximum'] * FPS), durations[key] - 150)
@@ -55,14 +55,21 @@ def cuts(timing, plan):
     return rows, body
 
 
-def game_label(part):
+def gameplay_overlay(part):
     labels = {'metroid': '메트로이드 드레드 · 크레이드', 'ghosts': '돌아온 마계촌',
               'zangief': '스트리트 파이터 6 · 훈련 화면', 'celeste': '셀레스트 · 공중 조향'}
     label = labels.get(part['source'])
-    if not label:
-        return ''
-    return (",drawtext=fontfile='C\\:/Windows/Fonts/malgunbd.ttf':text='" + label + "':"
-            "fontsize=38:fontcolor=0xf5f4ec:box=1:boxborderw=14:boxcolor=0x0a110d@0.85:x=w-tw-38:y=34")
+    filters = common.game_badge(label) if label else ''
+    # Native anchors checked in the decoded gameplay, in the final 880px picture region.
+    focus = {'05': (28.53, 28.69, 778, 463, 139, 133),
+             '06': (17.63, 18.52, 203, 432, 153, 155),
+             '07': (31.54, 31.69, 879, 252, 203, 168)}
+    item = focus.get(part['scene'])
+    if item:
+        start, end, x, y, w, h = item
+        a, b = start - part['offset'], end - part['offset']
+        filters += f",drawbox=x={x}:y={y}:w={w}:h={h}:color=0xf2d786:t=7:enable='between(t,{a:.4f},{b:.4f})'"
+    return filters
 
 
 def diagram(part, definition, destination):
@@ -107,7 +114,8 @@ def main():
         kind, key, frames = part['kind'], part['scene'], part['frames']
         destination = PARTS / f'{index:02d}-{key}-{kind}.mp4'
         if kind == 'game':
-            common.picture(sources[part['source']]['file'], frames, part['offset'], destination, kind, game_label(part))
+            common.picture(sources[part['source']]['file'], frames, part['offset'], destination, kind,
+                           gameplay_overlay(part))
         elif kind == 'explanation':
             diagram(part, plan['diagrams'][key], destination)
         else:

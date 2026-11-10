@@ -33,7 +33,12 @@ def main():
         title = escape(episode['workingTitle'])
         receipt = episode.get('deliveryManifest')
         if not receipt:
-            rows.append(f'<li>{episode_id} · {title} <small>제작 중</small></li>')
+            stages = {'voice-generated-readback-pending': '내레이션·자막 확인 중',
+                      'independent-footage-and-narration-finalized': '게임 장면·대본 확정 · 편집 준비',
+                      'bilingual-draft-gameplay-and-visuals-in-production': '게임 장면·시연 확인 중'}
+            status = stages.get(episode.get('stage'), '한영 대본 초안' if episode.get('draftLanguages') == ['ko', 'en']
+                                else '한국어 대본 초안')
+            rows.append(f'<li>{episode_id} · {title} <small>{status}</small></li>')
             continue
         delivery = read(Path(receipt))
         assert delivery['episode'] == episode_id and delivery['stage'] == 'local-final-review-ready'

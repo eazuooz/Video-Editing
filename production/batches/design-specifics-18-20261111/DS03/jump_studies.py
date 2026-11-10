@@ -242,7 +242,7 @@ class CommittedJump(Scene):
                  Arrow([-.58, -.71, 0], [-2.12, -.71, 0], buff=0, color=TEAL, stroke_width=5),
                  ko('점프 방향', 29, TEAL).move_to([-2.2, .56, 0]),
                  ko('공격 방향', 29, CORAL).move_to([2.52, .45, 0]),
-                 ko('뛰기 전에 착지할 곳을 고릅니다', 38, YELLOW).move_to([0, -2.47, 0]))
+                 ko('뛰기 전에 착지할 곳을 고릅니다', 34, YELLOW).move_to([3.45, -1.86, 0]))
         self.wait(.5)
         self.play(time.animate.set_value(1), run_time=7.7, rate_func=linear)
         self.wait(1.8)

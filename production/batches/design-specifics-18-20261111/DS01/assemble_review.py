@@ -107,6 +107,11 @@ def picture(source, frames, offset, destination, kind, suffix=''):
     check_picture(destination, frames)
 
 
+def game_badge(label):
+    return (",drawtext=fontfile='C\\:/Windows/Fonts/malgunbd.ttf':text='" + label + "':"
+            "fontsize=38:fontcolor=0xf5f4ec:box=1:boxborderw=14:boxcolor=0x0a110d@0.85:x=w-tw-38:y=34")
+
+
 def gameplay_focus(part):
     focus = FOCUS.get(part['scene'])
     if focus is None:

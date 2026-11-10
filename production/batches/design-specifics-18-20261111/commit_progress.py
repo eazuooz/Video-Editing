@@ -72,6 +72,8 @@ def prepare():
             state = '대본·녹음 생성 · 발음·자막·편집 검수 중'
         if ep.get('stage') == 'independent-footage-and-narration-finalized':
             state = '한영 대본·게임 구간 확정 · 음성·시연 제작 중'
+        if ep.get('stage') == 'bilingual-draft-gameplay-and-visuals-in-production':
+            state = '한영 대본 초안 · 실제 장면과 시연 검증 중'
         ready = bool(ep.get('deliveryManifest'))
         if ready:
             state = '1080p60 로컬 4종 완성'
