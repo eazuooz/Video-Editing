@@ -67,7 +67,7 @@ def run(episode):
         work=folder/"mix-recognition";work.mkdir(exist_ok=True)
         # These are regenerable checking samples, separate from every approved
         # source WAV. Keep them on C while the D output volume is nearly full.
-        scratch=Path(os.environ["LOCALAPPDATA"])/"YamyamCoding/VideoEditingScratch/math-teaching-sync-v2"/episode["slug"]
+        scratch=Path(os.environ["LOCALAPPDATA"])/"YamyamCoding/VideoEditingScratch/math-teaching-sync-v2"/episode["slug"]/encoded['files']['captioned']['sha256'][:16]
         scratch.mkdir(parents=True,exist_ok=True);pcm=scratch/"actual-final-body-mono.wav"
         identity=scratch/"identity.json"
         if pcm.exists():assert read(identity)["masterSha256"]==sha(master)

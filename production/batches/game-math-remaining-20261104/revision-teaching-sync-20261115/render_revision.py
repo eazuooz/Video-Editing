@@ -163,7 +163,8 @@ def filters(episode,origin,end):
             inputs.extend(["-ss",str(game["nativeIn"]+relative),"-t",str(finish-begin),"-reinit_filter","0","-i",game["nativeSource"]])
             cx,cy,cw,ch=game["nativeCrop"];x,y,w,h=game["nativeViewport"]
             clear=f",drawbox=0:{ch-game['nativeClearBottom']}:{cw}:{game['nativeClearBottom']}:color=black:t=fill" if game.get('nativeClearBottom') else ''
-            graph.append(f"[{index}:v]crop={cw}:{ch}:{cx}:{cy}{clear},scale={w}:{h},setsar=1,fps=60,setpts=PTS-STARTPTS+{begin}/TB[n{index}]")
+            if game.get('nativeClearTop'):clear+=f",drawbox=0:0:{cw}:{game['nativeClearTop']}:color=black:t=fill"
+            graph.append(f"[{index}:v]crop={cw}:{ch}:{cx}:{cy}{clear},scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=60,setpts=PTS-STARTPTS+{begin}/TB[n{index}]")
             next_name=f"b{count+1}";count+=1
             graph.append(f"[{current}][n{index}]overlay={x}:{y}:eof_action=pass:repeatlast=0:enable='gte(t,{begin})*lt(t,{finish})'[{next_name}]")
             current=next_name;index+=1

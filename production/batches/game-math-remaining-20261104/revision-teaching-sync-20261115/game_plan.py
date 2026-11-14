@@ -91,6 +91,13 @@ def build():
                 paired_picture["nativeIn"]=scene["start"]+cut["frames"]/60
                 paired_picture["nativeInputKind"]="current postprocessed explanation; introduce the same principle beside its existing game preface"
                 assert paired_picture["nativeIn"]+paired_picture["duration"]<=scene["end"]
+            if (eid,sid)==('M31','027'):
+                additions[-1]['nativeCrop']=[40,178,1080,738]
+                additions[-1]['nativeBoundsReason']='Keep both p1 and v1 fully inside the aspect-preserved diagram pane.'
+            if (eid,sid) in {('M29','018'),('M30','003')}:
+                additions[-1]['nativeClearBottom']=140
+            if (eid,sid) in {('M32','017'),('M32','022'),('M33','017')}:
+                additions[-1]['nativeClearTop']=24
     save(HERE/"game-additions.json",dict(additions=additions,
         otherGameExamples="Retain the concept-specific independently recorded before/action/result windows and their existing source/rights/FHD evidence; see inventory.originalGame for every episode.",
         finalVisualReview=False,gameInternalMeasurementsFabricated=False))
