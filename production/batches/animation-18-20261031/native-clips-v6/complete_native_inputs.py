@@ -5,6 +5,7 @@ import time
 
 from prepare import HERE,WORK,OUTPUT,read,save
 from run_selected_queue import run
+from finish_episode import sha
 
 
 def main():
@@ -23,10 +24,24 @@ def main():
             dest=rejected/source.name
             if source.exists() and not dest.exists():shutil.copyfile(source,dest)
         save(rejected/'reason.json',{'adopted':False,'reason':'The audition lowered the character through the stage floor. Preserve original actor height and place a single camera at hand height; never alter the animation to hide a staging error.'})
-    run('prepare_native.py','--only','anim_GrabValve_R','anim_OpeningValve_R')
-    for key in ('anim_GrabValve_R','anim_OpeningValve_R'):
-        run('capture_native.py',key)
-    run('render_recaps.py','--manifest','patches-manifest.json')
+    audition=WORK/'native-hand-audition.json'
+    audited=read(audition) if audition.exists() else {}
+    reusable=audited.get('visualAuditionPassed') and all(
+        sha(WORK/(key+'.mp4'))==audited['inputs'][key]['movieSha256'] and
+        read(WORK/(key+'-build.json'))['builderSha256']==audited['inputs'][key]['definitionSha256']
+        for key in ('anim_GrabValve_R','anim_OpeningValve_R'))
+    if not reusable:
+        run('prepare_native.py','--only','anim_GrabValve_R','anim_OpeningValve_R')
+        for key in ('anim_GrabValve_R','anim_OpeningValve_R'):
+            run('capture_native.py',key)
+    from prepare import VOICE_LOCAL
+    verified=WORK/'narration-patches-checked.json'
+    expected=read(HERE/'narration-patches.json')['records']
+    prior={r['id']:r for r in read(verified)['records']} if verified.exists() else {}
+    current=all(r['id'] in prior and prior[r['id']]['ko']==r['ko'] and
+                prior[r['id']].get('rawAudioSha256')==sha(VOICE_LOCAL/'patch-voice/chunks'/(r['id']+'-scene.wav'))
+                for r in expected)
+    if not current:run('render_recaps.py','--manifest','patches-manifest.json','--only-missing')
     run('check_narration_patches.py')
     run('finish_episode.py','A09')
     run('assemble_delivery.py','A09')

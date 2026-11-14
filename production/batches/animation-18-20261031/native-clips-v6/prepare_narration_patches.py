@@ -19,14 +19,15 @@ REPLACEMENTS = {
   ('머리, 어깨, 손, 발을 하나씩 고쳤어도 서로 어울리지 않으면 좋은 자세가 되지 않습니다.', '머리, 어깨, 손, 발을 하나씩 살펴도 서로 어울려야 좋은 자세가 됩니다.', 'The head, shoulders, hands and feet must work together as a pose.'),
   ('오늘 고친 자세를 처음 모습과 다시 나란히 보겠습니다.', '처음 모습과 다시 나란히 보겠습니다.', 'Compare it with the starting pose again.'),
   ('몸을 정확히 가운데에 두고 양발로 똑같이 받치는 모습에서, 한쪽 다리가 더 받치는 모습으로 조금 바꾸어 보겠습니다.', '몸을 가운데에 둔 순간과 한쪽 다리가 더 받치는 순간을 나누어 살펴보겠습니다.', 'Compare the centered moment with the moment supported more by one leg.'),
-  ('오른손이 몸 앞에서 올라가고, 왼손도 함께 따라옵니다.', '한 손이 올라갈 때, 팔과 몸통 사이의 빈 공간을 보세요.', 'As one hand rises, watch the negative space between the arm and the torso.')],
+  ('오른손이 몸 앞에서 올라가고, 왼손도 함께 따라옵니다.', '올라가는 손과 몸 사이 빈틈을 보세요.', 'Watch the negative space between the rising hand and the torso.')],
  'A10': [
   ('우리 시연에서는 카메라를 고정하고 몸통 방향만 바꿔, 같은 날아가는 자세가 얼마나 다르게 읽히는지 보겠습니다.', '같은 피격 자세를 다른 각도에서 보며, 가려졌던 팔다리가 드러나는지 살펴보겠습니다.', 'View the same hit reaction from different angles and check whether the hidden limbs become visible.'),
   ('먼저 높이만 바꾸고, 그다음 같은 높이에서 반응 크기만 바꾸면 무엇이 달라지는지 쉽게 볼 수 있습니다.', '먼저 피격 높이를 나누고, 반응의 시작과 크게 밀리는 순간을 비교하면 차이가 보입니다.', 'Separate the hit heights, then compare the reaction onset with the larger displacement.')],
  'A11': [
   ('오른쪽은 준비에 시간을 쓰고, 팔을 빠르게 올립니다.', '오른쪽은 준비에 시간을 쓰고, 주먹을 빠르게 뻗습니다.', 'The right version holds the preparation, then extends the fist quickly.'),
   ('아래에서 위로 주먹을 올리는 어퍼컷을 세 자세로 나눠 보겠습니다.', '앞으로 주먹을 뻗는 동작을 세 자세로 나눠 보겠습니다.', 'Break the forward punch into three poses.'),
-  ('몸을 낮춘 자세, 주먹이 올라가는 자세, 팔을 위로 뻗은 자세입니다.', '몸을 당긴 자세, 주먹이 나가는 자세, 팔을 뻗은 자세입니다.', 'The body draws back, the fist moves out, and the arm extends.')],
+  ('몸을 낮춘 자세, 주먹이 올라가는 자세, 팔을 위로 뻗은 자세입니다.', '몸을 당긴 자세, 주먹이 나가는 자세, 팔을 뻗은 자세입니다.', 'The body draws back, the fist moves out, and the arm extends.'),
+  ('주먹을 뻗은 뒤에는 올라온 길을 그대로 되짚는 대신 다른 경로로 돌아오게 해 보겠습니다.', '주먹을 뻗은 뒤에는 나간 길을 되짚는 모습과 실제 회수 동작을 비교해 보겠습니다.', 'After the punch, compare retracing the outward path with the actual recovery motion.')],
  'A12': [
   ('우리 시연에서는 같은 얼굴에서 눈썹, 눈, 입을 차례로 바꿔 보겠습니다.', '같은 캐릭터의 눈썹, 눈, 입을 차례로 살펴보겠습니다.', 'Examine the same character’s brows, eyes and mouth in turn.'),
   ('우리 시연에서는 원래 얼굴, 수정 그림, 실제 조정한 얼굴을 같은 크기와 각도로 이어 보여 주겠습니다.', '원래 얼굴과 수정 방향을 그린 그림을 같은 크기로 나란히 보겠습니다.', 'Compare the original face with a drawing of the proposed changes at the same size.'),

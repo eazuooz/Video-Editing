@@ -12,6 +12,8 @@ from assemble_delivery import srt
 def audio_and_captions(ep,base,folder,prior):
     import numpy as np
     import soundfile as sf
+    from scipy.signal import resample_poly
+    from math import gcd
     original=Path('C:/Users/1/Videos/YamyamProduction/animation-review-notes-20261110')/ep/'finish/narration-mix.wav'
     assert original.is_file()
     records=[r for r in read(WORK/'narration-patches-checked.json')['records'] if r['episode']==ep]
@@ -22,7 +24,11 @@ def audio_and_captions(ep,base,folder,prior):
     before=pcm.copy();modified=np.zeros(len(pcm),dtype=bool)
     music_path=ROOT/'projects'/base['slug']/'production/local/series-v1/music.wav'
     music,music_rate=sf.read(music_path,dtype='float32',always_2d=True)
-    assert music_rate==rate and music.shape[1]==2
+    if music_rate!=rate:
+        divisor=gcd(music_rate,rate)
+        music=resample_poly(music,rate//divisor,music_rate//divisor,axis=0).astype('float32')
+    if music.shape[1]==1:music=np.repeat(music,2,axis=1)
+    assert music.shape[1]==2
     evidence=[]
     for r in records:
         assert sha(Path(r['audioFile']))==r['audioSha256']

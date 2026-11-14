@@ -49,7 +49,7 @@ def main(ep):
     code=hashlib.sha256(b''.join((HERE/name).read_bytes() for name in
                 ('native_visuals.py','native_specials.py','render_replacements.py'))).hexdigest()
     source_inputs={}
-    for key in ('AS_ComboHands','am_Ready_Fight_01_Knockdown_A','anim_GrabValve_R','anim_OpeningValve_R'):
+    for key in ('AS_ComboHands','am_Ready_Fight_01_Knockdown_A','anim_GrabValve_R','anim_OpeningValve_R','A_Guard_idle'):
         p=WORK/(key+'-capture.json')
         if p.exists(): source_inputs[key]=sha(p)
     source_inputs['gameBanks']=sha(WORK/'game-banks/manifest.json')

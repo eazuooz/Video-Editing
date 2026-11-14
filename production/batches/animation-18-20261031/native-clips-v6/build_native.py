@@ -26,6 +26,7 @@ def build(row):
     assert clip.get_editor_property('skeleton') == mesh.get_editor_property('skeleton'), key
     start = row.get('sourceStartSeconds', 0)
     end = row.get('sourceEndSeconds', clip.get_play_length())
+    end = min(end,row.get('sourceMaxSeconds',end))
     assert 0 <= start < end <= clip.get_play_length() + .001
     frames = max(1, round((end - start) * 60))
     level = ASSET_ROOT + '/Levels/' + key
@@ -86,6 +87,19 @@ def build(row):
         tick = sequence.get_tick_resolution()
         params.set_editor_property('start_frame_offset', u.FrameNumber(round(start * tick.numerator / tick.denominator)))
         section.params = params
+        for prop in row.get('props',[]):
+            prop_mesh=u.load_asset(prop['mesh']);prop_clip=u.load_asset(prop['clip'])
+            assert isinstance(prop_mesh,u.SkeletalMesh) and isinstance(prop_clip,u.AnimSequence)
+            assert prop_mesh.get_editor_property('skeleton')==prop_clip.get_editor_property('skeleton')
+            item=u.EditorLevelLibrary.spawn_actor_from_class(u.SkeletalMeshActor,location,u.Rotator(pitch=0,yaw=yaw,roll=0))
+            item.set_actor_label(key+'_native_prop_'+str(side))
+            item.skeletal_mesh_component.set_skeletal_mesh(prop_mesh)
+            parent=sequence.add_possessable(item)
+            child=sequence.add_possessable(item.skeletal_mesh_component);child.set_parent(parent)
+            prop_section=child.add_track(u.MovieSceneSkeletalAnimationTrack).add_section()
+            prop_section.set_range(0,frames)
+            prop_params=u.MovieSceneSkeletalAnimationParams();prop_params.animation=prop_clip
+            prop_section.params=prop_params
     u.EditorAssetLibrary.save_loaded_asset(sequence, False)
     u.EditorLevelLibrary.save_current_level()
     config = owned('Capture', key, u.MoviePipelinePrimaryConfig, u.MoviePipelinePrimaryConfigFactory())

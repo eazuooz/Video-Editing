@@ -23,6 +23,12 @@ def main(ep):
     files={r['kind']:r for r in delivery['files']}
     master=Path(files['captioned.mp4']['path'])
     prior=ROOT/next(r['path'] for r in base['files'] if r['kind']=='captioned.mp4')
+    body_review=WORK/ep/'native-picture-review.json'
+    if ep!='A06' and body_review.is_file():
+        reviewed=read(body_review)
+        assert reviewed['visualReviewPassed']
+        prior=Path(reviewed['pictures']['captioned.mp4']['path'])
+        assert sha(prior)==reviewed['pictures']['captioned.mp4']['sha256']
     assert sha(master)==files['captioned.mp4']['sha256']
     folder=WORK/ep/'encoded-final-check';folder.mkdir(parents=True,exist_ok=True)
     at=base['frames']-600

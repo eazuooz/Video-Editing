@@ -44,7 +44,7 @@ def main():
         score=SequenceMatcher(None,norm(r['ko']),norm(recognized)).ratio()
         assert score>=.92,(r['id'],score,recognized,r['ko'])
         r.update(audioFile=str(trimmed),asrFile=str(proof),audioSha256=digest,voiceSeconds=duration,
-                 voiceAt=r['start']+.02,recognized=recognized,readbackScore=score)
+                 rawAudioSha256=sha(raw),voiceAt=r['start']+.02,recognized=recognized,readbackScore=score)
         print(r['id'],round(duration,3),round(score,3),recognized,flush=True)
     save(WORK/'narration-patches-checked.json',{'records':records,'humanListened':False})
     for ep in dict.fromkeys(r['episode'] for r in records):
@@ -59,6 +59,7 @@ def main():
             paragraphs.append({'id':r['id'],'scene':'native-animation','start':r['voiceAt'],'duration':r['voiceSeconds'],
                 'ko':r['ko'],'en':r['en'],'audioFile':r['audioFile'],'asrFile':r['asrFile'],
                 'captionUnits':[{'ko':r['ko'],'en':r['en'],'twoLineReason':'Keep the complete corrected demonstration sentence and its visible action together.'}]})
+        paragraphs.sort(key=lambda p:p['start'])
         caption_pipeline.build({'fps':60,'bodyEndFrame':base['frames']-600,'paragraphs':paragraphs},folder)
     print('All new demonstration sentences fit naturally and have aligned bilingual captions.',flush=True)
 

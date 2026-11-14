@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--episodes', nargs='+')
     parser.add_argument('--manifest', default='tts-manifest.json')
+    parser.add_argument('--only-missing', action='store_true')
     args = parser.parse_args()
     selected = args.episodes
     scope = read(ROOT / 'shared/publishing/video-production-control.json')['animationNativeClipsRevision20261114']
@@ -33,10 +34,14 @@ def main():
     runtime['configure_project']('animation-native-clips-v6', str(manifest.relative_to(ROOT)))
     runtime['load_tts_dependencies']()
     jobs = runtime['load_jobs']()
+    if args.only_missing:
+        chunks=ROOT/read(manifest)['tts']['outputDir']/'chunks'
+        jobs=[job for job in jobs if not runtime['valid_wav'](chunks/(job.scene_id+'-scene.wav'))]
     if selected:
         jobs = [job for job in jobs if job.scene_id in selected]
         assert len(jobs) == len(selected)
-    runtime['render_chunks'](runtime['build_render_items'](jobs), 3, set())
+    if jobs:
+        runtime['render_chunks'](runtime['build_render_items'](jobs), 3, set())
 
 
 if __name__ == '__main__':

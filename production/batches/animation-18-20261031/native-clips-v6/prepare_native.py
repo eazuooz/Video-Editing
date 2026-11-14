@@ -36,11 +36,21 @@ def main():
     base = next(row for row in catalog if row['id'] == 'am_Stand_Idle_03_LookAround')
     clips.append(dict(id='am_SitPiano_Play_01', clip='/Game/MC_Sample/Animations/Piano/am_SitPiano_Play_01',
                       mesh=base['mesh'], yaws=[-70, -25]))
+    clips.append(dict(id='A_Guard_idle',clip='/Game/Free_Idle_Animation_Pack_anim/Animation/A_Guard_idle',
+        mesh='/Game/Free_Idle_Animation_Pack_anim/Demo/Characters/Mannequins/Meshes/SKM_Manny',
+        yaws=[-45],actorSpacing=0,cameraWidth=620,cameraHeight=135,sourceMaxSeconds=2.5,
+        role='Existing native guard pose and breathing, before the abstract directional-blending diagram',
+        props=[{'clip':'/Game/Free_Idle_Animation_Pack_anim/Demo/Animation/A_Spear_Guard_idle',
+                'mesh':'/Game/Free_Idle_Animation_Pack_anim/Demo/SkeletalMesh/SKM_Spear'}]))
     for row in clips:
         asset = ROOT / 'GameAnimationSample/Content' / (row['clip'].removeprefix('/Game/') + '.uasset')
         assert asset.is_file(), asset
         with asset.open('rb') as stream:
             row['vendorSourceSha256'] = hashlib.file_digest(stream, 'sha256').hexdigest()
+        for prop in row.get('props',[]):
+            source=ROOT/'GameAnimationSample/Content'/(prop['clip'].removeprefix('/Game/')+'.uasset')
+            assert source.exists()
+            with source.open('rb') as stream:prop['sourceSha256']=hashlib.file_digest(stream,'sha256').hexdigest()
     save(HERE / 'native-candidates.json', {'clips': clips,
          'constraint': 'Direct native playback. Final topic adoption requires moving audition and narration match.'})
     worker = WORK / 'unreal-worker'

@@ -48,6 +48,12 @@ def validate(spec):
     assert not spec['control']['youtubeAuthorized'] and not spec['control']['driveAuthorized']
     for name in spec['ownedPaths']:
         path = PurePosixPath(name)
+        assets={r['path']:r['sha256'] for r in read(HERE/'editable-assets.json')['files']} if (HERE/'editable-assets.json').exists() else {}
+        if name in assets:
+            from finish_episode import sha
+            assert name.startswith('GameAnimationSample/Content/YamyamNativeClipsV6/')
+            assert path.suffix in {'.uasset','.umap'} and sha(ROOT/name)==assets[name]
+            continue
         assert name.startswith(PREFIX) and '..' not in path.parts and 'local' not in path.parts
         assert path.suffix in {'.py', '.cjs', '.json', '.txt', '.md'}
         assert (ROOT / name).is_file()
@@ -91,6 +97,7 @@ def prepare():
     (HERE / 'review-table.md').write_text(markdown + '\n', encoding='utf-8')
     sources = sorted(p.relative_to(ROOT).as_posix() for p in HERE.iterdir()
                      if p.is_file() and p.suffix in {'.py', '.cjs', '.json', '.txt', '.md'})
+    if (HERE/'editable-assets.json').exists():sources+=sorted(r['path'] for r in read(HERE/'editable-assets.json')['files'])
     save(SPEC, {'scope': KEY, 'control': control, 'rows': rows, 'markdown': markdown, 'ownedPaths': sources})
     print(SPEC)
 
