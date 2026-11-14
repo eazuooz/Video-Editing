@@ -47,6 +47,8 @@ def main(message,push):
     direct.append(HERE/"sources/mario-kart-provenance.json")
     direct.append(HERE.parent/"revision-teaching-sync-20261114/audit-m24-m26.json")
     shared=["shared/publishing/video-production-control.json","shared/publishing/video-worklist.json","docs/VIDEO_WORKLIST.md","docs/VIDEO_WORKFLOW.md",str((HERE.parent/"batch.json").relative_to(ROOT)).replace("\\","/"),str((HERE.parent/"checkpoint.json").relative_to(ROOT)).replace("\\","/")]
+    for episode in json.loads((HERE/'inventory.json').read_text(encoding='utf8'))['episodes']:
+        shared.append('projects/'+episode['slug']+'/production/review-ledger.json')
     with tempfile.TemporaryDirectory() as temp:
         commit_env=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/"commit.index"))
         reconcile=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/"reconcile.index"))

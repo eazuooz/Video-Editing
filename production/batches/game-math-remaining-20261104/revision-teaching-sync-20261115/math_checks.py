@@ -59,6 +59,10 @@ def main():
     for t in (0,.17,.5,.83,1):
         same('M32 polynomial to Bezier inverse coefficients',bezier(controls,t),polynomial(t))
         same('M33 degree elevation preserves the same curve',bezier(elevated,t),bezier(controls,t))
+        difference_form=3*(1-t)**2*(controls[1]-controls[0])+6*t*(1-t)*(controls[2]-controls[1])+3*t**2*(controls[3]-controls[2])
+        same('M32 differentiated curve and adjacent-control differences agree',difference_form,derivative(t))
+    same('M31 endpoint substitution',[polynomial(0),polynomial(1)],[coefficients[0],sum(coefficients)])
+    same('M29 rest and constant force substitution',3*((12/3)*2),12*2)
     same('M32 cubic midpoint weights',[math.comb(3,i)*.5**3 for i in range(4)],[1/8,3/8,3/8,1/8])
     same('M33 unequal duration C1 scaling',np.array([4.,2.])/2,np.array([2.,1.])/1)
     jump=np.array([[0.,0.],[4/3,1/3],[4/3,2/3],[0.,1.]])

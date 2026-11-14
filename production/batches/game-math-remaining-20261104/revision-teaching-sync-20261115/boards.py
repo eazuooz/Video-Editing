@@ -150,8 +150,11 @@ def code_lines(board,x,y,rows,active,a,b):
 
 def working(board, scene, recipe):
     start,end=scene["start"],scene["end"]
+    if recipe.get('startPhrase'):start=cue(scene,recipe['startPhrase'])
     left=recipe.get("side","right")=="left"
     x=70 if left else 1000
+    for rect in recipe.get('clearRects',[]):
+        board.rectangle(*rect,start,end)
     # Clear the old panel through its gutter/outer edge; a partial word from
     # the replaced native formula must not survive beside the new workings.
     board.rectangle(x-14,178,940 if left else 934,738,start,end)

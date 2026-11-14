@@ -461,6 +461,36 @@ WORKINGS['M28']['019']['codeSteps']=[
 ]
 WORKINGS['M28']['019']['keepPrevious']=False
 
+# The old light-source word extended into the new right-panel gutter. Keep
+# the sun, L and surface geometry, but erase that partly covered duplicate.
+for sid in ('009','016'):
+    WORKINGS['M21'][sid]['clearRects']=[(946,226,54,80)]
+WORKINGS['M22']['023']['clearRects']=[(980,800,940,116)]
+
+# These delivered passages already showed their answers, but the spoken
+# substitution must remain visible rather than depending on the prior slide.
+WORKINGS['M29']['001']=recipe('처음 정지한 물체의 힘과 운동량 연결',r'v=at\quad a=F/m',
+    ['일정한 힘 · 처음 속도 0 · m: 질량 · t: 힘을 준 시간'],
+    ('가속도 대신',r'v=\frac{F}{m}t','가속도 a 자리에 같은 물체의 F/m을 넣습니다'),
+    ('질량 곱하기 속도',r'mv=Ft','양변에 질량 m을 곱하면 시간 동안 준 충격량'))
+WORKINGS['M31']['007']=recipe('삼차식 안에 직선 경로 넣기',r'p(t)=c_0+c_1t+c_2t^2+c_3t^3',
+    ['p₀: 출발점 · p₁: 도착점 · d: 두 점의 변위'],
+    ('두 점의 차이',r'd=p_1-p_0','출발점에서 도착점까지의 벡터'),
+    ('삼차 표현에 넣어도',r'c_0=p_0,\ c_1=d,\ c_2=c_3=0 || p(t)=p_0+td','높은 차수의 항을 0으로 두면 같은 직선'),
+    ('디까지 영이면',r'd=0\quad\Rightarrow\quad p(t)=p_0','변위까지 0이면 출발점에 머무릅니다'))
+WORKINGS['M31']['008']=recipe('같은 다항식에 출발·도착 진행도 대입',r'p(t)=c_0+c_1t+c_2t^2+c_3t^3',
+    ['t: 진행도 · c₀~c₃: 각 차수의 벡터 계수'],
+    ('티가 영일 때는',r'p(0)=c_0+c_1(0)+c_2(0)^2+c_3(0)^3 || =c_0','t가 곱해진 항만 사라져 출발점이 남습니다'),
+    ('티가 일이면',r'p(1)=c_0+c_1(1)+c_2(1)^2+c_3(1)^3 || =c_0+c_1+c_2+c_3','같은 식에 1을 넣으면 모든 계수의 합'))
+WORKINGS['M32']['017']=recipe('미분한 식에서 양 끝 방향 꺼내기',
+    r'p(t)=(1-t)^3b_0+3t(1-t)^2b_1 || +3t^2(1-t)b_2+t^3b_3',
+    ['b₀~b₃: 네 제어점 · 도함수: 진행도에 따른 방향과 변화량'],
+    ('단항식 표현을 미분한 뒤',r'p\prime(t)=3(1-t)^2(b_1-b_0) || +6t(1-t)(b_2-b_1)+3t^2(b_3-b_2)','이웃한 제어점 차이로 미분식을 정리'),
+    ('티에 영을 넣으면',r'p\prime(0)=3(b_1-b_0)+0+0','t=0에서는 첫 손잡이 방향만 남습니다'),
+    ('끝 도함수는',r'p\prime(1)=0+0+3(b_3-b_2)','t=1에서는 마지막 손잡이 방향만 남습니다'))
+WORKINGS['M32']['017']['startPhrase']='단항식 표현을 미분한 뒤'
+WORKINGS['M32']['017']['keepPrevious']=False
+
 # Mathtext uses explicit braces; keep authoring shortcuts from obscuring a scene
 # validation error while these exact lecture equations are prepared.
 for episode in WORKINGS.values():

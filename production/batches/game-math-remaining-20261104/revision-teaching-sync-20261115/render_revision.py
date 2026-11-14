@@ -230,7 +230,7 @@ def encode(episode, sample=None, sample_revision=1):
         if output.exists():
             raise RuntimeError("Preserve previous sample; change the reviewed sample revision before recapturing")
         extra,graph,remix=filters(episode,start,start+duration)
-        if sample:graph=graph.replace("[vout]","[unsub]")+";[unsub]setpts=PTS+"+str(start)+"/TB,ass=captions.ko.ass,setpts=PTS-"+str(start)+"/TB[vout]"
+        if sample:graph=graph.replace("[vout]","[unsub]")+";[unsub]setpts=PTS+"+str(start)+"/TB,ass=captions.ko.ass,setpts=PTS-STARTPTS[vout]"
         graphfile=folder/(output.stem+".ffgraph");graphfile.write_text(graph,encoding="utf8")
         seek=["-ss",start] if start>0 else []
         args=[*seek,"-reinit_filter","0","-i",source,*extra,"-filter_complex_threads","2","-filter_complex",graph,

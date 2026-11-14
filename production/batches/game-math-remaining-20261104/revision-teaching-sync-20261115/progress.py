@@ -41,6 +41,7 @@ document.querySelectorAll('[data-time]').forEach(b=>b.addEventListener('click',(
 
 
 def update():
+    from workings import WORKINGS
     plan=read(HERE/"plan.json");inventory=read(HERE/"inventory.json")["episodes"]
     titles={x["id"]:x["title"] for x in read(HERE.parent/"batch.json")["items"]}
     corrections=read(HERE/"pending-encoded-corrections.json") if (HERE/"pending-encoded-corrections.json").exists() else {}
@@ -72,6 +73,8 @@ def update():
         row=next(r for r in rows if r['id']==episode['id'])
         episode.update(status=row['status'],review=dict(technical=row['technicalQa'],
             currentEncodedPictures=row['visualQa'],human='pending'),output=row['output'])
+        episode['calculationScenes']=list(WORKINGS.get(episode['id'],{}))
+        episode['calculationSceneCount']=len(episode['calculationScenes'])
     save(HERE/'plan.json',plan)
     checkpoint_path=HERE.parent/'checkpoint.json'
     checkpoint=read(checkpoint_path)
@@ -79,11 +82,22 @@ def update():
     leaf.update(status=plan['status'],completed=[r['id'] for r in rows if r['finalReviewReady']],
         completedTechnical=[r['id'] for r in rows if r['technicalQa']=='pass'],
         localReadyCount=data['readyCount'],humanReviewed=False,
+        calculationSceneCount=sum(len(v) for v in WORKINGS.values()),
         pendingPictureCorrections=[eid for eid,c in corrections.get('episodes',{}).items() if c.get('status')!='resolved'],
         nextAction='Finish remaining actual encoded picture review and guarded jobs; deliver all thirteen locally. No platform mutations.')
     save(checkpoint_path,checkpoint)
     for row,item in zip(rows,inventory):
         if row['finalReviewReady']:review_index(row,item)
+        ledger_path=ROOT/'projects'/item['slug']/'production/review-ledger.json'
+        ledger=read(ledger_path)
+        folder=ROOT/'projects'/item['slug']/'production/local/teaching-sync-v2'
+        ledger['teachingSyncRevision20261115']=dict(status=row['status'],
+            finalReviewReady=row['finalReviewReady'],humanReviewed=False,
+            actualHumanViewing=False,actualHumanListening=False,
+            output=row['output'],evidence={name:str((folder/name).relative_to(ROOT)).replace('\\','/')
+                for name in ('encoded.json','technical-qa.json','visual-review.json','mix-review.json') if (folder/name).exists()},
+            scope='Additive lesson visuals and matched gameplay; original order and voice retained. Local review only.')
+        save(ledger_path,ledger)
     worklist_path=ROOT/"shared/publishing/video-worklist.json"
     worklist=read(worklist_path)
     worklist["mathRemainingTeachingSync20261115"]=dict(plan=(HERE/"plan.json").relative_to(ROOT).as_posix(),
