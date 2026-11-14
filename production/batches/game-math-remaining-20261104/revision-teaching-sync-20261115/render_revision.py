@@ -24,7 +24,7 @@ import motion_panels
 
 FF = Path("C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe")
 CREATE = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-REVISION = "teaching-sync-v1"
+REVISION = "teaching-sync-v2"
 
 
 def library(name,path):
@@ -35,6 +35,22 @@ def library(name,path):
 
 def additions(episode):
     return [g for g in read(HERE/"game-additions.json")["additions"] if g["episode"]==episode["id"]]
+
+
+def prepare_captions(episode,folder):
+    previous=ROOT/"projects"/episode["slug"] / "production/local" / episode["baselineRevision"] / "composite"
+    if (previous/"captions.ko.ass").is_file():
+        shutil.copy2(previous/"captions.ko.ass",folder/"captions.ko.ass")
+        layout=read(previous/"preflight.json")["captionLayout"]
+        reused=True
+    else:
+        captions=library("preserved_math_captions",ROOT/"projects/buckshot-roulette-reverse-engineering/production/assemble_documentary.py")
+        cues=captions.read_srt(episode["baselineOutputs"]["ko"])
+        layout=captions.caption_ass(folder/"captions.ko.ass",cues,0,{})
+        reused=False
+    save(folder/"caption-layout.json",dict(cues=layout,center=[960,970],fontSize=48,
+        reusedApprovedAss=reused,assSha256=sha(folder/"captions.ko.ass"),
+        twoLineCues=[r["cue"] for r in layout if len(r["lines"])>1]))
 
 
 def game_labels(board,game):
@@ -50,6 +66,8 @@ def game_labels(board,game):
     board.text(70,837,marks["label"],a,a+end,TEAL,44,width=850)
     for i in range(math.ceil(end*20)):
         lo=i/20;hi=min(end,lo+.05)
+        if any(lo<z and hi>first for first,z in marks.get("hideIntervals",[])):
+            continue
         j=max(j for j,k in enumerate(keys) if k[0]<=lo)
         if j+1<len(keys):
             first,last=keys[j],keys[j+1];u=(lo-first[0])/(last[0]-first[0])
@@ -101,14 +119,12 @@ def prepare(episode):
         status="prepared-not-rendered", newMasterHumanReview=False,
         existingNarrationTempo=1, finalReviewReady=False)
     save(folder / "preparation.json", evidence)
-    captions=library("preserved_math_captions",ROOT/"projects/buckshot-roulette-reverse-engineering/production/assemble_documentary.py")
-    cues=captions.read_srt(episode["baselineOutputs"]["ko"])
-    captions.caption_ass(folder/"captions.ko.ass",cues,0,{})
+    prepare_captions(episode,folder)
     return folder
 
 
 def filters(episode,origin,end):
-    inputs=[];graph=[f"[0:v]setsar=1,setpts=PTS-STARTPTS+{origin}/TB[b0]"]
+    inputs=[];graph=[f"[0:v]setsar=1,setpts=PTS+{origin}/TB[b0]"]
     current="b0";count=0;index=1;audio=[]
     for game in additions(episode):
         begin=max(origin,game["start"]);finish=min(end,game["start"]+game["duration"])
@@ -122,7 +138,7 @@ def filters(episode,origin,end):
         current=next_name
         picture=game.get("preservedAnnotatedPicture",str(ROOT/game["source"]["file"]))
         picture_in=game.get("preservedPictureIn",game["sourceIn"])+relative
-        inputs.extend(["-ss",str(picture_in),"-t",str(finish-begin),"-i",picture])
+        inputs.extend(["-ss",str(picture_in),"-t",str(finish-begin),"-reinit_filter","0","-i",picture])
         x,y,w,h=game["viewport"]
         crop=""
         if game.get("preservedPictureCrop"):
@@ -135,13 +151,13 @@ def filters(episode,origin,end):
             audio.append((index,begin-origin))
         index+=1
         if "nativeSource" in game:
-            inputs.extend(["-ss",str(game["nativeIn"]+relative),"-t",str(finish-begin),"-i",game["nativeSource"]])
+            inputs.extend(["-ss",str(game["nativeIn"]+relative),"-t",str(finish-begin),"-reinit_filter","0","-i",game["nativeSource"]])
             cx,cy,cw,ch=game["nativeCrop"];x,y,w,h=game["nativeViewport"]
             graph.append(f"[{index}:v]crop={cw}:{ch}:{cx}:{cy},scale={w}:{h},setsar=1,fps=60,setpts=PTS-STARTPTS+{begin}/TB[n{index}]")
             next_name=f"b{count+1}";count+=1
             graph.append(f"[{current}][n{index}]overlay={x}:{y}:eof_action=pass:repeatlast=0:enable='gte(t,{begin})*lt(t,{finish})'[{next_name}]")
             current=next_name;index+=1
-    graph.append(f"[{current}]ass=workings.ass,setpts=PTS-STARTPTS[vout]")
+    graph.append(f"[{current}]ass=workings.ass,setpts=PTS-{origin}/TB[vout]")
     if audio:
         graph.append(f"[0:a]asplit={len(audio)+1}[base]"+"".join(f"[side{i}]" for i in range(len(audio))))
         for i,(idx,delay) in enumerate(audio):
@@ -162,6 +178,13 @@ def encoder():
     return ["-c:v","h264_nvenc","-preset","p5","-tune","hq","-rc","vbr","-cq","18","-b:v","0","-g","120","-pix_fmt","yuv420p","-video_track_timescale","90000"]
 
 
+def check_stream(file,frames):
+    data=json.loads(subprocess.check_output([str(FF.with_name("ffprobe.exe")),"-v","error","-select_streams","v:0","-show_entries","stream=width,height,r_frame_rate,nb_frames,duration","-of","json",str(file)],creationflags=CREATE))["streams"][0]
+    assert (data["width"],data["height"],data["r_frame_rate"],int(data["nb_frames"]))==(1920,1080,"60/1",frames),(str(file),frames,data)
+    assert abs(float(data["duration"])-frames/60)<.002,(file,"timeline duration changed")
+    return data
+
+
 def encode(episode, sample=None, sample_revision=1):
     folder = prepare(episode)
     p = ROOT / "projects" / episode["slug"]
@@ -179,9 +202,12 @@ def encode(episode, sample=None, sample_revision=1):
         source = Path(episode["baselineOutputs"]["clean"])
         start = 0
         if sample:
-            scene = next(s for s in episode["scenes"] if s["scene"] == sample)
-            start = scene["start"]
-            frames = round((scene["end"]-start)*60)
+            if sample=="opening":
+                start=0;frames=360
+            else:
+                scene = next(s for s in episode["scenes"] if s["scene"] == sample)
+                start = scene["start"]
+                frames = round((scene["end"]-start)*60)
             output = folder / (f"sample-{sample}-v{sample_revision}.mp4")
             duration=frames/60
         else:
@@ -195,9 +221,9 @@ def encode(episode, sample=None, sample_revision=1):
         if output.exists():
             raise RuntimeError("Preserve previous sample; change the reviewed sample revision before recapturing")
         extra,graph,remix=filters(episode,start,start+duration)
-        if sample:graph=graph.replace("[vout]","[unsub]")+";[unsub]setpts=PTS+"+str(start)+"/TB,ass=captions.ko.ass,setpts=PTS-STARTPTS[vout]"
+        if sample:graph=graph.replace("[vout]","[unsub]")+";[unsub]setpts=PTS+"+str(start)+"/TB,ass=captions.ko.ass,setpts=PTS-"+str(start)+"/TB[vout]"
         graphfile=folder/(output.stem+".ffgraph");graphfile.write_text(graph,encoding="utf8")
-        args=["-ss",start,"-i",source,*extra,"-filter_complex_threads","2","-filter_complex",graph,
+        args=["-ss",start,"-reinit_filter","0","-i",source,*extra,"-filter_complex_threads","2","-filter_complex",graph,
             "-map","[vout]","-map","[aout]" if remix else "0:a:0","-frames:v",frames,"-t",duration,*encoder()]
         args+= ["-c:a","aac","-b:a","192k"] if remix or sample else ["-c:a","copy"]
         args+=["-movflags","+faststart",output]
@@ -205,6 +231,7 @@ def encode(episode, sample=None, sample_revision=1):
             status="rendering-sample" if sample else "rendering-clean",startedAt=G.now(),finalReviewReady=False)
         save(folder/"worker.json",state)
         command(args,folder,output.stem)
+        stream=check_stream(output,frames)
         save(folder/(output.stem+".json"),dict(sample=bool(sample), scene=sample, sourceStart=start,
             sourceMasterSha256=sha(source), inputOverlaySha256=sha(folder/"workings.ass"),
             outputSha256=sha(output), finalMaster=False, actualVisualReview=False))
@@ -213,11 +240,12 @@ def encode(episode, sample=None, sample_revision=1):
             cap=output.with_name(episode["slug"]+".captioned.mp4")
             command(["-i",output,"-vf","ass=captions.ko.ass","-map","0:v:0","-map","0:a:0",
                 *encoder(),"-c:a","copy","-frames:v",frames,"-t",duration,"-movflags","+faststart",cap],folder,"captioned")
+            check_stream(cap,frames)
             for lang in ("ko","en"):
                 shutil.copy2(episode["baselineOutputs"][lang],dest/(episode["slug"]+"."+lang+".srt"))
             files={kind:dict(path=str(path),sha256=sha(path)) for kind,path in {
                 "clean":output,"captioned":cap,"ko":dest/(episode["slug"]+".ko.srt"),"en":dest/(episode["slug"]+".en.srt")}.items()}
-            save(folder/"encoded.json",dict(episode=episode["id"],frames=frames,duration=duration,
+            save(folder/"encoded.json",dict(episode=episode["id"],frames=frames,duration=duration,stream=stream,
                 files=files,originalVoiceTempo=1,baselineSpeechPreserved=True,
                 addedBgm=False,addedGameAudioIntervals=[g for g in additions(episode) if g["audioMode"].startswith("add-original")],
                 status="encoded-QA-pending",finalReviewReady=False,humanReviewed=False))
