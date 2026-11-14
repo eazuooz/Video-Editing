@@ -89,6 +89,8 @@ def finish(ep):
     source_at = 2.0
     if ep == 'A06':
         source_at = 107.3
+    if ep == 'A09':
+        source_at = 3.4
     layout = folder / 'summary-layout.png'
     picture = folder / 'summary-clean.mp4'
     ff('-loop', '1', '-framerate', 60, '-i', layout, '-ss', source_at, '-i', clean,

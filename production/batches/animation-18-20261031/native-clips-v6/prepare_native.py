@@ -26,9 +26,13 @@ def main():
         if row['id'] in ('am_Ready_Fight_01_Knockdown_A', 'af_Ready_Fight_01_Knockdown_B'):
             row.update(sourceStartSeconds=21.4, sourceEndSeconds=24.7)
         if row['id'] == 'anim_GrabValve_R':
-            row.update(focusOrigin=[-34.55156117382062, 16.42018626706892, 84.23882172442353],
-                       cameraHeight=0, cameraWidth=220, actorSpacing=57,
-                       focusSource='Component-space hand_r at source 0.4 s from the original exported native pose')
+            row.update(focusOrigin=[-32.83443326623921,30.0411485332685,0],
+                       cameraHeight=76.78697628720687,cameraWidth=140,actorSpacing=0,yaws=[-25],
+                       focusSource='Original hand_r component bounds over the full native clip; camera at hand height, original floor and actor height retained')
+        if row['id'] == 'anim_OpeningValve_R':
+            row.update(focusOrigin=[-38.21358605646271,79.36537549190619,0],
+                       cameraHeight=63.127436880565185,cameraWidth=140,actorSpacing=0,yaws=[-25],
+                       focusSource='Original hand_r component bounds over the full native valve-opening clip')
     base = next(row for row in catalog if row['id'] == 'am_Stand_Idle_03_LookAround')
     clips.append(dict(id='am_SitPiano_Play_01', clip='/Game/MC_Sample/Animations/Piano/am_SitPiano_Play_01',
                       mesh=base['mesh'], yaws=[-70, -25]))

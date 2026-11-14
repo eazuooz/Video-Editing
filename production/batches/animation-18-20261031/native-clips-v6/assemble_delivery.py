@@ -7,6 +7,7 @@ import subprocess
 
 from prepare import HERE, ROOT, WORK, OUTPUT, read, save
 from finish_episode import ff, sha, timestamp, VENC
+from insert_recap_picture import insert as insert_recap
 
 
 def seconds(text):
@@ -33,6 +34,7 @@ def assemble(ep):
     assert (captions / 'caption-alignment.json').is_file()
     prior = {f['kind']: ROOT / f['path'] for f in base['files']}
     pictures = dict(prior)
+    reviewed = None
     if ep != 'A06':
         reviewed = read(WORK / ep / 'native-picture-review.json')
         assert reviewed['visualReviewPassed']
@@ -40,7 +42,7 @@ def assemble(ep):
             pictures[kind] = Path(reviewed['pictures'][kind]['path'])
             assert sha(pictures[kind]) == reviewed['pictures'][kind]['sha256']
     insert = (base['frames'] - 600) / 60
-    pcm = Path('C:/Users/1/Videos/YamyamProduction/animation-review-notes-20261110') / ep / 'finish/narration-mix.wav'
+    pcm = Path(reviewed['audioPcm']) if reviewed and reviewed.get('audioPcm') else Path('C:/Users/1/Videos/YamyamProduction/animation-review-notes-20261110') / ep / 'finish/narration-mix.wav'
     if not pcm.is_file():
         pcm = folder / 'previous-decoded.wav'
         ff('-i', prior['clean.mp4'], '-vn', '-ar', 48000, '-ac', 2, '-c:a', 'pcm_f32le', pcm)
@@ -71,21 +73,17 @@ def assemble(ep):
     out.mkdir(parents=True, exist_ok=True)
     outputs = []
     for kind, recap_picture in [('clean.mp4', Path(summary['cleanPicture'])), ('captioned.mp4', summary_captioned)]:
-        picture = folder / ('joined-' + kind)
-        filters = (f'[0:v]split=2[b][e];[b]trim=end_frame={base["frames"]-600},setpts=PTS-STARTPTS[b0];'
-                   f'[e]trim=start_frame={base["frames"]-600}:end_frame={base["frames"]},setpts=PTS-STARTPTS[e0];'
-                   '[1:v]trim=end_frame=600,setpts=PTS-STARTPTS[s0];[b0][s0][e0]concat=n=3:v=1:a=0[v]')
-        ff('-threads', 2, '-i', pictures[kind], '-i', recap_picture, '-filter_complex', filters,
-           '-map', '[v]', '-an', '-frames:v', base['frames'] + 600, *VENC, picture)
+        picture, splice = insert_recap(pictures[kind],recap_picture,base['frames'],folder,kind)
         final = out / (base['slug'] + '.' + kind)
         ff('-i', picture, '-i', audio, '-map', '0:v:0', '-map', '1:a:0', '-c', 'copy', '-movflags', '+faststart', final)
         ff('-i', final, '-f', 'null', 'NUL')
         info = json.loads(subprocess.check_output([
             'ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_streams', '-of', 'json', str(final)]))['streams'][0]
         assert (info['width'], info['height'], info['avg_frame_rate'], int(info['nb_frames'])) == (1920, 1080, '60/1', base['frames'] + 600)
-        outputs.append({'kind': kind, 'path': str(final), 'sha256': sha(final), 'fullDecode': 'passed'})
+        outputs.append({'kind': kind, 'path': str(final), 'sha256': sha(final), 'fullDecode': 'passed', 'pictureSplice':splice})
     for language in ('ko', 'en'):
-        cues = srt(prior[language + '.srt'])
+        caption_source = Path(reviewed['captions'][language]) if reviewed and reviewed.get('captions') else prior[language+'.srt']
+        cues = srt(caption_source)
         assert not any(a < insert < b for a, b, _ in cues)
         cues = [(a + (10 if a >= insert else 0), b + (10 if a >= insert else 0), t) for a, b, t in cues]
         cues += [(a - 2 + insert, b - 2 + insert, t) for a, b, t in srt(captions / ('captions.' + language + '.srt'))]

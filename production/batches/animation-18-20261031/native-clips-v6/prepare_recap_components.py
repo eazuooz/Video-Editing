@@ -8,7 +8,7 @@ from prepare import HERE, ROOT, WORK, VOICE_LOCAL, RECAPS, read, save
 
 
 def run(filename, *args):
-    python = ROOT / 'qwen3-tts/.venv/Scripts/python.exe' if filename == 'render_recaps.py' else sys.executable
+    python = ROOT / 'qwen3-tts/.venv/Scripts/python.exe'
     subprocess.run([str(python), '-X', 'utf8', str(HERE / filename), *args], check=True,
                    creationflags=subprocess.CREATE_NO_WINDOW | subprocess.BELOW_NORMAL_PRIORITY_CLASS)
 

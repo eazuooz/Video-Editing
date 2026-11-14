@@ -54,7 +54,9 @@ def main():
                   'movie': str(movie), 'movieSha256': digest, 'frames': len(pictures),
                   'resolution': [1920, 1080], 'fps': 60, 'renderer': 'UE 5.8 software WARP',
                   'originalSequenceBoundDirectly': True, 'boneTracksEdited': False,
-                  'builderSha256': row['builderSha256'], 'visualReviewPending': True})
+                  'builderSha256': row['builderSha256'],
+                  'staging':{k:row.get(k) for k in ('yaws','cameraWidth','cameraHeight','focusOrigin','actorSpacing','sourceStartSeconds','sourceEndSeconds')},
+                  'visualReviewPending': True})
     print(args.key, 'native motion capture ready for visual review', flush=True)
 
 

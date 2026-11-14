@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import math
+import hashlib
 import unreal as u
 
 PROJECT = Path(u.Paths.convert_relative_path_to_full(u.Paths.project_dir())).resolve()
@@ -105,11 +106,14 @@ def build(row):
     game.game_mode_override = u.MoviePipelineGameMode
     game.cinematic_quality_settings = False
     u.EditorAssetLibrary.save_loaded_asset(config, False)
+    fingerprint=hashlib.sha256(json.dumps({'builderCodeSha256':JOB['builderSha256'],'definition':row},
+                              sort_keys=True,separators=(',',':')).encode()).hexdigest()
     result = dict(row, frames=frames, seconds=clip.get_play_length(), level=level,
                   sequence=sequence.get_path_name(), config=config.get_path_name(),
                   sourceSkeleton=clip.get_editor_property('skeleton').get_path_name(),
                   originalSequenceBoundDirectly=True, boneTracksEdited=False,
-                  sourceStageOrigin=[origin.x, origin.y, origin.z], builderSha256=JOB['builderSha256'])
+                  sourceStageOrigin=[origin.x, origin.y, origin.z], builderSha256=fingerprint,
+                  builderCodeSha256=JOB['builderSha256'])
     (OUT / (key + '-build.json')).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     u.log('NATIVE_CLIP_V6_READY ' + key)
 
