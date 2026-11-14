@@ -66,6 +66,12 @@ def main(ids,resume=False):
         except BaseException as error:
             state['failures'].append(dict(episode=eid,error=repr(error),trace=traceback.format_exc()))
             print(eid,'FAILED',repr(error),flush=True)
+            log=folder/(episode['slug']+'.clean.log')
+            tail=log.read_text(encoding='utf8',errors='replace')[-6000:] if log.exists() else ''
+            if any(message in tail for message in ('Padded dimensions cannot','Error reinitializing filters!')):
+                state.update(stopReason='Shared picture filter requires internal correction before the next episode',updatedAt=now())
+                save(path,state)
+                break
             # Respect ownership and stopped authorization instead of repeatedly
             # probing or competing with an unrelated costly application.
             if render.guard().idle_reason():

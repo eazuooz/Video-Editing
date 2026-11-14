@@ -60,7 +60,9 @@ def update():
             ready=False
             pending_picture=True
         else:pending_picture=False
-        state="사용자 검수 대기" if ready else {"rendering-clean":"Clean 렌더 중","rendering-captioned":"자막본 렌더 중","encoded-QA-pending":"인코딩 완료 · 내부 검수 중"}.get(worker.get("status"),"화면·계산 보충 작성 완료 / 렌더 대기")
+        phase=worker.get('status')
+        if phase in ('rendering-clean','rendering-captioned') and not psutil.pid_exists(worker.get('pid',0)):phase='render-failed'
+        state="사용자 검수 대기" if ready else {"rendering-clean":"Clean 렌더 중","rendering-captioned":"자막본 렌더 중","render-failed":"렌더 중단 · 보완 후 재시도","encoded-QA-pending":"인코딩 완료 · 내부 검수 중"}.get(phase,"화면·계산 보충 작성 완료 / 렌더 대기")
         rows.append(dict(id=item["id"],title=titles[item["id"]],slug=item["slug"],status=state,
             encoded=bool(encoded),technicalQa=tech.get("status") if tech else "pending",
             visualQa='correction-pending' if pending_picture else visual.get("status") if visual else "pending",humanReviewed=False,
