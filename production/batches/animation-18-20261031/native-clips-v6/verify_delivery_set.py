@@ -23,6 +23,8 @@ def main():
                 assert all(x[1]<=y[0]+.002 for x,y in zip(cues,cues[1:])),(ep,kind,'caption overlap')
         final=read(WORK/ep/'encoded-final-check/evidence.json')
         assert final['captionedMasterSha256']==files['captioned.mp4']['sha256']
+        identity=read(Path(delivery['inputIdentityEvidence']))
+        assert identity['captionedMasterSha256']==files['captioned.mp4']['sha256']
         audio_hashes=[subprocess.check_output(['ffmpeg','-nostdin','-v','error','-i',files[k]['path'],
              '-map','0:a:0','-c:a','copy','-f','hash','-hash','sha256','-']).decode().strip()
              for k in ('clean.mp4','captioned.mp4')]
@@ -31,6 +33,8 @@ def main():
                      'summaryFrames':600,'durationSeconds':delivery['durationSeconds'],
                      'fullDecodeBothMasters':'passed','captionClocks':'passed',
                      'identicalAacPayload':audio_hashes[0],
+                     'inputIdentityEvidence':delivery['inputIdentityEvidence'],
+                     'sourcePcmSha256':delivery['sourcePcmSha256'],
                      'encodedRecapAudioSimilarity':final['encodedSummaryAudioSimilarity'],
                      'internalSampleReviewPending':delivery['visualReviewPending'],'humanReviewed':False})
     save(HERE/'delivery-review-manifest.json',{'revision':'native-clips-v6','episodes':rows,

@@ -69,6 +69,8 @@ def chain(draw,points,color):
 
 def arm_diagram(im,key,n):
     d=ImageDraw.Draw(im)
+    d.rectangle((50,110,1330,155),fill=BG)
+    text(d,(64,119),'언리얼 동작 · 관절 제어 원리 도식',30,MUTED)
     u=np.clip(n/100,0,1)
     first_angle=math.radians(-25-35*u)
     second_angle=math.radians(70+20*u)
@@ -88,9 +90,9 @@ def arm_diagram(im,key,n):
         if key=='fkik' and side==0:elbow=tuple(np.array(shoulder)+elbow_delta)
         chain(d,[shoulder,elbow,target],TEAL if not side else RED)
         if key=='hint':
-            text(d,(x+90,550),'팔꿈치 방향',32,TEAL if not side else RED,650)
+            text(d,((90 if side==0 else 1290),450),'팔꿈치 방향',32,TEAL if not side else RED,650)
         else:
-            text(d,(x+90,550),'관절 → 손' if not side else '손 목표 → 관절',35,TEAL if not side else RED,650)
+            text(d,((90 if side==0 else 1290),450),'관절 → 손' if not side else '손 목표 → 관절',35,TEAL if not side else RED,650)
         d.ellipse((target[0]-22,target[1]-22,target[0]+22,target[1]+22),outline=GREEN,width=5)
         text(d,(x+80,841),'어깨 → 팔꿈치 → 손 목표',31,MUTED,790)
 
@@ -195,7 +197,7 @@ def draw_special(ep,key,n,mode,counter):
     im=layout(ep,key,mode,counter)
     d=ImageDraw.Draw(im)
     d.rectangle((50,110,1330,155),fill=BG)
-    source_label = '실제 게임 · 동작 관찰' if ep in ('A12','A18') or key=='warrior' else '언리얼 · 설치된 애니메이션'
+    source_label = '실제 게임 · 동작 관찰' if ep=='A12' or (ep=='A18' and key!='wrist') or key=='warrior' else '언리얼 · 설치된 애니메이션'
     text(d,(64,119),source_label,30,MUTED)
     if mode=='native':
         paste(im,source_picture(ep,key,n,native_rate=True),(180,188,1560,635))

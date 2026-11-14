@@ -19,7 +19,11 @@ def main():
         control=read(ROOT/'shared/publishing/video-production-control.json')['animationNativeClipsRevision20261114']
         assert control['renderAuthorized'] and ep in control['episodes'] and ep not in control['excludedUploaded']
         receipt=OUTPUT/ep/'delivery.json'
-        if not receipt.exists():run('assemble_delivery.py',ep)
+        current=read(WORK/ep/'native-picture-review.json')
+        existing=read(receipt) if receipt.exists() else {}
+        current_pictures={k:v['sha256'] for k,v in current['pictures'].items()}
+        identity={k:v['sha256'] for k,v in existing.get('bodyPictures',{}).items()}
+        if identity!=current_pictures:run('assemble_delivery.py',ep)
         run('sample_final_outputs.py',ep)
         done.append(ep)
         save(WORK/'final-queue-status.json',{'encodedFinalsReady':done,'stage':'final-summary-contact-inspection-pending','humanReviewed':False})

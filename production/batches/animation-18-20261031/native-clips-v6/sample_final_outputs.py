@@ -41,8 +41,13 @@ def main(ep):
         assert error<3.0,(ep,n,'GOP or insertion boundary differs from preserved picture',error)
         evidence.append({'frame':n,'originalFrame':n if n<at else n-600,'meanAbsolutePixelError':error})
     contact=Image.new('RGB',(1500,600),'#080c0a')
+    recap_errors=[]
     for j,delta in enumerate((0,90,390)):
         image=frame(master,at+delta)
+        expected=frame(WORK/ep/'assembly/summary-captioned.mp4',delta)
+        error=float(np.mean(abs(np.asarray(image,dtype=np.float32)-np.asarray(expected,dtype=np.float32))))
+        assert error<3.0,(ep,delta,'Encoded recap picture differs from the reviewed component',error)
+        recap_errors.append({'summaryFrame':delta,'meanAbsolutePixelError':error})
         path=folder/f'summary-{delta:03}.png';image.save(path)
         mobile=folder/f'summary-{delta:03}-375.png';image.resize((375,211),Image.Resampling.LANCZOS).save(mobile)
         contact.paste(image.resize((500,281)),(j*500,0))
@@ -59,6 +64,7 @@ def main(ep):
     assert similarity>.97,(ep,'Encoded recap audio mismatch',similarity)
     save(folder/'evidence.json',{'episode':ep,'captionedMasterSha256':files['captioned.mp4']['sha256'],
         'boundaryFrames':evidence,'encodedSummaryAudioSimilarity':similarity,'summaryFrames':600,
+        'summaryPictureErrors':recap_errors,
         'visualReviewPending':True,'humanReviewed':False})
     print(ep,'boundary and encoded audio checks passed',round(similarity,5),folder/'summary-contact.jpg',flush=True)
 
