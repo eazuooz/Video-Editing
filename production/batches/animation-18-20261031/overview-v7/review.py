@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 import numpy as np
 from prepare import HERE, SOURCE, WORK, OUTPUT, read, save, stamp
 from render import frame, sha, audio_clock, srt
-from artwork import text, BG, WHITE, YELLOW
+from artwork import build, text, BG, WHITE, YELLOW
 
 def shell(title,body):
     return ('<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -98,7 +98,7 @@ def verify():
     assert plan['scope']==[f'A{i:02}' for i in range(3,19)]
     assert not any((OUTPUT/e).exists() for e in ['A01','A02'])
     for row in plan['episodes']:
-        ep=row['id'];receipt=read(OUTPUT/ep/'delivery.json')
+        ep=row['id'];build(row);receipt=read(OUTPUT/ep/'delivery.json')
         assert not receipt['visualReviewPending'] and not receipt['humanReviewed'] and not receipt['platformChanged']
         assert receipt['frames']==row['sourceFrames'] and receipt['summaryFrames']==600
         assert receipt['audioChanged'] is False and receipt['srtChanged'] is False
