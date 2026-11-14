@@ -258,12 +258,14 @@ WORKINGS["M22"] = {
         ["팔 자세와 A,B는 고정 · w: 아래팔의 가중치"],
         ("아래팔의 몫이 늘면",r"w_B=w\uparrow\quad w_A=1-w\downarrow","한쪽 몫을 늘린 만큼 다른 쪽 몫을 줄입니다"),side="left"),
     "006": recipe("가중치 합을 1로 두는 이유",r"P=\sum_i w_iP_i\quad\sum_iw_i=1",
-        ["Pᵢ: 각 본이 제안한 정점 위치 · wᵢ: 그 본의 몫"],
+        ["Pᵢ: 변환한 위치 · wᵢ: 몫", "boneIndex: 본 번호 · boneWeight: 몫"],
         ("모두 같은 위치",r"P_i=Q\ \Rightarrow\ P=\left(\sum_iw_i\right)Q=Q","모든 본이 같은 위치를 제안하면 그 위치가 유지"),side="left"),
-    "007": recipe("반복문의 각 줄이 하는 계산",r"P=\sum_iw_iP_i",
-        ["Pᵢ: i번째 본으로 변환한 위치 · 한 정점씩 계산"],
-        ("영으로 비우는",r"P\leftarrow0","누적 결과를 정점마다 먼저 비웁니다"),
-        ("가중치를 곱해",r"P\leftarrow P+w_iP_i","해당 본의 위치 × 몫을 결과에 더합니다"),side="left"),
+    "007": recipe("반복문의 각 줄이 하는 계산",r"P=w_1P_1+\cdots+w_nP_n",
+        ["pᵢ: 본공간점 · Jᵢ: 본변환", "q=Pᵢ · w[i]=wᵢ"],
+        ("영으로 비우는",r"P\leftarrow0","정점마다 누적 변수를 초기화"),
+        ("본 목록을 순회",r"i=1,\ldots,n","n: 본의 수 · 하나씩 순회"),
+        ("본 공간의 위치를",r"P_i=J_ip_i","본 공간에서 모델 공간으로"),
+        ("가중치를 곱해",r"P\leftarrow P+w_iP_i","위치에 몫을 곱해 누적"),side="left"),
     "020": recipe("저장된 색에서 법선 방향 복원",r"\mathbf n=\frac{2\mathbf c-\mathbf1}{|2\mathbf c-\mathbf1|}",
         ["c: 저장된 RGB · n: 접선 공간의 단위 법선"],
         ("색에 저장된 성분을",r"\mathbf q=2\mathbf c-\mathbf1","[0,1] 색 범위를 [−1,1] 방향 성분으로"),
@@ -271,7 +273,8 @@ WORKINGS["M22"] = {
     "023": recipe("같은 공간으로 옮겨야 내적 가능",r"\mathbf n_{model}=M_{TBN}\mathbf n_{tangent}",
         ["M의 열: 접선 T, 종접선 B, 법선 N · 이 식은 열벡터 표기"],
         ("정규직교라면",r"M_{TBN}^{-1}=M_{TBN}^T","축 길이가 1이고 서로 직각일 때의 성질"),
-        ("축과의 내적으로",r"\mathbf L_{tangent}=M_{TBN}^T\mathbf L_{model}","각 축과 내적하여 그 축 방향의 좌표를 얻습니다"),side="left"),
+        ("축과의 내적으로",r"\mathbf L_{tangent}=M_{TBN}^T\mathbf L_{model}","정규직교 기저에서 각 축과 내적합니다"),
+        ("하지만 축들이",r"M_{TBN}^{-1}\ne M_{TBN}^T || \mathbf L_{tangent}=M_{TBN}^{-1}\mathbf L_{model}","비스듬한 기저에서는 일반 역행렬로 변환"),side="left"),
 }
 
 WORKINGS["M23"] = {
@@ -443,6 +446,20 @@ WORKINGS["M25"].update({
 })
 WORKINGS["M25"]["024"]["keepPrevious"] = False
 WORKINGS["M25"]["026"]["keepPrevious"] = False
+
+# Retain the explicitly narrated implementation as well as the new typeset
+# mathematics. Syntax colors and the execution marker have separate roles.
+skin_code=["P = 0", "for each bone i:", "  q = J[i] * p[i]", "  P += w[i] * q"]
+WORKINGS['M22']['007']['codeSteps']=[dict(lines=skin_code,active=i) for i in range(4)]
+WORKINGS['M22']['007']['keepPrevious']=False
+WORKINGS['M22']['007']['rightNote']='오른쪽 P: 계산을 마친 최종 위치'
+WORKINGS['M22']['023']['keepPrevious']=False
+WORKINGS['M28']['019']['codeSteps']=[
+    dict(lines=['e = x - target;', 'a = -K*e - C*v;'],active=1),
+    dict(lines=['v += a*dt;'],active=0),
+    dict(lines=['x += v*dt;'],active=0),
+]
+WORKINGS['M28']['019']['keepPrevious']=False
 
 # Mathtext uses explicit braces; keep authoring shortcuts from obscuring a scene
 # validation error while these exact lecture equations are prepared.

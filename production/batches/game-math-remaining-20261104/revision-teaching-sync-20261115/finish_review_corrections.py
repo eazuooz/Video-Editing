@@ -11,11 +11,11 @@ from inventory import ROOT,HERE,read,save,sha
 from render_revision import guard,authorized,CREATE
 
 
-def main(eid):
+def main(eid,archive_only=False):
     worker=read(HERE/'finite-worker.json')
-    assert worker['status']=='finite-job-ended-review-pending' and not worker['failures']
+    assert worker['status']=='finite-job-ended-review-pending'
     assert not guard().idle_reason(), 'Preserve active jobs'
-    assert eid in ('M24','M26')
+    assert eid in ('M22','M24','M26')
     episode=next(e for e in read(HERE/'inventory.json')['episodes'] if e['id']==eid)
     authorized(episode)
     source=(ROOT/'projects'/episode['slug']/'production/local/teaching-sync-v2').resolve()
@@ -34,8 +34,10 @@ def main(eid):
         shutil.move(str(source),str(archive/'production'));shutil.move(str(output),str(archive/'output'))
         records=read(HERE/'superseded-attempts.json')
         records[eid]=dict(episode=eid,archivedProduction=str(archive/'production'),archivedOutput=str(archive/'output'),
-            previousAttempt=records[eid],encoded=encoded)
+            previousAttempt=records.get(eid),encoded=encoded)
         save(HERE/'superseded-attempts.json',records)
+    if archive_only:
+        print(eid,'unapproved attempt preserved; internal sample stage can run',flush=True);return
     if not (source/'encoded.json').exists():
         subprocess.run([sys.executable,'-X','utf8',str(HERE/'render_revision.py'),eid,'--render'],cwd=ROOT,check=True,creationflags=CREATE)
     subprocess.run([sys.executable,'-X','utf8',str(HERE/'verify.py'),eid,'--pictures'],cwd=ROOT,check=True,creationflags=CREATE)
@@ -44,9 +46,16 @@ def main(eid):
     d['episodes'][eid].update(status='resolved',actualEncodedPictureReview='pending',archive=str(archive),
         newCaptionedSha256=read(source/'encoded.json')['files']['captioned']['sha256'])
     save(HERE/'pending-encoded-corrections.json',d)
+    worker=read(HERE/'finite-worker.json')
+    resolved=[r for r in worker['failures'] if r['episode']==eid]
+    worker['failures']=[r for r in worker['failures'] if r['episode']!=eid]
+    worker.setdefault('resolvedFailures',[]).extend([dict(**r,resolution=str(source/'technical-qa.json')) for r in resolved])
+    if eid not in worker['completed']:worker['completed'].append(eid)
+    save(HERE/'finite-worker.json',worker)
     print(eid,'final correction encoded; final picture inspection remains separate',flush=True)
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('episodes',nargs='+')
-    for eid in parser.parse_args().episodes:main(eid)
+    parser=argparse.ArgumentParser();parser.add_argument('episodes',nargs='+');parser.add_argument('--archive-only',action='store_true')
+    args=parser.parse_args()
+    for eid in args.episodes:main(eid,args.archive_only)

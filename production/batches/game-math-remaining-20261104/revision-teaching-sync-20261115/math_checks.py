@@ -28,6 +28,8 @@ def main():
     position=r*np.array([math.cos(theta),math.sin(theta)])
     acceleration=-omega**2*position
     same('M26 centripetal magnitude',np.linalg.norm(acceleration),(r*omega)**2/r)
+    velocity=r*omega*np.array([-math.sin(theta),math.cos(theta)])
+    same('M26 inward acceleration is perpendicular to the current velocity',np.dot(acceleration,velocity),0)
     same('M28 critical damping initial velocity',-6-4,-10)
     same('M28 one critical crossing',(1-6*(1/6))*math.exp(-4/6),0)
     same('M28 semi-implicit one step',[0+16*.1,0+(0+16*.1)*.1],[1.6,.16])

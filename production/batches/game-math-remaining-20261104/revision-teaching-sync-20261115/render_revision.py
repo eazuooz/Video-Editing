@@ -97,8 +97,16 @@ def authorized(episode):
     assert c["teachingSyncRevision20261115"]["userRequest"]
 
 
+def validate_inputs():
+    proof=read(HERE/'authoring-validation.json')
+    assert proof.get('status')=='pass' and not proof['failures'] and proof['nonPositiveStageCount']==0, 'Finish the current authoring preflight before a costly job'
+    for name,digest in proof['inputSha256'].items():
+        assert sha(HERE/name)==digest, ('Preparation changed; rerun the internal preflight',name)
+
+
 def prepare(episode):
     authorized(episode)
+    validate_inputs()
     p = ROOT / "projects" / episode["slug"]
     folder = p / "production/local" / REVISION
     folder.mkdir(exist_ok=True)
@@ -120,6 +128,7 @@ def prepare(episode):
         existingNarrationTempo=1, finalReviewReady=False)
     save(folder / "preparation.json", evidence)
     prepare_captions(episode,folder)
+    validate_inputs()
     return folder
 
 
@@ -223,8 +232,12 @@ def encode(episode, sample=None, sample_revision=1):
         extra,graph,remix=filters(episode,start,start+duration)
         if sample:graph=graph.replace("[vout]","[unsub]")+";[unsub]setpts=PTS+"+str(start)+"/TB,ass=captions.ko.ass,setpts=PTS-"+str(start)+"/TB[vout]"
         graphfile=folder/(output.stem+".ffgraph");graphfile.write_text(graph,encoding="utf8")
-        args=["-ss",start,"-reinit_filter","0","-i",source,*extra,"-filter_complex_threads","2","-filter_complex",graph,
-            "-map","[vout]","-map","[aout]" if remix else "0:a:0","-frames:v",frames,"-t",duration,*encoder()]
+        seek=["-ss",start] if start>0 else []
+        args=[*seek,"-reinit_filter","0","-i",source,*extra,"-filter_complex_threads","2","-filter_complex",graph,
+            "-map","[vout]","-map","[aout]" if remix else "0:a:0","-frames:v",frames,*encoder()]
+        # A copied AAC stream can finish one packet beyond the last video frame.
+        # Keep that original tail instead of trimming an already bounded master.
+        if remix or sample:args += ["-t",duration]
         args+= ["-c:a","aac","-b:a","192k"] if remix or sample else ["-c:a","copy"]
         args+=["-movflags","+faststart",output]
         state=dict(pid=os.getpid(),createTime=psutil.Process().create_time(),episode=episode["id"],
@@ -239,7 +252,7 @@ def encode(episode, sample=None, sample_revision=1):
             state["status"]="rendering-captioned";save(folder/"worker.json",state)
             cap=output.with_name(episode["slug"]+".captioned.mp4")
             command(["-i",output,"-vf","ass=captions.ko.ass","-map","0:v:0","-map","0:a:0",
-                *encoder(),"-c:a","copy","-frames:v",frames,"-t",duration,"-movflags","+faststart",cap],folder,"captioned")
+                *encoder(),"-c:a","copy","-frames:v",frames,"-movflags","+faststart",cap],folder,"captioned")
             check_stream(cap,frames)
             for lang in ("ko","en"):
                 shutil.copy2(episode["baselineOutputs"][lang],dest/(episode["slug"]+"."+lang+".srt"))

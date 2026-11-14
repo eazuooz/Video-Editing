@@ -7,6 +7,7 @@ from inventory import ROOT,HERE,read
 def snapshot():
     job=read(HERE/'finite-worker.json');eid=job.get('current')
     result={k:job.get(k) for k in ('status','current','stage','completed','failures')}
+    result['failures']=[dict(episode=r['episode'],state='Repair queued; not review-ready') for r in job.get('failures',[])]
     if eid:
         e=next(e for e in read(HERE/'inventory.json')['episodes'] if e['id']==eid)
         folder=ROOT/'projects'/e['slug']/'production/local/teaching-sync-v2'

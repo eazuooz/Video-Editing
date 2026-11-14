@@ -16,13 +16,26 @@ import progress
 def now(): return datetime.now(timezone.utc).isoformat()
 
 
-def main(ids):
+def main(ids,resume=False):
     assert len(ids)==len(set(ids)) and set(ids)<=set(f'M{i}' for i in range(21,34))
     records={e['id']:e for e in read(HERE/'inventory.json')['episodes']}
     state=dict(pid=os.getpid(),startedAt=now(),scope=ids,status='running',completed=[],failures=[],automation=False)
-    path=HERE/'finite-worker.json';save(path,state)
+    path=HERE/'finite-worker.json'
+    if resume:
+        before=read(path);assert before['status']!='running', 'Preserve the running finite worker'
+        assert not render.guard().idle_reason(), 'Preserve other active costly jobs'
+        archive=HERE/('finite-worker-before-resume-'+now().replace(':','').replace('.','')+'.json')
+        save(archive,before)
+        state.update(completed=before.get('completed',[]),failures=[r for r in before.get('failures',[]) if r['episode'] not in ids],
+            previousFailedForRetry=[r for r in before.get('failures',[]) if r['episode'] in ids],
+            resolvedFailures=before.get('resolvedFailures',[]),previousRun=str(archive))
+    save(path,state)
     for eid in ids:
         episode=records[eid];render.authorized(episode)
+        try:render.validate_inputs()
+        except AssertionError as error:
+            state.update(status='preparation-changed-before-next-job',current=eid,stage='internal-preflight',detail=repr(error),updatedAt=now())
+            save(path,state);print('Preserved current media; next job awaits corrected internal preflight',flush=True);return
         folder=ROOT/'projects'/episode['slug']/'production/local'/render.REVISION
         state.update(current=eid,stage='encode',updatedAt=now());save(path,state)
         try:
@@ -46,6 +59,9 @@ def main(ids):
                 import newmix
                 newmix.run(episode)
             state['completed'].append(eid)
+            prior=[r for r in state.get('previousFailedForRetry',[]) if r['episode']==eid]
+            state.setdefault('resolvedFailures',[]).extend([dict(**r,resolution=str(folder/'technical-qa.json')) for r in prior])
+            state['previousFailedForRetry']=[r for r in state.get('previousFailedForRetry',[]) if r['episode']!=eid]
             print(eid,'encoded and technical checks complete; actual picture/mix review remains separate',flush=True)
         except BaseException as error:
             state['failures'].append(dict(episode=eid,error=repr(error),trace=traceback.format_exc()))
@@ -59,4 +75,5 @@ def main(ids):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('episodes',nargs='+');main(parser.parse_args().episodes)
+    parser=argparse.ArgumentParser();parser.add_argument('episodes',nargs='+');parser.add_argument('--resume',action='store_true')
+    a=parser.parse_args();main(a.episodes,a.resume)

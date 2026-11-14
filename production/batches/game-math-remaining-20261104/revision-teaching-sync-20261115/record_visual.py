@@ -46,7 +46,7 @@ def main(eid,boards,full):
     save(folder/'visual-review.json',review)
     p=HERE/'pending-encoded-corrections.json';pending=read(p)
     if eid in pending['episodes']:
-        assert eid not in ('M24','M26') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
+        assert eid not in ('M22','M24','M26') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
         pending['episodes'][eid].update(status='resolved',actualEncodedPictureReview='pass',
             newCaptionedSha256=encoded['files']['captioned']['sha256'])
         save(p,pending)

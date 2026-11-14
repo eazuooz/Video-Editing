@@ -65,6 +65,23 @@ def update():
     data=dict(updatedAt=datetime.now(timezone.utc).isoformat(),scope="M21–M33 only",rows=rows,
         readyCount=sum(x["finalReviewReady"] for x in rows),upload=False,automation=False)
     save(HERE/"progress.json",data)
+    # Update only this explicitly selected revision, preserving platform states
+    # and unrelated projects in the shared checkpoint.
+    plan['status']='local-user-review-pending' if data['readyCount']==13 else 'serialized-render-and-QA'
+    for episode in plan['episodes']:
+        row=next(r for r in rows if r['id']==episode['id'])
+        episode.update(status=row['status'],review=dict(technical=row['technicalQa'],
+            currentEncodedPictures=row['visualQa'],human='pending'),output=row['output'])
+    save(HERE/'plan.json',plan)
+    checkpoint_path=HERE.parent/'checkpoint.json'
+    checkpoint=read(checkpoint_path)
+    leaf=checkpoint['teachingSyncRevision20261115']
+    leaf.update(status=plan['status'],completed=[r['id'] for r in rows if r['finalReviewReady']],
+        completedTechnical=[r['id'] for r in rows if r['technicalQa']=='pass'],
+        localReadyCount=data['readyCount'],humanReviewed=False,
+        pendingPictureCorrections=[eid for eid,c in corrections.get('episodes',{}).items() if c.get('status')!='resolved'],
+        nextAction='Finish remaining actual encoded picture review and guarded jobs; deliver all thirteen locally. No platform mutations.')
+    save(checkpoint_path,checkpoint)
     for row,item in zip(rows,inventory):
         if row['finalReviewReady']:review_index(row,item)
     worklist_path=ROOT/"shared/publishing/video-worklist.json"

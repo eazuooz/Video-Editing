@@ -49,21 +49,22 @@ class Board:
     def rectangle(self, x, y, w, h, a, b, color="000000", layer=2):
         self.polygon([(x,y),(x+w,y),(x+w,y+h),(x,y+h)],a,b,color,layer)
 
-    def text(self, x, y, text, a, b, color=WHITE, size=48, align=7, width=None):
+    def text(self, x, y, text, a, b, color=WHITE, size=48, align=7, width=None, font=None):
         assert "{" not in text and "}" not in text
         if width:
-            font=ImageFont.truetype("C:/Windows/Fonts/malgun.ttf",size)
+            measure_font=ImageFont.truetype("C:/Windows/Fonts/malgun.ttf",size)
             rows=[]
             for paragraph in text.split("\n"):
                 line=""
                 for word in paragraph.split():
                     candidate=(line+" "+word).strip()
-                    if font.getlength(candidate)>width and line:
+                    if measure_font.getlength(candidate)>width and line:
                         rows.append(line);line=word
                     else:line=candidate
                 rows.append(line)
             text="\n".join(rows)
-        self.event(a,b,r"{\an"+str(align)+r"\pos("+f"{x},{y}"+r")\fs"+str(size)+r"\1c&H"+color+r"&\bord0\shad0\fad(100,0)}"+text.replace("\n",r"\N"))
+        font_override=(r"\fn"+font) if font else ""
+        self.event(a,b,r"{\an"+str(align)+r"\pos("+f"{x},{y}"+r")\fs"+str(size)+font_override+r"\1c&H"+color+r"&\bord0\shad0\fad(100,0)}"+text.replace("\n",r"\N"))
         return (size+8)*len(text.split("\n"))
 
     def equation(self, x, y, tex, a, b, color=WHITE, width=830, size=53):
@@ -129,6 +130,24 @@ def cue(scene, phrase):
     return max(scene["start"], candidates[0]["start"])
 
 
+def code_lines(board,x,y,rows,active,a,b):
+    """Syntax roles stay independent of the separate current-line marker."""
+    font=ImageFont.truetype("C:/Windows/Fonts/consola.ttf",42)
+    keywords={'for','each','bone'}
+    for i,row in enumerate(rows):
+        yy=y+48*i
+        if i==active:board.rectangle(x-22,yy+5,6,36,a,b,GOLD,6)
+        px=x
+        for m in re.finditer(r'\s+|\d+(?:\.\d+)?|[A-Za-z_]\w*|.',row):
+            token=m.group()
+            color='E6B59F' if token in keywords else GOLD if token[0].isdigit() else TEAL if token[0].isalpha() else WHITE
+            if not token.isspace():board.text(px,yy,token,a,b,color,42,font='Consolas')
+            px+=font.getlength(token)
+        assert px-x<=830,('Code line exceeds panel',row,px-x)
+    board.text(x+620,y,'의사코드',a,b,MUTED,42)
+    return len(rows)*48
+
+
 def working(board, scene, recipe):
     start,end=scene["start"],scene["end"]
     left=recipe.get("side","right")=="left"
@@ -137,6 +156,7 @@ def working(board, scene, recipe):
     # the replaced native formula must not survive beside the new workings.
     board.rectangle(x-14,178,940 if left else 934,738,start,end)
     board.text(x,219,recipe["purpose"],start,end,GOLD,width=850)
+    if recipe.get('rightNote'):board.text(1020,219,recipe['rightNote'],start,end,WHITE,42,width=830)
     relation_height=board.equation(x,304,recipe["relation"],start,end,TEAL)
     legend_top=max(405,304+relation_height+30)
     for i,meaning in enumerate(recipe.get("inputs",[])):
@@ -149,19 +169,25 @@ def working(board, scene, recipe):
     # A full proof can span adjacent scenes without becoming tiny text.
     for i,(phrase,tex,meaning) in enumerate(steps):
         a=times[i];b=times[i+1] if i+1<len(times) else end
-        previous=steps[i-1] if i and recipe.get("keepPrevious",True) else None
+        code=recipe.get('codeSteps',[None]*len(steps))[i]
+        previous=steps[i-1] if i and recipe.get("keepPrevious",True) and not code else None
         if previous:
             previous_height=board.equation(x,top,previous[1],a,b,WHITE,size=50)
         else:previous_height=-30
         next_top=top+previous_height+30
         current_height=board.equation(x,next_top,tex,a,b,GOLD,size=54)
         explanation_y=max(top+(180 if previous else 140),next_top+current_height+30)
+        if code:
+            code_y=next_top+current_height+30
+            code_height=code_lines(board,x+40,code_y,code['lines'],code['active'],a,b)
+            explanation_y=max(explanation_y,code_y+code_height+25)
         explanation_height=board.text(x,explanation_y,meaning,a,b,WHITE,44,width=850)
         if explanation_y+explanation_height>918:
             raise ValueError((scene["scene"],"Working exceeds fixed caption clearance",tex))
         board.evidence.append(dict(scene=scene["scene"],operation=tex,anchor=phrase,
             start=a,end=b,persistentRelation=recipe["relation"],inputLegend=recipe.get("inputs",[]),
             cueBasis="Actual unchanged PCM word timestamp" if any(norm(e.get("phrase",""))==norm(phrase) for e in scene.get("operationWordEvidence",[])) else "Actual delivered clause/native word boundary",
+            code=code,
             retainedInNextStage=bool(i+1<len(steps) and recipe.get("keepPrevious",True)),
             minimumReadableDwell=b-a))
 

@@ -1,5 +1,5 @@
 """Check every authored operation before the selected finite production job."""
-from inventory import HERE,read,save
+from inventory import HERE,read,save,sha
 from boards import Board,working
 from workings import WORKINGS
 import motion_panels
@@ -23,8 +23,10 @@ def main():
         shortStages=[r for r in rows if r['end']-r['start']<1.5],
         scope='Individual reveals; the parent and preceding useful operation remain visible. Actual audio speed and all approved narration preserved.',
         actualHumanPaceApproval=False))
-    save(HERE/'authoring-validation.json',dict(preparedSceneCount=count,failures=failures,
+    inputs=['boards.py','workings.py','motion_panels.py','render_revision.py','inventory.json','game-additions.json']
+    save(HERE/'authoring-validation.json',dict(status='pass' if not failures and not zero else 'fail',preparedSceneCount=count,failures=failures,
         operationCount=len(rows),nonPositiveStageCount=len(zero),
+        inputSha256={name:sha(HERE/name) for name in inputs},
         actualWordEvidence='operation-word-alignment.json',finalVideoRendered=False))
     assert not failures and not zero,(failures,zero)
     print(count,'scenes,',len(rows),'ordered operations; layout/cue checks passed')
