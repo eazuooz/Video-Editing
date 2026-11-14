@@ -34,7 +34,7 @@ RECAPS = {
             'Small screens hide subtle gestures. Check the actual gameplay size and strengthen the motion you want to communicate.'),
     'A08': ('포즈는 몸의 흐름과 빈 공간, 체중을 받치는 발을 함께 봅니다. 참고 동작을 여러 시점에서 확인해 보세요.',
             'Read the body line, negative space, and supporting foot together. Inspect the reference motion from several angles.'),
-    'A09': ('눌림과 늘어남은 힘과 속도를 읽게 합니다. 부피와 실루엣을 함께 확인하며, 필요한 순간에 변형을 집중하세요.',
+    'A09': ('눌림과 늘어남은 힘과 속도를 더 분명하게 보여 줍니다. 부피와 실루엣을 함께 확인하며, 필요한 순간에 변형을 집중하세요.',
             'Squash and stretch communicate force and speed. Check volume and silhouette, concentrating the deformation where it matters.'),
     'A10': ('피격 동작은 맞은 위치와 충격 방향을 전달합니다. 반응의 시작과 몸의 이동, 원래 자세로 돌아오는 흐름을 확인하세요.',
             'A hit reaction shows the contact point and force direction. Check its onset, body displacement, and recovery.'),

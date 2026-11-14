@@ -23,7 +23,7 @@ def main():
     movie = WORK / (args.key + '.mp4')
     if receipt.is_file() and movie.is_file():
         old = read(receipt)
-        if old['sourceSha256'] == row['vendorSourceSha256']:
+        if old['sourceSha256'] == row['vendorSourceSha256'] and old.get('builderSha256') == row['builderSha256']:
             with movie.open('rb') as stream:
                 if hashlib.file_digest(stream, 'sha256').hexdigest() == old['movieSha256']:
                     print(args.key, 'verified existing capture reused', flush=True)
@@ -54,7 +54,7 @@ def main():
                   'movie': str(movie), 'movieSha256': digest, 'frames': len(pictures),
                   'resolution': [1920, 1080], 'fps': 60, 'renderer': 'UE 5.8 software WARP',
                   'originalSequenceBoundDirectly': True, 'boneTracksEdited': False,
-                  'visualReviewPending': True})
+                  'builderSha256': row['builderSha256'], 'visualReviewPending': True})
     print(args.key, 'native motion capture ready for visual review', flush=True)
 
 

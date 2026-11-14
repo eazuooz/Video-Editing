@@ -23,7 +23,10 @@ def build(row):
     mesh = u.load_asset(row['mesh'])
     assert isinstance(clip, u.AnimSequence) and isinstance(mesh, u.SkeletalMesh), key
     assert clip.get_editor_property('skeleton') == mesh.get_editor_property('skeleton'), key
-    frames = max(60, math.ceil(clip.get_play_length() * 60))
+    start = row.get('sourceStartSeconds', 0)
+    end = row.get('sourceEndSeconds', clip.get_play_length())
+    assert 0 <= start < end <= clip.get_play_length() + .001
+    frames = max(1, round((end - start) * 60))
     level = ASSET_ROOT + '/Levels/' + key
     u.EditorAssetLibrary.make_directory(ASSET_ROOT + '/Levels')
     if not u.EditorAssetLibrary.does_asset_exist(level):
@@ -36,8 +39,9 @@ def build(row):
         elif isinstance(actor, u.CameraActor):
             camera = actor
     assert camera
-    camera.set_actor_location(u.Vector(0, 900, 100), False, False)
-    camera.camera_component.ortho_width = 580
+    camera.set_actor_location(u.Vector(0, 900, row.get('cameraHeight', 100)), False, False)
+    camera.set_actor_rotation(u.Rotator(pitch=0, yaw=-90, roll=0), False)
+    camera.camera_component.ortho_width = row.get('cameraWidth', 580)
     sequence = owned('Sequences', key, u.LevelSequence, u.LevelSequenceFactoryNew())
     sequence.set_display_rate(u.FrameRate(60, 1))
     sequence.set_playback_start(0)
@@ -52,9 +56,19 @@ def build(row):
     binding_id = u.MovieSceneObjectBindingID()
     binding_id.set_editor_property('guid', camera_binding.get_id())
     cut.set_camera_binding_id(binding_id)
+    pose = u.AnimPoseExtensions.get_anim_pose_at_time(clip, start, u.AnimPoseEvaluationOptions())
+    # Root has no parent: its LOCAL transform is also the component transform.
+    origin = u.AnimPoseExtensions.get_bone_pose(pose, 'root', u.AnimPoseSpaces.LOCAL).translation
+    if 'focusOrigin' in row:
+        origin = u.Vector(*row['focusOrigin'])
     for side, yaw in enumerate(row.get('yaws', [-70, -25])):
+        radians = math.radians(yaw)
+        offset_x = origin.x * math.cos(radians) - origin.y * math.sin(radians)
+        offset_y = origin.x * math.sin(radians) + origin.y * math.cos(radians)
+        spacing = row.get('actorSpacing', 145)
+        location = u.Vector((-spacing if side == 0 else spacing) - offset_x, -offset_y, -origin.z)
         actor = u.EditorLevelLibrary.spawn_actor_from_class(
-            u.SkeletalMeshActor, u.Vector(-145 if side == 0 else 145, 0, 0), u.Rotator(0, yaw, 0))
+            u.SkeletalMeshActor, location, u.Rotator(pitch=0, yaw=yaw, roll=0))
         actor.set_actor_label(key + ('_left' if side == 0 else '_right'))
         component = actor.skeletal_mesh_component
         component.set_skeletal_mesh(mesh)
@@ -68,6 +82,8 @@ def build(row):
         section.set_range(0, frames)
         params = u.MovieSceneSkeletalAnimationParams()
         params.animation = clip
+        tick = sequence.get_tick_resolution()
+        params.set_editor_property('start_frame_offset', u.FrameNumber(round(start * tick.numerator / tick.denominator)))
         section.params = params
     u.EditorAssetLibrary.save_loaded_asset(sequence, False)
     u.EditorLevelLibrary.save_current_level()
@@ -92,7 +108,8 @@ def build(row):
     result = dict(row, frames=frames, seconds=clip.get_play_length(), level=level,
                   sequence=sequence.get_path_name(), config=config.get_path_name(),
                   sourceSkeleton=clip.get_editor_property('skeleton').get_path_name(),
-                  originalSequenceBoundDirectly=True, boneTracksEdited=False)
+                  originalSequenceBoundDirectly=True, boneTracksEdited=False,
+                  sourceStageOrigin=[origin.x, origin.y, origin.z], builderSha256=JOB['builderSha256'])
     (OUT / (key + '-build.json')).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     u.log('NATIVE_CLIP_V6_READY ' + key)
 

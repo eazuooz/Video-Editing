@@ -2,11 +2,15 @@
 import os
 import runpy
 import sys
+import argparse
 
 from prepare import ROOT, VOICE_LOCAL, read
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--episodes', nargs='+')
+    selected = parser.parse_args().episodes
     scope = read(ROOT / 'shared/publishing/video-production-control.json')['animationNativeClipsRevision20261114']
     assert scope['ttsAuthorized'] and scope['episodes'] == [f'A{i:02}' for i in range(3, 19)]
     os.environ.update(OMP_NUM_THREADS='4', MKL_NUM_THREADS='4', CUDA_VISIBLE_DEVICES='-1')
@@ -25,6 +29,9 @@ def main():
     runtime['configure_project']('animation-native-clips-v6', str((VOICE_LOCAL / 'tts-manifest.json').relative_to(ROOT)))
     runtime['load_tts_dependencies']()
     jobs = runtime['load_jobs']()
+    if selected:
+        jobs = [job for job in jobs if job.scene_id in selected]
+        assert len(jobs) == len(selected)
     runtime['render_chunks'](runtime['build_render_items'](jobs), 3, set())
 
 

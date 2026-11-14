@@ -1,4 +1,5 @@
 """Prepare an isolated worker and exact installed native animation candidates."""
+import argparse
 import hashlib
 import shutil
 import subprocess
@@ -7,6 +8,9 @@ from prepare import BATCH, HERE, ROOT, WORK, read, save
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--only', nargs='+')
+    args = parser.parse_args()
     selected = read(ROOT / 'shared/publishing/video-production-control.json')['animationNativeClipsRevision20261114']
     assert selected['renderAuthorized'] and selected['excludedUploaded'] == ['A01', 'A02']
     catalog = read(BATCH / 'real-clips-v2/source-motion-catalog.json')
@@ -18,6 +22,13 @@ def main():
              'MM_Walk_Fwd', 'MM_Run_Fwd', 'am_Stand_Idle_03_LookAround']
     clips = [dict(row, yaws=[-70, -25]) for row in catalog if row['id'] in names]
     assert len(clips) == len(names)
+    for row in clips:
+        if row['id'] in ('am_Ready_Fight_01_Knockdown_A', 'af_Ready_Fight_01_Knockdown_B'):
+            row.update(sourceStartSeconds=21.4, sourceEndSeconds=24.7)
+        if row['id'] == 'anim_GrabValve_R':
+            row.update(focusOrigin=[-34.55156117382062, 16.42018626706892, 84.23882172442353],
+                       cameraHeight=0, cameraWidth=220, actorSpacing=57,
+                       focusSource='Component-space hand_r at source 0.4 s from the original exported native pose')
     base = next(row for row in catalog if row['id'] == 'am_Stand_Idle_03_LookAround')
     clips.append(dict(id='am_SitPiano_Play_01', clip='/Game/MC_Sample/Animations/Piano/am_SitPiano_Play_01',
                       mesh=base['mesh'], yaws=[-70, -25]))
@@ -44,7 +55,10 @@ def main():
             subprocess.run(['powershell', '-NoProfile', '-Command', command], check=True,
                            creationflags=subprocess.CREATE_NO_WINDOW)
         assert destination.resolve() == source.resolve()
-    save(worker / 'native-job.json', {'work': str(WORK), 'clips': clips})
+    builder_hash = hashlib.sha256((HERE / 'build_native.py').read_bytes()).hexdigest()
+    selected_clips = [row for row in clips if not args.only or row['id'] in args.only]
+    assert selected_clips and (not args.only or len(selected_clips) == len(args.only))
+    save(worker / 'native-job.json', {'work': str(WORK), 'clips': selected_clips, 'builderSha256': builder_hash})
     engine = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
     with (WORK / 'build.log').open('wb') as stream:
         subprocess.run([engine, str(worker / 'NativeClipsV6.uproject'), '-run=pythonscript',
