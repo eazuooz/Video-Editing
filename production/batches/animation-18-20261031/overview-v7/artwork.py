@@ -38,7 +38,7 @@ def tracks(d,first,second):
 def diagram(d,kind):
     if kind=='phases':
         chain(d,['대기','준비','타격','후속'],495,[TEAL,TEAL,RED,GREEN])
-        text(d,(70,603),'動作の段階'.replace('動作の段階','동작의 단계 ≠ 판정의 유효 구간'),34,MUTED,maxwidth=800)
+        text(d,(70,603),'동작의 단계 ≠ 판정의 유효 구간',34,MUTED,maxwidth=800)
         d.line((150,680,800,680),fill=LINE,width=12);d.line((520,680,610,680),fill=RED,width=12)
         label(d,560,735,'판정은 별도로 확인',RED,600)
     elif kind=='anticipation':
@@ -75,13 +75,14 @@ def diagram(d,kind):
         arrow(d,(100,680),(820,680),MUTED,4)
         label(d,465,735,'어디를 · 어느 방향으로 맞았는가',WHITE,810)
     elif kind=='timing':
-        text(d,(65,415),'같은 시작과 끝',34,WHITE)
+        text(d,(65,415),'같은 시간 간격으로 본 위치',34,WHITE)
         for y,pts,c in [(520,[140,280,420,560,700,840],MUTED),(650,[140,180,225,300,500,840],TEAL)]:
             d.line((140,y,840,y),fill=LINE,width=3)
             for x in pts:d.ellipse((x-11,y-11,x+11,y+11),fill=c)
         text(d,(65,706),'사이의 간격을 바꾸면 속도감도 달라짐',32,TEAL,maxwidth=800)
     elif kind=='face':
-        chain(d,['눈썹','눈','입'],475,[YELLOW,TEAL,GREEN])
+        # These facial regions contribute together, rather than causing one another.
+        for x,s,c in [(150,'눈썹',YELLOW),(475,'눈',TEAL),(800,'입',GREEN)]:node(d,x,475,s,c,180)
         for x in [150,475,800]:arrow(d,(x,540),(475,635),MUTED,4)
         node(d,475,680,'하나의 감정',WHITE,500)
     elif kind=='mirror':
@@ -104,11 +105,11 @@ def diagram(d,kind):
         label(d,465,708,'물체의 형태 → 손가락 자세',WHITE,800)
         text(d,(70,390),'그립의 개념도',30,MUTED)
     elif kind=='detection':
-        d.arc((80,380,840,740),185,350,fill=TEAL,width=9)
+        d.arc((80,450,840,740),185,350,fill=TEAL,width=9)
         d.rectangle((560,465,760,655),outline=RED,width=7)
         label(d,270,645,'보이는 무기 경로',TEAL,380)
         label(d,665,710,'판정 구간',RED,330)
-        text(d,(65,390),'개념도 · 실제 판정값을 표시한 것은 아님',29,MUTED,maxwidth=810)
+        text(d,(65,390),'무기 경로와 판정 영역의 개념도',29,MUTED,maxwidth=810)
     elif kind=='rig':
         pts=[(130,660),(205,550),(260,460),(360,500)]
         d.line(pts,fill=TEAL,width=7)
