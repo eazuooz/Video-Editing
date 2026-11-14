@@ -568,13 +568,13 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 | M23 | 사용자 검수 대기 | pass | pass | 검수 전 |
 | M24 | 사용자 검수 대기 | pass | pass | 검수 전 |
 | M25 | 사용자 검수 대기 | pass | pass | 검수 전 |
-| M26 | 인코딩 완료 · 내부 검수 중 | pass | correction-pending | 검수 전 |
+| M26 | 사용자 검수 대기 | pass | pass | 검수 전 |
 | M27 | 사용자 검수 대기 | pass | pass | 검수 전 |
 | M28 | 사용자 검수 대기 | pass | pass | 검수 전 |
-| M29 | Clean 렌더 중 | pending | pending | 검수 전 |
-| M30 | 렌더 중단 · 보완 후 재시도 | pending | correction-pending | 검수 전 |
-| M31 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
-| M32 | 렌더 중단 · 보완 후 재시도 | pending | pending | 검수 전 |
-| M33 | 렌더 중단 · 보완 후 재시도 | pending | pending | 검수 전 |
+| M29 | 사용자 검수 대기 | pass | pass | 검수 전 |
+| M30 | 사용자 검수 대기 | pass | pass | 검수 전 |
+| M31 | 사용자 검수 대기 | pass | pass | 검수 전 |
+| M32 | 사용자 검수 대기 | pass | pass | 검수 전 |
+| M33 | 사용자 검수 대기 | pass | pass | 검수 전 |
 
 <!-- MATH-TEACHING-SYNC-20261115-END -->

@@ -33,7 +33,7 @@ def watch():
         for e in read(HERE/'inventory.json')['episodes']:
             folder=ROOT/'projects'/e['slug']/'production/local/teaching-sync-v2'
             if not all((folder/name).exists() for name in ('encoded.json','picture-review.json','technical-qa.json')):continue
-            if e['id'] in ('M21','M22','M23','M24','M26') and corrections.get(e['id'],{}).get('status')!='resolved':continue
+            if e['id'] in corrections and corrections[e['id']].get('status')!='resolved':continue
             encoded=read(folder/'encoded.json');pictures=read(folder/'picture-review.json')
             visual=read(folder/'visual-review.json') if (folder/'visual-review.json').exists() else {}
             digest=encoded['files']['captioned']['sha256']

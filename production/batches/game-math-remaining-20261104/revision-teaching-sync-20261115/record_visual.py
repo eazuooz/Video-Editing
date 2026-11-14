@@ -23,7 +23,7 @@ def main(eid,boards,full):
     assert len(note['findings'])>=3 and not note['actualHumanViewing'] and not note['actualHumanListening']
     p=HERE/'pending-encoded-corrections.json';pending=read(p)
     if eid in pending['episodes']:
-        assert eid not in ('M21','M22','M23','M24','M26') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
+        assert eid not in ('M21','M22','M23','M24','M26','M29','M30','M31','M33') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
     selected=[]
     for f in full:
         item=next(r for r in pictures['frames'] if r['frame']==f)

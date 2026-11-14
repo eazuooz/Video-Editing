@@ -100,6 +100,13 @@ def pictures(episode,folder):
     # All changed cut joins are represented. Unchanged pictures/audio retain
     # their previous edition's review evidence, not a fabricated new viewing.
     byscene={s["scene"]:s for s in episode["scenes"]}
+    if episode['id']=='M33':
+        from boards import cue
+        jump=byscene['029'];a=cue(jump,'원점에서 출발해');z=cue(jump,'최고 높이를 h')
+        for i in range(math.ceil((z-a)*2)+1):
+            points.append(dict(scene='029',time=min(z+.2,a+i*.5),role='illustration-motion',cue='Same t drives launch, apex and landing'))
+        for phrase in ('최고 높이를 h','전체 전진 거리를 d','그래서 일 초에는','이 초에는 높이 영'):
+            points.append(dict(scene='029',time=cue(jump,phrase)+.25,role='illustration-motion',cue=phrase))
     changed={p["scene"] for p in points}
     for sid in changed:
         s=byscene[sid]

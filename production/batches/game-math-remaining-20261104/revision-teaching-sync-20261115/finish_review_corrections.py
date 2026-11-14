@@ -15,7 +15,7 @@ def main(eid,archive_only=False):
     worker=read(HERE/'finite-worker.json')
     assert worker['status']=='finite-job-ended-review-pending'
     assert not guard().idle_reason(), 'Preserve active jobs'
-    assert eid in ('M21','M22','M23','M24','M26')
+    assert eid in ('M21','M22','M23','M24','M26','M29','M30','M31','M33')
     episode=next(e for e in read(HERE/'inventory.json')['episodes'] if e['id']==eid)
     authorized(episode)
     source=(ROOT/'projects'/episode['slug']/'production/local/teaching-sync-v2').resolve()

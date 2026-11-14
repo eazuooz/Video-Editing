@@ -149,7 +149,7 @@ def carriage_displacements(b,s):
     # At that exact clause, bind the pictured displacements to the same interval.
     a=cue(s,"십육 초 동안");z=s["end"]
     vc=5-75*1.25/1075;vp=vc+1.25;t=16
-    b.rectangle(56,178,886,738,a,z)
+    b.rectangle(56,160,940,756,a,z)
     b.text(75,219,"같은 16초 동안 이동한 거리",a,z,GOLD,46,width=840)
     b.text(75,288,"각자의 출발점에서 잰 변위 · 지면 기준",a,z,WHITE,42,width=840)
     for row,(label,v,color) in enumerate((("객차",vc,GOLD),("사람",vp,TEAL))):
@@ -181,6 +181,42 @@ def last_speed_rectangle(b,s):
     b.text(1080,810,"각 조각: 그때의 속도 × 짧은 시간 폭",parts,z,WHITE,42,width=790)
 
 
+def hermite_endpoint_labels(b,s):
+    # The new math gutter covers the native outside labels. Keep identities
+    # next to the exact unchanged endpoint and its downward tangent instead.
+    a,z=s['start'],s['end']
+    b.rectangle(930,790,65,70,a,z)
+    b.text(933,795,"p₁",a,z,GOLD,44)
+    b.text(920,490,"v₁",a,z,TEAL,44)
+
+
+def complete_jump_path(b,s):
+    # The mathematical side panel must not hide the landing point. One shared
+    # t drives both height and forward distance, anchored to the spoken stages.
+    a,z=s['start'],s['end'];launch=cue(s,'원점에서 출발해');second=cue(s,'이 초에는 앞쪽으로');land=cue(s,'최고 높이를 h')
+    h_at=land;d_at=cue(s,'전체 전진 거리를 d');recap=cue(s,'그래서 일 초에는');last=cue(s,'이 초에는 높이 영')
+    b.rectangle(56,215,940,701,a,z)
+    def xy(t):return 185+650*t/2,740-330*t*(2-t)
+    line(b,[(150,740),(880,740)],a,z,MUTED,3)
+    line(b,[(185,760),(185,300)],a,z,MUTED,3)
+    line(b,[xy(2*i/100) for i in range(101)],a,z,GOLD,5)
+    b.text(75,257,'높이 y',a,z,WHITE,40)
+    b.text(105,777,'출발 · t=0 s',a,z,WHITE,40)
+    b.text(410,340,'정점 · t=1 s',a,z,WHITE,40)
+    b.text(655,777,'착지 · t=2 s',a,z,WHITE,40)
+    for t in (0,1,2):dot(b,*xy(t),a,z,GOLD,8)
+    line(b,[(510,740),(510,410)],h_at,z,MUTED,3)
+    b.text(535,555,'h',h_at,z,TEAL,48)
+    arrow(b,(185,858),(835,858),d_at,z,TEAL,5)
+    b.text(475,858,'d · 앞쪽 z',d_at,z,TEAL,40)
+    phases=[(a,launch,0),(land,recap,2),(recap,last,1),(last,z,2)]
+    for start,finish,t0,t1 in ((launch,second,0,1),(second,land,1,2)):
+        for i in range(math.ceil((finish-start)*20)):
+            lo=start+i/20;hi=min(finish,lo+.05);t=t0+(t1-t0)*(lo-start)/(finish-start)
+            phases.append((lo,hi,t))
+    for start,finish,t in phases:dot(b,*xy(t),start,finish,TEAL,13)
+
+
 def apply(board,episode,games):
     lookup={s["scene"]:s for s in episode["scenes"]}
     if episode["id"]=="M24":
@@ -193,5 +229,7 @@ def apply(board,episode,games):
         kart_acceleration(board,lookup["002"],next(g for g in games if g["scene"]=="002"))
         last_speed_rectangle(board,lookup["006"])
     if episode["id"]=="M30":carriage_displacements(board,lookup["053"])
+    if episode["id"]=="M31":hermite_endpoint_labels(board,lookup["032"])
+    if episode["id"]=="M33":complete_jump_path(board,lookup["029"])
     if episode["id"]=="M26":
         for sid in ('001','005'):defined_circular_inputs(board,lookup[sid])

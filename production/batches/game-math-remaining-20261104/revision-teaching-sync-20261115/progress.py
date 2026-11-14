@@ -47,6 +47,7 @@ def update():
     titles={x["id"]:x["title"] for x in read(HERE.parent/"batch.json")["items"]}
     corrections=read(HERE/"pending-encoded-corrections.json") if (HERE/"pending-encoded-corrections.json").exists() else {}
     rows=[]
+    finite=read(HERE/"finite-worker.json") if (HERE/"finite-worker.json").exists() else {}
     for item in inventory:
         folder=ROOT/"projects"/item["slug"] / "production/local/teaching-sync-v2"
         worker=read(folder/"worker.json") if (folder/"worker.json").exists() else {}
@@ -62,12 +63,15 @@ def update():
         else:pending_picture=False
         phase=worker.get('status')
         if phase in ('rendering-clean','rendering-captioned') and not psutil.pid_exists(worker.get('pid',0)):phase='render-failed'
-        state="사용자 검수 대기" if ready else {"rendering-clean":"Clean 렌더 중","rendering-captioned":"자막본 렌더 중","render-failed":"렌더 중단 · 보완 후 재시도","encoded-QA-pending":"인코딩 완료 · 내부 검수 중"}.get(phase,"화면·계산 보충 작성 완료 / 렌더 대기")
+        if phase=='render-failed' and finite.get('status')=='running' and item['id'] in finite.get('scope',[]) and finite.get('current') and int(item['id'][1:])>int(finite['current'][1:]) and not any(r['episode']==item['id'] for r in finite.get('failures',[])):
+            phase='queued-after-fix'
+        state="사용자 검수 대기" if ready else {"queued-after-fix":"보완 완료 · 순서대로 렌더 대기","rendering-clean":"Clean 렌더 중","rendering-captioned":"자막본 렌더 중","render-failed":"렌더 중단 · 보완 후 재시도","encoded-QA-pending":"인코딩 완료 · 내부 검수 중"}.get(phase,"화면·계산 보충 작성 완료 / 렌더 대기")
         rows.append(dict(id=item["id"],title=titles[item["id"]],slug=item["slug"],status=state,
             encoded=bool(encoded),technicalQa=tech.get("status") if tech else "pending",
             visualQa='correction-pending' if pending_picture else visual.get("status") if visual else "pending",humanReviewed=False,
             audioQa="unchanged-bitstream" if tech and tech.get("unchangedAudioBitstream") else mix.get("status") if mix else "pending",
             finalReviewReady=ready,output=(ROOT/"output"/(item["slug"]+"-teaching-sync-v2")).as_posix() if encoded else None))
+        rows[-1]['durationSeconds']=encoded['duration'] if encoded else None
     data=dict(updatedAt=datetime.now(timezone.utc).isoformat(),scope="M21–M33 only",rows=rows,
         readyCount=sum(x["finalReviewReady"] for x in rows),upload=False,automation=False)
     save(HERE/"progress.json",data)
@@ -93,10 +97,10 @@ def update():
         completedTechnical=[r['id'] for r in rows if r['technicalQa']=='pass'],
         localReadyCount=data['readyCount'],humanReviewed=False,
         calculationSceneCount=sum(len(v) for v in WORKINGS.values()),
-        currentEpisode=current,currentStage=active.get('owner') if active else 'local-picture-review',
+        currentEpisode=current,currentStage=active.get('owner') if active else 'local-user-review-pending' if data['readyCount']==13 else 'local-picture-review',
         runningCostlyJobs=[active] if active else [],
         pendingPictureCorrections=[eid for eid,c in corrections.get('episodes',{}).items() if c.get('status')!='resolved'],
-        nextAction='Finish remaining actual encoded picture review and guarded jobs; deliver all thirteen locally. No platform mutations.')
+        nextAction='Wait for actual user review of the exact local masters. No upload, automation or next video.' if data['readyCount']==13 else 'Finish remaining actual encoded picture review and guarded jobs; deliver all thirteen locally. No platform mutations.')
     save(checkpoint_path,checkpoint)
     control_path=ROOT/'shared/publishing/video-production-control.json'
     control=read(control_path)
@@ -141,9 +145,12 @@ def update():
     out=ROOT/"output/game-math-teaching-sync-20261115";out.mkdir(exist_ok=True)
     body=[]
     for r in rows:
-        link=f'<a href="../{r["slug"]}-teaching-sync-v2/index.html">영상 폴더</a>' if r["encoded"] else "제작 중"
-        body.append(f'<tr><td>{r["id"]}<br>{html.escape(r["title"])}</td><td>{html.escape(r["status"])}</td><td>{r["technicalQa"]}</td><td>{r["visualQa"]}</td><td>검수 전</td><td>{link}</td></tr>')
-    (out/"index.html").write_text('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>게임수학 13편 수정 검수표</title><style>body{max-width:1200px;padding:24px;margin:auto;background:#080808;color:#fff;font:18px/1.7 system-ui}h1{color:#e8cf83}a{color:#73c7c2}table{border-collapse:collapse;width:100%}td,th{padding:12px;text-align:left;border-bottom:1px solid #444}</style><h1>M21–M33 계산·게임 예시 보충 검수표</h1><p>기존 완성본은 보존합니다. 새 영상은 내부 검수 완료 후 사용자 검수 대기로 표시합니다. 업로드·공개·예약은 진행하지 않습니다.</p><table><tr><th>편</th><th>현재 작업</th><th>파일 검사</th><th>화면 검수</th><th>사용자 검수</th><th>새 영상</th></tr>'+''.join(body)+'</table>',encoding="utf8")
+        link=f'<a href="../{r["slug"]}-teaching-sync-v2/index.html">영상·파일 모음</a><br><a href="../{r["slug"]}-teaching-sync-v2/{r["slug"]}.captioned.mp4">자막 MP4</a>' if r["encoded"] else "제작 중"
+        seconds=round(r['durationSeconds']) if r['durationSeconds'] else None
+        duration=f'{seconds//60}:{seconds%60:02}' if seconds else '—'
+        audio={'unchanged-bitstream':'원본과 동일','pass':'새 믹스 검사 통과','reused':'동일 음성 검사 재사용','pending':'검사 전'}.get(r['audioQa'],r['audioQa'])
+        body.append(f'<tr><td>{r["id"]}<br>{html.escape(r["title"])}</td><td>{duration}</td><td>{html.escape(r["status"])}</td><td>{r["technicalQa"]}</td><td>{r["visualQa"]}</td><td>{audio}</td><td>검수 전</td><td>{link}</td></tr>')
+    (out/"index.html").write_text('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>게임수학 13편 수정 검수표</title><style>body{max-width:1400px;padding:24px;margin:auto;background:#080808;color:#fff;font:18px/1.7 system-ui}h1{color:#e8cf83}a{color:#73c7c2}table{border-collapse:collapse;width:100%}td,th{padding:12px;text-align:left;border-bottom:1px solid #444}.table{overflow:auto}small{color:#bbb}</style><h1>M21–M33 계산·게임 예시 보충 검수표</h1><p>기존 완성본은 보존합니다. 새 영상은 파일·변경 화면·음성 검사를 마친 뒤 사용자 검수 대기로 표시합니다.</p><p>영상별 재생 화면에서 보충한 구간으로 바로 이동할 수 있고, Clean MP4·자막 MP4·한국어/영어 SRT를 함께 받을 수 있습니다.</p><small>파일 검사는 전체 디코딩·프레임/시간축 검사입니다. 화면 검수는 보충한 모든 계산 단계·전환과 게임 동작의 연속 샘플을 확인합니다. 전체 실시간 시청·청취와 사용자 승인은 별도이며 아직 기록하지 않았습니다. 업로드·공개·예약은 진행하지 않습니다.</small><div class="table"><table><tr><th>편</th><th>길이</th><th>현재 작업</th><th>파일 검사</th><th>변경 화면</th><th>음성 검사</th><th>사용자 검수</th><th>새 영상</th></tr>'+''.join(body)+'</table></div>',encoding="utf8")
     return data
 
 
