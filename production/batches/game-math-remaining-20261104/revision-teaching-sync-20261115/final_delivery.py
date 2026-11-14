@@ -9,7 +9,9 @@ def main():
     state=progress.update()
     assert state['readyCount']==13, 'Never turn partial encoding into batch completion'
     assert read(HERE/'authoring-validation.json')['status']=='pass'
-    assert read(HERE/'mathematical-qa.json')['status']=='pass'
+    maths=read(HERE/'mathematical-qa.json');assert maths['status']=='pass'
+    assert maths['formulaAuthoringSha256']==sha(HERE/'workings.py')
+    assert maths['motionAuthoringSha256']==sha(HERE/'motion_panels.py')
     rows=[]
     for episode in read(HERE/'inventory.json')['episodes']:
         folder=ROOT/'projects'/episode['slug']/'production/local/teaching-sync-v2'

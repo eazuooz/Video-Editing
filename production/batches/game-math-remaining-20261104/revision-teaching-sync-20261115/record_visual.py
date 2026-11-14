@@ -21,6 +21,9 @@ def main(eid,boards,full):
     assert sorted(boards)==list(range(1,len(pictures['mobileBoards'])+1)), 'Inspect every changed board'
     note=read(HERE/'visual-notes.json')[eid]
     assert len(note['findings'])>=3 and not note['actualHumanViewing'] and not note['actualHumanListening']
+    p=HERE/'pending-encoded-corrections.json';pending=read(p)
+    if eid in pending['episodes']:
+        assert eid not in ('M21','M22','M23','M24','M26') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
     selected=[]
     for f in full:
         item=next(r for r in pictures['frames'] if r['frame']==f)
@@ -44,9 +47,7 @@ def main(eid,boards,full):
         inspectedMobileSheets=sheets,allChangedMobileFrames=len(pictures['frames']),
         inspectedFull1080Frames=selected,gameMotionSamples=game_changes,**note)
     save(folder/'visual-review.json',review)
-    p=HERE/'pending-encoded-corrections.json';pending=read(p)
     if eid in pending['episodes']:
-        assert eid not in ('M22','M24','M26') or pending['episodes'][eid]['status']=='resolved', 'Complete the recorded picture correction first'
         pending['episodes'][eid].update(status='resolved',actualEncodedPictureReview='pass',
             newCaptionedSha256=encoded['files']['captioned']['sha256'])
         save(p,pending)

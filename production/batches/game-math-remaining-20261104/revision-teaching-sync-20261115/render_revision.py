@@ -141,7 +141,7 @@ def filters(episode,origin,end):
         relative=begin-game["start"]
         if "nativeSource" in game:
             mask="0:0:1920:918"
-        else:mask="56:178:886:738"
+        else:mask="56:178:940:738"
         next_name=f"b{count+1}";count+=1
         graph.append(f"[{current}]drawbox={mask}:color=black:t=fill:enable='gte(t,{begin})*lt(t,{finish})'[{next_name}]")
         current=next_name
