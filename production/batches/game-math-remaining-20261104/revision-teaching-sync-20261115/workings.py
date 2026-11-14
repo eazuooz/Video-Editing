@@ -300,8 +300,8 @@ WORKINGS["M30"] = {
         ("두 배 멀리",r"I_{new}=m(2r)^2=4mr^2=4I","거리를 두 배 → 관성은 네 배"),
         ("여러 질점이면",r"I=\sum_i m_ir_i^2","모든 질량을 같은 회전축에서 잽니다")),
     "018": recipe("기준축을 옮길 때 관성을 더하기",r"I_{axis}=I_{CM}+md^2",
-        ["평행한 축 · 축에 수직인 거리 d · Icm = 0.2 · m = 2 · d = 1"],
-        ("한 미터 옮기면",r"I_{axis}=0.2+2(1)^2=2.2","자체 중심 관성 + 축을 옮긴 데 따른 관성")),
+        ["평행한 축 · d: 축에 수직인 거리", "Icm = 0.2 kg·m² · m = 2 kg · d = 1 m"],
+        ("한 미터 옮기면",r"I_{axis}=0.2+2(1)^2=2.2\ \mathrm{kg\,m^2}","자체 중심 관성 + 축을 옮긴 데 따른 관성")),
     "020": recipe("접촉점의 속도는 이동과 회전의 합",r"\mathbf v_{point}=\mathbf v_{CM}+\boldsymbol\omega\times\mathbf r",
         ["r: 질량중심에서 접촉점 · J: 그 점에서 받은 충격량"],
         ("각운동량도 바뀝니다",r"\Delta\mathbf L=\mathbf r\times\mathbf J","중심에서 벗어난 충격은 회전도 바꿉니다"),
@@ -389,7 +389,7 @@ WORKINGS["M32"] = {
 
 WORKINGS["M33"] = {
     "002": recipe("모양을 보존하며 차수 한 단계 올리기",r"q_i=\frac i4b_{i-1}+\left(1-\frac i4\right)b_i",
-        ["삼차의 b₀…b₃ → 사차의 q₀…q₄ · 끝점 유지"],
+        ["삼차의 b₀…b₃ → 사차의 q₀…q₄", "내부점 i = 1,2,3 · 양 끝 q₀=b₀, q₄=b₃"],
         ("첫 새 내부점",r"q_1=\frac14b_0+\frac34b_1","첫 이웃 두 점의 1/4, 3/4 보간"),
         ("다음은 반씩",r"q_2=\frac12b_1+\frac12b_2\quad q_3=\frac34b_2+\frac14b_3","가운데는 반씩 · 다음은 3/4, 1/4")),
     "011": recipe("같은 재생 시간에서 C¹ 맞추기",r"v^-=3(k-f)\quad v^+=3(a-k)",
@@ -427,7 +427,7 @@ WORKINGS["M24"]["032"]["side"] = "right"
 WORKINGS["M25"].update({
     "007": recipe("속도 그래프의 작은 칸이 뜻하는 것",r"\Delta x_i\approx v(t_i)\Delta t",
         ["가로 폭 Δt: 짧은 시간 · 세로 높이 v: 그때의 속도"],
-        ("직사각형 한 칸의",r"[\mathrm{s}]\,[\mathrm{m/s}]=[\mathrm{m}]","작은 칸의 넓이는 그 시간 동안의 이동량"),
+        ("직사각형 한 칸의",r"[\mathrm{s}]\,[\mathrm{ft/s}]=[\mathrm{ft}]","작은 칸의 넓이는 그 시간 동안의 이동량"),
         ("다 채우지 못합니다",r"\Delta x\approx\sum_i v(t_i)\Delta t","변하는 속도를 한 칸에서 고정해서 틈이 생깁니다"),side="left"),
     "008": recipe("Integration (적분) · 작은 이동량 더하기",r"\Delta x\approx\sum_i v(t_i)\Delta t",
         ["같은 낙하 유지 · 시간 조각의 폭만 줄입니다"],

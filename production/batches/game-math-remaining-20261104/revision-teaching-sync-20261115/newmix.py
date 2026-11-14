@@ -35,6 +35,21 @@ def run(episode):
         assert read(folder/"technical-qa.json")["unchangedAudioBitstream"]
         save(folder/"mix-review.json",dict(status="reused",method="Same full compressed audio stream and origin as the delivered baseline",actualHumanListening=False))
         return
+    archive=HERE/'superseded-attempts.json'
+    if archive.exists():
+        prior_archive=read(archive).get(episode['id'])
+        if prior_archive:
+            old=Path(prior_archive['archivedProduction'])
+            if (old/'technical-qa.json').exists() and (old/'mix-review.json').exists():
+                previous_qa=read(old/'technical-qa.json');current_qa=read(folder/'technical-qa.json')
+                previous_review=read(old/'mix-review.json')
+                if previous_qa['status']=='pass' and previous_review['status']=='pass' and previous_qa['media']['clean']['audioHash']==current_qa['media']['clean']['audioHash']:
+                    previous_review.update(captionedSha256=encoded['files']['captioned']['sha256'],
+                        reusedFrom=str(old/'mix-review.json'),
+                        audioHash=current_qa['media']['clean']['audioHash'],
+                        reuseProof='Complete compressed audio stream identical to the actual fully recognized mix; only the visual cue/guide revision changed',actualHumanListening=False)
+                    save(folder/'mix-review.json',previous_review)
+                    print(episode['id'],'identical complete audio stream: actual recognition and level review reused');return
     report_path=folder/"mix-evidence.json"
     if report_path.exists():
         existing=read(report_path);assert existing["captionedSha256"]==sha(master)

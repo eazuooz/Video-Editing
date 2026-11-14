@@ -20,7 +20,7 @@ def payload(value):
 
 
 def project(path,base,current):
-    if path.endswith("VIDEO_WORKLIST.md"):
+    if path.endswith(("VIDEO_WORKLIST.md","VIDEO_WORKFLOW.md")):
         start="<!-- MATH-TEACHING-SYNC-20261115-START -->";end="<!-- MATH-TEACHING-SYNC-20261115-END -->"
         a=base.decode("utf-8-sig");b=current.decode("utf-8-sig")
         addition=b[b.index(start):b.index(end)+len(end)]
@@ -46,7 +46,7 @@ def main(message,push):
     direct=[p for p in HERE.iterdir() if p.suffix in (".py",".json",".md") or p.name==".gitignore"]
     direct.append(HERE/"sources/mario-kart-provenance.json")
     direct.append(HERE.parent/"revision-teaching-sync-20261114/audit-m24-m26.json")
-    shared=["shared/publishing/video-production-control.json","shared/publishing/video-worklist.json","docs/VIDEO_WORKLIST.md",str((HERE.parent/"batch.json").relative_to(ROOT)).replace("\\","/"),str((HERE.parent/"checkpoint.json").relative_to(ROOT)).replace("\\","/")]
+    shared=["shared/publishing/video-production-control.json","shared/publishing/video-worklist.json","docs/VIDEO_WORKLIST.md","docs/VIDEO_WORKFLOW.md",str((HERE.parent/"batch.json").relative_to(ROOT)).replace("\\","/"),str((HERE.parent/"checkpoint.json").relative_to(ROOT)).replace("\\","/")]
     with tempfile.TemporaryDirectory() as temp:
         commit_env=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/"commit.index"))
         reconcile=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/"reconcile.index"))

@@ -117,6 +117,9 @@ def norm(text):
 
 def cue(scene, phrase):
     """Use an existing actual spoken caption boundary; never guessed character time."""
+    precise=[e for e in scene.get("operationWordEvidence",[]) if norm(phrase)==norm(e.get("phrase",""))]
+    if len(precise)==1:
+        return max(scene["start"],2+precise[0]["word"]["timestamp"][0])
     words=[e for e in scene.get("wordCueEvidence",[]) if norm(phrase) in norm(e.get("phrase",""))]
     if len(words)==1 and words[0].get("word",{}).get("timestamp"):
         return max(scene["start"],2+words[0]["word"]["timestamp"][0])
@@ -156,7 +159,9 @@ def working(board, scene, recipe):
             raise ValueError((scene["scene"],"Working exceeds fixed caption clearance",tex))
         board.evidence.append(dict(scene=scene["scene"],operation=tex,anchor=phrase,
             start=a,end=b,persistentRelation=recipe["relation"],inputLegend=recipe.get("inputs",[]),
-            cueBasis="Actual delivered KO subtitle clause boundary",minimumReadableDwell=b-a))
+            cueBasis="Actual unchanged PCM word timestamp" if any(norm(e.get("phrase",""))==norm(phrase) for e in scene.get("operationWordEvidence",[])) else "Actual delivered clause/native word boundary",
+            retainedInNextStage=bool(i+1<len(steps) and recipe.get("keepPrevious",True)),
+            minimumReadableDwell=b-a))
 
 
 def fixed_fall_graph(board,scene,stage_phrase):

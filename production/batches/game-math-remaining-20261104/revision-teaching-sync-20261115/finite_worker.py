@@ -29,10 +29,12 @@ def main(ids):
             if not (folder/'encoded.json').exists():
                 # A partial existing movie is evidence of an interrupted job,
                 # not permission to overwrite or start a duplicate encoder.
-                render.encode(episode)
+                subprocess.run([sys.executable,'-X','utf8',str(HERE/'render_revision.py'),eid,'--render'],
+                    cwd=ROOT,check=True,creationflags=render.CREATE)
             progress.update()
             state.update(stage='technical-and-picture-QA',updatedAt=now());save(path,state)
-            verify.run(episode,True)
+            subprocess.run([sys.executable,'-X','utf8',str(HERE/'verify.py'),eid,'--pictures'],
+                cwd=ROOT,check=True,creationflags=render.CREATE)
             progress.update()
             state.update(stage='audio-evidence',updatedAt=now());save(path,state)
             if read(folder/'encoded.json')['addedGameAudioIntervals']:

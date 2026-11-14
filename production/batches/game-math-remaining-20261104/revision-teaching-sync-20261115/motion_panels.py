@@ -116,6 +116,43 @@ def kart_acceleration(b,s,game):
     b.text(1380,832,"일정한 a",a,z,RED,44)
 
 
+def carriage_displacements(b,s):
+    # Keep the original moving carriage until the spoken sixteen-second result.
+    # At that exact clause, bind the pictured displacements to the same interval.
+    a=cue(s,"십육 초 동안");z=s["end"]
+    vc=5-75*1.25/1075;vp=vc+1.25;t=16
+    b.rectangle(56,178,886,738,a,z)
+    b.text(75,219,"같은 16초 동안 이동한 거리",a,z,GOLD,46,width=840)
+    b.text(75,288,"각자의 출발점에서 잰 변위 · 지면 기준",a,z,WHITE,42,width=840)
+    for row,(label,v,color) in enumerate((("객차",vc,GOLD),("사람",vp,TEAL))):
+        y=485+row*205;left=130;right=left+700*(v*t)/100
+        b.text(75,y-110,label,a,z,color,44)
+        line(b,[(left,y),(830,y)],a,z,MUTED,3)
+        arrow(b,(left,y),(right,y),a,z,color,8)
+        b.text(75,y+23,f"{v:.4f} m/s × 16 s = {v*t:.1f} m",a,z,color,42,width=840)
+    b.text(75,840,"두 경우 모두 상대 변위에 80 m를 더한 결과",a,z,WHITE,42,width=840)
+
+
+def last_speed_rectangle(b,s):
+    a=cue(s,"마지막 속도에");parts=cue(s,"작은 조각으로");z=s["end"]
+    b.rectangle(995,178,888,738,a,z)
+    b.text(1070,219,"같은 구간 T = 2.4 s를 비교",a,z,GOLD,44,width=800)
+    left,right=1135,1760;top,bottom=355,715
+    def xy(t,v):return left+(right-left)*t/2.4,bottom-(bottom-top)*v/76.8
+    b.rectangle(left,top,right-left,bottom-top,a,parts,"292039")
+    line(b,[(left,top),(left,bottom),(right,bottom)],a,z,MUTED,3)
+    line(b,[xy(0,0),xy(2.4,76.8)],a,z,TEAL,5)
+    line(b,[(left,top),(right,top)],a,parts,RED,5)
+    b.text(1010,302,"76.8 ft/s",a,z,TEAL,40)
+    b.text(1630,746,"2.4 s",a,z,GOLD,44)
+    b.text(1080,810,"처음부터 마지막 속도라면: 직사각형 184.32 ft",a,parts,WHITE,42,width=790)
+    for i in range(6):
+        x0,y0=xy(i*.4,32*i*.4);x1,_=xy((i+1)*.4,0)
+        if i:b.rectangle(x0,y0,x1-x0,bottom-y0,parts,z,"233630")
+        line(b,[(x0,bottom),(x0,y0),(x1,y0),(x1,bottom)],parts,z,TEAL,3)
+    b.text(1080,810,"각 조각: 그때의 속도 × 짧은 시간 폭",parts,z,WHITE,42,width=790)
+
+
 def apply(board,episode,games):
     lookup={s["scene"]:s for s in episode["scenes"]}
     if episode["id"]=="M24":derivative_value(board,lookup["019"])
@@ -124,3 +161,5 @@ def apply(board,episode,games):
         designed_acceleration(board,lookup["015"])
         power_area(board,lookup["028"])
         kart_acceleration(board,lookup["002"],next(g for g in games if g["scene"]=="002"))
+        last_speed_rectangle(board,lookup["006"])
+    if episode["id"]=="M30":carriage_displacements(board,lookup["053"])
