@@ -566,9 +566,9 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 | M21 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
 | M22 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
 | M23 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
-| M24 | 인코딩 완료 · 내부 검수 중 | pending | pending | 검수 전 |
-| M25 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
-| M26 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
+| M24 | 인코딩 완료 · 내부 검수 중 | pass | pending | 검수 전 |
+| M25 | 사용자 검수 대기 | pass | pass | 검수 전 |
+| M26 | 인코딩 완료 · 내부 검수 중 | pass | pending | 검수 전 |
 | M27 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
 | M28 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |
 | M29 | 화면·계산 보충 작성 완료 / 렌더 대기 | pending | pending | 검수 전 |

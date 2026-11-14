@@ -8,6 +8,38 @@ START="<!-- MATH-TEACHING-SYNC-20261115-START -->"
 END="<!-- MATH-TEACHING-SYNC-20261115-END -->"
 
 
+def review_index(row,item):
+    """A playable local master with direct navigation to the revised passages."""
+    from workings import WORKINGS
+    folder=ROOT/"output"/(item["slug"]+"-teaching-sync-v2")
+    moments=[]
+    for scene in item['scenes']:
+        recipe=WORKINGS.get(item['id'],{}).get(scene['scene'])
+        if recipe:moments.append((scene['start'],recipe['purpose']))
+    gameplan=read(HERE/'game-additions.json')['additions']
+    for g in gameplan:
+        if g['episode']==item['id']:moments.append((g['start'],g['label']))
+    buttons=[]
+    for t,label in sorted(moments):
+        stamp=f'{int(t)//60:02}:{int(t)%60:02}'
+        buttons.append(f'<li><button data-time="{t:.4f}">{stamp} · {html.escape(label)}</button></li>')
+    credit='<p><a href="supplemental-credits.txt">추가 게임 녹화 출처 · 설명문 반영용</a></p>' if (folder/'supplemental-credits.txt').exists() else ''
+    slug=item['slug']
+    text=f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{row['id']} {html.escape(row['title'])} · 수정 검수본</title><style>
+body{{background:#080808;color:#fff;font:18px/1.65 system-ui;max-width:1200px;margin:auto;padding:24px}}h1,h2{{color:#e8cf83}}video{{width:100%}}a,button{{color:#73c7c2}}button{{font:inherit;border:0;border-bottom:1px solid #444;background:transparent;text-align:left;padding:9px;cursor:pointer}}ul{{padding-left:22px}}small{{color:#bbb}}
+</style><h1>{row['id']} · {html.escape(row['title'])}</h1><p>1920×1080 · 60fps · 자체 검사 완료 / 사용자 검수 대기</p>
+<video id="master" controls playsinline preload="metadata" src="{slug}.captioned.mp4"></video>
+<p><a href="{slug}.captioned.mp4">자막 영상 MP4</a> · <a href="{slug}.clean.mp4">Clean MP4</a> · <a href="{slug}.ko.srt">한국어 SRT</a> · <a href="{slug}.en.srt">영어 SRT</a></p>
+<p>기존 내레이션·학습 순서를 유지하고, 대사에 맞춘 수식 전개·입력값 설명과 게임 비교 화면을 보충했습니다.</p>
+<h2>수정한 부분 바로 보기</h2><ul>{''.join(buttons)}</ul>{credit}
+<small>전체 시청·청취와 사용자 승인은 아직 기록되지 않았습니다. 단계 검사 근거는 통합 검수표에서 별도로 관리합니다.</small>
+<p><a href="../game-math-teaching-sync-20261115/index.html">13편 통합 검수표</a></p><script>
+document.querySelectorAll('[data-time]').forEach(b=>b.addEventListener('click',()=>{{const v=document.getElementById('master');v.currentTime=Number(b.dataset.time);v.play();v.scrollIntoView({{behavior:'smooth',block:'center'}});}}));
+</script></html>'''
+    (folder/'index.html').write_text(text,encoding='utf8')
+
+
 def update():
     plan=read(HERE/"plan.json");inventory=read(HERE/"inventory.json")["episodes"]
     titles={x["id"]:x["title"] for x in read(HERE.parent/"batch.json")["items"]}
@@ -33,6 +65,8 @@ def update():
     data=dict(updatedAt=datetime.now(timezone.utc).isoformat(),scope="M21–M33 only",rows=rows,
         readyCount=sum(x["finalReviewReady"] for x in rows),upload=False,automation=False)
     save(HERE/"progress.json",data)
+    for row,item in zip(rows,inventory):
+        if row['finalReviewReady']:review_index(row,item)
     worklist_path=ROOT/"shared/publishing/video-worklist.json"
     worklist=read(worklist_path)
     worklist["mathRemainingTeachingSync20261115"]=dict(plan=(HERE/"plan.json").relative_to(ROOT).as_posix(),

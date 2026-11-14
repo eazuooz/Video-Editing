@@ -53,6 +53,33 @@ def derivative_value(b,s):
         [(at,s["end"],2.5)],"같은 2.5 min → x = 7.75, v = 1")
 
 
+def instantaneous_and_interval(b,game):
+    # The Forza speedometer increases. Do not put the later rabbit's decreasing
+    # velocity curve next to it and invite a false numerical comparison.
+    a=game['start'];z=a+game['duration'];left,right=1120,1750
+    b.rectangle(995,178,888,738,a,z)
+    b.text(1060,219,"같은 주행을 두 관점으로 보기",a,z,GOLD,44,width=800)
+    b.text(1080,320,"순간 속력: 바로 지금의 빠르기",a,z,TEAL,44,width=790)
+    b.text(1080,395,"게임 계기판에서 현재 값을 봅니다",a,z,WHITE,42,width=790)
+    b.text(1080,540,"구간 평균: 그동안의 움직임을 요약",a,z,GOLD,42,width=790)
+    b.text(1080,810,"시간 띠만 표시 · 게임의 수치를 계산한 그래프 아님",a,z,WHITE,40,width=790)
+    line(b,[(left,690),(right,690)],a,z,MUTED,4)
+    for i in range(math.ceil((z-a)*20)):
+        lo=a+i/20;hi=min(z,lo+.05);u=(lo-a)/(z-a);x=left+(right-left)*u
+        line(b,[(left,690),(x,690)],lo,hi,GOLD,13)
+        dot(b,x,690,lo,hi,TEAL,11)
+        b.text(max(left,min(right-90,x-35)),730,"지금",lo,hi,TEAL,40)
+
+
+def defined_circular_inputs(b,s):
+    # Omega is taught in scene006. Earlier helper readouts must use the r and s
+    # that have actually been introduced, rather than an unexplained omega.
+    a,z=s['start'],s['end']
+    b.rectangle(995,795,888,123,a,z)
+    b.text(1090,813,"r: 원의 반지름 · s: 속력",a,z,WHITE,43,width=780)
+    b.text(1090,865,"속도 방향은 원의 접선",a,z,TEAL,42,width=780)
+
+
 def throw_times(b,s):
     peak=79.25/32;back=2*peak
     a=cue(s,"값을 영으로 놓으면");z=cue(s,"출발 순간 0초");last=cue(s,"약 4.953초")
@@ -155,7 +182,9 @@ def last_speed_rectangle(b,s):
 
 def apply(board,episode,games):
     lookup={s["scene"]:s for s in episode["scenes"]}
-    if episode["id"]=="M24":derivative_value(board,lookup["019"])
+    if episode["id"]=="M24":
+        derivative_value(board,lookup["019"])
+        instantaneous_and_interval(board,next(g for g in games if g['scene']=='015'))
     if episode["id"]=="M25":
         throw_times(board,lookup["014"])
         designed_acceleration(board,lookup["015"])
@@ -163,3 +192,5 @@ def apply(board,episode,games):
         kart_acceleration(board,lookup["002"],next(g for g in games if g["scene"]=="002"))
         last_speed_rectangle(board,lookup["006"])
     if episode["id"]=="M30":carriage_displacements(board,lookup["053"])
+    if episode["id"]=="M26":
+        for sid in ('001','005'):defined_circular_inputs(board,lookup[sid])

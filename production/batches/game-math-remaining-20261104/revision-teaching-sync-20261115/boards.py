@@ -133,7 +133,9 @@ def working(board, scene, recipe):
     start,end=scene["start"],scene["end"]
     left=recipe.get("side","right")=="left"
     x=70 if left else 1000
-    board.rectangle(x-14,178,886,738,start,end)
+    # Clear the old panel through its gutter/outer edge; a partial word from
+    # the replaced native formula must not survive beside the new workings.
+    board.rectangle(x-14,178,940 if left else 934,738,start,end)
     board.text(x,219,recipe["purpose"],start,end,GOLD,width=850)
     relation_height=board.equation(x,304,recipe["relation"],start,end,TEAL)
     legend_top=max(405,304+relation_height+30)
