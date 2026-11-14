@@ -21,6 +21,7 @@ def main():
     import caption_pipeline
     recognize=None
     records=read(HERE/'narration-patches.json')['records']
+    issues=[]
     for r in records:
         raw=VOICE_LOCAL/'patch-voice/chunks'/(r['id']+'-scene.wav')
         samples,rate=sf.read(raw,dtype='float32')
@@ -33,7 +34,9 @@ def main():
         sf.write(trimmed,samples[a:b],rate,subtype='PCM_16')
         duration=(b-a)/rate
         available=r['end']-r['start']
-        assert duration+.04<=available,(r['id'],'retake naturally; no time compression',duration,available)
+        if duration+.04>available:
+            issues.append({'id':r['id'],'kind':'natural-duration-retake','seconds':duration,'available':available,'ko':r['ko']})
+            continue
         proof=VOICE_LOCAL/'patch-voice/asr'/(r['id']+'.json')
         digest=sha(trimmed)
         if not proof.exists() or read(proof).get('audio_sha256')!=digest:
@@ -42,10 +45,14 @@ def main():
             save(proof,{'audio_sha256':digest,'text':result['text'],'words':result['chunks'],'humanListened':False})
         recognized=read(proof)['text']
         score=SequenceMatcher(None,norm(r['ko']),norm(recognized)).ratio()
-        assert score>=.92,(r['id'],score,recognized,r['ko'])
+        if score<.92:
+            issues.append({'id':r['id'],'kind':'readback-retake','score':score,'recognized':recognized,'ko':r['ko']})
+            continue
         r.update(audioFile=str(trimmed),asrFile=str(proof),audioSha256=digest,voiceSeconds=duration,
                  rawAudioSha256=sha(raw),voiceAt=r['start']+.02,recognized=recognized,readbackScore=score)
         print(r['id'],round(duration,3),round(score,3),recognized,flush=True)
+    save(WORK/'narration-patch-issues.json',{'issues':issues,'humanListened':False})
+    assert not issues,issues
     save(WORK/'narration-patches-checked.json',{'records':records,'humanListened':False})
     for ep in dict.fromkeys(r['episode'] for r in records):
         folder=WORK/ep/'patch-captions'

@@ -17,7 +17,7 @@ ENC=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','18','-bf','0',
      '-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-movflags','+faststart']
 
 
-@lru_cache(24)
+@lru_cache(1024)
 def pixels(ep,key,n,mode,counter):
     return draw(ep,key,n,mode,counter).tobytes()
 

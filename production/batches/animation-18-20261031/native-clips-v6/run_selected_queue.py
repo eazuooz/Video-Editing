@@ -8,7 +8,7 @@ from prepare import ROOT, HERE, WORK, read, save
 def run(filename, *args):
     log=WORK/('queue-'+filename.replace('.py','')+'-'+('-'.join(args).replace('/','_'))+'.log')
     with log.open('wb') as out:
-        pure_scripts={'sample_final_outputs.py','sample_native_body.py','prepare_native.py','capture_native.py','preflight_visuals.py','render_replacements.py'}
+        pure_scripts={'sample_final_outputs.py','sample_native_body.py','prepare_native.py','capture_native.py','preflight_visuals.py','render_replacements.py','run_body_queue.py'}
         executable='C:/Python/python.exe' if filename in pure_scripts else str(ROOT/'qwen3-tts/.venv/Scripts/python.exe')
         result=subprocess.run([executable, '-X', 'utf8',
                         str(HERE / filename), *args], stdout=out,stderr=subprocess.STDOUT,

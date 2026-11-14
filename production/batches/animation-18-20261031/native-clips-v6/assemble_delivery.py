@@ -93,6 +93,8 @@ def assemble(ep):
                                  for i, (a, b, t) in enumerate(cues, 1)), encoding='utf-8')
         outputs.append({'kind': language + '.srt', 'path': str(final), 'sha256': sha(final)})
     save(out / 'delivery.json', {'id': ep, 'title': base['title'], 'frames': base['frames'] + 600,
+         'revisionDescription': ('기존 시연을 보존하고, 마지막에 핵심을 짚는 10초 정리를 추가했습니다.' if ep=='A06' else
+             '준비된 애니메이션과 실제 게임 동작을 바탕으로 비교하고, 마지막에 핵심을 짚는 10초 정리를 추가했습니다.'),
          'durationSeconds': (base['frames'] + 600) / 60, 'files': outputs,
          'summaryAt': insert, 'summaryFrames': 600, 'sourcePcm': str(pcm),
          'sourcePcmOutsideSummaryUnchanged': True, 'humanReviewed': False,

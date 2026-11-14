@@ -40,6 +40,30 @@ REPLACEMENTS = {
 }
 
 
+ADDITIONAL = {
+ 'A08': [
+  ('먼저 똑바로 세운 자세와 조정한 자세를 나란히 보겠습니다.', '먼저 처음 자세와 동작 속 다음 자세를 나란히 보겠습니다.', 'Compare the starting pose with the next pose in the animation.'),
+  ('완성된 쪽에서는 머리와 몸통이 같은 정면만 바라보지 않고, 두 팔과 발에도 서로 다른 역할이 생깁니다.', '다음 자세에서는 머리와 몸통이 서로 다른 방향을 보고, 두 팔과 발도 다른 역할을 맡습니다.', 'In the next pose, the head and torso face different directions, and the arms and feet take different roles.')],
+ 'A10': [
+  ('우리 시연에서는 시작 자세와 도착 자세를 옅게 남겨 두고 실제 캐릭터가 그 사이를 어떻게 지나가는지 보겠습니다.', '우리 시연에서는 시작과 도착 자세를 나누어 놓고 실제 동작이 그 사이를 어떻게 지나가는지 보겠습니다.', 'Our demonstration separates the starting and ending poses to examine how the actual animation moves between them.')],
+ 'A12': [
+  ('한 번에 하나씩 바꿔야 무엇이 표정을 바꿨는지 알 수 있습니다.', '한 번에 한 부위씩 살펴야 무엇이 표정을 만드는지 알 수 있습니다.', 'Examine one facial region at a time to see what creates the expression.')],
+ 'A14': [
+  ('우리 시연에서는 같은 무대에 경사면만 추가하고, 상체 행동과 하체 이동을 구분해 보겠습니다.', '실제 걷기 동작을 보고, 도식에서 경사면과 상체, 하체의 관계를 나누어 보겠습니다.', 'Watch the actual walk, then separate the slope, upper body and legs in the diagram.'),
+  ('발을 지면에 맞추는 제어를 켰을 때와 껐을 때도 같은 시점에서 비교하겠습니다.', '도식에서 발 목표를 지면에 맞추기 전과 후를 비교하겠습니다.', 'The diagram compares the foot targets before and after aligning them to the ground.')],
+ 'A15': [
+  ('그래서 우리 시연에서도 손 모델 자체를 바꾸기 전에 카메라 거리와 화면 속 캐릭터 수를 바꿔 보겠습니다.', '손 모델 자체를 바꾸기 전에 카메라 거리와 화면 속 캐릭터 수도 함께 고려해야 합니다.', 'Consider camera distance and the number of on-screen characters before changing the hand model itself.')],
+ 'A17': [
+  ('우리 비교에서는 같은 목표 포즈를 단순한 리그와 추가 제어가 있는 리그로 만들어 보겠습니다.', '우리 도식에서는 같은 손 목표에 팔꿈치 방향 정보를 더했을 때의 차이를 보겠습니다.', 'Our diagram shows the difference when elbow-direction information is added to the same hand target.')],
+ 'A18': [
+  ('같은 손잡이에서 손목만 돌려 보고, 기울임을 더하고, 마지막에는 어깨까지 이어서 움직여 보겠습니다.', '완성된 손목 동작을 보고, 도식에서 회전과 기울임이 만드는 경로를 나누어 보겠습니다.', 'Watch the finished wrist motion, then separate the paths created by rotation and tilt in the diagram.'),
+  ('어느 부위를 더했을 때 몸 전체의 연속성이 생기는지 같은 카메라에서 보겠습니다.', '실제 동작에서는 손목과 팔이 어떻게 이어지는지도 함께 보겠습니다.', 'Also observe how the wrist and arm connect in the actual animation.'),
+  ('우리 화면에서는 고개 숙임과 좌우 회전의 곡선을 따로 놓고, 재생 위치가 움직일 때 실제 자세도 같은 순간을 가리키게 하겠습니다.', '우리 도식에서는 숙임과 좌우 회전의 곡선을 따로 놓고, 재생 위치와 방향 표시를 같은 순간에 맞추겠습니다.', 'Our diagram separates pitch and yaw curves, with the playback cursor and direction marker synchronized.'),
+  ('우리 시연에서는 목표 위치를 고정한 채 눈의 시선을 켜고 끄겠습니다.', '도식에서 머리만 돌릴 때와 눈도 움직일 때를 보세요.', 'Our diagram compares aiming at the same target with the head alone and with both head and eyes.')],
+}
+for _ep,_lines in ADDITIONAL.items():REPLACEMENTS.setdefault(_ep,[]).extend(_lines)
+
+
 def normalized(text):
     return re.sub(r'[^가-힣a-zA-Z0-9]', '', text)
 

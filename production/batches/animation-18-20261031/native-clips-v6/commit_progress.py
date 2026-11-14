@@ -85,11 +85,12 @@ def prepare():
         table.append(f'| {ep} | {row["title"].split("|")[0]} | {status} | {"대기" if ready else "제작 후 검수"} |')
     table += ['', END]
     control = read(ROOT / CONTROL)[KEY]
-    control.update(status='native-motion-capture-and-summary-assembly', updatedAt=stamp,
+    stage='local-final-review-ready' if len(completed)==len(rows) else 'native-motion-capture-and-summary-assembly'
+    control.update(status=stage, updatedAt=stamp,
                    completedLocalReviews=completed, reviewUrl='http://127.0.0.1:9300/',
                    humanReviewed=False, platformChanged=False)
     checkpoint = read(HERE / 'checkpoint.json')
-    checkpoint.update(updatedAt=stamp, completed=completed,
+    checkpoint.update(stage=stage, updatedAt=stamp, completed=completed,
                       remaining=[r['id'] for r in rows if r['id'] not in completed],
                       recapComponentsReady=[r['id'] for r in rows if (WORK / r['id'] / 'assembly/summary-components.json').exists()])
     save(HERE / 'checkpoint.json', checkpoint)
