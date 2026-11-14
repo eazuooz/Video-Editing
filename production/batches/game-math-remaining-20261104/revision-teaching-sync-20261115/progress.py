@@ -1,5 +1,6 @@
 """A factual local revision table. Encoding is separate from internal/user review."""
 import html
+import psutil
 from pathlib import Path
 from datetime import datetime,timezone
 from inventory import HERE,ROOT,read,save
@@ -79,13 +80,32 @@ def update():
     checkpoint_path=HERE.parent/'checkpoint.json'
     checkpoint=read(checkpoint_path)
     leaf=checkpoint['teachingSyncRevision20261115']
+    lease_path=ROOT/'shared/output/GPU_HANDOFF.json'
+    lease=read(lease_path) if lease_path.exists() else {}
+    active=lease if lease.get('pid') and psutil.pid_exists(lease['pid']) and any(
+        str(lease.get('owner','')).startswith(item['slug']) for item in inventory) else None
+    current=next((item['id'] for item in inventory if active and active.get('owner','').startswith(item['slug'])),None)
     leaf.update(status=plan['status'],completed=[r['id'] for r in rows if r['finalReviewReady']],
         completedTechnical=[r['id'] for r in rows if r['technicalQa']=='pass'],
         localReadyCount=data['readyCount'],humanReviewed=False,
         calculationSceneCount=sum(len(v) for v in WORKINGS.values()),
+        currentEpisode=current,currentStage=active.get('owner') if active else 'local-picture-review',
+        runningCostlyJobs=[active] if active else [],
         pendingPictureCorrections=[eid for eid,c in corrections.get('episodes',{}).items() if c.get('status')!='resolved'],
         nextAction='Finish remaining actual encoded picture review and guarded jobs; deliver all thirteen locally. No platform mutations.')
     save(checkpoint_path,checkpoint)
+    control_path=ROOT/'shared/publishing/video-production-control.json'
+    control=read(control_path)
+    current_leaf=control['explicitMathRemainingBatch20261104']['teachingSyncRevision20261115']
+    current_leaf.update(status=plan['status'],currentEpisode=current,
+        localReadyCount=data['readyCount'],calculationSceneCount=sum(len(v) for v in WORKINGS.values()),
+        humanReviewed=False,progress=(HERE/'progress.json').relative_to(ROOT).as_posix())
+    save(control_path,control)
+    batch_path=HERE.parent/'batch.json';batch=read(batch_path)
+    batch['teachingSyncRevision20261115'].update(status=plan['status'],
+        localReadyCount=data['readyCount'],humanReviewed=False,
+        progress=(HERE/'progress.json').relative_to(ROOT).as_posix())
+    save(batch_path,batch)
     for row,item in zip(rows,inventory):
         if row['finalReviewReady']:review_index(row,item)
         ledger_path=ROOT/'projects'/item['slug']/'production/review-ledger.json'

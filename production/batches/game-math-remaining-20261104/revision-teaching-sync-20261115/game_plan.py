@@ -79,6 +79,9 @@ def build():
                 nativeViewport=[995,178,887,738],
                 basis="Previously inspected concept-matched game window and its same-scene frame-exact Unity capture; newly paired layout requires encoded QA",
                 status="paired-layout-prepared-review-pending"))
+            if eid=='M23':
+                additions[-1]['nativeClearBottom']=116
+                additions[-1]['nativeFooterReason']='Clear the clipped tail of an original full-width footer; preserve the entire rasterizer triangle and current game viewport.'
             if (eid,sid) in {("M31","027"),("M33","008")}:
                 # These two approved figures replace the raw native placeholder.
                 # Preserve the corrected p/v and continuity constructions rather
