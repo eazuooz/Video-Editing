@@ -195,6 +195,33 @@ def check_stream(file,frames):
     return data
 
 
+def packet_hash(path,stream):
+    return subprocess.check_output([str(FF),'-v','error','-nostdin','-threads','1','-i',str(path),
+        '-map','0:'+stream+':0','-c','copy','-f','hash','-hash','sha256','-'],creationflags=CREATE).decode().strip()
+
+
+def ensure_audio_copy(output,source,folder):
+    """Video frame bounds must never trim a copied AAC preroll or silent tail."""
+    expected=packet_hash(source,'a')
+    if packet_hash(output,'a')==expected:return
+    root=(Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingScratch/audio-integrity-remux').resolve()
+    archive=(root/(folder.parents[2].name+'-'+str(uuid.uuid4()))).resolve()
+    assert archive.is_relative_to(root) and output.resolve().is_relative_to((ROOT/'output').resolve())
+    archive.mkdir(parents=True);temp=archive/'restored.mp4';previous=archive/'frame-bounded.mp4'
+    before=packet_hash(output,'v');prior_sha=sha(output)
+    subprocess.run([str(FF),'-hide_banner','-nostdin','-v','error','-n','-threads','1',
+        '-i',str(output),'-i',str(source),'-map','0:v:0','-map','1:a:0','-c','copy',
+        '-movflags','+faststart',str(temp)],check=True,creationflags=CREATE)
+    assert packet_hash(temp,'v')==before and packet_hash(temp,'a')==expected
+    shutil.move(str(output),str(previous));shutil.move(str(temp),str(output))
+    evidence=dict(source=str(source),output=str(output),preservedIntermediate=str(previous),
+        previousSha256=prior_sha,finalSha256=sha(output),videoBitstreamHash=before,
+        audioBitstreamHash=expected,reencodedVideo=False,reencodedAudio=False)
+    receipt=folder/'audio-copy-preservation.json'
+    rows=read(receipt) if receipt.exists() else []
+    rows.append(evidence);save(receipt,rows);save(archive/'receipt.json',evidence)
+
+
 def encode(episode, sample=None, sample_revision=1):
     folder = prepare(episode)
     p = ROOT / "projects" / episode["slug"]
@@ -245,6 +272,7 @@ def encode(episode, sample=None, sample_revision=1):
             status="rendering-sample" if sample else "rendering-clean",startedAt=G.now(),finalReviewReady=False)
         save(folder/"worker.json",state)
         command(args,folder,output.stem)
+        if not sample and not remix:ensure_audio_copy(output,source,folder)
         stream=check_stream(output,frames)
         save(folder/(output.stem+".json"),dict(sample=bool(sample), scene=sample, sourceStart=start,
             sourceMasterSha256=sha(source), inputOverlaySha256=sha(folder/"workings.ass"),
@@ -254,6 +282,7 @@ def encode(episode, sample=None, sample_revision=1):
             cap=output.with_name(episode["slug"]+".captioned.mp4")
             command(["-i",output,"-vf","ass=captions.ko.ass","-map","0:v:0","-map","0:a:0",
                 *encoder(),"-c:a","copy","-frames:v",frames,"-movflags","+faststart",cap],folder,"captioned")
+            ensure_audio_copy(cap,output,folder)
             check_stream(cap,frames)
             for lang in ("ko","en"):
                 shutil.copy2(episode["baselineOutputs"][lang],dest/(episode["slug"]+"."+lang+".srt"))

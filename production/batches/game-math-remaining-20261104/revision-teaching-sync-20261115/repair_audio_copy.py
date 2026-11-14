@@ -25,7 +25,8 @@ def main(eid):
     folder=ROOT/'projects'/episode['slug']/'production/local/teaching-sync-v2'
     record=read(folder/'encoded.json');assert not record['addedGameAudioIntervals']
     assert 'Unchanged voice/game mix' in read(folder/'qa-failure.json')['error']
-    diagnosis=inspect_packets(eid);assert diagnosis['leadingPacketOffset']==1, diagnosis
+    diagnosis=inspect_packets(eid)
+    assert diagnosis['leadingPacketOffset']==1 or (diagnosis['samePrefix'] and 0<diagnosis['packetCountDifference']<=3), diagnosis
     G=guard();assert not G.idle_reason(), 'Preserve active applications and encoders'
     token=str(uuid.uuid4())
     with G.LEASE.open('x',encoding='utf8') as f:__import__('json').dump(dict(id=token,pid=os.getpid(),owner=episode['slug']+'-original-AAC-remux',createdAt=G.now()),f)

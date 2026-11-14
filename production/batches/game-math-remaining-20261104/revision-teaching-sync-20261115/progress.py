@@ -58,10 +58,12 @@ def update():
         ready=bool(encoded and tech and tech.get("status")=="pass" and visual and visual.get("status")=="pass" and audio_ok)
         if item["id"] in corrections.get("episodes",{}) and corrections["episodes"][item["id"]].get("status")!="resolved":
             ready=False
+            pending_picture=True
+        else:pending_picture=False
         state="사용자 검수 대기" if ready else {"rendering-clean":"Clean 렌더 중","rendering-captioned":"자막본 렌더 중","encoded-QA-pending":"인코딩 완료 · 내부 검수 중"}.get(worker.get("status"),"화면·계산 보충 작성 완료 / 렌더 대기")
         rows.append(dict(id=item["id"],title=titles[item["id"]],slug=item["slug"],status=state,
             encoded=bool(encoded),technicalQa=tech.get("status") if tech else "pending",
-            visualQa=visual.get("status") if visual else "pending",humanReviewed=False,
+            visualQa='correction-pending' if pending_picture else visual.get("status") if visual else "pending",humanReviewed=False,
             audioQa="unchanged-bitstream" if tech and tech.get("unchangedAudioBitstream") else mix.get("status") if mix else "pending",
             finalReviewReady=ready,output=(ROOT/"output"/(item["slug"]+"-teaching-sync-v2")).as_posix() if encoded else None))
     data=dict(updatedAt=datetime.now(timezone.utc).isoformat(),scope="M21–M33 only",rows=rows,
