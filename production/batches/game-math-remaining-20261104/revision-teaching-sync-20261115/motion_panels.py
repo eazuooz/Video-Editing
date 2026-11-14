@@ -75,6 +75,7 @@ def defined_circular_inputs(b,s):
     # Omega is taught in scene006. Earlier helper readouts must use the r and s
     # that have actually been introduced, rather than an unexplained omega.
     a,z=s['start'],s['end']
+    if s['scene']=='001':b.rectangle(995,178,888,50,a,z)
     b.rectangle(995,795,888,123,a,z)
     b.text(1090,813,"r: 원의 반지름 · s: 속력",a,z,WHITE,43,width=780)
     b.text(1090,865,"속도 방향은 원의 접선",a,z,TEAL,42,width=780)

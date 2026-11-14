@@ -21,7 +21,9 @@ def main(eid,archive_only=False):
     source=(ROOT/'projects'/episode['slug']/'production/local/teaching-sync-v2').resolve()
     output=(ROOT/'output'/(episode['slug']+'-teaching-sync-v2')).resolve()
     root=(Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingScratch/teaching-sync-superseded').resolve()
-    archive=(root/(eid+'-word-accurate-before-review-fix')).resolve()
+    suffix=read(HERE/'pending-encoded-corrections.json')['episodes'][eid].get('archiveSuffix','word-accurate-before-review-fix')
+    assert suffix.replace('-','').isalnum()
+    archive=(root/(eid+'-'+suffix)).resolve()
     assert source.is_relative_to(ROOT.resolve()) and output.is_relative_to(ROOT.resolve())
     assert archive.is_relative_to(root) and archive!=root
     if not archive.exists():
