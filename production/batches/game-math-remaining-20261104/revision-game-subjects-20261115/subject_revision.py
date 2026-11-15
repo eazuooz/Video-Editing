@@ -11,7 +11,7 @@ HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3];OLD=HERE.parent/'revis
 if str(OLD) not in sys.path:sys.path.append(str(OLD))
 import render_revision as prior
 from inventory import read,save,sha
-from boards import Board,GOLD,TEAL,WHITE,MUTED,RED,cue
+from boards import Board as LegacyBoard,GOLD,TEAL,WHITE,MUTED,RED,cue
 from motion_panels import line,dot,arrow
 import motion_positions as motion
 import resource_guard
@@ -20,6 +20,20 @@ DEST=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingOutputs/game-mat
 WORK=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingWork/game-math-subjects-20261115-final'
 EPISODES={e['id']:e for e in read(OLD/'inventory.json')['episodes']}
 ASSETS={a['id']:a for a in read(HERE/'assets.json')}
+
+class Board(LegacyBoard):
+ """New editorial guides end before the next exact60fps scene boundary.
+
+ Legacy maths and captions remain byte-for-byte unchanged. ASS stores only
+ centiseconds: nearest rounding could otherwise put an elbow guide on the
+ first frame of the following Doom clip.
+ """
+ def event(self,a,b,text,layer=5):
+  def stamp(t):
+   n=math.floor(t*100+1e-7)
+   return f'{n//360000}:{n//6000%60:02}:{n//100%60:02}.{n%100:02}'
+  if b>a and stamp(b)!=stamp(a):
+   self.lines.append(f'Dialogue: {layer},{stamp(a)},{stamp(b)},Default,,0,0,0,,{text}')
 
 # Contexts are mapped to the actual subject, not added as decorative thumbnails.
 # (episode, scenes, asset, caption, semantic correspondence, viewport)
