@@ -14,7 +14,7 @@ def main(ids):
     reason=str(error)
     resource=any(x in reason for x in ('lease','batch job still running','Other media encode','Other model job','Game process still running','Other Unreal render','Shared lease'))
     if resource:
-     state.update(stage='resource-wait',reason=reason);save(HERE/'finite-worker.json',state);time.sleep(20);continue
+     state.update(stage='resource-wait',reason=reason);save(HERE/'finite-worker.json',state);time.sleep(2);continue
     state['failed'].append(dict(episode=eid,error=reason));save(HERE/'finite-worker.json',state);traceback.print_exc();break
   if (p/'encoded.json').exists():
    state.update(current=eid,stage='technical-and-picture-evidence');save(HERE/'finite-worker.json',state)
