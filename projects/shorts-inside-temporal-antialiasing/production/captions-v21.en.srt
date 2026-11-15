@@ -1,0 +1,111 @@
+1
+00:00:00,000 --> 00:00:02,700
+Scenes with thin lines, as in INSIDE,
+
+2
+00:00:02,700 --> 00:00:06,180
+can have shimmering edges in motion.
+
+3
+00:00:06,180 --> 00:00:07,720
+The team adds to the current image
+
+4
+00:00:07,720 --> 00:00:09,700
+information from the previous image.
+
+5
+00:00:09,700 --> 00:00:11,740
+But simply overlaying the old image
+
+6
+00:00:11,740 --> 00:00:14,360
+can leave ghosts behind moving objects.
+
+7
+00:00:14,360 --> 00:00:17,460
+Each frame samples a different location inside the pixel.
+
+8
+00:00:17,460 --> 00:00:18,940
+This is called jitter.
+
+9
+00:00:18,940 --> 00:00:21,000
+One image can capture thin-line information
+
+10
+00:00:21,000 --> 00:00:22,880
+that another image missed.
+
+11
+00:00:22,880 --> 00:00:23,960
+Combining those images carefully
+
+12
+00:00:23,960 --> 00:00:26,880
+can make the edges more stable.
+
+13
+00:00:26,880 --> 00:00:30,300
+A moving camera or object changes its screen position.
+
+14
+00:00:30,300 --> 00:00:32,980
+Use depth and motion information together.
+
+15
+00:00:32,980 --> 00:00:36,620
+Find where the same point was in the previous frame.
+
+16
+00:00:36,620 --> 00:00:39,360
+This finds the corresponding position in the old frame.
+
+17
+00:00:39,360 --> 00:00:42,960
+When a hidden area appears, old information may be wrong.
+
+18
+00:00:42,960 --> 00:00:45,840
+Check the color range around the current pixel.
+
+19
+00:00:45,840 --> 00:00:48,900
+Bring incompatible past colors within that range.
+
+20
+00:00:48,900 --> 00:00:52,080
+This helps prevent incorrect traces from persisting.
+
+21
+00:00:52,080 --> 00:00:54,920
+Blend the adjusted history with the current color
+
+22
+00:00:54,920 --> 00:00:57,760
+and store the result for the next frame.
+
+23
+00:00:57,760 --> 00:01:01,060
+Fast motion also uses separate motion blur.
+
+24
+00:01:01,060 --> 00:01:03,800
+That blur is not repeatedly accumulated in history.
+
+25
+00:01:03,800 --> 00:01:06,580
+Gather screen information from slightly different positions.
+
+26
+00:01:06,580 --> 00:01:09,600
+Find the same point and correct its past color.
+
+27
+00:01:09,600 --> 00:01:12,040
+Blend that information with the current color.
+
+28
+00:01:12,040 --> 00:01:15,120
+Choose only information that fits the current image.
