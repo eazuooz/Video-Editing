@@ -662,3 +662,25 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 확정 16/16편. 자동 검사/수익 상태와 사용자 검수 승인은 별도 기록. 자동 더빙은 검수하지 않았으며 한영 수동 SRT와 영어 제목·설명만 직접 게시.
 
 <!-- ANIMATION-GAMEPLAY-V8-PUBLISHING-20261115-END -->
+
+<!-- MATH-DIRECTION-OVERVIEW-20261115 -->
+### M21–M33 방향·개론·정리 수정 검수
+
+렌더·재생 검사 13/13 · 내부 화면 검수 13/13 · 사용자 검수 전.
+
+| 번호 | 강의 | 상태 | 링크 |
+|---|---|---|---|
+| M21 | 빛과 셰이딩 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M21/index.html) |
+| M22 | 스키닝과 노멀 매핑 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M22/index.html) |
+| M23 | 렌더링 파이프라인 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M23/index.html) |
+| M24 | 속도와 미분 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M24/index.html) |
+| M25 | 가속도와 적분 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M25/index.html) |
+| M26 | 원운동 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M26/index.html) |
+| M27 | 힘과 마찰 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M27/index.html) |
+| M28 | 용수철과 감쇠 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M28/index.html) |
+| M29 | 운동량과 충돌 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M29/index.html) |
+| M30 | 강체와 관성 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M30/index.html) |
+| M31 | 매개 곡선과 에르미트 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M31/index.html) |
+| M32 | 베지에와 분할 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M32/index.html) |
+| M33 | 스플라인과 연속성 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M33/index.html) |
+<!-- MATH-DIRECTION-OVERVIEW-20261115-END -->
