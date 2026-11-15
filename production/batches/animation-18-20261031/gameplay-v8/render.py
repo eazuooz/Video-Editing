@@ -1,6 +1,6 @@
 """Frame-accurate replacement masks, one serialized encode for each clean/captioned pair."""
 from common import *
-from visuals import draw,picture,fit,BG,WHITE,MUTED,text,game_label
+from visuals import draw,picture,fit,BG,WHITE,MUTED,text,game_label,scaled_picture
 from studies import SOURCES
 import argparse,ast,types,math,time,shutil,socket
 from PIL import Image,ImageDraw,ImageFont
@@ -53,9 +53,18 @@ def encoder_options(folder):
   gpuInference=False,engineCapture=False,reason='Use bounded hardware encode only with free memory and encoder headroom; sharing-related GPU TTS restriction remains intact.',options=opts,checkedAt=stamp()))
  return opts
 
+def render_signature(e):
+ ep=e['id'];a=read(WORK/ep/'audio.json')
+ return dict(renderer={n:sha(HERE/n) for n in ['render.py','visuals.py','studies.py']},
+  story={k:e.get(k) for k in ['opening','summaryAt','openingGameBank','studyDefinitions','replacementSpans','nativeLeads']},
+  baseline=[dict(kind=f['kind'],sha256=f['sha256']) for f in e['baselineFiles']],
+  audioSha256=a['audioSha256'],captions={l:sha(WORK/ep/(l+'.srt')) for l in ['ko','en']})
+
 def render_episode(e,limit=None):
- ep=e['id'];guard(ep);folder=WORK/ep;dest=OUTPUT/ep;dest.mkdir(parents=True,exist_ok=True)
+ ep=e['id'];guard(ep);scaled_picture.cache_clear();picture.cache_clear();folder=WORK/ep;dest=OUTPUT/ep;dest.mkdir(parents=True,exist_ok=True)
  audio=read(folder/'audio.json');changes=audio['changes'];frames=audio['frames']
+ assert not audio.get('captionAlignmentPending'),(ep,'guided clauses need actual-word caption alignment')
+ e=dict(e,renderNarrationCues=srt(folder/'ko.srt'))
  files={r['kind']:Path(r['path']) for r in e['baselineFiles']}
  for r in e['baselineFiles']:assert sha(r['path'])==r['sha256'],(ep,'baseline changed')
  ass=caption_ass(ep);audiofile=folder/'final-audio.m4a'
@@ -98,7 +107,7 @@ def render_episode(e,limit=None):
     elif recap<=oldn<recap+600:
      im=summary.copy();fit(im,picture(bank,(oldn-recap)%banklength),(948,266,880,496));data=im.tobytes()
     elif spanidx<len(spans) and spans[spanidx]['start']<=oldn<spans[spanidx]['end']:
-     span=dict(spans[spanidx]);local=newn-map_frame(span['start'],changes)
+     span=dict(spans[spanidx],newFrame=newn);local=newn-map_frame(span['start'],changes)
      lead=next((r for r in e.get('nativeLeads',[]) if map_frame(r['start'],changes)<=newn<map_frame(r['start'],changes)+3*r['framesPerPass']),None)
      if lead:span['nativeLeadFrame']=newn-map_frame(lead['start'],changes);span['nativeLeadBank']=lead['bank']
      else:
@@ -131,7 +140,7 @@ def render_episode(e,limit=None):
  for p in [clean,captioned]:
   hashes.append(ff('-i',p,'-map','0:a','-c:a','copy','-vn','-f','hash','-hash','sha256','-',capture=True).decode().strip())
  assert len(set(hashes))==1
- receipt=dict(id=ep,title=e['title'],revision='gameplay-v8',files=result,frames=frames,durationSeconds=frames/60,
+ receipt=dict(id=ep,title=e['title'],renderSignature=render_signature(e),revision='gameplay-v8',files=result,frames=frames,durationSeconds=frames/60,
   originalReceipt=e['baselineReceipt'],overviewAt=map_frame(e['opening']['startFrame'],changes)/60,overviewEnd=map_frame(e['opening']['endFrame'],changes)/60,
   summaryAt=map_frame(round(e['summaryAt']*60),changes)/60,summaryFrames=600,memberEndingFrames=600,
   replacements=len(spans),sourceStudies=list(e['studyDefinitions']),fourOutputs=True,cleanCaptionedIdenticalAac=True,audioChanges=audio['changes'],
@@ -160,5 +169,5 @@ if __name__=='__main__':
   receipt=OUTPUT/e['id']/'delivery.json'
   if receipt.exists() and not a.sample_seconds:
    d=read(receipt)
-   if all(Path(f['path']).exists() and sha(f['path'])==f['sha256'] for f in d['files']):continue
+   if d.get('renderSignature')==render_signature(e) and all(Path(f['path']).exists() and sha(f['path'])==f['sha256'] for f in d['files']):continue
   render_episode(e,a.sample_seconds)

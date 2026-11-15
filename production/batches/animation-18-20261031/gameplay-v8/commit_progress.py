@@ -23,7 +23,7 @@ def validate(data):
     assert data['scope']==KEY and data['control']['scope']==SCOPE and data['control']['preserved']==['A06']
     assert not any(data['control'][x] for x in ['youtubeAuthorized','driveAuthorized','schedulingAuthorized','deletionAuthorized'])
     for name in data['ownedPaths']:
-        p=PurePosixPath(name);assert name.startswith(PREFIX) and '..' not in p.parts and p.suffix in {'.py','.json','.html','.cjs','.txt','.md'} and 'local' not in p.parts
+        p=PurePosixPath(name);assert name.startswith(PREFIX) and '..' not in p.parts and (p.suffix in {'.py','.json','.html','.cjs','.txt','.md'} or p.name=='.gitignore') and 'local' not in p.parts
     return sorted(data['ownedPaths'])+sorted(scoped.SHARED)
 def prepare():
     plan=read(HERE/'plan.json');now=stamp();done=[];rows=[]
@@ -44,7 +44,7 @@ def prepare():
         resources=plan['resources'],completed=done,plan=str(HERE.relative_to(ROOT)/'plan.json'),checkpoint=str(HERE.relative_to(ROOT)/'checkpoint.json'),updatedAt=now)
     save(HERE/'checkpoint.json',dict(stage=control['status'],scope=SCOPE,preserved=['A06'],completed=done,remaining=[e for e in SCOPE if e not in done],updatedAt=now,humanReviewed=False,platformChanged=False))
     (HERE/'review-table.md').write_text(markdown+'\n',encoding='utf-8')
-    save(SPEC,dict(scope=KEY,control=control,rows=rows,markdown=markdown,ownedPaths=sorted(p.relative_to(ROOT).as_posix() for p in HERE.iterdir() if p.is_file() and p.suffix in {'.py','.json','.html','.cjs','.txt','.md'})))
+    save(SPEC,dict(scope=KEY,control=control,rows=rows,markdown=markdown,ownedPaths=sorted(p.relative_to(ROOT).as_posix() for p in HERE.iterdir() if p.is_file() and (p.suffix in {'.py','.json','.html','.cjs','.txt','.md'} or p.name=='.gitignore'))))
     print(SPEC)
 if __name__=='__main__':
     if sys.argv[1:]==['--prepare']:prepare()

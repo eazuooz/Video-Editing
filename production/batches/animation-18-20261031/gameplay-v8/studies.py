@@ -7,7 +7,7 @@ from audit_pictures import source_catalog
 # All times are in the cached independent recording, not in the edited lesson.
 # A crop is a detail view; the complete, unflipped recording remains in its inset.
 SOURCES={
- 'great':('great',17.8,20.6,[0,.5,1.7,2.7],(400,100,1400,1060)),
+ 'great':('great',17.8,20.6,[0,1,1.9,2.7],(400,100,1400,1060)),
  'axe':('hades-training',39.1,41.9,[0,.6,1.5,2.6],(630,230,1320,940)),
  'jab':('zss-retained',2.8,4.8,[0,.45,.7,1.8],None),
  'peach':('peach-sword',17.5,20.7,[0,.8,2,3.1],(500,100,1470,1060)),
@@ -22,27 +22,27 @@ SOURCES={
  'lili':('lili-practice',20.43,22.47,[0,.45,.8,1.9],(480,180,1420,940)),
  'punch':('marisa-follow',10.5,13,[0,.6,1.2,2.4],(300,130,1500,1060)),
  'paper':('paper-mario',25.4,28.4,[0,.8,1.4,2.9],None),
- 'lune':('lune-clean-camp',21,24,[0,.8,1.7,2.9],(1000,100,1700,900)),
+ 'lune':('lune-clean-camp',21,24,[0,.8,1.7,2.9],(1050,150,1660,790)),
  'animal':('acnh-catch-expression',11.25,14.25,[0,.8,1.7,2.9],(580,160,1220,820)),
  'dee-right':('sf2-deejay',15.5,16.2,[0,.2,.4,.65],(100,220,800,1050)),
  'dee-left':('sf2-deejay',29.4,30.1,[0,.2,.4,.65],(950,220,1490,1050)),
  'horizon':('hzd-aim-move',8.5,11.5,[0,.6,1.7,2.9],None),
  'splatoon':('splatoon-moving-fire',21.5,24.5,[0,.8,1.7,2.9],None),
  'bottle-neck':('alyx-grip',19,20.4,[0,.4,.8,1.3],(620,180,1880,1080)),
- 'bottle-body':('alyx-grip',25.4,26.3,[0,.2,.5,.8],(420,80,1750,1080)),
+ 'bottle-body':('alyx-grip',25.4,26.3,[0,.2,.5,.8],(0,100,820,1080)),
  'hands':('ghostwire-cast',7,10,[0,.8,1.7,2.9],None),
- 'lance':('mhw-lance',13.5,16.5,[0,.8,1.7,2.9],None),
+ 'lance':('mhw-lance',13.5,16.5,[0,.8,1.7,2.9],(500,120,1810,1050)),
  'ribbon':('arms-ribbon',4,7,[0,.8,1.7,2.9],None),
  'luigi-head':('luigi-lobby',29.5,32.5,[0,.8,1.7,2.9],(420,240,1000,850)),
  'goose':('goose-basket-start',5,8,[0,.8,1.7,2.9],(650,270,1720,1060)),
- 'trico':('trico-look',18.5,21,[0,.7,1.4,2.4],None),
+ 'trico':('trico-look',18.5,21,[0,.7,1.4,2.4],(500,200,1400,1080)),
 }
 
 # key -> bank, visual grammar, focus, ordered observed phases.
 STUDIES={'A03': {'attack': ('great', 'phases')},
  'A04': {'anticipation': ('axe', 'timing'),
          'charge': ('axe', 'phases'),
-         'jab': ('jab', 'phases'),
+         'jab': ('jab', 'startup'),
          'weight': ('axe', 'phases')},
  'A05': {'impact': ('peach', 'pose'),
          'size': ('peach', 'pose'),
@@ -51,7 +51,7 @@ STUDIES={'A03': {'attack': ('great', 'phases')},
          'twist': ('peach', 'pose'),
          'outline': ('peach', 'pose'),
          'camera': ('peach', 'space')},
- 'A07': {'near': ('luigi', 'size'), 'far': ('luigi', 'size'), 'gesture': ('hug', 'pose')},
+ 'A07': {'near': ('luigi-head', 'size'), 'far': ('luigi-head', 'size'), 'gesture': ('peach', 'size')},
  'A08': {'overview': ('ring', 'pose'),
          'flow': ('ring-flow', 'pose'),
          'edge': ('ring', 'pose'),
@@ -168,6 +168,18 @@ def prepare():
     visualRole='explanation; slow motion, detail crop or principle drawing in the same original explanation slots',
     audioTreatment='New analytic windows retain the approved speech/music bed; their source-recording music is muted. Untouched native game/audio segments remain unchanged.',
     nativeLead='Original-speed observed action repeated before detail study in existing native-pass slots; no optical-flow frames.')
+   if grammar in ('startup','squash','wrist'):
+    record['sourceKind']='principle-diagram-only' if grammar!='startup' else 'primary-frame-data-with-character-still'
+    record['performanceVideoUsedInStudy']=False
+    record['selectionReason']='Show the unobservable or configured property directly in a diagram; do not claim unrelated footage performs the illustrated change.'
+    record['nativeLead']='Not applicable to this data/illustration-only study; do not label it a recorded game-animation performance.'
+   if grammar=='startup':
+    record['primaryData']='projects/animation-making-lead-ins-instant-and-impactful/production/series-v1/source-selection.json'
+    record['primaryDataUrl']='https://ultimateframedata.com/zero_suit_samus'
+    record['sourceLimit']='Retained official showcase does not verify Jab1. Use only a character still, and show Jab1 start-up1F as separately sourced data; exclude the earlier laser segment as a jab performance.'
+   if ep=='A18' and key=='wrist':
+    record.update(sourceKind='hybrid-game-contact-and-principle-diagram',performanceVideoUsedInStudy=True,
+      selectionReason='Show the inspected boy/hand/body contact crop for the named Trico passage (old192.4–202.27s); use the calculated hand-axis diagram for the following hypothetical wrist explanation.')
    e['studyDefinitions'][key]=record;rows.append(dict(episode=ep,**record))
   e['openingGameBank']=next(iter(studies.values()))[0]
   e['summaryGameBank']=e['openingGameBank'];e['timing']='Preserve baseline clock except natural-duration speech insertions; carry original ordering/overview/recap speech through the same map.'
@@ -180,9 +192,16 @@ def prepare():
    else:groups.append(dict(start=span['start'],end=span['end'],bank=bank))
   leads=[]
   for bank in dict.fromkeys(s[0] for s in studies.values()):
+   if all(s[1] in ('startup','squash','wrist') for s in studies.values() if s[0]==bank):continue
    length=round((SOURCES[bank][2]-SOURCES[bank][1])*60)
-   candidates=[g for g in groups if g['bank']==bank and g['start']>=b and g['end']-g['start']>=3*length]
+   candidates=[]
+   for g in groups:
+    start=max(g['start'],round(247.5*60)) if ep=='A07' and bank=='peach' else g['start']
+    if g['bank']==bank and start>=120 and g['end']-start>=3*length:candidates.append(dict(g,start=start))
    if candidates:leads.append(dict(bank=bank,start=candidates[0]['start'],end=candidates[0]['start']+3*length,framesPerPass=length,passes=3))
+  if ep=='A18':
+   start=min(s['start'] for s in spans if s['key']=='wrist');length=round((SOURCES['trico'][2]-SOURCES['trico'][1])*60)
+   leads.append(dict(bank='trico',start=start,end=start+3*length,framesPerPass=length,passes=3,role='named boy climbing/contact passage only'))
   e['nativeLeads']=leads
  index=read(BATCH/'research/research-index.json')
  for e in plan['episodes']:

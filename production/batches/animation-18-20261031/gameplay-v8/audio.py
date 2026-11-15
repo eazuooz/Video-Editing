@@ -33,16 +33,23 @@ def music_path(ep):
 def prepare_episode(e):
  ep=e['id'];folder=WORK/ep;folder.mkdir(parents=True,exist_ok=True)
  prior={r['kind']:Path(r['path']) for r in e['baselineFiles']}
- patches=[r for r in read(HERE/'narration-changes.json')['records'] if r['episode']==ep]
+ patches=[dict(r,audioFile=str(HERE/'local/voice/chunks'/(r['id']+'-scene.wav'))) for r in read(HERE/'narration-changes.json')['records'] if r['episode']==ep]
+ if (HERE/'guidance-changes.json').exists():patches += [r for r in read(HERE/'guidance-changes.json')['records'] if r['episode']==ep]
+ for r in patches:
+  if r.get('kind')=='music-only-observation-guidance':
+   assert not any(c['start']<r['end'] and c['end']>r['start'] for c in e['bodyNarrationCues']),(ep,'guidance overlaps original speech')
  out=folder/'audio.json'
- signature=dict(algorithm='exact-sample-splice-natural-frames-v2',original=sha(source_mix(ep)),patches=[dict(id=r['id'],sha256=sha(HERE/'local/voice/chunks'/(r['id']+'-scene.wav')),ko=r['ko'],en=r['en']) for r in patches])
+ signature=dict(algorithm='exact-sample-splice-guided-observations-v3',original=sha(source_mix(ep)),patches=[dict(id=r['id'],start=r['start'],end=r['end'],sha256=sha(r['audioFile']),ko=r['ko'],en=r['en'],units=r.get('units'),**({'postNormalizeGainDb':r['postNormalizeGainDb']} if 'postNormalizeGainDb' in r else {})) for r in patches])
  if out.exists() and read(out).get('signature')==signature and (folder/'final-mix.wav').exists():return read(out)
  original,rate=sf.read(source_mix(ep),dtype='float32',always_2d=True);assert rate==RATE
  assert abs(len(original)/RATE-e['baselineFrames']/60)<.04,(ep,len(original)/RATE)
  records=[]
  for r in patches:
-  r=dict(r);p=HERE/'local/voice/chunks'/(r['id']+'-scene.wav');norm=folder/(r['id']+'-normalized.wav')
-  ff('-i',p,'-af','loudnorm=I=-18:TP=-3:LRA=7,aresample=48000','-ar',48000,'-ac',1,'-c:a','pcm_f32le',norm)
+  r=dict(r);p=Path(r['audioFile']);norm=folder/(r['id']+'-normalized.wav')
+  filters='loudnorm=I=-18:TP=-3:LRA=7,aresample=48000'
+  if r.get('postNormalizeGainDb'):filters+=f",volume={r['postNormalizeGainDb']}dB"
+  if r.get('postNormalizeGainDb',0)>0:filters+=',alimiter=limit=0.70:level=false:attack=5:release=50'
+  ff('-i',p,'-af',filters,'-ar',48000,'-ac',1,'-c:a','pcm_f32le',norm)
   samples,sr=sf.read(norm,dtype='float32');assert sr==RATE
   a=round(r['start']*60);b=round(r['end']*60);delta=max(0,math.ceil((len(samples)/RATE+.04-(r['end']-r['start']))*60))
   r.update(oldStartFrame=a,oldEndFrame=b,oldStartSample=round(r['start']*RATE),oldEndSample=round(r['end']*RATE),
@@ -77,18 +84,25 @@ def prepare_episode(e):
   a,b,c=proof.values();assert np.array_equal(original[a:b],mixed[c:c+b-a]),(ep,'unchanged PCM altered')
  sf.write(folder/'final-mix.wav',mixed,RATE,subtype='FLOAT')
  for lang in ['ko','en']:
-  cues=srt(prior[lang+'.srt']);lookup={r['captionIndex']:r for r in records};new=[]
+  cues=srt(prior[lang+'.srt']);lookup={r['captionIndex']:r for r in records if r['captionIndex'] is not None};new=[]
   for i,c in enumerate(cues):
    if i in lookup:
     r=lookup[i];new.append(dict(start=r['newStartSeconds'],end=r['newStartSeconds']+r['naturalDuration'],text=wrap_caption(r[lang])))
    else:new.append(dict(start=c['start']+(map_frame(round(c['start']*60),records)-round(c['start']*60))/60,
                         end=c['end']+(map_frame(round(c['end']*60),records)-round(c['end']*60))/60,text=c['text']))
+  for r in records:
+   if r['captionIndex'] is not None:continue
+   units=r['units'];weights=[len(u['ko'].replace(' ','')) for u in units];cursor=r['newStartSeconds']
+   for unit,weight in zip(units,weights):
+    end=cursor+r['naturalDuration']*weight/sum(weights);new.append(dict(start=cursor,end=end,text=wrap_caption(unit[lang])));cursor=end
+  new.sort(key=lambda c:c['start'])
   assert all(a['end']<=b['start']+.022 for a,b in zip(new,new[1:])),(ep,lang,'overlapping captions')
   write_srt(folder/(lang+'.srt'),new)
  record=dict(signature=signature,episode=ep,changes=records,originalFrames=e['baselineFrames'],frames=e['baselineFrames']+delta,
   addedNaturalSpeechFrames=delta,audio=str(folder/'final-mix.wav'),audioSha256=sha(folder/'final-mix.wav'),
   unchangedPcmRanges=identical,unchangedPcmRangeCount=len(identical),originalPcmUnchangedOutsideReplacements=True,
-  overviewSpeechPreserved=True,recapSpeechPreserved=True,speechTimeCompression=False,bgmRetained=True,fullListening='pending-human-review')
+  overviewSpeechPreserved=True,recapSpeechPreserved=True,speechTimeCompression=False,bgmRetained=True,fullListening='pending-human-review',
+  guidanceCount=sum(r['captionIndex'] is None for r in records),captionAlignmentPending=any(r['captionIndex'] is None for r in records))
  save(out,record);print(ep,'natural-duration audio ready, added frames',delta,flush=True);return record
 
 if __name__=='__main__':

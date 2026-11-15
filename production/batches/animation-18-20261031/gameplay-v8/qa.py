@@ -11,6 +11,11 @@ def points(e,audio):
  add(60,'branding');add(total-300,'member-ending')
  add(map_frame(e['opening']['startFrame'],changes)+90,'opening')
  add(map_frame(round(e['summaryAt']*60),changes)+180,'recap')
+ if e['id']=='A18':add(map_frame(round(163*60),changes),'study:three-rotation-comparison')
+ if e['id']=='A04':add(map_frame(round(118*60),changes),'study:first-preparation-change')
+ if e['id']=='A08':
+  wrist=next((c for c in e['bodyNarrationCues'] if '손목' in c['text'] and c['start']>e['opening']['endFrame']/60),None)
+  if wrist:add(map_frame(round((wrist['start']+wrist['end'])*30),changes),'study:wrist-direction')
  for key in e['studyDefinitions']:
   choices=[x for x in e['replacementSpans'] if x['key']==key and x['mode']!='native']
   if not choices:choices=[x for x in e['replacementSpans'] if x['key']==key]
