@@ -3,6 +3,10 @@ from subject_revision import *
 import qa,progress,review_delivery
 
 NOTES={
+ 'M33': ['Viewed both fresh corrected encoded boards covering all28 first/15/50/85% pictures of003,018,020,024,026,042,029. Train-path photos accompany the original spline, tangent and boundary-condition diagrams; native train footage remains intact.',
+         'Viewed corrected final029 landing and exact657.6167s apex at1080p and375px, plus12 encoded jump positions and mobile snapshot. The character head and feet are complete; symbolic conditions and staged derivation remain visible. Backings now render before the character.',
+         'The fixed apex marker briefly touches the moving cap just after the peak; the face and equation remain recognizable. At exact003 first frame, an outgoing original ASS formula tail is still present for a single60fps frame. Original math ASS is deliberately byte-preserved; narrative reading frames are clear.',
+         'Compared the replaced bad backing attempt against actual newly encoded Clean/Captioned apex and landing. This is sampled internal inspection, not full human viewing or a new voice review.'],
  'M32': ['Viewed both fresh encoded boards covering all20 first/15/50/85% pictures of001,003,010,015,029. Mario Maker route image accompanies the original control-point, interpolation, global-support and subdivision constructions without covering mathematics or captions.',
          'Viewed final003 at85% in1080p and375px: all construction points, p(t), algorithm heading and actual route picture remain visible. The image is labeled as a route example alongside our Bézier principle model.',
          'Viewed12 final010 positions plus mobile snapshot: only the selected control input changes while the curve and evaluated point update together; native gameplay elsewhere is preserved.'],
