@@ -13,6 +13,28 @@ def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
 def save(p,d):
     p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def stamp():return datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+
+def map_frame(n,changes):return n+sum(c['deltaFrames'] for c in changes if n>=c['oldEndFrame'])
+
+def old_frame(n,changes):
+    delta=0
+    for r in changes:
+        at=r['oldEndFrame']+delta
+        if at<=n<at+r['deltaFrames']:return r['oldEndFrame']-1
+        if n>=at+r['deltaFrames']:delta+=r['deltaFrames']
+    return n-delta
+
+def wrap_caption(value):
+    from PIL import ImageFont
+    font=ImageFont.truetype('C:/Windows/Fonts/NotoSansKR-VF.ttf',48)
+    try:font.set_variation_by_axes([500])
+    except (ValueError,OSError):pass
+    value=' '.join(value.split())
+    if font.getlength(value)<=1570:return value
+    options=[(value[:i].rstrip(),value[i:].lstrip()) for i,c in enumerate(value) if c==' ']
+    options=[x for x in options if max(font.getlength(t) for t in x)<=1570]
+    if not options:raise ValueError('Changed caption needs semantic subdivision: '+value)
+    return '\n'.join(min(options,key=lambda p:abs(font.getlength(p[0])-font.getlength(p[1]))))
 def sha(p):
     h=hashlib.sha256()
     with open(p,'rb') as f:
