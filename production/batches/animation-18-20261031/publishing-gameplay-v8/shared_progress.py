@@ -40,7 +40,7 @@ def validate(data):
  return sorted(data['ownedPaths'])+sorted(scoped.SHARED)
 def prepare():
  manifests=load(HERE/'upload-manifest.json');ledger=load(HERE/'platform-ledger.json');now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat();rows=[];images=[];done=[]
- table=[BEGIN,'','## 애니메이션 A03–A18 업로드·예약','','사용자: gameplay-v8 통합 검수 승인. 검수한 captioned FHD60 원본 파일과 해시 동일. 기존 예약 마지막 2026-12-31을 보존하고 2027-01-01부터 매일08:00 Asia/Seoul 배정. 광고 평가도 이번16편은 사용자 명시 위임.','','| 편 | 주제 | 예약 예정(KST) | 실제 상태 | Studio |','|---|---|---|---|']
+ table=[BEGIN,'','## 애니메이션 A03–A18 업로드·예약','','사용자: gameplay-v8 통합 검수 승인. 검수한 captioned FHD60 원본 파일과 해시 동일. 기존 예약 마지막 2026-12-31을 보존하고 2027-01-01부터 매일08:00 Asia/Seoul 배정. 광고 평가도 이번16편은 사용자 명시 위임.','','| 편 | 주제 | 예약 예정(KST) | 실제 상태 | Studio |','|---|---|---|---|---|']
  for m in manifests:
   ep=m['id'];fact=ledger['videos'][ep];scheduled=fact.get('status')=='scheduled-confirmed'
   if scheduled:done.append(ep)

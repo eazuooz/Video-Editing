@@ -641,7 +641,7 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 사용자: gameplay-v8 통합 검수 승인. 검수한 captioned FHD60 원본 파일과 해시 동일. 기존 예약 마지막 2026-12-31을 보존하고 2027-01-01부터 매일08:00 Asia/Seoul 배정. 광고 평가도 이번16편은 사용자 명시 위임.
 
 | 편 | 주제 | 예약 예정(KST) | 실제 상태 | Studio |
-|---|---|---|---|
+|---|---|---|---|---|
 | A03 | 공격 동작의 단계 | 2027-01-01 08:00 | 예약 확정 | [열기](https://studio.youtube.com/video/Z3k9mCqAYAo/edit) |
 | A04 | 빠르고 강한 준비 동작 | 2027-01-02 08:00 | 예약 확정 | [열기](https://studio.youtube.com/video/Z2snynFBmRw/edit) |
 | A05 | 공격 자세 | 2027-01-03 08:00 | 예약 확정 | [열기](https://studio.youtube.com/video/b1J1pYmy6Ho/edit) |
