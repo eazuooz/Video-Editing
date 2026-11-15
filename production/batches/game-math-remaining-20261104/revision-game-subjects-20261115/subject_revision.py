@@ -40,7 +40,7 @@ class Board(LegacyBoard):
 CONTEXTS=[
  ('M26',['017'],'windmill-context','Besiege · 회전하는 풍차','날개 끝 → 원 위의 점',[80,620,390,210]),
  ('M27',['001','003','023','024'],'beamng-context','BeamNG.drive · 차량과 지면','차량 → 물체 / 지면과의 접촉 → 마찰',[80,650,475,215]),
- ('M28',['002'],'chomp-context','Super Mario Odyssey · 멍멍이','당겨진 멍멍이 → 질량 / 되돌아감 → 복원 운동',[1180,550,620,300]),
+ ('M28',['002'],'chomp-context','Super Mario Odyssey','당겨진 멍멍이 → 질량 / 되돌아감 → 복원 운동',[660,55,350,170]),
  ('M29',['006','019','021','022'],'collision-context','Super Mario Odyssey · 충돌','게임의 물체 → 단순화한 두 충돌 물체',[1280,435,480,245]),
  ('M30',['017','057','058','059'],'beamng-context','BeamNG.drive · 차량','실제 차량 → 부품별 질량으로 단순화',[1180,470,620,230]),
  ('M31',['001','005','013','033','034'],'train-context','Satisfactory · 철도 경로','열차가 지나는 경로 → p(t) / 진행 방향 → 접선',[1110,535,700,320]),
@@ -289,8 +289,8 @@ def prepare(e,origin=0,end=None):
   pathboard.write(p/f'paths-{j}.ass')
   cmd=p/f'commands-{j}.txt';cmd.write_text('\n'.join(cmds)+'\n',encoding='utf8')
   extra.append(dict(asset=asset,mode=mode,file=af['file'],width=width,height=height,commands=cmd.name,eraser=eraser,j=j))
- # Keep the source-to-model context only in inspected blank areas. Math overlays
- # remain above it, and original game motion is never replaced by a still.
+ # Place each source-to-model context in a blank area verified throughout the
+ # formula reveal. Original game motion is never replaced by a still.
  for eid,sids,asset,title,meaning,viewport in CONTEXTS:
   if eid!=e['id']:continue
   for sid in sids:
@@ -305,9 +305,9 @@ def prepare(e,origin=0,end=None):
     contexts.append(dict(scene=sid,start=ca,end=cz,asset=asset,x=x,y=y,width=aw,height=ah))
     postboard.rectangle(x-5,y-52,aw+10,52,ca,cz)
     postboard.rectangle(x-5,y+ah,aw+10,66,ca,cz)
-    postboard.text(x,y-50,title,ca,cz,GOLD,32,width=w)
-    short={'M26':'날개 끝 → 원 위의 점','M27':'차량·지면 → 물체·마찰','M28':'실제 움직임 → 스프링·감쇠','M29':'게임 물체 → 충돌 모형','M30':'차량 → 부품별 질량','M31':'선로 → p(t) / 진행 방향 → 접선','M32':'경로 예시 · Bézier 원리 모형','M33':'이어지는 선로 → 곡선의 연결'}[eid]
-    postboard.text(x,y+ah+5,short,ca,cz,TEAL,36,width=w)
+    postboard.text(x,y-50,title,ca,cz,GOLD,28 if eid=='M28' else 32,width=w)
+    short={'M26':'날개 끝 → 원 위의 점','M27':'차량·지면 → 물체·마찰','M28':'당김 → 복원 운동','M29':'게임 물체 → 충돌 모형','M30':'차량 → 부품별 질량','M31':'선로 → p(t) / 진행 방향 → 접선','M32':'경로 예시 · Bézier 원리 모형','M33':'이어지는 선로 → 곡선의 연결'}[eid]
+    postboard.text(x,y+ah+5,short,ca,cz,TEAL,30 if eid=='M28' else 36,width=w)
     # Visible object-to-model link; fixed, labeled editorial guide, no fake data.
     if eid=='M26':
      hx,hy=x+aw*.423,y+ah*.324

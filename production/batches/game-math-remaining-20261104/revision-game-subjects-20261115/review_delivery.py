@@ -52,9 +52,18 @@ def page(e,enc,title):
     save(folder/'game-image-provenance.json',dict(episode=e['id'],assets=provenance,sources=sources,recorderCredits=rights,
         meaning='Actual independent game-recording frames/cutouts in an explanatory animation; not measured game vectors or internal algorithms.'))
     exception='<p>기존 음성이 로봇을 직접 언급하는 엘리베이터 사고실험 한 장면은 대사와 맞도록 보존했습니다.</p>' if e['id']=='M27' else ''
+    # An actual reviewed encoded frame, never invented artwork, is the poster.
+    snapshots=sorted((work(e)/'full-picture-qa').glob('*/1080p.png'))
+    poster=''
+    if snapshots:
+        shot=snapshots[0];evidence=read(shot.parent/'evidence.json')
+        assert evidence['movieSha256']==enc['files']['captioned']['sha256'] and evidence['actuallyInspected']
+        Image.open(shot).convert('RGB').save(folder/'review-preview.jpg',quality=93)
+        save(folder/'review-preview.evidence.json',dict(source=str(shot),sourceSha256=sha(shot),frame=evidence['frame'],movieSha256=evidence['movieSha256']))
+        poster=' poster="review-preview.jpg"'
     text=f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e['id']} {html.escape(title)}</title><style>body{{max-width:1200px;margin:auto;padding:24px;background:#080808;color:white;font:18px/1.65 system-ui}}h1,h2{{color:#e8cf83}}a,button{{color:#73c7c2}}video{{width:100%}}button{{background:transparent;border:0;border-bottom:1px solid #444;font:inherit;text-align:left;padding:10px;cursor:pointer}}small{{color:#bbb}}</style>
 <h1>{e['id']} · {html.escape(title)}</h1><p>1920×1080 · 60fps · 내부 검사 완료 / 사용자 검수 대기</p>
-<video id="master" src="{Path(enc['files']['captioned']['path']).name}" controls playsinline preload="metadata"></video><p>{links}</p>
+<video id="master" src="{Path(enc['files']['captioned']['path']).name}"{poster} controls playsinline preload="metadata"></video><p>{links}</p>
 <p>실제 게임에서 가져온 캐릭터·물체 이미지를 기존 설명의 위치·벡터·그래프와 연결했습니다. 게임 녹화와 해설 애니메이션을 구분하며, 내레이션·음성·수식 전개·전체 길이는 보존했습니다.</p>{exception}
 <h2>이미지 연결 수정 구간</h2><ul>{''.join(items)}</ul><p><a href="game-image-provenance.json">게임 이미지 출처·원본 프레임 기록</a> · <a href="game-image-credits.txt">추가 이미지 크레딧</a></p>
 <small>내부 검수는 수정 장면의 실제 인코딩 프레임·동작 샘플·연결과 전체 파일 디코딩을 확인한 결과입니다. 전체 사용자 시청·청취 승인은 아직 기록하지 않았습니다.</small>
@@ -68,7 +77,9 @@ class Links(HTMLParser):
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
         if tag=='a' and a.get('href'):self.items.append(a['href'])
-        if tag=='video':self.items.append(a.get('src'))
+        if tag=='video':
+            self.items.append(a.get('src'))
+            if a.get('poster'):self.items.append(a['poster'])
 
 
 def check_links(path):
