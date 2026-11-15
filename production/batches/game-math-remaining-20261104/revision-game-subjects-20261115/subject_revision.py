@@ -161,7 +161,7 @@ def prepare(e,origin=0,end=None):
  p=work(e);ts=tracks(e);ss={s['scene']:s for s in e['scenes']}
  if end is None:end=e['scenes'][-1]['end']+10
  for t in ts:t['sceneStart']=ss[t['scene']]['start']
- board=Board();postboard=Board();contexts=[]
+ board=Board();postboard=Board();backingboard=Board();contexts=[]
  groups={}
  for t in ts:
   if t['start']>=end or t['end']<=origin:continue
@@ -327,12 +327,15 @@ def prepare(e,origin=0,end=None):
    cmds.append(f'{max(0,min(z,end)-.0002):.6f} overlay@jump x -2200;');(p/'jump-commands.txt').write_text('\n'.join(cmds)+'\n',encoding='utf8')
    contexts.append(dict(asset='mario',jump=True,width=width,height=height,start=max(a,origin),end=min(z,end)))
    postboard.text(80,210,'마리오의 점프를 단순화한 경로',a,z,GOLD,34,width=850)
-   postboard.rectangle(400,330,330,65,a,z)
+   # Erase the two old labels BEFORE drawing the character. A backing placed
+   # after the photo would crop Mario's head at the apex and feet at landing.
+   backingboard.rectangle(400,330,330,65,a,z)
    postboard.text(565,330,'정점 · t=1 s',a,z,WHITE,40)
-   postboard.rectangle(655,775,290,55,a,z)
+   backingboard.rectangle(655,775,290,55,a,z)
    postboard.text(625,805,'착지 · t=2 s',a,z,WHITE,38)
  board.write(p/'identity.ass')
  postboard.write(p/'context-labels.ass')
+ backingboard.write(p/'context-backings.ass')
  save(p/'subject-plan.json',dict(episode=e['id'],evidence=evidence,assets=extra,contexts=contexts,origin=origin,end=end,status='prepared-not-reviewed'))
  return extra,contexts
 
@@ -373,7 +376,7 @@ def graph(e,origin,end):
  tail=f'ass=workings.ass,setpts=PTS-{origin}/TB[vout]'
  # A clear backing belongs behind the photo, not on top of it. Apply only the
  # authored labels after the context pictures (the math remains untouched).
- replacement='ass=workings.ass[post0];'+';'.join(tailparts)+(';' if tailparts else '')+f'[{post}]ass=context-labels.ass,setpts=PTS-{origin}/TB[vout]'
+ replacement='ass=workings.ass,ass=context-backings.ass[post0];'+';'.join(tailparts)+(';' if tailparts else '')+f'[{post}]ass=context-labels.ass,setpts=PTS-{origin}/TB[vout]'
  assert tail in g;g=g.replace(tail,replacement)
  return inputs,g
 

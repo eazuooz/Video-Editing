@@ -10,7 +10,12 @@ def project(path,base,current):
   return (a[:a.index(start)]+block+a[a.index(end)+len(end):] if start in a else a.rstrip()+'\n\n'+block+'\n').encode('utf8')
  a=json.loads(a);b=json.loads(b)
  if path.endswith('review-ledger.json'):a['gameSubjectRevision20261115']=copy.deepcopy(b['gameSubjectRevision20261115'])
- elif path.endswith('video-production-control.json'):a['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115']=copy.deepcopy(b['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115'])
+ elif path.endswith('video-production-control.json'):
+  own=b['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115']
+  a['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115']=copy.deepcopy(own)
+  if own.get('costlyJobsClosed'):
+   assert own['localReadyCount']==13 and own['status']=='all-thirteen-local-user-review-pending'
+   a['explicitMathRemainingBatch20261104']['productionAllowedNow']=False
  else:
   a['mathGameSubjects20261115']=copy.deepcopy(b['mathGameSubjects20261115'])
   rows={r['id']:r['gameSubjects20261115'] for r in b['rows'] if 'gameSubjects20261115' in r}

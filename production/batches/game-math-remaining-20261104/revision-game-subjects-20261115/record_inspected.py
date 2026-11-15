@@ -3,6 +3,12 @@ from subject_revision import *
 import qa,progress,review_delivery
 
 NOTES={
+ 'M32': ['Viewed both fresh encoded boards covering all20 first/15/50/85% pictures of001,003,010,015,029. Mario Maker route image accompanies the original control-point, interpolation, global-support and subdivision constructions without covering mathematics or captions.',
+         'Viewed final003 at85% in1080p and375px: all construction points, p(t), algorithm heading and actual route picture remain visible. The image is labeled as a route example alongside our Bézier principle model.',
+         'Viewed12 final010 positions plus mobile snapshot: only the selected control input changes while the curve and evaluated point update together; native gameplay elsewhere is preserved.'],
+ 'M31': ['Viewed both fresh encoded boards covering all20 first/15/50/85% pictures of001,005,013,033,034. Native Mario Maker preface remains animated; subsequent original point/curve formulas accompany the Satisfactory source path without occlusion.',
+         'Viewed final013 at50% in1080p and375px: source train/rail, p(t), tangent and curvature formula remain separated from captions.',
+         'Viewed12 final013 positions plus mobile snapshot: moving sample point and tangent follow the original varying circle, while the game-image correspondence stays clear. Existing parameterization and narration order preserved.'],
  'M30': ['Viewed the fresh encoded board containing first/15/50/85% of017,057,058,059. BeamNG source photo accompanies the original component-mass vehicle model; centroid and inertia formulas, component masses and caption area remain unobscured.',
          'Viewed final057 at85% in1080p and375px; vehicle-to-component correspondence and the full centroid expression remain readable.',
          'Viewed12 final017 positions plus its375px snapshot: source/model caption, reference marker and part masses stay stable through the original continuous narration. This revised context does not replace the retained native gameplay.'],

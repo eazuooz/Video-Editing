@@ -121,7 +121,8 @@ def main():
         delivery=str(HERE/'delivery.json'),next='Wait for human review of these exact local masters; no upload or automatic next work.')
     save(HERE/'checkpoint.json',cp)
     control_path=ROOT/'shared/publishing/video-production-control.json';control=read(control_path)
-    control['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115'].update(status=report['status'],localReadyCount=13,delivery=str(HERE/'delivery.json'),humanReviewed=False)
+    control['explicitMathRemainingBatch20261104']['productionAllowedNow']=False
+    control['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115'].update(status=report['status'],localReadyCount=13,delivery=str(HERE/'delivery.json'),humanReviewed=False,costlyJobsClosed=True)
     save(control_path,control)
     print('13 local review deliveries / 52 verified files /',linkcount,'checked local links')
 
