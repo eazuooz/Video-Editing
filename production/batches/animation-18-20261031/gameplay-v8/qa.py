@@ -32,7 +32,10 @@ def extract_during_decode(e,audio,movie):
  folder=WORK/e['id']/'encoded-qa';folder.mkdir(exist_ok=True);rows=points(e,audio)
  assert folder.resolve().is_relative_to(WORK.resolve())
  for p in folder.glob('*.jpg'):p.unlink()
- expr='+'.join('eq(n,'+str(r['frame'])+')' for r in rows)
+ def balanced(terms):
+  if len(terms)==1:return terms[0]
+  mid=len(terms)//2;return '('+balanced(terms[:mid])+'+'+balanced(terms[mid:])+')'
+ expr=balanced(['eq(n,'+str(r['frame'])+')' for r in rows])
  ff('-threads',2,'-i',movie,'-map','0:v:0','-vf',"select='"+expr+"'",'-fps_mode','vfr','-q:v',2,'-start_number',0,folder/'%04d.jpg',
     '-map','0:a:0','-f','null','NUL')
  files=sorted(folder.glob('*.jpg'));assert len(files)==len(rows),(e['id'],len(files),len(rows))

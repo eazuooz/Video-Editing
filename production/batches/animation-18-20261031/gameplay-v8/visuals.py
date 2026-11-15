@@ -89,11 +89,12 @@ def backdrop(ep,key,title,bank,grammar):
  text(d,(1860,106),game_label(bank),26,MUTED,width=650,anchor='rt')
  return im
 
-def timeline(d,x,y,w,u,labels):
- colors=[TEAL,YELLOW,RED,GREEN]
+def timeline(d,x,y,w,u,labels,boundaries=None):
+ colors=[TEAL,YELLOW,RED,GREEN];positions=boundaries or [0,.25,.5,.75,1]
  for i,label in enumerate(labels):
-  xx=x+w*i/4;d.line((xx,y,xx+w/4-10,y),fill=colors[i],width=11)
-  text(d,(xx,y+20),label,31,colors[i],width=w/4-12)
+  xx=x+w*positions[i];width=w*(positions[i+1]-positions[i])
+  d.line((xx,y,xx+width-10,y),fill=colors[i],width=11)
+  text(d,(xx,y+20),label,31,colors[i],width=width-12)
  xx=x+w*min(1,max(0,u));d.polygon([(xx,y-19),(xx-12,y-37),(xx+12,y-37)],fill=WHITE)
 
 def phase_grid(im,bank,labels):
@@ -137,7 +138,7 @@ def observation(im,bank,n,grammar,ep,key,labels,u):
  fit(im,detail(bank,n),(55,195,1280,635));fit(im,picture(bank,n),(1360,245,500,282))
  text(d,(1360,197),'원래 화면 · 전체 맥락',30,MUTED,500)
  text(d,(1360,562),'실제 장면에서 보이는',30,TEAL,500);text(d,(1360,606),'시작 → 행동 → 결과',34,YELLOW,500)
- timeline(d,90,787,1160,u,labels)
+ timeline(d,90,787,1160,u,labels,[0,60/167,114/167,126/167,1] if bank=='great' else None)
 
 def timing(im,bank,u,key,ep):
  d=ImageDraw.Draw(im);frames=phase_frames(bank);N=12 if ep=='A04' else 8
