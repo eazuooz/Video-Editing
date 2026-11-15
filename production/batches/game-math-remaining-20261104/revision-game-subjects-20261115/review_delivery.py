@@ -41,15 +41,22 @@ def page(e,enc,title):
     if credits.exists():shutil.copy2(credits,folder/'supplemental-credits.txt')
     assets=read(HERE/'assets.json');source_ids={item.get('asset') for item in plan['evidence']}
     if e['id']=='M33':source_ids.add('mario')
-    provenance=[a for a in assets if a['id'] in source_ids]
-    save(folder/'game-image-provenance.json',dict(episode=e['id'],assets=provenance,sources=read(HERE/'sources.json'),
+    provenance=[{**a,'review':'Actual encoded pictures inspected for this episode'} for a in assets if a['id'] in source_ids]
+    frame_ids={Path(a['sourceFrame']).stem for a in provenance}
+    sources=[{**r,'visualReview':'Frame/crop and its realized explanation inspected'} for r in read(HERE/'sources.json') if r['id'] in frame_ids]
+    rights=[r for r in read(HERE/'source-rights-review.json')['sources'] if r['frameId'] in frame_ids]
+    credit_lines=['Additional game-image credits (description / course notes):','']
+    for r in rights:
+        credit_lines.extend([r['title']+' — '+r['uploader'],r['recordingUrl'],r['licenseLabel'] or r['recorderPermissionEvidence'],r['changes'],''])
+    (folder/'game-image-credits.txt').write_text('\n'.join(credit_lines),encoding='utf8')
+    save(folder/'game-image-provenance.json',dict(episode=e['id'],assets=provenance,sources=sources,recorderCredits=rights,
         meaning='Actual independent game-recording frames/cutouts in an explanatory animation; not measured game vectors or internal algorithms.'))
     exception='<p>기존 음성이 로봇을 직접 언급하는 엘리베이터 사고실험 한 장면은 대사와 맞도록 보존했습니다.</p>' if e['id']=='M27' else ''
     text=f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e['id']} {html.escape(title)}</title><style>body{{max-width:1200px;margin:auto;padding:24px;background:#080808;color:white;font:18px/1.65 system-ui}}h1,h2{{color:#e8cf83}}a,button{{color:#73c7c2}}video{{width:100%}}button{{background:transparent;border:0;border-bottom:1px solid #444;font:inherit;text-align:left;padding:10px;cursor:pointer}}small{{color:#bbb}}</style>
 <h1>{e['id']} · {html.escape(title)}</h1><p>1920×1080 · 60fps · 내부 검사 완료 / 사용자 검수 대기</p>
 <video id="master" src="{Path(enc['files']['captioned']['path']).name}" controls playsinline preload="metadata"></video><p>{links}</p>
 <p>실제 게임에서 가져온 캐릭터·물체 이미지를 기존 설명의 위치·벡터·그래프와 연결했습니다. 게임 녹화와 해설 애니메이션을 구분하며, 내레이션·음성·수식 전개·전체 길이는 보존했습니다.</p>{exception}
-<h2>이미지 연결 수정 구간</h2><ul>{''.join(items)}</ul><p><a href="game-image-provenance.json">게임 이미지 출처·원본 프레임 기록</a></p>
+<h2>이미지 연결 수정 구간</h2><ul>{''.join(items)}</ul><p><a href="game-image-provenance.json">게임 이미지 출처·원본 프레임 기록</a> · <a href="game-image-credits.txt">추가 이미지 크레딧</a></p>
 <small>내부 검수는 수정 장면의 실제 인코딩 프레임·동작 샘플·연결과 전체 파일 디코딩을 확인한 결과입니다. 전체 사용자 시청·청취 승인은 아직 기록하지 않았습니다.</small>
 <p><a href="{(ROOT/'output/game-math-game-subjects-20261115/index.html').as_uri()}">13편 통합 검수표</a></p>
 <script>document.querySelectorAll('[data-time]').forEach(b=>b.onclick=()=>{{let v=document.getElementById('master');v.currentTime=Number(b.dataset.time);v.play();v.scrollIntoView({{behavior:'smooth',block:'center'}});}});</script></html>'''

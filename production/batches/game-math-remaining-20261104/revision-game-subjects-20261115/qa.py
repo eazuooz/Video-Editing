@@ -23,22 +23,25 @@ def technical(e):
 
 def pictures(e):
  p=work(e);enc=read(p/'encoded.json');movie=Path(enc['files']['captioned']['path']);plan=read(p/'subject-plan.json');out=p/'qa';out.mkdir(exist_ok=True)
+ previous=read(p/'picture-evidence.json') if (p/'picture-evidence.json').exists() else {}
+ assert not any(out.glob('*.jpg')) or previous.get('movieSha256')==sha(movie),'Archive picture evidence from a different encode before extracting new QA frames'
  # Verify realized locations at multiple moments, not just a successful render.
  sceneids=sorted(set(row['scene'] for row in plan['evidence']));rows=[]
  if e['id']=='M33' and '029' not in sceneids:sceneids.append('029')
  for sid in sceneids:
   s=next(s for s in e['scenes'] if s['scene']==sid)
-  for frac in (.15,.5,.85):
+  for frac in (0,.15,.5,.85):
    t=s['start']+(s['end']-s['start'])*frac;target=out/f'{sid}-{frac:.2f}.jpg'
-   if not target.exists():subprocess.run([str(FF),'-v','error','-nostdin','-n','-threads','1','-ss',str(t),'-i',str(movie),'-frames:v','1','-vf','scale=480:270','-threads','1',str(target)],check=True,creationflags=prior.CREATE)
-   rows.append(dict(scene=sid,time=t,file=str(target),fraction=frac))
+   frame=round(t*60);prefix=max(0,frame//60-1);local=frame-prefix*60
+   if not target.exists():subprocess.run([str(FF),'-v','error','-nostdin','-n','-threads','1','-ss',str(prefix),'-i',str(movie),'-frames:v','1','-vf',f'select=eq(n\\,{local}),scale=480:270','-q:v','2','-threads','1',str(target)],check=True,creationflags=prior.CREATE)
+   rows.append(dict(scene=sid,time=frame/60,frame=frame,file=str(target),fraction=frac))
  boards=[]
  for first in range(0,len(rows),18):
   group=rows[first:first+18];im=Image.new('RGB',(1440,294*math.ceil(len(group)/3)),'black');d=ImageDraw.Draw(im)
   for j,row in enumerate(group):
    x=j%3*480;y=j//3*294;im.paste(Image.open(row['file']),(x,y));d.text((x+5,y+274),f'{e["id"]}/{row["scene"]} {row["fraction"]:.0%} @ {row["time"]:.2f}',fill='white')
   target=out/f'board-{first//18+1:02}.jpg';im.save(target,quality=95);boards.append(str(target))
- save(p/'picture-evidence.json',dict(movieSha256=sha(movie),method='Actual encoded frames at 15/50/85 percent of every revised scene; full-frame and moving-source checks recorded separately.',rows=rows,boards=boards,actuallyInspected=False))
+ save(p/'picture-evidence.json',dict(movieSha256=sha(movie),method='Exact 60fps indexed first frame and 15/50/85 percent of every revised scene; full-frame and moving-source checks recorded separately.',rows=rows,boards=boards,actuallyInspected=False))
  return boards
 
 def record(e,notes):

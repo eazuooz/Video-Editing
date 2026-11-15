@@ -7,14 +7,16 @@ from pathlib import Path
 from PIL import Image
 import numpy as np
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3];OLD=HERE.parent/'revision-teaching-sync-20261115'
-sys.path.insert(0,str(OLD))
+# Reuse the old renderer helpers without shadowing this revision's progress.py.
+if str(OLD) not in sys.path:sys.path.append(str(OLD))
 import render_revision as prior
 from inventory import read,save,sha
 from boards import Board,GOLD,TEAL,WHITE,MUTED,RED,cue
 from motion_panels import line,dot,arrow
 import motion_positions as motion
-FF=prior.FF;REV='game-subjects-v3'
-DEST=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingOutputs/game-math-subjects-20261115'
+FF=prior.FF;REV='game-subjects-v4'
+DEST=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingOutputs/game-math-subjects-20261115-final'
+WORK=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingWork/game-math-subjects-20261115-final'
 EPISODES={e['id']:e for e in read(OLD/'inventory.json')['episodes']}
 ASSETS={a['id']:a for a in read(HERE/'assets.json')}
 
@@ -32,7 +34,7 @@ CONTEXTS=[
 ]
 
 def work(e):
- p=ROOT/'projects'/e['slug']/'production/local'/REV;p.mkdir(parents=True,exist_ok=True);return p
+ p=WORK/e['slug'];p.mkdir(parents=True,exist_ok=True);return p
 def latest(e,kind='clean'):
  return ROOT/'output'/(e['slug']+'-teaching-sync-v2')/(e['slug']+'.'+kind+('.srt' if kind in ('ko','en') else '.mp4'))
 def cuts(e):
@@ -48,6 +50,10 @@ def mechanics_at(l,t):
  x,y=-4.7,.1;p=m.get('picture',0);scale=m.get('worldScale',1);value=velocity=None
  if p==4:
   g=2*m.get('jumpHeight',2)/m.get('apexSeconds',.4)**2;y+=(g*m.get('apexSeconds',.4)*t-g*t*t/2)*scale-.3
+ elif p==10:
+  acceleration=(m.get('forceX',6)-m.get('opposingForce',2))/m.get('mass',2)
+  distance=m.get('initialVelocity',0)*t+.5*acceleration*t*t
+  x+=distance*scale-2
  elif p==11:x+=(-1.3-.5*m.get('forceX',6)/m.get('mass',2)*t*t*scale)
  elif p==12:
   if not m.get('showObserverFrame'):x+=m.get('frameVelocity',0)*t*scale;y+=.5*m.get('frameAcceleration',0)*t*t*scale
@@ -81,7 +87,7 @@ def tracks(e):
    mode='surface-code' if s['scene'] in ('017','034') else 'surface';asset='doom-context'
   elif eid=='M23' and s['scene'] not in ('000','016','018','021','037','041','053','054','055','056','057','062','063','064','065','066'):
    mode='pipeline' if s['scene'] in ('001','002','003','004','006','014','023','034','050','060','061') else 'pipeline-clear';asset='mario' if s['scene']=='050' else 'town-context'
-  elif eid=='M27' and s['scene'] in ('009','011','014','021','022'):mode='mechanics';asset='beamng' if s['scene']=='021' else 'mario'
+  elif eid=='M27' and s['scene'] in ('009','011','014','021','022'):mode='mechanics-jump' if s['scene'] in ('021','022') else 'mechanics';asset='beamng' if s['scene']=='021' else 'mario'
   elif eid=='M28' and s['scene'] in ('010','024'):mode='mechanics';asset='beamng'
   if not mode:continue
   for a,z in segment_ranges(e,s,exclude):result.append(dict(scene=s['scene'],start=a,end=z,mode=mode,asset=asset,lesson=l))
@@ -89,7 +95,7 @@ def tracks(e):
 
 def anchor(track,t,fitting=None):
  if track['mode']=='motion':return motion.at(track['lesson'],t-track.get('sceneStart',track['start']),fitting)
- if track['mode']=='mechanics':return mechanics_at(track['lesson'],t-track.get('sceneStart',track['start']))
+ if track['mode'].startswith('mechanics'):return mechanics_at(track['lesson'],t-track.get('sceneStart',track['start']))
  return dict(x=600 if track['mode']=='portrait' or track['mode'].startswith('surface') else 500,y=535)
 
 def unitguide(m,e):
@@ -105,6 +111,37 @@ def maxima(lesson):
 def text_now(b,x,y,value,a,z,color,size=42):
  b.event(a,z,r'{\an7\pos('+f'{x:.2f},{y:.2f}'+r')\fs'+str(size)+r'\1c&H'+color+r'&\bord0\shad0}'+value,5)
 
+def mechanics_guides(b,background,q,lesson,a,z):
+ m=q['model'];kind=m['picture'];cx,cy=q['x'],q['y'];t=q['t']
+ if kind in (4,10):line(background,[(124.8,592.8),(892.8,592.8)],a,z,MUTED,5)
+ if kind==10:
+  acceleration=(m.get('forceX',6)-m.get('opposingForce',2))/m.get('mass',2);velocity=m.get('initialVelocity',0)+acceleration*t
+  items=[('가속도 a',acceleration*m.get('accelerationScale',.15)*96,(cx+80,cy-164),(650,cy-190),RED),('속도 v',velocity*m.get('velocityScale',.3)*96,(cx+80,cy-96),(650,cy-120),'A0C6A4'),('지면의 힘 F₁',m.get('forceX',6)*m.get('forceScale',.12)*96,(cx+80,cy+20),(650,cy-5),TEAL),('상자의 힘 F₂',-m.get('opposingForce',2)*m.get('forceScale',.12)*96,(cx-80,cy+20),(90,cy+100),GOLD)]
+  for name,length,tail,label,color in items:
+   tip=(tail[0]+length,tail[1]);line(b,[(cx,cy),tail],a,z,MUTED,2);arrow(b,tail,tip,a,z,color,6);line(b,[tip,(label[0]-10,label[1]+25)],a,z,MUTED,2);text_now(b,*label,name,a,z,color,38)
+  dot(b,cx,cy,a,z,TEAL,8)
+ elif kind==11:
+  force=m.get('forceX',4);other=960+96*(-4.7+1.3+.5*force/m.get('secondaryMass',4)*t*t*m.get('worldScale',1));centre=(m.get('mass',2)*cx+m.get('secondaryMass',4)*other)/(m.get('mass',2)+m.get('secondaryMass',4))
+  line(background,[(centre,348),(centre,732)],a,z,MUTED,2)
+  tail=(cx-65,cy);tip=(tail[0]-force*m.get('forceScale',.12)*96,cy)
+  line(b,[(cx,cy),tail],a,z,MUTED,2);arrow(b,tail,tip,a,z,TEAL,6);text_now(b,90,650,'상자가 미는 힘 F_A',a,z,TEAL,36);line(b,[tip,(270,640)],a,z,MUTED,2);text_now(b,max(90,cx-90),cy-150,'사람 · 마리오',a,z,WHITE,34)
+ elif kind==12:
+  scale=m.get('worldScale',1);shiftx=-m.get('frameVelocity',0)*t if m.get('showObserverFrame') else 0;shifty=-.5*m.get('frameAcceleration',0)*t*t if m.get('showObserverFrame') else 0
+  ox=960+96*(-4.7+1.5+shiftx*scale);oy=540-96*(.1+(-.5*m.get('gravity',9.8)*t*t+shifty)*scale)
+  line(background,[(cx-96,cy-182.4),(cx-96,cy+67.2),(cx+211.2,cy+67.2),(cx+211.2,cy-182.4)],a,z,MUTED,4)
+  text_now(b,cx-75,cy-160,'관찰자 · 마리오',a,z,TEAL,34)
+  line(b,[(ox-19,oy-19),(ox+19,oy-19),(ox+19,oy+19),(ox-19,oy+19),(ox-19,oy-19)],a,z,GOLD,5)
+  text_now(b,min(760,ox+35),min(780,oy-55),'낙하 물체',a,z,GOLD,34)
+  acceleration=-m.get('gravity',9.8)-(m.get('frameAcceleration',0) if m.get('showObserverFrame') else 0)
+  if abs(acceleration)>1e-8:arrow(b,(ox,oy),(ox,oy-acceleration*m.get('accelerationScale',.15)*96),a,z,RED,6)
+  text_now(b,90,830,'빨강: 상대가속도' if abs(acceleration)>1e-8 else '상대가속도 0 · 같은 기준에서 함께 낙하',a,z,RED if abs(acceleration)>1e-8 else GOLD,34)
+ elif kind==4:
+  models=[x['model'] for x in lesson['steps']];maxv=max(2*x.get('jumpHeight',2)/x.get('apexSeconds',.4) for x in models);maxa=max(2*x.get('jumpHeight',2)/x.get('apexSeconds',.4)**2 for x in models)
+  g=2*m.get('jumpHeight',2)/m.get('apexSeconds',.4)**2;velocity=g*(m.get('apexSeconds',.4)-t)
+  for tail,tip,color,label,pos in [((cx-90,cy),(cx-90,cy-velocity/maxv*150),TEAL,'v · 속도',(700,350)),((cx+100,cy),(cx+100,cy+g/maxa*140),RED,'a · 가속도',(700,700))]:
+   line(b,[(cx,cy),tail],a,z,MUTED,2);arrow(b,tail,tip,a,z,color,6);line(b,[tip,(pos[0]-15,pos[1]+25)],a,z,MUTED,2);text_now(b,*pos,label,a,z,color,40)
+  dot(b,cx,cy,a,z,TEAL,8);text_now(b,90,830,'화살표 축척은 이 장면 안에서 고정',a,z,MUTED,30)
+
 def prepare(e,origin=0,end=None):
  p=work(e);ts=tracks(e);ss={s['scene']:s for s in e['scenes']}
  if end is None:end=e['scenes'][-1]['end']+10
@@ -119,6 +156,7 @@ def prepare(e,origin=0,end=None):
   # Commands use absolute main-picture timestamps, including sample seeks.
   cmds=[];last=None;af=ASSETS[asset];iw,ih=af['dimensions'];pathboard=Board();pathruns=[]
   if mode=='portrait':height=290
+  elif mode=='mechanics-jump':height=116
   elif mode.startswith('surface'):height=230
   elif mode.startswith('pipeline'):height=235
   else:height=170 if asset in ('mario','kart') else 140
@@ -159,6 +197,12 @@ def prepare(e,origin=0,end=None):
       if index<2:arrow(board,(1390,yy+108),(1390,yy+140),a,z,TEAL,4)
      dot(board,531,535,a,z,TEAL,9)
      line(board,[(531,535),(900,535),(995,350)],a,z,TEAL,3)
+   if mode=='mechanics-jump':
+    board.text(90,205,'오른쪽 +x · 위쪽 +y · 시간 s · 거리 m',a,z,MUTED,30,width=930)
+    board.text(90,250,'청록: 속도 v · 빨강: 가속도 a',a,z,MUTED,30,width=930)
+   elif mode.startswith('mechanics') and t['lesson']['steps'][0]['model']['picture']==12:
+    board.text(90,205,'오른쪽 +x · 위쪽 +y · 시간 s · 거리 m',a,z,MUTED,30,width=930)
+    board.text(90,250,'청록: 관찰자 · 노랑: 물체 · 빨강: 상대가속도',a,z,MUTED,30,width=930)
    if e['id']=='M24' and t['scene']=='004':
     board.rectangle(80,470,930,70,a,z)
     board.text(90,480,'캐릭터 몸 가운데의 한 점을 추적합니다',a,z,WHITE,40,width=930)
@@ -167,19 +211,23 @@ def prepare(e,origin=0,end=None):
     # A scalar plot intentionally hides its actor; retain that decision.
     if mode=='motion' and q['model'].get('scalarFunction'):cx=cy=-2000
     sx=round(cx-width*.5);sy=round(cy-height*.55)
+    if mode.startswith('mechanics') and q['model']['picture']!=6:sy=round(cy+(33.6 if q['model']['picture']==4 else 62.4)-height)
     if mode=='surface-code':
      sx+=220;sy=295
     ex=round(cx-eraser[0]/2);ey=round(cy-eraser[1]/2);ew,eh=eraser
     if mode=='surface-code':ex,ey,ew,eh=75,300,780,435
     if hide_subject:ex,ey,ew,eh=75,535,925,260;sx=-2200
-    spring=mode=='mechanics' and q['model'].get('picture')==6
+    spring=mode.startswith('mechanics') and q['model'].get('picture')==6
     if spring:ex,ey,ew,eh=80,335,920,350
+    if mode.startswith('mechanics') and q['model']['picture'] in (4,10,12):ex,ey,ew,eh=80,300,920,625
+    if mode=='mechanics-jump' or (mode.startswith('mechanics') and q['model']['picture']==12):ex,ey,ew,eh=70,195,930,730
+    if mode.startswith('mechanics') and q['model']['picture']==11:ex,ey,ew,eh=80,330,480,385
     ug=mode=='motion' and unitguide(q['model'],e)
     if ug and cx>0:ex,ey,ew,eh=80,535,920,260
     if mode=='pipeline-clear':sx=-2200
     current=(ex,ey,sx,sy,ew,eh)
     if current!=last:
-     cmds.append(f'{sec:.6f} drawbox@erase{j} x {ex},drawbox@erase{j} y {ey},drawbox@erase{j} w {ew},drawbox@erase{j} h {eh},overlay@subject{j} x {sx},overlay@subject{j} y {sy};');last=current
+     cmds.append(f'{max(0,sec-.0001):.6f} drawbox@erase{j} x {ex},drawbox@erase{j} y {ey},drawbox@erase{j} w {ew},drawbox@erase{j} h {eh},overlay@subject{j} x {sx},overlay@subject{j} y {sy};');last=current
     signature=json.dumps(q.get('model',{}),sort_keys=True) if ug else None
     if signature!=(run[0] if run else None):
      if run:pathruns.append((run[1],sec,run[2],fit));run=None
@@ -191,6 +239,7 @@ def prepare(e,origin=0,end=None):
      for force,tail_y,color,name in [(-q['model'].get('k',16)*q['springX'],410,TEAL,'복원력 Fₛ = −kx'),(-q['model'].get('c',4)*q['springV'],620,GOLD,'감쇠력 Fd = −cv')]:
       tail=(cx,tail_y);line(board,[(cx,cy),tail],sec,hi,MUTED,2);arrow(board,tail,(cx+force*q['model'].get('forceScale',.12)*96,tail_y),sec,hi,color,6)
       text_now(board,90,360 if tail_y==410 else 642,name,sec,hi,color,40)
+    if k%3==0 and mode.startswith('mechanics') and q['model']['picture'] in (4,10,11,12):mechanics_guides(board,pathboard,q,t['lesson'],sec,min(z,sec+.05))
     # Editorial vectors are mathematically coupled to the same native point.
     if k%3==0 and mode=='motion' and cx>0 and not hide_subject:
      hi=min(z,sec+.05);dot(board,cx,cy,sec,hi,TEAL,8)
@@ -212,7 +261,10 @@ def prepare(e,origin=0,end=None):
         v*=m.get(scale,.3 if field=='velocity' else .15)*fit[0]
         arrow(board,(cx,cy),(cx+96*v[0],cy-96*v[1]),sec,hi,color,5)
    if run:pathruns.append((run[1],z,run[2],fit))
-   cmds.append(f'{z:.6f} drawbox@erase{j} x -2200,overlay@subject{j} x -2200;');last=None
+   # At a shared boundary the old layer leaves before the new layer enters.
+   # Both commands precede the same 60fps frame by less than 0.0002s, avoiding
+   # float rounding and equal-time ordering without changing lesson timing.
+   cmds.append(f'{max(0,z-.0002):.6f} drawbox@erase{j} x -2200,overlay@subject{j} x -2200;');last=None
    evidence.append(dict(scene=t['scene'],start=a,end=z,asset=asset,mode=mode,representation='Game image on the unchanged analytic position; illustration, not game measurement'))
   for a,z,m,fit in pathruns:
    path=[]
@@ -255,9 +307,9 @@ def prepare(e,origin=0,end=None):
    sec=k/60
    t=0 if sec<launch else (sec-launch)/(second-launch) if sec<second else 1+(sec-second)/(land-second) if sec<land else 2 if sec<recap else 1 if sec<last else 2
    x=185+325*t-width*.5;y=740-330*t*(2-t)-height*.55
-   cmds.append(f'{sec:.6f} overlay@jump x {round(x)},overlay@jump y {round(y)};')
+   cmds.append(f'{max(0,sec-.0001):.6f} overlay@jump x {round(x)},overlay@jump y {round(y)};')
   if cmds:
-   cmds.append(f'{min(z,end):.6f} overlay@jump x -2200;');(p/'jump-commands.txt').write_text('\n'.join(cmds)+'\n',encoding='utf8')
+   cmds.append(f'{max(0,min(z,end)-.0002):.6f} overlay@jump x -2200;');(p/'jump-commands.txt').write_text('\n'.join(cmds)+'\n',encoding='utf8')
    contexts.append(dict(asset='mario',jump=True,width=width,height=height,start=max(a,origin),end=min(z,end)))
    postboard.text(80,210,'마리오의 점프를 단순화한 경로',a,z,GOLD,34,width=850)
    postboard.rectangle(400,330,330,65,a,z)
@@ -308,6 +360,19 @@ def authorized(e):
  c=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];v=c['gameSubjectRevision20261115']
  assert c['productionAllowedNow'] and e['id'] in v['scope'] and not v['upload']
 
+def video_output(label,ni,frames,codec,target):
+ return ['-map',label,'-map',f'{ni}:a:0','-frames:v',frames,*codec,'-c:a','copy','-movflags','+faststart',target]
+
+def dual_graph(g,origin=0):
+ return g.replace('[vout]','[dualbase]')+';[dualbase]split=2[vout][captionbase];[captionbase]setpts=PTS+'+str(origin)+'/TB,ass=captions.ko.ass,setpts=PTS-STARTPTS[captionout]'
+
+def preserve_audio(movie,audio,p,kind):
+ if prior.packet_hash(movie,'a')==prior.packet_hash(audio,'a'):return
+ dest=movie.parent;repaired=dest/(kind+'-audio-preserved.mp4')
+ prior.command(['-i',movie,'-i',audio,'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',repaired],p,'restore-'+kind+'-audio')
+ archive=dest/'intermediate';assert archive.resolve().is_relative_to(DEST.resolve());archive.mkdir(exist_ok=True);backup=archive/('frame-bounded-'+kind+'.mp4')
+ assert not backup.exists();shutil.move(movie,backup);shutil.move(repaired,movie)
+
 def encode(e,sample=None):
  authorized(e);p=work(e);G=prior.guard();reason=G.idle_reason()
  cpu=bool(reason and reason.startswith('Insufficient idle headroom:'))
@@ -315,7 +380,9 @@ def encode(e,sample=None):
  codec=['-c:v','libx264','-preset','fast','-crf','18','-threads','2','-g','120','-pix_fmt','yuv420p','-video_track_timescale','90000'] if cpu else prior.encoder()
  save(p/'resource-choice.json',dict(backend='CPU libx264, two encode/filter threads' if cpu else 'NVENC',reason=reason or 'GPU guard passed',noTts=True,otherProcessesUntouched=True))
  ownership=str(uuid.uuid4())
- with G.LEASE.open('x',encoding='utf8') as f:json.dump(dict(id=ownership,owner=e['slug']+'-'+REV,pid=os.getpid(),createdAt=G.now()),f)
+ try:
+  with G.LEASE.open('x',encoding='utf8') as f:json.dump(dict(id=ownership,owner=e['slug']+'-'+REV,pid=os.getpid(),createdAt=G.now()),f)
+ except FileExistsError:raise RuntimeError('Shared lease was claimed before this encode; retry at the next safe boundary')
  try:
   source=Path(e['baselineOutputs']['clean']);audio=latest(e)
   meta=json.loads(subprocess.check_output([str(FF.with_name('ffprobe.exe')),'-v','error','-select_streams','v:0','-show_entries','stream=nb_frames','-of','json',str(audio)]))['streams'][0]
@@ -331,22 +398,28 @@ def encode(e,sample=None):
   ni=1+sum(x=='-i' for x in inputs)
   inputs+=['-ss',str(start),'-i',str(audio)]
   if sample:g=g.replace('[vout]','[unsub]')+f';[unsub]setpts=PTS+{start}/TB,ass=captions.ko.ass,setpts=PTS-STARTPTS[vout]'
+  simultaneous=not sample and not cpu
+  if simultaneous:g=dual_graph(g)
   (p/'filter.ffgraph').write_text(g,encoding='utf8')
   assert shutil.disk_usage(dest).free>2*audio.stat().st_size+1024**3
-  save(p/'worker.json',dict(status='rendering-sample' if sample else 'rendering-clean',pid=os.getpid(),episode=e['id'],finalReviewReady=False))
+  save(p/'worker.json',dict(status='rendering-sample' if sample else 'rendering-clean-and-captioned' if simultaneous else 'rendering-clean',pid=os.getpid(),episode=e['id'],finalReviewReady=False))
   trim=['-t',frames/60] if sample else []
-  prior.command(['-ss',start,'-reinit_filter','0','-i',source,*inputs,'-filter_complex_threads','2','-/filter_complex','filter.ffgraph','-map','[vout]','-map',f'{ni}:a:0','-frames:v',frames,*trim,*codec,'-c:a','copy','-movflags','+faststart',clean],p,('sample-'+sample) if sample else 'clean')
+  cap=dest/(e['slug']+'.captioned.mp4')
+  if simultaneous:
+   prior.command(['-ss',start,'-reinit_filter','0','-i',source,*inputs,'-filter_complex_threads','2','-/filter_complex','filter.ffgraph',*video_output('[vout]',ni,frames,codec,clean),*video_output('[captionout]',ni,frames,codec,cap)],p,'clean-and-captioned')
+  else:
+   prior.command(['-ss',start,'-reinit_filter','0','-i',source,*inputs,'-filter_complex_threads','2','-/filter_complex','filter.ffgraph','-map','[vout]','-map',f'{ni}:a:0','-frames:v',frames,*trim,*codec,'-c:a','copy','-movflags','+faststart',clean],p,('sample-'+sample) if sample else 'clean')
   prior.check_stream(clean,frames)
   if sample:save(p/'worker.json',dict(status='sample-needs-actual-visual-review',episode=e['id'],sample=str(clean)));return clean
-  # Explicitly remux a copy if FFmpeg's frame bound trimmed original AAC tail.
-  if prior.packet_hash(clean,'a')!=prior.packet_hash(audio,'a'):
-   repaired=dest/'audio-preserved.mp4';prior.command(['-i',clean,'-i',audio,'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',repaired],p,'restore-audio');archive=dest/'intermediate';assert archive.resolve().is_relative_to(DEST.resolve());archive.mkdir(exist_ok=True);backup=archive/'frame-bounded-original.mp4';shutil.move(clean,backup);shutil.move(repaired,clean)
-  cap=dest/(e['slug']+'.captioned.mp4');save(p/'worker.json',dict(status='rendering-captioned',pid=os.getpid(),episode=e['id'],finalReviewReady=False))
-  prior.command(['-i',clean,'-vf','ass=captions.ko.ass','-map','0:v:0','-map','0:a:0',*codec,'-c:a','copy','-movflags','+faststart',cap],p,'captioned');prior.check_stream(cap,frames)
+  preserve_audio(clean,audio,p,'clean')
+  if not simultaneous:
+   save(p/'worker.json',dict(status='rendering-captioned',pid=os.getpid(),episode=e['id'],finalReviewReady=False))
+   prior.command(['-i',clean,'-vf','ass=captions.ko.ass','-map','0:v:0','-map','0:a:0',*codec,'-c:a','copy','-movflags','+faststart',cap],p,'captioned')
+  prior.check_stream(cap,frames);preserve_audio(cap,audio,p,'captioned')
   files={'clean':clean,'captioned':cap}
   for lang in ('ko','en'):
    target=dest/(e['slug']+'.'+lang+'.srt');shutil.copy2(latest(e,lang),target);files[lang]=target
-  save(p/'encoded.json',dict(episode=e['id'],revision=REV,frames=frames,duration=frames/60,files={k:dict(path=str(v),sha256=sha(v)) for k,v in files.items()},audioSource=str(audio),audioBitstreamUnchanged=prior.packet_hash(clean,'a')==prior.packet_hash(audio,'a')==prior.packet_hash(cap,'a'),status='encoded-needs-actual-QA',humanReviewed=False,finalReviewReady=False))
+  save(p/'encoded.json',dict(episode=e['id'],revision=REV,frames=frames,duration=frames/60,files={k:dict(path=str(v),sha256=sha(v)) for k,v in files.items()},audioSource=str(audio),audioBitstreamUnchanged=prior.packet_hash(clean,'a')==prior.packet_hash(audio,'a')==prior.packet_hash(cap,'a'),captionedDirectFromComposite=simultaneous,status='encoded-needs-actual-QA',humanReviewed=False,finalReviewReady=False))
   save(p/'worker.json',dict(status='encoded-needs-actual-QA',episode=e['id'],finalReviewReady=False));return cap
  except BaseException as error:
   save(p/'worker.json',dict(status='failed',episode=e['id'],error=repr(error),finalReviewReady=False));raise

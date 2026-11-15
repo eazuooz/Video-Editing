@@ -12,7 +12,8 @@ def update():
   pending=read(HERE/'pending-corrections.json').get('episodes',{}) if (HERE/'pending-corrections.json').exists() else {}
   correction=pending.get(eid,{})
   if correction and correction.get('status')!='resolved':ready=False
-  state='기존 구·표면 설명 검수 완료 · 변경 없이 유지' if eid=='M21' and ready else '내부 검수 완료 · 사용자 검수 대기' if ready else '화면 보정 후 재렌더 대기' if correction and correction.get('status')!='resolved' else '인코딩 완료 · 실제 화면 검수 중' if ep else {'rendering-clean':'Clean 렌더 중','rendering-captioned':'자막본 렌더 중','failed':'오류 확인·보완 중'}.get(worker.get('status'),'실제 게임 이미지 합성·화면 검수 중')
+  rendering={'rendering-clean':'Clean 렌더 중','rendering-captioned':'자막본 렌더 중','rendering-clean-and-captioned':'Clean·자막본 동시 렌더 중'}.get(worker.get('status'))
+  state='기존 구·표면 설명 검수 완료 · 변경 없이 유지' if eid=='M21' and ready else '내부 검수 완료 · 사용자 검수 대기' if ready else rendering if rendering else '인코딩 완료 · 실제 화면 검수 중' if ep else '화면 보정 완료 · 렌더 대기' if correction and correction.get('status')!='resolved' else '실제 게임 이미지 합성·화면 검수 중'
   rows.append(dict(id=eid,title=titles.get(eid,e['slug']),slug=e['slug'],status=state,files=files,ready=ready,humanReviewed=False))
  hub=ROOT/'output/game-math-game-subjects-20261115';hub.mkdir(exist_ok=True)
  body=[]

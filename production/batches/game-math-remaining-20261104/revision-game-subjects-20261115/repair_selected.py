@@ -31,6 +31,10 @@ def archive(e):
             destination=evidence/filename
             assert not destination.exists() and destination.resolve().is_relative_to(p.resolve())
             shutil.move(source,destination)
+    if (p/'qa').exists():
+        source=(p/'qa').resolve();destination=(evidence/'pictures').resolve()
+        assert source.is_relative_to(p.resolve()) and destination.is_relative_to(p.resolve()) and not destination.exists()
+        shutil.move(source,destination)
     save(p/'preserved-previous-encode.json',dict(files=str(target),evidence=str(evidence),reason='Corrected actual encoded picture issues; no baseline or platform deletion.'))
 
 
