@@ -684,3 +684,13 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 | M32 | 베지에와 분할 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M32/index.html) |
 | M33 | 스플라인과 연속성 | 내부 검수 완료 · 사용자 검수 대기 | [로컬 검수](D:/Github/VideoEditing/output/game-math-direction-overview-20261115/M33/index.html) |
 <!-- MATH-DIRECTION-OVERVIEW-20261115-END -->
+
+<!-- AI3D-LOFI-GAMING-ROOM-20261116 -->
+## AI 3D LOFI 게이밍룸 제작
+
+| 영상 | 제작 | 검수 | 게시 |
+|---|---|---|---|
+| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | 콘셉트 1장·도구 후보 10개·게임/영상 구성 준비. C/D 공간 부족으로 모델 생성·게임 구현·영상 렌더 대기 | 전체 영상 미제작 | 미업로드·예약 없음 |
+
+Spirit City의 음악·방·집중 경험을 참고해 기존 2D 방을 자체 디자인의 3D 게이밍룸으로 확장한다. 실제 실행과 성공 여부는 [제작 계획](../projects/ai-3d-lofi-gaming-room/planning/production-plan.json)에 구분한다. 현재 허용 범위는 로컬 완성본 검수까지이며 기존 영상과 타 작업을 보존한다.
+<!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->
