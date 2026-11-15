@@ -1,0 +1,28 @@
+using System;
+using Yamyam.OriginalTechTwelve.Camera;
+public static class CameraFixture {
+    static int checks;
+    static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    static bool Near(float a,float b){return Math.Abs(a-b)<.0001f;}
+    public static void Main(){
+        bool offsets=true,orbitRadius=true,fixedActor=true,finite=true,clamped=true;
+        for(int n=0;n<720;n++){
+            float t=n/60f;var follow=CameraModel.Sample("follow",t);var orbit=CameraModel.Sample("orbit",t);var limit=CameraModel.Sample("orbit-limit",t);
+            offsets&=Near(follow.cameraX-follow.heroX,0)&&Near(follow.cameraZ-follow.heroZ,-6);
+            orbitRadius&=Math.Abs(Math.Sqrt(orbit.cameraX*orbit.cameraX+orbit.cameraZ*orbit.cameraZ)-6)<.0001;
+            foreach(var mode in CameraModel.Modes){var s=CameraModel.Sample(mode,t);finite&=!float.IsNaN(s.cameraX)&&!float.IsInfinity(s.cameraZ)&&s.fieldOfView==55;if(mode!="follow")fixedActor&=s.heroX==0&&s.heroZ==0;}
+            clamped&=limit.actualYaw<=60&&limit.actualYaw<=limit.requestedYaw;
+        }
+        Check(offsets,"follow camera keeps its world offset while the hero translates");
+        Check(orbitRadius,"orbit changes viewpoint while maintaining horizontal radius");
+        Check(fixedActor,"look/orbit/dolly comparisons keep the same actor location");
+        Check(finite,"all5x720 samples remain finite with one fixed lens");
+        Check(clamped,"authored limit clamps the camera without changing requested input");
+        Check(CameraModel.Sample("orbit-limit",10).limitReached&&!CameraModel.Sample("orbit-limit",1).limitReached,"limit state changes only when the request exceeds its bound");
+        Check(CameraModel.Sample("pull-back",10).distance>CameraModel.Sample("pull-back",1).distance,"pullback increases distance without changing field of view");
+        Check(CameraModel.Sample("look-around",10).lookY>CameraModel.Sample("look-around",1).lookY,"look view points upward while actor stays put");
+        Check(CameraModel.Sample("orbit",1).actualYaw<0&&CameraModel.Sample("orbit",10).actualYaw>0,"orbit traverses opposite viewpoints");
+        bool rejected=false;try{CameraModel.Sample("nintendo-internal-camera",0);}catch(ArgumentException){rejected=true;}Check(rejected,"unknown modes are rejected");
+        Console.WriteLine("CHECKS="+checks);Console.WriteLine("SAMPLED_FRAMES=720");Console.WriteLine("SCOPE=authored camera model, not Nintendo code or rendered capture");
+    }
+}

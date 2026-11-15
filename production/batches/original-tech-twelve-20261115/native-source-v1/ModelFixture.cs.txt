@@ -1,0 +1,36 @@
+using System;
+using Yamyam.OriginalTechTwelve.LockOn;
+public static class ModelFixture {
+    static int checks;
+    static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    static bool Near(float a,float b){return Math.Abs(a-b)<.0001f;}
+    public static void Main(){
+        var locked=Model.Sample("target-relative",0);var free=Model.Sample("free-movement",0);
+        Check(Near(locked.hero.x,free.hero.x)&&Near(locked.hero.z,free.hero.z)&&Near(locked.heroForward.x,free.heroForward.x)&&Near(locked.heroForward.z,free.heroForward.z),"same initial actor position and facing");
+        Check(Model.Sample("target-relative",2).radialDistance<locked.radialDistance,"approach reduces distance to selected target");
+        bool radius=true,facing=true,inputs=true,finite=true,turns=true,overlap=false;
+        for(int frame=0;frame<720;frame++){
+            float t=frame/60f;var a=Model.Sample("target-relative",t);var b=Model.Sample("free-movement",t);
+            inputs&=a.sideInput==b.sideInput&&a.forwardInput==b.forwardInput&&a.phase==b.phase;
+            facing&=a.facingDot>.9999f;
+            if(t>=3&&t<7)radius&=Near(a.radialDistance,3);
+            finite&=!float.IsNaN(a.hero.x)&&!float.IsInfinity(a.hero.z)&&a.heroY>=-.0001f;
+            turns&=Model.Sample("turn-taking-intents",t).attackParticipants<=1;
+            overlap|=Model.Sample("simultaneous-intents",t).attackParticipants==2;
+        }
+        Check(inputs,"paired movement modes receive the same scripted command phases");
+        Check(radius,"target-relative side movement preserves target distance");
+        Check(facing,"target-relative facing remains toward the selected target");
+        Check(Near(Model.Sample("free-movement",4).hero.z,Model.Sample("free-movement",6).hero.z)&&Model.Sample("free-movement",6).hero.x>Model.Sample("free-movement",4).hero.x,"free side movement follows a fixed world direction");
+        Check(Model.Sample("free-movement",6).facingDot<.99f,"free movement does not secretly keep target-facing");
+        Check(Model.Sample("target-relative",8.6f).heroY>.7f&&Near(Model.Sample("target-relative",9.2f).heroY,0),"authored jump has an airborne interval and returns to the ground");
+        Check(turns&&overlap,"turn-taking removes simultaneous action intentions without claiming game damage");
+        Check(Model.Sample("turn-taking-intents",2).attackA&&!Model.Sample("turn-taking-intents",2).attackB&&Model.Sample("turn-taking-intents",3.8f).attackB,"both opponents receive a distinct turn");
+        Check(Model.Sample("turn-taking-intents",2).selectedEnemy==0&&Model.Sample("turn-taking-intents",3.8f).selectedEnemy==1,"selected opponent changes with the authored turn");
+        Check(finite,"all720 sampled states remain finite and above the ground");
+        bool rejected=false;try{Model.Sample("other-game-ai",0);}catch(ArgumentException){rejected=true;}
+        Check(rejected,"unknown modes rejected");
+        Console.WriteLine("CHECKS="+checks);Console.WriteLine("SAMPLED_FRAMES=720");
+        Console.WriteLine("SCOPE=own model; no Unity render, game AI, collision or damage proof");
+    }
+}
