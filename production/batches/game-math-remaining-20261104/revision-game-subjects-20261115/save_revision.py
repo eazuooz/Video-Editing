@@ -1,7 +1,7 @@
 """Isolated index; only this revision's code and exact shared leaves."""
 import argparse,copy,json,os,runpy,subprocess,tempfile
 from pathlib import Path
-from subject_revision import HERE,ROOT
+from subject_revision import HERE,ROOT,EPISODES
 def git(*args,data=None,env=None):return subprocess.check_output(['git','-c','core.safecrlf=false',*args],cwd=ROOT,input=data,env=env)
 def project(path,base,current):
  a=base.decode('utf-8-sig');b=current.decode('utf-8-sig')
@@ -9,7 +9,8 @@ def project(path,base,current):
   key='GAME-SUBJECT-CONTINUITY-20261115' if path.endswith('VIDEO_WORKFLOW.md') else 'MATH-GAME-SUBJECTS-20261115';start='<!-- '+key+' -->';end='<!-- '+key+'-END -->';block=b[b.index(start):b.index(end)+len(end)]
   return (a[:a.index(start)]+block+a[a.index(end)+len(end):] if start in a else a.rstrip()+'\n\n'+block+'\n').encode('utf8')
  a=json.loads(a);b=json.loads(b)
- if path.endswith('video-production-control.json'):a['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115']=copy.deepcopy(b['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115'])
+ if path.endswith('review-ledger.json'):a['gameSubjectRevision20261115']=copy.deepcopy(b['gameSubjectRevision20261115'])
+ elif path.endswith('video-production-control.json'):a['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115']=copy.deepcopy(b['explicitMathRemainingBatch20261104']['gameSubjectRevision20261115'])
  else:
   a['mathGameSubjects20261115']=copy.deepcopy(b['mathGameSubjects20261115'])
   rows={r['id']:r['gameSubjects20261115'] for r in b['rows'] if 'gameSubjects20261115' in r}
@@ -21,6 +22,9 @@ def main(message,push):
  head=git('rev-parse','HEAD').decode().strip();ref=git('symbolic-ref','HEAD').decode().strip();index=Path(git('rev-parse','--path-format=absolute','--git-path','index').decode().strip());original=index.read_bytes()
  direct=[p for p in HERE.iterdir() if p.suffix in ('.py','.json','.md')]
  shared=['shared/publishing/video-production-control.json','shared/publishing/video-worklist.json','docs/VIDEO_WORKFLOW.md','docs/VIDEO_WORKLIST.md']
+ for e in EPISODES.values():
+  path='projects/'+e['slug']+'/production/review-ledger.json'
+  if 'gameSubjectRevision20261115' in json.loads((ROOT/path).read_text(encoding='utf-8-sig')):shared.append(path)
  with tempfile.TemporaryDirectory() as temp:
   ce=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/'commit.index'));re=dict(os.environ,GIT_INDEX_FILE=str(Path(temp)/'reconcile.index'));git('read-tree',head,env=ce);Path(re['GIT_INDEX_FILE']).write_bytes(original);buffers={x['GIT_INDEX_FILE']:bytearray() for x in (ce,re)}
   def stage(path,data,env):

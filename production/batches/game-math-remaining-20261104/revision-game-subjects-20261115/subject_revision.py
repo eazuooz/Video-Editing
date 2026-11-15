@@ -330,7 +330,10 @@ def graph(e,origin,end):
  # Put annotations on the final 60fps grid before drawing. Otherwise an input
  # timestamp drift or gap can otherwise leave a previously composited old
  # subject at a cut when output timestamps are later snapped to60fps.
- inputs=list(gameinputs);n=1+sum(x=='-i' for x in inputs);chain=['[0:v]setsar=1,fps=60:start_time=0,setpts=PTS+'+str(origin)+'/TB[identity0]'];current='identity0';counter=0
+ # Millisecond-rounded legacy source timestamps can shorten the fps grid by
+ # one EOF frame. Only the static member-ending may be cloned; the exact
+ # approved frame budget below trims this bounded two-frame safety tail.
+ inputs=list(gameinputs);n=1+sum(x=='-i' for x in inputs);chain=['[0:v]setsar=1,fps=60:start_time=0,tpad=stop_mode=clone:stop=2,setpts=PTS+'+str(origin)+'/TB[identity0]'];current='identity0';counter=0
  for item in extra:
   inputs+=['-i',item['file']];j=item['j'];w,h=item['eraser'];label=f'identity{counter+1}';counter+=1
   restore=item['mode']=='pipeline-clear'

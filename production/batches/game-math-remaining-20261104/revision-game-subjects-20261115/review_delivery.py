@@ -91,8 +91,14 @@ def main():
         assert qa['status']=='pass' and qa['finalReviewReady'] and not qa['humanReviewed']
         for f in enc['files'].values():assert sha(f['path'])==f['sha256']
         review=page(e,enc,row['title']);linkcount+=check_links(review)
+        ledger_path=ROOT/'projects'/e['slug']/'production/review-ledger.json';ledger=read(ledger_path)
+        ledger['gameSubjectRevision20261115']=dict(revision=REV,status='local-user-review-pending',files=enc['files'],reviewPage=str(review),
+            finalReviewReady=True,humanReviewed=False,actualHumanViewing=False,actualHumanListening=False,
+            qaEvidence=str(p/'qa.json'),originalNarrationAndLengthPreserved=True,originalMastersPreserved=True,uploaded=False)
+        save(ledger_path,ledger)
         results.append(dict(id=e['id'],reviewPage=str(review),files=enc['files'],frames=enc['frames'],duration=enc['duration'],
             qaEvidence=dict(path=str(p/'qa.json'),sha256=sha(p/'qa.json')),reusedUnchanged=enc.get('reusedUnchanged',False),humanReviewed=False))
+    progress.update()  # Include the review pages that were just written.
     linkcount+=check_links(ROOT/'output/game-math-game-subjects-20261115/index.html')
     report=dict(status='all-thirteen-local-user-review-pending',at=datetime.now(timezone.utc).isoformat(),episodes=results,
         outputFileCount=sum(len(r['files']) for r in results),verifiedLocalLinks=linkcount,

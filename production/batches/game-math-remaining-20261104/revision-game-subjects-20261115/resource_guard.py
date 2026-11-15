@@ -22,7 +22,7 @@ def wrapper(base,receipt):
     method=args[lower.index('-executemethod')+1] if '-executemethod' in lower else None
     log=Path(args[lower.index('-logfile')+1]) if '-logfile' in lower else None
     text=log.read_text(encoding='utf8',errors='replace') if log and log.is_file() else ''
-    if not ('-nographics' in lower and method=='LunaValidation.ContentMatrix' and 'Renderer: Null Device' in text):return 'Other Unity batch job still running'
+    if not ('-nographics' in lower and method in ('LunaValidation.ContentMatrix','LunaValidation.BuildWindowsClean') and 'Renderer: Null Device' in text):return 'Other Unity batch job still running'
     permitted.append(dict(pid=info['pid'],method=method,nographics=True,observedGraphics='Renderer: Null Device',processChanged=False))
    if name=='unrealeditor.exe' and any(x.startswith('-moviepipeline') or x=='-renderoffscreen' for x in lower):return 'Other Unreal render still running'
    if name.startswith('python') and any(k in ' '.join(lower) for k in ('--synthesize','render_narration','review-source-voice.py','faster_whisper','torchrun')):return 'Other model job still running'
