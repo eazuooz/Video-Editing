@@ -1,0 +1,2 @@
+from pathlib import Path
+H=Path(__file__).resolve().parent;s=(H/'run-finite-mixed-clarity-completion-v27.py').read_text(encoding='utf8');a=s.index('JOBS=');z=s.index('\n\ndef read',a);s=s[:a]+"JOBS=[('shorts-returnal-particle-tentacles','run-mixed-clarity-voice-repair-v27.py','run-mixed-clarity-voice-repair-asr-v27.py','voice-repair-v27','asr-repair-v27')]"+s[z:];s=s.replace('finite-mixed-clarity-completion-v27','finite-returnal-mixed-completion-v36');p=H/'run-finite-returnal-mixed-completion-v36.py';assert not p.exists();p.write_text(s,'utf8');print(str(p))
