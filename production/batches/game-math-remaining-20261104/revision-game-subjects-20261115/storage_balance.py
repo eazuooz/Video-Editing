@@ -1,6 +1,6 @@
 """Storage for this finite render: prior authorized uploaded-local cleanup.
 
-Only redundant Clean copies of M05–M20 can qualify. Every corresponding
+Only redundant Clean copies of M05–M20 (or separately selected M03/M04) qualify. Every corresponding
 captioned master stays locally, along with all source/narration and M21–M33.
 No online mutation and no reliance on an inferred current cloud visibility.
 """

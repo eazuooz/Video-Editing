@@ -113,7 +113,8 @@ def main():
     linkcount+=check_links(ROOT/'output/game-math-game-subjects-20261115/index.html')
     report=dict(status='all-thirteen-local-user-review-pending',at=datetime.now(timezone.utc).isoformat(),episodes=results,
         outputFileCount=sum(len(r['files']) for r in results),verifiedLocalLinks=linkcount,
-        originalAudioPreserved=True,originalLengthPreserved=True,uploaded=False,deleted=False,automation=False,
+        originalAudioPreserved=True,originalLengthPreserved=True,uploaded=False,platformDeleted=False,automation=False,
+        localStorageHousekeepingEvidence=[str(HERE/n) for n in ('abandoned-mux-cleanup.json','redundant-uploaded-clean-audit.json','redundant-uploaded-rotation-clean-audit.json','context-overlap-draft-cleanup.json','lossless-storage-compression.json','local-master-storage.json')],
         limitations='Internal sampled visual QA and whole-stream decode; actual full human viewing/listening is pending. M21 was already a matching sphere/surface explanation and is reused unchanged. M27 retains one robot explicitly named by its preserved narration.')
     assert report['outputFileCount']==52;save(HERE/'delivery.json',report)
     cp=read(HERE/'checkpoint.json');cp.update(status=report['status'],completedFinalMasters=[r['id'] for r in results],
