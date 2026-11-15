@@ -4,7 +4,7 @@ import argparse,hashlib,importlib.util,json,math
 import av,numpy as np,soundfile as sf
 from PIL import Image,ImageDraw
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2];MEDIA=Path('C:/Users/1/Videos/YamyamProduction/original-tech-twelve-20261115')
-CONFIG={'shorts-oot-ninja-show-z-targeting':('film-v6','caption-timing-v3.json'),'shorts-mario64-lakitu-camera':('film-v6','caption-timing-v5.json'),'shorts-mariokart8-spin-boost':('film-v2','caption-timing-v2.json')}
+CONFIG={'shorts-oot-ninja-show-z-targeting':('film-v8','caption-timing-v3.json'),'shorts-mario64-lakitu-camera':('film-v7','caption-timing-v5.json'),'shorts-mariokart8-spin-boost':('film-v2','caption-timing-v2.json')}
 def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
 def pin(p):return dict(path=str(Path(p).resolve()),sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest())
 def save(p,d):
