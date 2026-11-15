@@ -80,7 +80,7 @@ def tracks(e):
   elif eid=='M22' and s['scene'] in ('015','017','018','022','034'):
    mode='surface-code' if s['scene'] in ('017','034') else 'surface';asset='doom-context'
   elif eid=='M23' and s['scene'] not in ('000','016','018','021','037','041','053','054','055','056','057','062','063','064','065','066'):
-   mode='pipeline' if s['scene'] in ('001','002','003','006','014','023','034','050','060','061') else 'pipeline-clear';asset='town-context'
+   mode='pipeline' if s['scene'] in ('001','002','003','004','006','014','023','034','050','060','061') else 'pipeline-clear';asset='mario' if s['scene']=='050' else 'town-context'
   elif eid=='M27' and s['scene'] in ('009','011','014','021','022'):mode='mechanics';asset='beamng' if s['scene']=='021' else 'mario'
   elif eid=='M28' and s['scene'] in ('010','024'):mode='mechanics';asset='beamng'
   if not mode:continue
@@ -147,8 +147,18 @@ def prepare(e,origin=0,end=None):
      for n0,label0 in enumerate(labels):board.text(90,310+n0*87,label0,a,z,TEAL if n0==3 else WHITE,36,width=580)
    elif mode.startswith('pipeline'):
     board.rectangle(75,200,900,90,a,z)
-    board.text(85,210,'같은 물체와 카메라에서 살펴봅니다',a,z,WHITE,36,width=890)
-    if mode=='pipeline':board.text(360,715,'게임의 건물 → 정점·삼각형·픽셀',a,z,GOLD,30,width=620)
+    board.text(85,210,'캐릭터의 정점과 표면 데이터를 연결합니다' if asset=='mario' else '같은 물체와 카메라에서 살펴봅니다',a,z,WHITE,36,width=890)
+    if mode=='pipeline':board.text(360,715,'게임의 캐릭터 → 본·표면·픽셀' if asset=='mario' else '게임의 건물 → 정점·삼각형·픽셀',a,z,GOLD,30,width=620)
+    if asset=='mario':
+     stages=[('Skinning (스키닝)','본으로 정점의 위치를 움직임'),('Normal Mapping (노멀 매핑)','그 표면에서 작은 방향을 복원'),('Pixel Shading (픽셀 셰이딩)','빛과 재질로 최종 색을 계산')]
+     for index,(name,meaning) in enumerate(stages):
+      yy=300+index*145
+      line(board,[(1010,yy),(1775,yy),(1775,yy+106),(1010,yy+106),(1010,yy)],a,z,MUTED,3)
+      board.text(1030,yy+5,name,a,z,WHITE,44,width=730)
+      board.text(1030,yy+57,meaning,a,z,TEAL,36,width=730)
+      if index<2:arrow(board,(1390,yy+108),(1390,yy+140),a,z,TEAL,4)
+     dot(board,531,535,a,z,TEAL,9)
+     line(board,[(531,535),(900,535),(995,350)],a,z,TEAL,3)
    if e['id']=='M24' and t['scene']=='004':
     board.rectangle(80,470,930,70,a,z)
     board.text(90,480,'캐릭터 몸 가운데의 한 점을 추적합니다',a,z,WHITE,40,width=930)

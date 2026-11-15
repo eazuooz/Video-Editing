@@ -16,7 +16,7 @@ def reuse_m21():
     for record in enc['files'].values():assert sha(record['path'])==record['sha256']
     save(p/'encoded.json',{**enc,'revision':REV,'reusedUnchanged':True,
         'reuseReason':'The inspected M21 already uses the requested material sphere, sampled-surface vectors and independent games, not a generic robot.',
-        'status':'unchanged-verified-master','humanReviewed':False})
+        'status':'unchanged-verified-master','humanReviewed':False,'finalReviewReady':True})
     save(p/'qa.json',dict(episode='M21',status='pass',reusedUnchanged=True,
         originalTechnicalEvidence=str(previous/'technical-qa.json'),
         originalPictureEvidence=str(previous/'visual-review.json'),

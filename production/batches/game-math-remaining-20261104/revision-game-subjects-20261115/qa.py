@@ -49,6 +49,8 @@ def record(e,notes):
  artifacts={str(f.relative_to(p)):sha(f) for f in p.iterdir() if f.is_file() and (f.suffix in ('.ass','.ffgraph') or f.name.startswith('commands-') or f.name in ('jump-commands.txt','subject-plan.json'))}
  save(p/'render-input-evidence.json',dict(episode=e['id'],inputHashes=artifacts,assetManifestSha256=sha(HERE/'assets.json'),movieSha256=pic['movieSha256']))
  save(p/'qa.json',dict(episode=e['id'],status='pass',technical=tech,actualPictureReview=True,pictureBoards=pic['boards'],pictureEvidenceSha256=sha(p/'picture-evidence.json'),renderInputEvidenceSha256=sha(p/'render-input-evidence.json'),reviewNotes=notes,scope='Revised picture locations, source/model correspondence, captions, motion samples and joins; unchanged audio evidence reused by exact bitstream hash. This is internal sampled visual QA, not a claim of uninterrupted full human viewing.',humanReviewed=False,finalReviewReady=True))
+ enc=read(p/'encoded.json');enc.update(status='internal-QA-pass-user-review-pending',finalReviewReady=True,humanReviewed=False);save(p/'encoded.json',enc)
+ save(p/'worker.json',dict(status='local-user-review-pending',episode=e['id'],finalReviewReady=True,humanReviewed=False))
 
 if __name__=='__main__':
  import argparse

@@ -34,28 +34,31 @@ def archive(e):
     save(p/'preserved-previous-encode.json',dict(files=str(target),evidence=str(evidence),reason='Corrected actual encoded picture issues; no baseline or platform deletion.'))
 
 
-def main():
-    own=dict(pid=os.getpid(),status='waiting-for-current-finite-worker',scope=['M22','M24'])
-    save(HERE/'repair-worker.json',own)
+def main(ids=None,after_pid=None):
+    own=dict(pid=os.getpid(),status='waiting-for-current-finite-worker',scope=ids or ['M22','M24'])
+    state_path=HERE/('repair-worker-M23.json' if own['scope']==['M23'] else 'repair-worker.json')
+    save(state_path,own)
     finite=read(HERE/'finite-worker.json')
-    while psutil.pid_exists(finite['pid']):time.sleep(20)
+    while psutil.pid_exists(after_pid or finite['pid']):time.sleep(20)
     for eid in own['scope']:
         e=EPISODES[eid];p=work(e);pending=read(HERE/'pending-corrections.json')
         if pending['episodes'][eid]['status']=='resolved':continue
-        own.update(status='correcting',current=eid);save(HERE/'repair-worker.json',own)
+        own.update(status='correcting',current=eid);save(state_path,own)
         archive(e)
         while True:
             try:encode(e);break
             except RuntimeError as error:
                 if not resource_wait(error):raise
-                own.update(status='resource-wait',reason=str(error));save(HERE/'repair-worker.json',own);time.sleep(20)
+                own.update(status='resource-wait',reason=str(error));save(state_path,own);time.sleep(20)
         qa.technical(e);qa.pictures(e)
         pending=read(HERE/'pending-corrections.json');pending['episodes'][eid]['status']='encoded-picture-review-pending';save(HERE/'pending-corrections.json',pending)
         progress.update();print(eid,'correction encoded; actual final picture inspection pending',flush=True)
-    own.update(status='encoded-needs-actual-picture-review');save(HERE/'repair-worker.json',own)
+    own.update(status='encoded-needs-actual-picture-review');save(state_path,own)
 
 
 if __name__=='__main__':
-    try:main()
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('episodes',nargs='*');parser.add_argument('--after-pid',type=int);args=parser.parse_args()
+    try:main(args.episodes,args.after_pid)
     except BaseException as error:
         save(HERE/'repair-failure.json',dict(error=repr(error)));traceback.print_exc();raise
