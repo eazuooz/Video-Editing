@@ -1,0 +1,21 @@
+using System;
+using System.Linq;
+using Yamyam.OriginalTechTwelve.Placement;
+public static class PlacementFixture {
+    static int checks;static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    public static void Main(){
+        var all=PlacementModel.Build("all-candidates");var density=PlacementModel.Build("density-map");var masks=PlacementModel.Build("road-water-exclusion");var terrain=PlacementModel.Build("terrain-aligned");var layers=PlacementModel.Build("two-placement-layers");
+        Check(all.candidates==100&&all.accepted==100,"all100 deterministic candidates exist in the baseline");
+        Check(PlacementModel.Modes.All(mode=>PlacementModel.Build(mode).points.Select(p=>p.x+","+p.z+","+p.sample).SequenceEqual(all.points.Select(p=>p.x+","+p.z+","+p.sample))),"comparisons preserve exact candidates and random thresholds");
+        Check(density.accepted<all.accepted&&masks.accepted<=density.accepted,"density and exclusion stages only remove candidates");
+        Check(density.points.All(p=>p.accepted==(p.sample<p.density)),"density acceptance uses the authored map and candidate threshold");
+        Check(masks.points.Where(p=>p.accepted).All(p=>!p.road&&!p.water),"no accepted trunk intersects the reserved road or water mask");
+        Check(masks.accepted+masks.rejectedDensity+masks.rejectedRoad+masks.rejectedWater==100,"all rejection reasons reconcile with the exact candidate count");
+        Check(terrain.points.All(p=>p.y==PlacementModel.Height(p.x,p.z))&&terrain.points.All(p=>Math.Abs(p.normalX*p.normalX+p.normalY*p.normalY+p.normalZ*p.normalZ-1)<.00001),"terrain-aligned objects use finite surface heights and unit normals");
+        Check(terrain.points.Select(p=>p.accepted).SequenceEqual(masks.points.Select(p=>p.accepted)),"terrain orientation does not secretly change the accepted population");
+        bool grass=false;for(int x=-9;x<10;x++)for(int z=-9;z<10;z++)if(PlacementModel.GrassAllowed(x,z)){grass=true;if(Math.Abs(x)<=1.85||x>3&&z>3)throw new Exception("Second layer violated masks");}
+        Check(grass&&layers.secondLayer&&!terrain.secondLayer&&layers.accepted==terrain.accepted,"second grass layer respects exclusions and preserves the tree population");
+        bool rejected=false;try{PlacementModel.Build("Horizon-GPU-buffers");}catch(ArgumentException){rejected=true;}Check(rejected,"unknown implementation claims rejected");
+        Console.WriteLine("COUNTS="+all.accepted+","+density.accepted+","+masks.accepted);Console.WriteLine("CHECKS="+checks);Console.WriteLine("SCOPE=authoredCPU rule model; no engine capture or original Horizon GPU proof");
+    }
+}

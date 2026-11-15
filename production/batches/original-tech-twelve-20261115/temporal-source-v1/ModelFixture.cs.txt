@@ -1,0 +1,14 @@
+using System;
+using Yamyam.OriginalTechTwelve.Temporal;
+public static class TemporalFixture {
+    static int checks;static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    public static void Main(){
+        bool same=true,finite=true;for(int i=0;i<720;i++)foreach(var mode in TemporalSceneModel.Modes){var a=TemporalSceneModel.Sample(mode,i/60f);var b=TemporalSceneModel.Sample("no-aa",i/60f);same&=a.cameraX==b.cameraX&&a.cubeX==b.cubeX;finite&=!float.IsNaN(a.cameraX)&&Math.Abs(a.cubeX)<=2.2f;}
+        Check(same,"all4 modes share the same720 camera and occluder transforms");Check(finite,"authored motion stays finite and within bounds");
+        bool bounded=true;for(int i=1;i<=16;i++)bounded&=TemporalSceneModel.Halton(i,2)>=0&&TemporalSceneModel.Halton(i,2)<1&&TemporalSceneModel.Halton(i,3)>=0&&TemporalSceneModel.Halton(i,3)<1;Check(bounded,"jitter diagram samples stay inside a pixel");
+        Check(Math.Abs(TemporalSceneModel.Halton(1,2)-.5)<.00001&&Math.Abs(TemporalSceneModel.Halton(2,2)-.25)<.00001,"Halton diagram starts with known positions");
+        Check(TemporalSceneModel.Constrain(1,.1f,.3f)==.3f,"incompatible bright history is limited to the neighborhood");Check(TemporalSceneModel.Constrain(.2f,.1f,.3f)==.2f,"compatible history remains unchanged");
+        Check(TemporalSceneModel.Blend(.2f,.8f,0)==.2f,"zero feedback selects the current sample");Check(TemporalSceneModel.Blend(.2f,.8f,1)==.8f,"full feedback selects history");
+        bool rejected=false;try{TemporalSceneModel.Blend(0,1,1.1f);}catch(ArgumentException){rejected=true;}Check(rejected,"invalid diagram feedback is rejected");rejected=false;try{TemporalSceneModel.Sample("INSIDE-original-scene",0);}catch(ArgumentException){rejected=true;}Check(rejected,"unknown implementation claims rejected");Console.WriteLine("CHECKS="+checks);Console.WriteLine("SAMPLED_FRAMES=720");Console.WriteLine("SCOPE=own motion/diagram primitives; actual published temporal shader still needs guarded engine execution");
+    }
+}

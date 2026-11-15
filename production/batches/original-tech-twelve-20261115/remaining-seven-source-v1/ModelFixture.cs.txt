@@ -1,0 +1,37 @@
+using System;
+using System.Linq;
+using Yamyam.OriginalTechTwelve.RemainingSeven;
+public static class RuleFixture {
+    static int checks;static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    static Pose Find(State s,string id){return s.poses.Single(x=>x.id==id);}static bool Same(V a,V b){return(a-b).Length<.00001f;}
+    public static void Main(){
+        bool unique=true,finite=true,links=true;float maxRopeError=0;
+        foreach(var topic in RuleModels.Topics)foreach(var mode in RuleModels.Modes)for(int frame=0;frame<720;frame++){
+            var s=RuleModels.Sample(topic,mode,frame);unique&=s.poses.Select(p=>p.id).Distinct().Count()==s.poses.Count;
+            foreach(var p in s.poses)finite&=!float.IsNaN(p.p.x)&&!float.IsNaN(p.p.y)&&!float.IsNaN(p.p.z)&&!float.IsInfinity(p.p.x)&&p.size.x>0&&p.size.y>0&&p.size.z>0;
+            links&=s.links.All(l=>s.poses.Any(p=>p.id==l.a)&&s.poses.Any(p=>p.id==l.b));maxRopeError=Math.Max(maxRopeError,s.ropeError);
+        }
+        Check(unique,"all14x720 states use unique stable actor IDs");Check(finite,"all actor transforms remain finite with positive sizes");Check(links,"all relationship links bind actual actors in the same state");
+        Check(maxRopeError<.00001f,"both constrained swing trajectories preserve their selected rope lengths");
+        Check(Same(Find(RuleModels.Sample("spiderman","a",0),"body-point").p,Find(RuleModels.Sample("spiderman","b",0),"body-point").p),"anchor comparison starts from the same body position");
+        Check(RuleModels.Sample("spiderman","a",0).ropeLength!=RuleModels.Sample("spiderman","b",0).ropeLength,"selected anchor height derives a different rope constraint");
+        Check(!RuleModels.Sample("control","a",300).bondsBroken&&RuleModels.Sample("control","b",300).bondsBroken&&!RuleModels.Sample("control","b",179).bondsBroken,"same prepared desk reacts only after an input exceeding bond strength");
+        Check(Find(RuleModels.Sample("control","b",240),"board2").p.y<2&&Find(RuleModels.Sample("control","b",240),"board1").p.y==2,"released central piece falls while supported neighbors stay in place");
+        Check(Same(Find(RuleModels.Sample("returnal","a",0),"node5").p,Find(RuleModels.Sample("returnal","b",0),"node5").p),"parent comparison starts with the same child curve");
+        Check(!Same(Find(RuleModels.Sample("returnal","a",300),"node5").p,Find(RuleModels.Sample("returnal","b",300),"node5").p)&&Same(Find(RuleModels.Sample("returnal","a",300),"root").p,Find(RuleModels.Sample("returnal","b",300),"root").p),"only parent inheritance changes while the root motion stays the same");
+        Check(RuleModels.Sample("returnal","b",300).poses.Count(p=>p.id.StartsWith("node"))==14,"declared node count matches actual nodes");
+        Check(RuleModels.Sample("ratchet","a",300).ready&&!RuleModels.Sample("ratchet","b",300).ready&&RuleModels.Sample("ratchet","b",390).ready,"prefetch model distinguishes arrival before versus after readiness");
+        Check(Enumerable.Range(0,720).All(i=>Same(Find(RuleModels.Sample("ratchet","a",i),"hero").p,Find(RuleModels.Sample("ratchet","b",i),"hero").p)),"storage comparison preserves the complete player path");
+        Check(RuleModels.Sample("doom","b",179).health==20&&RuleModels.Sample("doom","b",180).health==50&&RuleModels.Sample("doom","a",180).health==20,"close finish recovers authored health; retreat does not manufacture recovery");
+        Check(RuleModels.Sample("doom","b",180).ammo==8&&RuleModels.Sample("doom","b",420).ammo==28&&RuleModels.Sample("doom","b",420).fuel==1,"health rewards and fuel-funded ammunition rewards stay distinct");
+        Check((Find(RuleModels.Sample("doom","b",420),"hero").p-Find(RuleModels.Sample("doom","b",420),"second-enemy").p).Length<=1.2f,"fuel-funded finish requires approaching the second enemy too");
+        Check(!RuleModels.Sample("botw","a",76).burning&&RuleModels.Sample("botw","a",77).burning,"fire/wood state transition follows geometric contact");
+        Check(RuleModels.Sample("botw","a",360).burning&&!RuleModels.Sample("botw","b",360).burning,"rain changes the element-state result without changing the original wood");
+        Check(Same(Find(RuleModels.Sample("mariokart8","a",100),"hero-kart").p,Find(RuleModels.Sample("mariokart8","b",100),"hero-kart").p),"kart comparisons preserve the pre-contact approach");
+        var ka=RuleModels.Sample("mariokart8","a",144);var kb=RuleModels.Sample("mariokart8","b",144);Check(Math.Abs((Find(ka,"hero-kart").p-Find(ka,"other-kart").p).Length-1.2f)<.00001,"authored contact time follows the declared combined contact radius");
+        Check(kb.speed>2&&ka.speed<2&&RuleModels.Sample("mariokart8","b",240).speed==2,"contact mode controls a bounded boost instead of a permanent speed increase");
+        Check(RuleModels.Modes.All(mode=>Enumerable.Range(144,576).All(i=>(Find(RuleModels.Sample("mariokart8",mode,i),"hero-kart").p-Find(RuleModels.Sample("mariokart8",mode,i),"other-kart").p).Length>=1.1999f)),"shared separation rule preserves the declared kart contact bounds after response");
+        bool rejected=false;try{RuleModels.Sample("other-batch","a",0);}catch(ArgumentException){rejected=true;}Check(rejected,"unselected topics rejected");rejected=false;try{RuleModels.Sample("doom","a",720);}catch(ArgumentException){rejected=true;}Check(rejected,"out-of-range frames rejected instead of looping");
+        Console.WriteLine("CHECKS="+checks);Console.WriteLine("MAX_ROPE_ERROR="+maxRopeError);Console.WriteLine("SAMPLED_STATES=10080");Console.WriteLine("SCOPE=authored teaching rules and kinematics; no original game code, Unity capture, collision telemetry or performance proof");
+    }
+}

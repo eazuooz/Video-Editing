@@ -1,0 +1,21 @@
+using System;
+using Yamyam.OriginalTechTwelve.Sand;
+public static class SandFixture {
+    static int checks;static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+    static double Variance(double[] x){double sum=0,mean=0;foreach(var v in x)mean+=v;mean/=x.Length;foreach(var v in x)sum+=(v-mean)*(v-mean);return sum/x.Length;}
+    public static void Main(){
+        bool sameCamera=true,finite=true;
+        for(int f=0;f<720;f++)foreach(string mode in SandModel.Modes){var a=SandModel.Sample(mode,f/60f);var b=SandModel.Sample("smooth-surface",f/60f);sameCamera&=a.cameraX==b.cameraX&&a.cameraY==b.cameraY&&a.cameraZ==b.cameraZ;finite&=!float.IsNaN(a.cameraX)&&!float.IsInfinity(SandModel.Height(a.cameraX,a.cameraZ));}
+        Check(sameCamera,"all7 modes share exactly the same720 camera states");Check(finite,"dune and camera samples stay finite");
+        var flat=SandModel.Sample("smooth-surface",3);Check(flat.grain==0&&flat.glitter==0&&flat.broad==0,"smooth baseline has no hidden grain or highlights");
+        var avg=SandModel.Sample("averaged-grain-mips",3);var kept=SandModel.Sample("preserved-grain-mips",3);Check(!avg.preserveMipDistribution&&kept.preserveMipDistribution&&avg.grain==kept.grain&&avg.glitter==kept.glitter,"mip comparison changes only distribution preservation");
+        var half=SandModel.Sample("half-vector-glints",3);var view=SandModel.Sample("view-related-glints",3);Check(half.glitter==view.glitter&&half.viewGlitter==0&&view.viewGlitter==1&&half.grazingMask==view.grazingMask,"glint comparison changes only its direction term");
+        var mask=SandModel.Sample("masked-view-glints",3);var broad=SandModel.Sample("masked-glints-broad-light",3);Check(view.grazingMask==0&&mask.grazingMask==1&&view.broad==mask.broad&&mask.broad==0&&broad.broad==1,"mask and broad highlight have separate one-variable steps");
+        var rng=new Random(7123);double[] baseValues=new double[4096],average=new double[1024];bool unit=true;
+        for(int i=0;i<baseValues.Length;i++){var n=SandModel.Grain(rng);double length=n[0]*n[0]+n[1]*n[1]+n[2]*n[2];unit&=Math.Abs(length-1)<.000001&&n[1]>=.12;baseValues[i]=n[0];}
+        for(int i=0;i<average.Length;i++)average[i]=(baseValues[4*i]+baseValues[4*i+1]+baseValues[4*i+2]+baseValues[4*i+3])/4;
+        Check(unit,"authored grain directions are unit vectors on the upper hemisphere");Check(Variance(average)<Variance(baseValues)*.4,"ordinary four-sample averaging reduces direction variation");
+        double[] preserved=new double[1024];rng=new Random(7140);for(int i=0;i<preserved.Length;i++)preserved[i]=SandModel.Grain(rng)[0];Check(Variance(preserved)>Variance(average)*2,"new mip distribution retains variation in the authored demonstration");
+        bool rejected=false;try{SandModel.Sample("Journey-original-shader",0);}catch(ArgumentException){rejected=true;}Check(rejected,"unknown implementation claims rejected");Console.WriteLine("CHECKS="+checks);Console.WriteLine("SAMPLED_FRAMES=720");Console.WriteLine("SCOPE=CPU synthetic teaching model, not shader compilation, actual glints or Journey implementation proof");
+    }
+}

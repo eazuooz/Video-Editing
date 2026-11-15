@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "slug": "shorts-inside-temporal-antialiasing",
+  "status": "source-order-speech-locked; native and final action QA pending",
+  "workingTitle": "지난 프레임으로 이번 화면의 계단을 줄인다?",
+  "sourceOrderMap": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-inside-temporal-antialiasing\\planning\\source-order-map-v1.json",
+    "sha256": "c8f9a19df2e3caae8536062235864db4903f3c0af3872ce97f15f28559c388a4"
+  },
+  "paragraphs": [
+    {
+      "id": "p001",
+      "ko": "인사이드처럼 가느다란 선이 많은 화면은 움직일 때 가장자리가 반짝거리기 쉽습니다. 개발진은 지금 그린 화면에 지난 화면의 정보를 보탭니다. 단, 예전 화면을 그대로 겹치면 움직이는 물체에 잔상이 생길 수 있죠.",
+      "en": "Fine edges can shimmer in motion, as in INSIDE’s detailed scenes. Its developers use information from previous frames to help the current image. Simply overlaying an old frame, however, can leave trails behind moving objects.",
+      "sourceLocation": "problem and overview before jitter"
+    },
+    {
+      "id": "p002",
+      "ko": "먼저 매번 픽셀 안의 조금 다른 위치를 살펴봅니다. 이를 지터라고 합니다. 한 장에서 놓친 가는 선의 정보를 다른 장에서 얻을 수 있으니, 여러 장을 잘 모으면 가장자리를 더 안정적으로 표현할 수 있습니다.",
+      "en": "First, each frame samples a slightly different location within the pixels. This is jitter. A fine edge missed by one sample may be captured by another, so combining frames can represent it more steadily.",
+      "sourceLocation": "jitter section"
+    },
+    {
+      "id": "p003",
+      "ko": "카메라나 물체가 움직이면 같은 물체도 화면의 다른 자리에 보입니다. 그래서 깊이와 움직임 정보를 이용해, 지금 이 점이 지난 화면의 어디에 있었는지 찾습니다. 이 대응 위치 찾기가 재투영입니다.",
+      "en": "Camera and object motion move things to different screen positions. Depth and motion information help find where a current point appeared in the previous frame. That correspondence is reprojection.",
+      "sourceLocation": "reprojection, depth and velocity sections"
+    },
+    {
+      "id": "p004",
+      "ko": "하지만 방금 가려졌다 드러난 곳은 지난 정보가 틀릴 수 있습니다. 개발진은 현재 픽셀 주변의 색 범위를 살펴, 어울리지 않는 과거 색을 그 범위 안으로 제한합니다. 잘못된 흔적이 계속 남지 않게 하는 과정입니다.",
+      "en": "History may be wrong where a surface has just become visible. The developers inspect the current pixel’s neighborhood and constrain incompatible history colors to a suitable range. This helps stop outdated information from lingering.",
+      "sourceLocation": "invalid history and neighborhood clipping sections"
+    },
+    {
+      "id": "p005",
+      "ko": "이렇게 다듬은 과거 정보와 현재 색을 섞어 다음 장에서도 쓸 화면을 저장합니다. 빠르게 움직이는 부분에는 별도의 모션 블러를 보완으로 쓰지만, 그 흐림을 과거 기록에 계속 쌓지는 않습니다.",
+      "en": "The constrained history is blended with the current color and saved for the next frame. A separate motion-blur fallback can help fast-moving fragments, but that blur is not repeatedly written into the history.",
+      "sourceLocation": "blending and motion-blur fallback sections"
+    },
+    {
+      "id": "p006",
+      "ko": "작은 위치 차이로 정보를 모으고, 같은 지점을 찾고, 틀린 과거를 제한한 뒤 섞습니다. 지난 화면이 도움이 되는 이유는 오래됐기 때문이 아니라, 지금 화면에 맞도록 골라 쓸 수 있기 때문입니다.",
+      "en": "Sample at small offsets, find the matching point, constrain invalid history, then blend. The previous frame is useful because the system can adapt its information to the current image.",
+      "sourceLocation": "closing synthesis of main pipeline"
+    }
+  ],
+  "displayTerms": {
+    "Frame": "화면 한 장",
+    "Reprojection": "지난 화면의 대응 위치 찾기",
+    "History": "저장한 지난 화면 정보",
+    "Jitter": "픽셀 안의 작은 표본 위치 변화"
+  },
+  "sourceOrderPreserved": true,
+  "noArbitraryDurationCap": true,
+  "naturalSpeechSpeed": true,
+  "narrationLocked": true,
+  "approvedForTts": true,
+  "reason": "Original primary-source-supported wording preserved. Acquired independent gameplay is scoped to observed context/actions. Own illustrations explain internal mechanisms and still require actual runtime/visual QA. Voice and final media acceptance remain separate.",
+  "sourceDraft": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-inside-temporal-antialiasing\\planning\\narration-draft-v1.json",
+    "sha256": "7607b9dd7830ce2527092da9b50af372a1cca1a2c7ac521284d50b6bcafd5804"
+  },
+  "primarySourceReview": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-inside-temporal-antialiasing\\planning\\primary-source-review-v1.json",
+    "sha256": "f3b09161fae92500388c1648cd07ad5426382cffa368ddec3a54be1990e6a80e"
+  },
+  "sourceActionReview": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-inside-temporal-antialiasing\\planning\\source-action-review-v3.json",
+    "sha256": "d9d4e046bf08867aaa69a089f6cacd019f02b1eca6ec9ffe4b69d9f89e90cf5a"
+  },
+  "nativeModelCpuReview": {
+    "path": "C:\\Users\\1\\Videos\\YamyamProduction\\original-tech-twelve-20261115\\production-resume-20261115T055255Z\\temporal-static-v2\\compile-receipt.json",
+    "sha256": "4412ce7a9cb02e6dc4a2f6bc8c4651be30411727e07d65bbf563036ff498ca8e"
+  },
+  "humanApproval": false
+}
