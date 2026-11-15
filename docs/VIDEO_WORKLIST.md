@@ -558,7 +558,7 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 <!-- ORIGINAL-TECH-TWELVE-20261115 -->
 ## 새 게임 개발 기술 쇼츠12편
 
-원음 생성12/12, 음성 기술 검수3/12, 전체 native 촬영2그룹, 최종 로컬 영상0/12. 락온5,760프레임 및 마리오64 7,200프레임 원본 픽셀 검증과 표본 시각 검수를 완료했다. 나머지9편에서 확인된 인식·음량 문제 구간은82개의 짧은 새 문장으로 보수하며 검증된 나머지 PCM은 보존한다. 모든 비용 작업은 기존 전체 자원 가드와 단일 lease를 따르고, 중간 승인 없이 이12편을 끝까지 제작한다.
+최종 로컬 검수본12/12. 실제 독립 FHD 자료, 원자료 설명 순서, 음성·혼합음성, 자체 촬영, 모든 자막 표본 및 최종 인코딩 검사를 완료했다. 사람의 전체 청취·실시간 재생·승인은 아직 하지 않았다.
 
-[현재 제작 진행표](../production/batches/original-tech-twelve-20261115/preproduction-v8.html)
+[12편 최종 검수표](../production/batches/original-tech-twelve-20261115/local-final-review-v1.html) · [파일·버전·해시 manifest](../production/batches/original-tech-twelve-20261115/local-final-review-manifest-v1.json)
 <!-- ORIGINAL-TECH-TWELVE-20261115-END -->
