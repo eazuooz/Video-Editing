@@ -45,7 +45,10 @@ def record(e,notes):
  p=work(e);tech=read(p/'technical-qa.json');pic=read(p/'picture-evidence.json');assert tech['status'].startswith('technical-pass')
  for f in pic['boards']:assert Path(f).exists()
  assert pic['movieSha256']==read(p/'encoded.json')['files']['captioned']['sha256']
- save(p/'qa.json',dict(episode=e['id'],status='pass',technical=tech,actualPictureReview=True,pictureBoards=pic['boards'],reviewNotes=notes,scope='Revised picture locations, source/model correspondence, captions, motion samples and joins; unchanged audio evidence reused by exact bitstream hash. This is internal sampled visual QA, not a claim of uninterrupted full human viewing.',humanReviewed=False,finalReviewReady=True))
+ pic.update(actuallyInspected=True,actualHumanViewing=False,reviewNotes=notes);save(p/'picture-evidence.json',pic)
+ artifacts={str(f.relative_to(p)):sha(f) for f in p.iterdir() if f.is_file() and (f.suffix in ('.ass','.ffgraph') or f.name.startswith('commands-') or f.name in ('jump-commands.txt','subject-plan.json'))}
+ save(p/'render-input-evidence.json',dict(episode=e['id'],inputHashes=artifacts,assetManifestSha256=sha(HERE/'assets.json'),movieSha256=pic['movieSha256']))
+ save(p/'qa.json',dict(episode=e['id'],status='pass',technical=tech,actualPictureReview=True,pictureBoards=pic['boards'],pictureEvidenceSha256=sha(p/'picture-evidence.json'),renderInputEvidenceSha256=sha(p/'render-input-evidence.json'),reviewNotes=notes,scope='Revised picture locations, source/model correspondence, captions, motion samples and joins; unchanged audio evidence reused by exact bitstream hash. This is internal sampled visual QA, not a claim of uninterrupted full human viewing.',humanReviewed=False,finalReviewReady=True))
 
 if __name__=='__main__':
  import argparse

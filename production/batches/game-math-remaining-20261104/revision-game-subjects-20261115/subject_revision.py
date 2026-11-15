@@ -74,6 +74,7 @@ def tracks(e):
   l=s.get('currentTeaching') or {};eid=e['id'];asset=None;mode=None
   if eid in ('M24','M25','M26') and motion.visible(l):
    mode='motion';asset='mario' if eid=='M24' else 'forza' if eid=='M26' else 'kart'
+   if eid=='M24' and s['scene'] in ('010','015'):asset='forza'
    if eid=='M25' and l['motion']['parameters'].get('kind')==3:asset='mario'
   elif eid=='M22' and s['scene'] in ('001','002','003','008','009','013','014','035'):mode='portrait';asset='mario'
   elif eid=='M22' and s['scene'] in ('015','017','018','022','034'):
@@ -125,11 +126,13 @@ def prepare(e,origin=0,end=None):
   eraser=(420,400) if mode=='portrait' or mode.startswith('surface') else (300,400) if mode.startswith('pipeline') else (150,154)
   for t in items:
    fit=motion.fit(t['lesson']) if mode=='motion' else None;a=max(origin,t['start']);z=min(end,t['end']);limits=maxima(t['lesson']) if mode=='motion' else None;run=None
+   hide_subject=e['id']=='M24' and t['scene'] in ('021','023','030')
    label={'mario':'Super Mario Odyssey · 위치를 나타내는 게임 이미지','kart':'Mario Kart 8 Deluxe · 카트의 운동 모형','forza':'Forza Horizon 5 · 코너링을 단순화한 모형','beamng':'BeamNG.drive · 차량의 운동 모형','town-context':'Townscaper · 실제 게임 이미지','doom-context':'Doom 3 · 금속 벽의 표면'}[asset]
+   if asset=='forza' and e['id']=='M24':label='Forza Horizon 5 · 차의 위치·속도를 단순화한 모형'
    if mode not in ('portrait','pipeline','pipeline-clear','surface','surface-code'):
     board.rectangle(1180,30,720,147,a,z)
-    board.text(1200,44,label,a,z,GOLD,34,width=685)
-    board.text(1200,127,'게임 이미지 + 해설 모형',a,z,WHITE,32,width=680)
+    board.text(1200,44,'수학적 관계를 나타내는 해설 모형' if hide_subject else label,a,z,GOLD,34,width=685)
+    board.text(1200,127,'조건을 고정한 원리 설명' if hide_subject else '게임 이미지 + 해설 모형',a,z,WHITE,32,width=680)
    elif mode=='portrait':
     board.rectangle(350,510,55,95,a,z)
     board.text(398,716,'실제 마리오의 팔 → 오른쪽 관절 모형',a,z,GOLD,32,width=600)
@@ -146,6 +149,9 @@ def prepare(e,origin=0,end=None):
     board.rectangle(75,200,900,90,a,z)
     board.text(85,210,'같은 물체와 카메라에서 살펴봅니다',a,z,WHITE,36,width=890)
     if mode=='pipeline':board.text(360,715,'게임의 건물 → 정점·삼각형·픽셀',a,z,GOLD,30,width=620)
+   if e['id']=='M24' and t['scene']=='004':
+    board.rectangle(80,470,930,70,a,z)
+    board.text(90,480,'캐릭터 몸 가운데의 한 점을 추적합니다',a,z,WHITE,40,width=930)
    for k in range(round(a*60),round(z*60)):
     sec=k/60;q=anchor(t,sec,fit);cx,cy=q['x'],q['y']
     # A scalar plot intentionally hides its actor; retain that decision.
@@ -155,6 +161,7 @@ def prepare(e,origin=0,end=None):
      sx+=220;sy=295
     ex=round(cx-eraser[0]/2);ey=round(cy-eraser[1]/2);ew,eh=eraser
     if mode=='surface-code':ex,ey,ew,eh=75,300,780,435
+    if hide_subject:ex,ey,ew,eh=75,535,925,260;sx=-2200
     spring=mode=='mechanics' and q['model'].get('picture')==6
     if spring:ex,ey,ew,eh=80,335,920,350
     ug=mode=='motion' and unitguide(q['model'],e)
@@ -175,7 +182,7 @@ def prepare(e,origin=0,end=None):
       tail=(cx,tail_y);line(board,[(cx,cy),tail],sec,hi,MUTED,2);arrow(board,tail,(cx+force*q['model'].get('forceScale',.12)*96,tail_y),sec,hi,color,6)
       text_now(board,90,360 if tail_y==410 else 642,name,sec,hi,color,40)
     # Editorial vectors are mathematically coupled to the same native point.
-    if k%3==0 and mode=='motion' and cx>0:
+    if k%3==0 and mode=='motion' and cx>0 and not hide_subject:
      hi=min(z,sec+.05);dot(board,cx,cy,sec,hi,TEAL,8)
      m=q['model']
      for field,visible,scale,color in [('velocity','showVelocity','velocityArrowScale',TEAL),('acceleration','showAcceleration','accelerationArrowScale',RED)]:
