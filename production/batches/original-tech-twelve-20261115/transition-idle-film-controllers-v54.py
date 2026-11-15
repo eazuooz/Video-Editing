@@ -1,0 +1,7 @@
+from pathlib import Path
+import json,time,psutil
+M=Path('C:/Users/1/Videos/YamyamProduction/original-tech-twelve-20261115');R=M/'production-resume-20261115T055255Z';rows=[]
+assert not(Path('D:/Github/VideoEditing/shared/output/original-tech-twelve-20261115/remaining-seven/native-reviewed-pose-v35')/'full-visual-review-v35.json').exists()
+for name in ['finite-ready-pilots-v38','finite-reviewed-finals-v42']:
+ p=M/name/'worker.json';d=json.loads(p.read_text(encoding='utf8'));assert d['child']is None;proc=psutil.Process(d['pid']);assert abs(proc.create_time()-d['createTime'])<.01;cmd=proc.cmdline();assert any(name.replace('finite-ready-pilots-v38','run-ready-local-pilots-v38').replace('finite-reviewed-finals-v42','run-reviewed-local-finals-v42')+'.py'in arg for arg in cmd);desc=proc.children(recursive=True);assert all(x.name().lower()in['conhost.exe','openconsole.exe']for x in desc),[(x.pid,x.name())for x in desc];before=dict(pid=proc.pid,createTime=proc.create_time(),idleControllerOnly=True,actualMediaChildren=0);proc.terminate();proc.wait(10);rows.append(before)
+out=R/'idle-film-controller-transition-v54.json';assert not out.exists();out.write_text(json.dumps(dict(terminatedOwnIdleCpuControllers=rows,mediaJobsInterrupted=False,foreignProcessesChanged=False,reason='Route the two independently repaired cut plans through their explicit new renderer version; preserve the completed Inside pilot.'),indent=2)+'\n','utf8');print(json.dumps(rows))
