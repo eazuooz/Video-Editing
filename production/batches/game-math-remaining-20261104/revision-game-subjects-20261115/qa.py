@@ -54,6 +54,11 @@ def record(e,notes):
  save(p/'qa.json',dict(episode=e['id'],status='pass',technical=tech,actualPictureReview=True,pictureBoards=pic['boards'],pictureEvidenceSha256=sha(p/'picture-evidence.json'),renderInputEvidenceSha256=sha(p/'render-input-evidence.json'),reviewNotes=notes,scope='Revised picture locations, source/model correspondence, captions, motion samples and joins; unchanged audio evidence reused by exact bitstream hash. This is internal sampled visual QA, not a claim of uninterrupted full human viewing.',humanReviewed=False,finalReviewReady=True))
  enc=read(p/'encoded.json');enc.update(status='internal-QA-pass-user-review-pending',finalReviewReady=True,humanReviewed=False);save(p/'encoded.json',enc)
  save(p/'worker.json',dict(status='local-user-review-pending',episode=e['id'],finalReviewReady=True,humanReviewed=False))
+ pending_path=HERE/'pending-corrections.json'
+ if pending_path.exists():
+  pending=read(pending_path)
+  if e['id'] in pending.get('episodes',{}):
+   pending['episodes'][e['id']].update(status='resolved',reviewedCaptionedSha256=enc['files']['captioned']['sha256'],qaEvidence=str(p/'qa.json'),humanReviewed=False);save(pending_path,pending)
 
 if __name__=='__main__':
  import argparse

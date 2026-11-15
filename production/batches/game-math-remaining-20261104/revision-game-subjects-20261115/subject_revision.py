@@ -14,6 +14,7 @@ from inventory import read,save,sha
 from boards import Board,GOLD,TEAL,WHITE,MUTED,RED,cue
 from motion_panels import line,dot,arrow
 import motion_positions as motion
+import resource_guard
 FF=prior.FF;REV='game-subjects-v4'
 DEST=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingOutputs/game-math-subjects-20261115-final'
 WORK=Path(os.environ['LOCALAPPDATA'])/'YamyamCoding/VideoEditingWork/game-math-subjects-20261115-final'
@@ -326,7 +327,10 @@ def graph(e,origin,end):
  # Retain the already delivered mixed audio bit-for-bit. Only use prior video
  # filters; their audio remix graph must not be applied a second time.
  g=g.split(';\n[0:a]')[0]
- inputs=list(gameinputs);n=1+sum(x=='-i' for x in inputs);chain=['[0:v]setsar=1,setpts=PTS+'+str(origin)+'/TB[identity0]'];current='identity0';counter=0
+ # Put annotations on the final 60fps grid before drawing. Otherwise an input
+ # timestamp drift or gap can otherwise leave a previously composited old
+ # subject at a cut when output timestamps are later snapped to60fps.
+ inputs=list(gameinputs);n=1+sum(x=='-i' for x in inputs);chain=['[0:v]setsar=1,fps=60:start_time=0,setpts=PTS+'+str(origin)+'/TB[identity0]'];current='identity0';counter=0
  for item in extra:
   inputs+=['-i',item['file']];j=item['j'];w,h=item['eraser'];label=f'identity{counter+1}';counter+=1
   restore=item['mode']=='pipeline-clear'
@@ -370,11 +374,20 @@ def preserve_audio(movie,audio,p,kind):
  if prior.packet_hash(movie,'a')==prior.packet_hash(audio,'a'):return
  dest=movie.parent;repaired=dest/(kind+'-audio-preserved.mp4')
  prior.command(['-i',movie,'-i',audio,'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',repaired],p,'restore-'+kind+'-audio')
- archive=dest/'intermediate';assert archive.resolve().is_relative_to(DEST.resolve());archive.mkdir(exist_ok=True);backup=archive/('frame-bounded-'+kind+'.mp4')
- assert not backup.exists();shutil.move(movie,backup);shutil.move(repaired,movie)
+ # This is a newly generated, not-yet-delivered partial-audio mux. Replace it
+ # atomically only after proving the video packets are identical and the audio
+ # equals the preserved source; do not double the scarce disk usage with an
+ # unnecessary duplicate of those same video packets. Prior masters stay intact.
+ assert movie.resolve().is_relative_to(DEST.resolve()) and repaired.resolve().is_relative_to(DEST.resolve())
+ before=prior.packet_hash(movie,'v');after=prior.packet_hash(repaired,'v');expected=prior.packet_hash(audio,'a')
+ assert before==after and prior.packet_hash(repaired,'a')==expected
+ save(p/('restore-'+kind+'-packet-proof.json'),dict(videoPacketsBefore=before,videoPacketsAfter=after,audioSourcePackets=expected,newUnreviewedMuxOnly=True,originalMastersUntouched=True))
+ os.replace(repaired,movie)
+
+def video_guard():return resource_guard.wrapper(prior.guard(),HERE/'resource-concurrency-evidence.json')
 
 def encode(e,sample=None):
- authorized(e);p=work(e);G=prior.guard();reason=G.idle_reason()
+ authorized(e);p=work(e);G=video_guard();reason=G.idle_reason()
  cpu=bool(reason and reason.startswith('Insufficient idle headroom:'))
  if reason and not cpu:raise RuntimeError(reason)
  codec=['-c:v','libx264','-preset','fast','-crf','18','-threads','2','-g','120','-pix_fmt','yuv420p','-video_track_timescale','90000'] if cpu else prior.encoder()
