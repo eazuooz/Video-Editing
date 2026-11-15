@@ -3,6 +3,9 @@ from subject_revision import *
 import qa,progress,review_delivery
 
 NOTES={
+ 'M28': ['Viewed the fresh encoded board with first/15/50/85% of002,010,024. Chomp source image now occupies blank upper-center; the original symbolic formula, units and final substitution all remain visible.',
+         'Viewed corrected final002 at85% in1080p and375px. Photo, source/model label, spring object, calculation and captions do not overlap.',
+         'Viewed12 final010 positions and mobile snapshot: BeamNG image follows the same spring displacement, rebuilt coil, restoring/damping arrows and synchronized graph. No robot or masking debris observed.'],
  'M29': ['Viewed the one fresh encoded QA board containing first/15/50/85% of006,019,021,022. Game collision photo accompanies unchanged contact-normal, impulse and relative-speed diagrams without hiding formulas.',
          'Viewed actual encoded022 at85% in1080p and375px; caption, separating contact, vn inequality and game/model correspondence remain clear.',
          'Viewed12 encoded019 positions: contact normal and object labels reverse together, relative directions and unchanged caption timing agree; no robot introduced.'],
