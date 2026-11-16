@@ -17,7 +17,7 @@ namespace Yamyam.LofiRoom
         public bool hasIdle;
         public bool hasWalk;
         public bool hasSit;
-        public string assetVersion = "Tripo H3.1 · Nature / PBR v2";
+        public string assetVersion = "Tripo H3.1 · Atmosphere / Motion v3";
         private Coroutine action;
         private bool night = true;
         private string state = "Ready";
@@ -27,6 +27,8 @@ namespace Yamyam.LofiRoom
         public float groundY;
         public bool showControls=true;
         public bool moving;
+        public LofiAtmosphere atmosphere;
+        public float turnSpeed=145f;
         private Vector3 motionTarget;
         private Font uiFont;
 
@@ -76,6 +78,9 @@ namespace Yamyam.LofiRoom
                 if(keyboard.digit5Key.wasPressedThisFrame)ToggleMusic();
                 if(keyboard.digit6Key.wasPressedThisFrame)CameraDesk();
                 if(keyboard.digit7Key.wasPressedThisFrame)CameraRoom();
+                if(keyboard.digit8Key.wasPressedThisFrame && atmosphere)atmosphere.ToggleBreeze();
+                if(keyboard.digit9Key.wasPressedThisFrame && atmosphere)atmosphere.ToggleShafts();
+                if(keyboard.digit0Key.wasPressedThisFrame)ToggleHair();
             }
 #endif
             if (!actor) return;
@@ -93,20 +98,30 @@ namespace Yamyam.LofiRoom
         IEnumerator WalkRoute()
         {
             state = "Walking - native clip";
-            var points = new[] { new Vector3(-1.6f, groundY, -1.1f), new Vector3(1.1f, groundY, -1.1f), new Vector3(1.1f, groundY, -.2f), new Vector3(-1.6f, groundY, -.2f) };
-            int i = 0;
+            // Continuous rounded route: do not stop in Idle and swivel on the
+            // same planted feet at each corner. Native root stride drives it.
+            var points=new Vector3[96];int i=0;float nearest=float.MaxValue;
+            for(int j=0;j<points.Length;j++)
+            {
+                float a=j*Mathf.PI*2/points.Length;
+                points[j]=new Vector3(-.25f+1.35f*Mathf.Cos(a),groundY,-.72f+.43f*Mathf.Sin(a));
+                float d=Vector3.Distance(actor.transform.position,points[j]);if(d<nearest){nearest=d;i=j;}
+            }
+            actor.speed=.82f;moving=true;actor.CrossFadeInFixedTime("Walk",.38f);
             while (true)
             {
                 Vector3 target = points[i];
                 motionTarget=target;
-                moving=false;
-                if(hasIdle) actor.CrossFadeInFixedTime("Idle",.18f);
-                Quaternion facing=Quaternion.LookRotation((target-actor.transform.position).normalized);
-                while(Quaternion.Angle(actor.transform.rotation,facing)>2)
-                {actor.transform.rotation=Quaternion.RotateTowards(actor.transform.rotation,facing,180*Time.deltaTime);yield return null;}
-                moving=true;actor.CrossFadeInFixedTime("Walk",.18f);
-                while (Vector3.Distance(actor.transform.position, target) > .11f)
+                while (Vector3.Distance(actor.transform.position, target) > .085f)
                 {
+                    var direction=target-actor.transform.position;direction.y=0;
+                    if(direction.sqrMagnitude>.0001f)
+                    {
+                        Quaternion facing=Quaternion.LookRotation(direction);
+                        float angle=Quaternion.Angle(actor.transform.rotation,facing);
+                        actor.transform.rotation=Quaternion.RotateTowards(actor.transform.rotation,facing,turnSpeed*Time.deltaTime);
+                        actor.speed=Mathf.Lerp(.58f,.82f,Mathf.InverseLerp(85,8,angle));
+                    }
                     yield return null;
                 }
                 i = (i + 1) % points.Length;
@@ -117,7 +132,7 @@ namespace Yamyam.LofiRoom
         {
             moving=false;
             if (action != null) { StopCoroutine(action); action = null; }
-            if (actor && hasIdle) actor.CrossFade("Idle", .2f);
+            if (actor && hasIdle){actor.speed=1;actor.CrossFadeInFixedTime("Idle", .38f);}
             state = actor ? (hasIdle ? "Resting - native clip" : "Native idle clip not loaded") : "Character asset pending";
         }
 
@@ -144,9 +159,10 @@ namespace Yamyam.LofiRoom
         {
             night = value;
             if (deskLight) deskLight.intensity = night ? 5.0f : 1.5f;
-            if (fillLight) { fillLight.intensity = night ? .95f : 1.6f; fillLight.color = night ? new Color(.65f, .75f, 1f) : new Color(1f, .92f, .78f); }
+            if (fillLight) { fillLight.intensity = night ? .32f : .58f; fillLight.color = night ? new Color(.65f, .75f, 1f) : new Color(1f, .92f, .78f); }
             RenderSettings.ambientLight = night ? new Color(.30f, .31f, .36f) : new Color(.43f, .45f, .49f);
             if (roomCamera) roomCamera.backgroundColor = night ? new Color(.055f, .075f, .11f) : new Color(.31f, .40f, .48f);
+            if(atmosphere)atmosphere.SetNight(night);
             PlayerPrefs.SetInt("ai3d-lofi-room-v1-night", night ? 1 : 0);
             PlayerPrefs.Save();
         }
@@ -161,6 +177,11 @@ namespace Yamyam.LofiRoom
         {
             if (!music || !music.clip) { state = "Music asset pending"; return; }
             if (music.isPlaying) music.Pause(); else music.Play();
+        }
+        public void ToggleHair()
+        {
+            if(!actor)return;var hair=actor.GetComponent<LofiHairMotion>();
+            if(hair)hair.enabledMotion=!hair.enabledMotion;
         }
 
         public void SetMemo(string value) { PlayerPrefs.SetString("ai3d-lofi-room-v1-memo", value); PlayerPrefs.Save(); }
@@ -183,9 +204,9 @@ namespace Yamyam.LofiRoom
             GUI.backgroundColor=new Color(.13f,.21f,.22f,.92f);
             GUI.Box(new Rect(20, 20, 350, 94), "얌얌코딩 · LOFI ROOM");
             GUI.Label(new Rect(36, 54, 320, 30), moving?"산책 중 · Tripo 걷기 애니메이션":"잠깐 쉬어가기 · Tripo 대기 애니메이션");
-            GUI.Label(new Rect(36, 82, 320, 25), "PC v2 · 1 산책 / 2 쉬기 / 3 낮밤");
-            string[] labels = { "산책", "쉬기", "낮 / 밤", "비", "책상 보기", "방 전체", "음악" };
-            System.Action[] actions = { Walk, Idle, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic };
+            GUI.Label(new Rect(36, 82, 320, 25), "PC v3 · 8 바람 / 9 빛줄기");
+            string[] labels = { "산책", "쉬기", "낮 / 밤", "비", "책상 보기", "방 전체", "음악", "바람", "빛줄기", "머리카락" };
+            System.Action[] actions = { Walk, Idle, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic, ()=>{if(atmosphere)atmosphere.ToggleBreeze();}, ()=>{if(atmosphere)atmosphere.ToggleShafts();}, ToggleHair };
             for (int i = 0; i < labels.Length; i++) if (GUI.Button(new Rect(22 + i * 108, Screen.height / scale - 60, 102, 38), labels[i])) actions[i]();
         }
     }

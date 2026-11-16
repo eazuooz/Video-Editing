@@ -8,7 +8,7 @@ using Yamyam.LofiRoom;
 
 public static class LofiNatureArt
 {
-    public const string Root="Assets/LofiRoom/GeneratedNatureV2";
+    public const string Root="Assets/LofiRoom/GeneratedAtmosphereV3";
     static System.Random random=new(241106);
     static int number;
     public static int leafCount;
@@ -31,7 +31,7 @@ public static class LofiNatureArt
     {
         number=0;leafCount=0;random=new System.Random(241106);
         foreach(var go in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None).Where(r=>r.name=="plant leaf"||r.name=="plant pot").Select(r=>r.gameObject).ToArray())UnityEngine.Object.DestroyImmediate(go);
-        leaf=Material("living-leaf",new Color(.20f,.41f,.20f),5,.28f,0);leaf.SetFloat("_Cull",0);leaf.SetFloat("_WindStrength",.012f);
+        leaf=Material("living-leaf",new Color(.25f,.45f,.22f),5,.28f,0);leaf.SetFloat("_Cull",0);leaf.SetFloat("_WindStrength",.028f);
         stem=Material("plant-stem",new Color(.24f,.32f,.12f),0,.23f,0);
         soil=Material("pot-soil",new Color(.17f,.12f,.08f),3,.1f,0);
         ceramic=Material("warm-ceramic",new Color(.69f,.48f,.29f),0,.38f,0);
@@ -226,7 +226,8 @@ public static class LofiNatureArt
             float height=(canonical[i].y-low)/(high-low);float rear=center.z-canonical[i].z;
             bool brown=c.r>c.b*1.23f && c.r>c.g*1.03f && luminance<.58f;
             float weight=height>.80f&&brown?Mathf.SmoothStep(0,1,Mathf.Clamp01((rear-.012f)/.17f)):0;
-            colors[i]=new Color(weight,1,1,1);if(weight>.05f)masked++;
+            float along=Mathf.Clamp01((.985f-height)/.16f);
+            colors[i]=new Color(weight,along,1,1);if(weight>.05f)masked++;
         }
         UnityEngine.Object.DestroyImmediate(decoded);mesh.colors=colors;mesh.name="Tripo hero with ponytail secondary-motion weights";
         string path=Root+"/Meshes/hero-hair-mask.asset";var existing=AssetDatabase.LoadAssetAtPath<Mesh>(path);

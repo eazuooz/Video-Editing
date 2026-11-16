@@ -690,9 +690,9 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 
 | 영상 | 제작 | 검수 | 게시 |
 |---|---|---|---|
-| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v2: 머리카락 흔들림·311개 잎·가구 마감·4K/PBR 재질 · Windows 실행 파일·48초 FHD60 완료 | [새 검수·전후 비교](http://127.0.0.1:9320/) · v1 사용자 호평 · v2 검수 대기 | 미업로드·예약 없음 |
+| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v3: 곡선 걷기·머리카락 관성/충돌·잎 흔들림·창가 빛줄기·100% 렌더링 · Windows·48초 FHD60 완료 | [새 PC 검수·전후 비교](http://127.0.0.1:9321/) · v3 사용자 검수 대기 | 미업로드·예약 없음 |
 
-기존 시안과 걷기·대기 모션을 보존하고 자연/재질 디테일을 보완했다. 캐릭터·헤드폰 색상은 실제 4K 원본이며 굴곡·거칠기·금속성 지도는 원본 해상도로 연결했다. 식물·소품은 직접 작성한 3D 형상, 벽 지도는 자체 이미지 생성이다. [파일·QA 기록](../projects/ai-3d-lofi-gaming-room/production/nature-v2-delivery.json) · [재질·이미지 프롬프트](../projects/ai-3d-lofi-gaming-room/production/nature-v2-art-record.json). 사용자 요청으로 웹 모듈 설치·빌드는 다시 보류했다. 앉기·독서·전체 제작 영상은 남아 있다.
+실제 Tripo 걷기·대기와 4K 색상/PBR 지도는 보존했다. 머리카락에는 길이/각도/충돌 제약, 잎에는 뿌리 고정과 잔잔한 바람을 추가했다. 창가 빛줄기·창틀 무늬 조명·부드러운 그림자·접촉 음영·반사를 구현하고 화면 80% 확대를 100% 렌더링으로 바꿨다. [파일·QA 기록](../projects/ai-3d-lofi-gaming-room/production/atmosphere-v3-delivery.json). 실제 PC에서 걷기·낮밤을 확인했으며 효과별 비교 버튼을 제공한다. 기존 v1/v2 전달 파일은 보존했다. 웹 설치·빌드는 사용자 지시로 계속 보류; 앉기·독서와 전체 제작 영상은 남아 있다.
 <!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->
 
 <!-- MATH-CONCEPT-EXAMPLES-20261116-START -->

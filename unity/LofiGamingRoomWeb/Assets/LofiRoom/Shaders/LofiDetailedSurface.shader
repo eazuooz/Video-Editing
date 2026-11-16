@@ -17,6 +17,10 @@ Shader "Yamyam/Lofi Detailed Surface"
         _HairEnabled("Hair vertex mask",Float)=0
         _Cull("Cull",Float)=2
         _HairMotion("Hair inertia world offset",Vector)=(0,0,0,0)
+        _HairOffset1("Hair chain 1",Vector)=(0,0,0,0)
+        _HairOffset2("Hair chain 2",Vector)=(0,0,0,0)
+        _HairOffset3("Hair chain 3",Vector)=(0,0,0,0)
+        _HairOffset4("Hair chain 4",Vector)=(0,0,0,0)
     }
     SubShader
     {
@@ -34,6 +38,9 @@ Shader "Yamyam/Lofi Detailed Surface"
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -42,8 +49,9 @@ Shader "Yamyam/Lofi Detailed Surface"
             TEXTURE2D(_RoughnessMap);SAMPLER(sampler_RoughnessMap);
             TEXTURE2D(_MetallicMap);SAMPLER(sampler_MetallicMap);
             CBUFFER_START(UnityPerMaterial)
-            float4 _BaseMap_ST;half4 _BaseColor;half _Smoothness,_Metallic,_Pattern,_DetailStrength,_WindStrength,_HairEnabled,_UsePbrMaps,_NormalStrength;float4 _HairMotion;
+            float4 _BaseMap_ST;half4 _BaseColor;half _Smoothness,_Metallic,_Pattern,_DetailStrength,_WindStrength,_HairEnabled,_UsePbrMaps,_NormalStrength;float4 _HairMotion,_HairOffset1,_HairOffset2,_HairOffset3,_HairOffset4;
             CBUFFER_END
+            float _LofiWind;
             struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;float4 color:COLOR;UNITY_VERTEX_INPUT_INSTANCE_ID};
             struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;float4 shadowCoord:TEXCOORD5;UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO};
             float Hash(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
@@ -53,9 +61,26 @@ Shader "Yamyam/Lofi Detailed Surface"
                 Varyings o=(Varyings)0;UNITY_SETUP_INSTANCE_ID(a);UNITY_TRANSFER_INSTANCE_ID(a,o);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 float3 p=TransformObjectToWorld(a.positionOS.xyz);
                 float mask=0;if(_HairEnabled>.5 || _WindStrength>.0001)mask=saturate(a.color.r);
-                if(_HairEnabled>.5)p+=_HairMotion.xyz*mask;
-                float phase=_Time.y*1.45+p.x*1.9+p.z*2.7;
-                if(_WindStrength>.0001)p+=float3(sin(phase),0,cos(phase*.81)*.42)*mask*_WindStrength;
+                if(_HairEnabled>.5)
+                {
+                    float t=saturate(a.color.g)*4;float3 offset=0;
+                    if(t<1)offset=lerp(0,_HairOffset1.xyz,t);
+                    else if(t<2)offset=lerp(_HairOffset1.xyz,_HairOffset2.xyz,t-1);
+                    else if(t<3)offset=lerp(_HairOffset2.xyz,_HairOffset3.xyz,t-2);
+                    else offset=lerp(_HairOffset3.xyz,_HairOffset4.xyz,t-3);
+                    p+=offset*mask;
+                }
+                float3 root=TransformObjectToWorld(float3(0,0,0));
+                float phase=_Time.y*1.1+root.x*2.4+root.z*2.1;
+                if(_WindStrength>.0001)
+                {
+                    float gust=.68+.32*sin(_Time.y*.43+root.x);
+                    float scale=saturate(length(a.positionOS.xyz)*2.2+.06);
+                    float sway=(sin(phase)+sin(phase*.57+1.3)*.3)*_WindStrength*_LofiWind*gust*scale;
+                    float flutter=sin(_Time.y*2.1+a.uv.y*3.0+root.z)*_WindStrength*.15*_LofiWind*scale;
+                    p+=float3(sway,-abs(sway)*.12,cos(phase*.83)*_WindStrength*.38*_LofiWind)*mask;
+                    p+=float3(0,flutter,flutter*.3)*mask*saturate(abs(a.uv.x-.5)*2);
+                }
                 o.positionWS=p;o.positionCS=TransformWorldToHClip(p);o.normalWS=TransformObjectToWorldNormal(a.normalOS);
                 o.tangentWS=half4(TransformObjectToWorldDir(a.tangentOS.xyz),a.tangentOS.w*GetOddNegativeScale());o.uv=TRANSFORM_TEX(a.uv,_BaseMap);o.fog=ComputeFogFactor(o.positionCS.z);o.shadowCoord=TransformWorldToShadowCoord(p);return o;
             }
