@@ -1,0 +1,1485 @@
+{
+  "scope": "M21–M33",
+  "status": "planning-exact-source-review",
+  "acceptedExplanationPreserved": true,
+  "newTransitionNarrationOnly": true,
+  "originalAudioTempoChange": false,
+  "episodes": [
+    {
+      "id": "M21",
+      "slug": "game-math-shading-lights",
+      "title": "빛과 셰이딩",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-shading-lights\\game-math-shading-lights.clean.mp4",
+          "sha256": "e744a59ddd8de8be7a2aae10b8f0d8c44f0cc113cecb1731fb479ccc1abe054a"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-shading-lights\\game-math-shading-lights.captioned.mp4",
+          "sha256": "a33425eca0c22acad18f761df02b4a2b74012d381dd27a20b7d8380d9e400746"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-shading-lights\\game-math-shading-lights.ko.srt",
+          "sha256": "9d2b3334ac217fca72bf94d073a2c62535517368ca609d3cca7c1d72c0eb2623"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-shading-lights\\game-math-shading-lights.en.srt",
+          "sha256": "7de27b93b52e67c4b7909ccb7096b6173a0235f101e16992a7e74b43be58c401"
+        }
+      },
+      "baselineFrames": 114359,
+      "inserts": [
+        {
+          "key": "M21-01",
+          "afterScene": "017",
+          "atFrame": 25789,
+          "previousSpeech": "이것이 블린–퐁 모델에서 사용하는 정반사 계산입니다. 엔과 에이치의 내적을 영 이상으로 제한하고 거듭제곱하죠. 두 방식은 닮았지만 같은 지수를 넣어도 하이라이트 폭이 정확히 같지는 않습니다. 광원과 카메라 방향을 물체 전체에서 일정하다고 볼 수 있으면 에이치를 재사용할 수 있지만, 어떤 방식이 더 빠른지는 실제 구현에 달려 있어요. 또 두 방향이 정확히 반대면 합이 영이므로 그대로 정규화하지 않도록 처리해야 합니다.",
+          "followingSpeech": "타운스케이퍼의 둥근 탑을 둘러보면 넓은 벽면의 밝기 변화만으로도 형태가 읽힙니다. 지금까지는 보는 방향에 따라 움직이는 반짝임을 구했습니다. 그런데 무광 표면은 카메라를 조금 옮겨도 기본 밝기가 크게 바뀌지 않죠. 이상적인 램버트 난반사 모델은 이런 성질을, 나가는 방향에 관계없이 같은 복사휘도를 내는 표면으로 나타냅니다. 이 모델에서도 빛이 어느 방향에서 들어오는지는 중요합니다. 카메라 방향 대신 표면과 광원의 각도를 살펴보겠습니다.",
+          "candidate": "car-reflection",
+          "source": "showroom",
+          "sourceIn": 47.8,
+          "sourceOut": 63.5,
+          "concept": "Specular Reflection · 정반사",
+          "question": "차체는 그대로, 반사 무늬는?",
+          "ko": [
+            "앞에서 배운 반사를 실제 게임에서 확인해 볼게요.",
+            "자동차를 보는 방향에 따라 밝은 무늬가 달라지죠.",
+            "이것이 반사 계산에 시선 방향도 필요한 이유입니다."
+          ],
+          "en": [
+            "Let us check reflection in an actual game.",
+            "The bright patterns change as we view the car from another angle.",
+            "This is why a reflection model also needs the viewing direction."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "5a4afc9c4a213681a3279bf2184f0aa3405f0dba3ec337df731b87c7aef9875f"
+        },
+        {
+          "key": "M21-02",
+          "afterScene": "046",
+          "atFrame": 67592,
+          "previousSpeech": "이 계산을 월드 공간에서 할지, 물체 공간에서 할지, 카메라 공간에서 할지는 구현에 맞게 정할 수 있습니다. 중요한 것은 비교하는 벡터들을 같은 공간으로 맞추는 거예요. 월드 법선과 물체 공간 광원 방향을 그대로 내적하면 숫자는 나오지만 같은 방향끼리 비교한 것이 아닙니다. 크기 변환이 비균일하면 법선 변환도 주의하고, 변환과 보간 뒤에는 필요한 정규화를 확인해야 합니다.",
+          "followingSpeech": "여기까지는 빛의 방향과 세기가 주어졌다고 놓고 표면을 계산했습니다. 이제 그 입력을 누가 정하는지로 이어가 보죠. 게임에서 쓰는 광원은 실제 전구를 완벽하게 복제한 물체라기보다, 빛의 분포를 조절하는 도구입니다. 먼저 점, 스폿, 방향성 광원으로 빛이 어디에 닿는지 정하고, 거리 감쇠와 텍스처로 분포를 다듬은 다음, 계산을 미리 저장하는 방법까지 연결하겠습니다.",
+          "candidate": "town-orbit",
+          "source": "town",
+          "sourceIn": 350,
+          "sourceOut": 374,
+          "concept": "Shading · 표면 셰이딩",
+          "question": "면의 밝기와 입체감",
+          "ko": [
+            "표면 전체의 셰이딩을 실제 게임에서 보겠습니다.",
+            "탑을 둘러보면 벽의 밝기 차이로 굽은 형태가 읽힙니다.",
+            "특정 공식을 단정하기보다, 방금 배운 표면 표현의 목적을 보세요."
+          ],
+          "en": [
+            "Now observe surface shading in an actual game.",
+            "Differences in wall brightness reveal the curved tower as the camera moves.",
+            "Observe the purpose of shading; this recording does not establish a particular formula."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "5a4afc9c4a213681a3279bf2184f0aa3405f0dba3ec337df731b87c7aef9875f"
+        }
+      ],
+      "retainedExistingCases": [
+        {
+          "key": "M21-03",
+          "afterScene": "059",
+          "atFrame": 85965,
+          "previousSpeech": "스폿 광원에는 거리 말고도 원뿔 가장자리로 갈 때의 감쇠가 있습니다. 광원에서 같은 거리에 있어도 중심 방향에서는 밝고 가장자리에서는 약할 수 있죠. 그래서 거리 감쇠와 각도 감쇠를 구분해야 합니다. 방향성 광원은 보통 거리 감쇠가 없고요. 이렇게 어떤 지점에서의 방향과 세기만 정할 수 있다면, 꼭 원이나 원뿔만으로 광원을 만들 필요도 없습니다.",
+          "followingSpeech": "둠 쓰리에서는 손전등으로 통로와 난간, 문을 차례로 비춥니다. 원형 무늬가 표면을 따라 움직이는 모습을 이제 광원의 좌표와 연결해 보겠습니다. 이 아이디어를 더 자유롭게 만든 예가 둠 쓰리의 광원입니다. 여기서 체적 광원이라는 말은 빛이 영향을 주는 공간의 부피를 정한다는 뜻이에요. 안개 속 빛줄기의 산란을 계산하는 볼류메트릭 라이팅과는 구분하겠습니다. 목적은 여전히 표면의 한 지점에서 빛이 어느 방향으로, 얼마나 들어오는지 알아내는 것입니다.",
+          "candidate": "doom-light",
+          "source": "doom",
+          "sourceIn": 112,
+          "sourceOut": 127,
+          "concept": "Projected Light · 투영 조명",
+          "question": "손전등이 비추는 영역",
+          "ko": [
+            "이번에는 광원의 모양을 실제 게임에서 확인해 볼게요.",
+            "둠 쓰리에서 손전등을 돌리면 밝은 영역도 벽을 따라 옮겨 갑니다.",
+            "이제 이 무늬를 만드는 방법으로 이어가겠습니다."
+          ],
+          "en": [
+            "Now look at the visible footprint of a light in a game.",
+            "In Doom 3, turning the flashlight moves the bright region across the walls.",
+            "Next we will examine a way of producing that pattern."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "temporal strip inspected; final voiced interval and composite require QA",
+          "omitAsAdjacentDuplicate": true,
+          "retainedExistingScene": "060",
+          "reason": "The accepted lesson already plays an appropriate actual-game example after this concept; do not immediately repeat an overlapping demonstration."
+        }
+      ]
+    },
+    {
+      "id": "M22",
+      "slug": "game-math-skinning-normal-map",
+      "title": "스키닝과 노멀 매핑",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-skinning-normal-map\\game-math-skinning-normal-map.clean.mp4",
+          "sha256": "0b0f68fa03220e8762b62b286216620883cb73b77d5f3f29e99c2e0f1569ae5a"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-skinning-normal-map\\game-math-skinning-normal-map.captioned.mp4",
+          "sha256": "9be83a09620fc4060d192e53773d87f7a3d85a5c062648632d601770d6301701"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-skinning-normal-map\\game-math-skinning-normal-map.ko.srt",
+          "sha256": "b1dbbd6c8bc2438876c30a3468383a8c296b225b5b83989330d282531eb2259b"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-skinning-normal-map\\game-math-skinning-normal-map.en.srt",
+          "sha256": "314fdec2d51be8eab617b18b36d59c98ea830908be0791802930da57bb188dbe"
+        }
+      },
+      "baselineFrames": 51670,
+      "inserts": [
+        {
+          "key": "M22-01",
+          "afterScene": "014",
+          "atFrame": 21046,
+          "previousSpeech": "그래서 스키닝은 본을 만들었다고 끝나는 작업이 아닙니다. 관절을 여러 각도로 시험하면서 가중치와 메시를 조정해야 합니다. 팔을 굽힐 때 근육이 부풀거나 발이 눌리며 퍼지는 모습까지 원한다면 추가 변형도 필요하고요. 여기까지는 정점 위치를 바꾸어 큰 형태를 만들었습니다. 이제 그 형태 위에 있는 작은 요철은 정점을 모두 늘리지 않고 어떻게 표현하는지 살펴보겠습니다.",
+          "followingSpeech": "둠 쓰리의 금속 벽을 손전등으로 비추면, 작은 홈이 밝아졌다 어두워지며 드러납니다. 이런 표면 디테일을 표현하는 한 가지 방법을, 이제 우리가 만든 같은 면에서 직접 비교해 보겠습니다. 텍스처는 색뿐 아니라 표면의 여러 성질을 저장할 수 있습니다. 범프 매핑은 작은 요철이 빛에 반응하는 모습을 표면 방향의 변화로 나타내는 방법입니다. 높이 맵은 밝기를 높낮이로 저장하고 그 기울기에서 법선을 구합니다. 노멀 맵은 그 법선 방향 자체를 저장하죠. 여기서는 노멀 맵을 따라가겠습니다. 이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+          "candidate": "mario-water",
+          "source": "mario",
+          "sourceIn": 748,
+          "sourceOut": 765,
+          "concept": "Skinning · 스키닝",
+          "question": "몸 전체의 이동과 관절의 굽힘",
+          "ko": [
+            "큰 형태의 변화를 실제 게임에서 볼까요?",
+            "마리오가 헤엄칠 때 몸은 이동하고 팔과 다리는 따로 굽습니다.",
+            "방금 나눈 전체 변환과 관절 변형을 구별해 보세요."
+          ],
+          "en": [
+            "Let us look at large-scale deformation in an actual game.",
+            "Mario moves through the water while his arms and legs bend separately.",
+            "Distinguish whole-body movement from the joint deformation we just discussed."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "ceb523adabe9605e9175eecd02bc8efb8b922b2aa8c6ba84d391dce5e679e85e"
+        },
+        {
+          "key": "M22-02",
+          "afterScene": "034",
+          "atFrame": 49630,
+          "previousSpeech": "이렇게 유브이, 접선, 부호를 미리 맞춰 놓으면 실행 중에는 노멀 맵을 읽고 좌표를 바꿔 조명하는 과정으로 이어집니다. 실행 코드를 짧게 만드는 준비 작업이 데이터 쪽에 들어 있는 셈이에요. 노멀 맵을 만든 도구와 게임 엔진이 서로 다른 기저 약속을 쓰면 경계나 반사에서 오류가 드러날 수 있으므로, 같은 약속으로 만들고 해석해야 합니다.",
+          "followingSpeech": "큰 움직임과 작은 요철은 서로 다른 작업처럼 보였지만, 둘 다 어느 좌표계의 값을 어떻게 옮길지에 달려 있었습니다. 스키닝은 바인드 자세의 정점을 여러 본으로 옮겨 섞고, 노멀 매핑은 텍스처의 작은 방향을 표면의 기저로 옮깁니다. 이제 캐릭터가 관절을 굽혀도 형태가 이어지고, 그 위의 요철이 빛에 맞게 반응하려면 위치와 방향의 약속이 함께 맞아야 한다는 것을 알 수 있습니다.",
+          "candidate": "doom-light",
+          "source": "doom",
+          "sourceIn": 112,
+          "sourceOut": 127,
+          "concept": "Normal Mapping · 노멀 매핑",
+          "question": "외곽선과 표면의 요철",
+          "ko": [
+            "작은 요철은 실제 게임에서 어떻게 보일까요?",
+            "둠 쓰리의 금속 벽을 비추면 표면의 굴곡이 빛에 드러납니다.",
+            "큰 외곽 형태와 작은 빛 반응을 나누어 보세요."
+          ],
+          "en": [
+            "How do small surface details appear in an actual game?",
+            "Illuminating the metal walls in Doom 3 reveals fine surface relief.",
+            "Separate the large silhouette from small changes in the lighting response."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "ceb523adabe9605e9175eecd02bc8efb8b922b2aa8c6ba84d391dce5e679e85e"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M23",
+      "slug": "game-math-pipeline-shaders",
+      "title": "렌더링 파이프라인",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-pipeline-shaders\\game-math-pipeline-shaders.clean.mp4",
+          "sha256": "443ec0586f4eb4749cd72aef3801bdffaf23fd22534f7ee29fcf8afe24b931c2"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-pipeline-shaders\\game-math-pipeline-shaders.captioned.mp4",
+          "sha256": "21e2309aad5adc30868cd3cc249bb86146ebb014ef52648c092fe74ea90fda64"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-pipeline-shaders\\game-math-pipeline-shaders.ko.srt",
+          "sha256": "efa4881b372b92ef5f3b2b4ff488d20d5a468615bd7f7090a53e98fb25f18eb7"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-pipeline-shaders\\game-math-pipeline-shaders.en.srt",
+          "sha256": "119eec33c45d48af9a3cd3c4ca3d7c40ad521239924f8ef9b18228c35dba19b8"
+        }
+      },
+      "baselineFrames": 97592,
+      "inserts": [
+        {
+          "key": "M23-01",
+          "afterScene": "008",
+          "atFrame": 11590,
+          "previousSpeech": "그래서 표시할 그림과 만드는 그림을 나눕니다. 프런트 버퍼에는 보여 주는 그림을, 백 버퍼에는 다음 그림을 준비하죠. 다 그린 뒤 두 버퍼의 역할을 바꾸거나, 완성된 내용을 복사해 표시합니다. 이처럼 결과를 표시하도록 넘기는 동작을 프레젠트라고 합니다. 실제 시스템에는 더 많은 버퍼와 표시 동기화가 있지만, 핵심은 완성되지 않은 그림을 만드는 작업과 보여 주는 작업을 분리하는 것입니다.",
+          "followingSpeech": "포털에서 큐브를 들어 옮기면, 가까운 큐브가 뒤쪽 발판과 벽의 일부를 가립니다. 같은 화면 자리에 여러 표면이 겹칠 때, 어느 표면을 남겨야 할지 결정해야 하는 거죠. 색 옆에는 깊이 버퍼도 있습니다. 같은 화면 위치에 여러 삼각형이 겹칠 때 어느 것이 앞인지 기억하는 공간이에요. 가까울수록 작은 값을 쓰는 예를 들어 보죠. 기존 깊이가 영 점 칠이고 새 값이 영 점 삼이면 새 표면이 더 가깝습니다. 색과 깊이를 갱신합니다. 그다음 영 점 팔이 들어오면 뒤에 있으므로 버립니다.",
+          "candidate": "town-build",
+          "source": "town",
+          "sourceIn": 135,
+          "sourceOut": 149,
+          "concept": "Rendered Frame · 완성된 프레임",
+          "question": "입력이 새 화면으로",
+          "ko": [
+            "실제 게임에서 보겠습니다.",
+            "건물을 더하거나 카메라를 돌리면 다음 화면이 달라집니다.",
+            "여러 계산의 결과가 하나의 완성된 프레임으로 보이는 겁니다."
+          ],
+          "en": [
+            "Let's look at an actual game.",
+            "Adding buildings or turning the camera changes the next image.",
+            "The output of many calculations appears as one completed frame."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "5c188a2729d5560baaa580f329e95aaa8cd541aa43bd3a6888d67fb4e02a47d4"
+        },
+        {
+          "key": "M23-02",
+          "afterScene": "027",
+          "atFrame": 38549,
+          "previousSpeech": "삼각형이 덮는 위치를 찾으면 유브이와 법선 같은 값을 정점 사이에서 보간합니다. 원근 장면에서는 화면 위의 단순 평균과 원근 보정 보간이 다를 수 있습니다. 법선처럼 길이가 중요한 값은 보간 뒤 다시 정규화해야 하죠. 이미 가까운 표면에 가린 샘플은 가능하다면 비싼 셰이딩 전에 깊이 검사로 걸러냅니다. 셰이더가 깊이를 바꾸는 등 조건에 따라 처리 방식은 달라집니다.",
+          "followingSpeech": "같은 포털에서도 유리 너머의 방은 보이지만, 그 둘레의 불투명한 틀 뒤는 가려집니다. 앞뒤만 정하는 데서 한 걸음 더 나아가, 어떤 표면의 색을 얼마나 보여 줄지도 정해야 합니다. 픽셀 셰이더는 이 정보로 조명과 재질, 필요한 안개를 계산해 색과 알파를 만듭니다. 알파를 기준으로 구멍을 도려내는 알파 테스트는 해당 샘플을 버리는 것이고, 반투명한 색을 섞는 알파 블렌딩은 남겨서 합성하는 것입니다. 빨강을 불투명도 사분의 일로 파랑 위에 섞는 단순 예에서는 빨강 영 점 이오, 파랑 영 점 칠오가 됩니다. 깊이 쓰기와 정렬도 재질에 맞춰 설정해야 합니다.",
+          "candidate": "portal-occlude",
+          "source": "portal",
+          "sourceIn": 423,
+          "sourceOut": 444,
+          "concept": "Visibility · 가시성",
+          "question": "가까운 벽이 가리는 부분",
+          "ko": [
+            "가려짐을 실제 게임에서 확인해 볼게요.",
+            "포털에서 시점을 옮기면 가까운 벽 뒤의 공간이 드러나거나 가려집니다.",
+            "방금 설명한 깊이 판단이 해결하는 문제를 보세요."
+          ],
+          "en": [
+            "Let us check visibility in an actual game.",
+            "Moving the viewpoint in Portal reveals or hides space behind nearby walls.",
+            "Observe the problem that depth testing is designed to solve."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "5c188a2729d5560baaa580f329e95aaa8cd541aa43bd3a6888d67fb4e02a47d4"
+        },
+        {
+          "key": "M23-03",
+          "afterScene": "049",
+          "atFrame": 71702,
+          "previousSpeech": "움직이는 표면에 노멀 맵까지 붙이려면 위치뿐 아니라 법선과 접선도 현재 자세로 옮깁니다. 여러 행렬을 섞으면 축의 길이와 직각 관계가 틀어질 수 있으므로 정규화와 직교화를 확인합니다. 비균일 크기 변화에는 법선 처리도 별도로 고려해야 합니다. 그다음 비탄젠트를 복원하고 광원 방향을 접선 공간으로 옮기면, 앞서 만든 노멀 매핑 픽셀 셰이더를 그대로 연결할 수 있습니다.",
+          "followingSpeech": "처음의 텍스처 한 장에서 출발해 빛을 더하고, 노멀 맵을 더하고, 마지막으로 뼈의 움직임까지 연결했습니다. 표면을 움직이는 계산과 그 표면의 색을 구하는 계산은 서로 다른 단계에 놓일 수 있습니다. 각 단계가 무엇을 받으며 어떤 공간의 값을 내보내는지 알면, 기능을 붙이거나 오류를 찾을 때 길을 잃지 않게 됩니다.",
+          "candidate": "mario-water",
+          "source": "mario",
+          "sourceIn": 748,
+          "sourceOut": 765,
+          "concept": "Animated Surface · 변형된 표면",
+          "question": "움직이는 몸 위의 표면",
+          "ko": [
+            "표면 계산이 움직임과 만나는 모습을 보겠습니다.",
+            "헤엄치는 마리오의 팔과 몸은 형태가 바뀌어도 표면 표현을 유지하죠.",
+            "우리 예제에서는 변형된 위치와 법선으로 이 계산을 연결했습니다."
+          ],
+          "en": [
+            "Now observe surface appearance together with motion.",
+            "Mario retains his surface appearance while his arms and body deform as he swims.",
+            "In our implementation, transformed positions and normals connect these stages."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "5c188a2729d5560baaa580f329e95aaa8cd541aa43bd3a6888d67fb4e02a47d4"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M24",
+      "slug": "game-math-velocity-derivatives",
+      "title": "속도와 미분",
+      "baselineFiles": {
+        "clean": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-velocity-derivatives\\game-math-velocity-derivatives.clean.mp4",
+          "sha256": "3318301201fe3c53a08df879c4e20e1581de368b1f42b328bbfb41a1f00aa14c"
+        },
+        "captioned": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-velocity-derivatives\\game-math-velocity-derivatives.captioned.mp4",
+          "sha256": "5ca9b2c7ee85b4d2cda191eaa2c2cd708b26acbc2022fadca57c52c240700e8a"
+        },
+        "ko": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-velocity-derivatives\\game-math-velocity-derivatives.ko.srt",
+          "sha256": "b5dced6cc433aa7893a1af7174abe925c8832f4a880af784c16a1bad67b0f18c"
+        },
+        "en": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-velocity-derivatives\\game-math-velocity-derivatives.en.srt",
+          "sha256": "94b058f53bdf2d306f8a8ba44c3166b2b63fe41b08e9e7d46f3bbcedb559079e"
+        }
+      },
+      "baselineFrames": 74113,
+      "inserts": [
+        {
+          "key": "M24-01",
+          "afterScene": "014",
+          "atFrame": 22898,
+          "previousSpeech": "이번에는 출발점으로 되돌아오는 사람을 따라가 보죠. 출발점과 도착점은 겹치므로 변위도 평균속도도 영입니다. 하지만 걸어온 길을 따라 그린 선은 분명히 남아 있죠. 그 길이 전체를 경과시간으로 나누면 평균속력입니다. 토끼와 거북이도 같은 시각에 같은 두 끝점을 지나면 전체 구간의 평균속도는 같지만, 도중의 움직임은 다를 수 있습니다.",
+          "followingSpeech": "차가 출발하는 지금 계기판의 바늘을 보세요. 도로 위에서는 위치가 앞으로 옮겨가고, 계기판은 그 순간 차가 얼마나 빠르게 가는지 보여 줍니다. 방금 달린 구간 전체의 평균은 그사이에 어떻게 빨라졌는지까지는 말해 주지 않지요. 그렇다면 그림에서 지금의 빠르기를 어떻게 찾을까요? 한 순간만 고르면 위치 변화도 시간 변화도 영입니다. 대신 그 순간에서 시작하는 짧은 구간을 놓고, 그 폭을 줄여 보겠습니다. 직선에서는 어디서나 기울기가 같지만 곡선에서는 짧은 구간일수록 그 순간의 움직임이 더 잘 드러납니다.",
+          "candidate": "mario-run",
+          "source": "mario",
+          "sourceIn": 2498,
+          "sourceOut": 2512,
+          "concept": "Displacement · 변위",
+          "question": "움직인 길과 두 끝점",
+          "ko": [
+            "평균속도와 속력의 차이를 실제 게임에서 볼게요.",
+            "마리오가 방 안에서 방향을 바꾸며 달립니다.",
+            "두 끝점의 차이와, 실제로 지나온 길을 따로 생각해 보세요."
+          ],
+          "en": [
+            "Let us distinguish average velocity from speed in an actual game.",
+            "Mario runs through the room, changing direction.",
+            "Consider the difference between the two endpoints separately from the path he traveled."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "6ca6b95aa29f81b5bbaca99ed580a194ac035bdaa316860cce4c15124fe4cb80"
+        },
+        {
+          "key": "M24-02",
+          "afterScene": "028",
+          "atFrame": 44143,
+          "previousSpeech": "이제 위치 그래프만 봐도 속도의 성격을 읽을 수 있습니다. 수평이면 정지, 올라가면 양의 속도, 내려가면 음의 속도입니다. 직선 구간은 기울기가 일정하니 속도도 일정하고, 곡선 구간은 속도가 바뀝니다. 다만 날카롭게 꺾인 점은 예외예요. 왼쪽에서 접근한 기울기와 오른쪽에서 접근한 기울기가 다르면 그 점의 도함수는 없습니다. 게임에서 순간적으로 방향을 바꾸는 이상화도 이런 불연속을 따로 다뤄야 합니다.",
+          "followingSpeech": "또 한 가지를 기억해야 합니다. 위치 그래프 전체를 위로 옮겨도 기울기는 변하지 않아요. 출발점이 영인 물체와 출발점이 십인 물체가 똑같이 움직이면 속도 함수는 같습니다. 미분은 변화율을 남기지만 일정한 위치 차이는 지워 버리는 셈이죠. 나중에 속도에서 위치를 되찾으려면 출발 위치가 따로 필요한 이유가 여기에 있습니다.",
+          "candidate": "car-speed",
+          "source": "forza",
+          "sourceIn": 22,
+          "sourceOut": 35,
+          "concept": "Instantaneous Rate · 순간 변화율",
+          "question": "계속 달라지는 속도계",
+          "ko": [
+            "순간 변화율을 실제 게임에서도 확인해 보겠습니다.",
+            "차가 달리는 동안 속도계의 숫자가 계속 바뀌죠.",
+            "전체 구간의 평균과 지금 이 순간의 상태가 다르다는 뜻입니다."
+          ],
+          "en": [
+            "Let us observe an instantaneous rate in an actual game.",
+            "The speedometer changes while the car moves.",
+            "The average over the whole interval differs from the state at the present moment."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "6ca6b95aa29f81b5bbaca99ed580a194ac035bdaa316860cce4c15124fe4cb80"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M25",
+      "slug": "game-math-acceleration-integration",
+      "title": "가속도와 적분",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-acceleration-integration\\game-math-acceleration-integration.clean.mp4",
+          "sha256": "2b64de7bd6c9f2b49ac8bc8f8a5bebcb3a8b8992d72f9a53db28711d559983b8"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-acceleration-integration\\game-math-acceleration-integration.captioned.mp4",
+          "sha256": "eb321ebf71d645b37dbda5472396a9faadfeddd48755478c60b0a41a4ae3f8dc"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-acceleration-integration\\game-math-acceleration-integration.ko.srt",
+          "sha256": "123aa3fdae2b43f3840e4c514a87450ebc708eb325082f2df4706471d7a2180e"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-acceleration-integration\\game-math-acceleration-integration.en.srt",
+          "sha256": "b4803842c4e98c276f8ac1c20908bba248b27623a93ef1f2bfc9dd06d5e4b7c1"
+        }
+      },
+      "baselineFrames": 60869,
+      "inserts": [
+        {
+          "key": "M25-01",
+          "afterScene": "005",
+          "atFrame": 9149,
+          "previousSpeech": "게임에서는 속도를 즉시 바꾸기도 합니다. 그래프에 수직 점프가 생기면 그 순간의 보통 도함수는 정의되지 않습니다. 충돌의 충격량처럼 별도의 모델로 다룰 수는 있지만, 유한한 일정 가속도 식에 그대로 끼워 넣으면 안 돼요. 가속도만 계단처럼 바뀌는 경우에는 속도가 이어지면서 기울기만 꺾일 수 있습니다. 가속도의 변화율은 저크라고 부르며, 움직임의 부드러움을 다룰 때 다시 쓰입니다.",
+          "followingSpeech": "속도가 일정하다면 위치 계산은 간단합니다. 초기 위치에 속도 곱하기 시간을 더하면 됩니다. 그런데 떨어지는 물체는 매 순간 더 빨라지고 있었죠. 마지막 속도에 전체 시간을 곱하면 처음부터 그 속도로 움직인 것처럼 계산해 너무 멀리 떨어진 것으로 나옵니다. 이제 속도 그래프 아래를 작은 조각으로 나누어, 실제로 쌓인 이동량을 구해 보겠습니다.",
+          "candidate": "kart-start",
+          "source": "kart",
+          "sourceIn": 7,
+          "sourceOut": 21,
+          "concept": "Acceleration · 가속도",
+          "question": "멈춤에서 출발로",
+          "ko": [
+            "가속도를 실제 게임에서 확인해 볼게요.",
+            "출발 신호 뒤에 카트가 정지 상태에서 움직이기 시작합니다.",
+            "움직인 거리보다 먼저, 속도가 달라지는 과정에 주목하세요."
+          ],
+          "en": [
+            "Let us observe acceleration in an actual game.",
+            "After the starting signal, the kart begins moving from rest.",
+            "Focus first on how its velocity changes rather than just the distance traveled."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "a30412982c1ad346b28a152f110cf3f769509d72ef5a64b1f75632bff6bf4473"
+        },
+        {
+          "key": "M25-03",
+          "afterScene": "030",
+          "atFrame": 47892,
+          "previousSpeech": "지금까지는 잘게 나누어 더하는 뜻에서 적분을 봤습니다. 그런데 위치 식을 미분하면 속도, 다시 미분하면 가속도가 되었죠. 반대로 속도를 보고 그 도함수가 되는 위치 함수를 찾을 수도 있습니다. 이런 함수를 원시함수 또는 부정적분의 한 대표라고 합니다. 일정한 가속도 에이를 적분하면 에이 티와 상수가 나오고, 이것을 다시 적분하면 이분의 일 에이 티 제곱에 초기 속도 항과 초기 위치가 더해집니다.",
+          "followingSpeech": "거듭제곱은 지수를 하나 올리고 그 새 지수로 나누면 됩니다. 예를 들어 티 제곱의 원시함수는 티 세제곱 나누기 삼이고, 미분하면 다시 티 제곱이 되는지 확인할 수 있어요. 단, 지수가 마이너스 일이면 새 지수가 영이라 이 규칙으로 나눌 수 없습니다. 영을 포함하지 않는 구간에서 티의 역수를 적분할 때는, 먼저 티의 절댓값을 구하고 그 값에 자연로그를 취하면 원시함수 하나가 됩니다. 규칙을 기억하는 것과 적용 가능한 조건을 확인하는 것은 함께 해야 합니다.",
+          "candidate": "car-land",
+          "source": "forza",
+          "sourceIn": 48,
+          "sourceOut": 65,
+          "concept": "Integration · 적분",
+          "question": "변화가 쌓여 다음 위치로",
+          "ko": [
+            "적분의 관점으로 실제 움직임을 다시 보겠습니다.",
+            "차가 전진하는 동안 매 순간의 이동이 쌓여 다음 위치가 됩니다.",
+            "이 장면에 공식을 측정한 것은 아니고, 누적이라는 뜻을 연결하는 겁니다."
+          ],
+          "en": [
+            "Let us view actual motion through the idea of integration.",
+            "Successive small movements accumulate as the car advances.",
+            "We are connecting the meaning of accumulation, not measuring this game with our formula."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "a30412982c1ad346b28a152f110cf3f769509d72ef5a64b1f75632bff6bf4473"
+        }
+      ],
+      "retainedExistingCases": [
+        {
+          "key": "M25-02",
+          "afterScene": "017",
+          "atFrame": 26515,
+          "previousSpeech": "예를 들어 목표의 높이와 같은 순간은 올라갈 때와 내려올 때 두 번일 수 있습니다. 하지만 그때 수평 위치가 목표와 다르면 적중한 것이 아닙니다. 수직 방정식에서 얻은 시간마다 전체 위치를 계산해 목표와 비교해야 해요. 두 직선이 교차한다는 것만으로 앞으로 움직이는 두 광선이 만나거나 같은 시각에 두 물체가 만난다고 할 수도 없습니다. 위치뿐 아니라 방향과 시간 조건이 함께 맞아야 합니다.",
+          "followingSpeech": "마리오가 발판에서 뛰면, 위로 올라갔다가 내려와 다시 발판에 닿습니다. 이 움직임을 수평과 수직으로 나누어 읽어 보죠. 이제 점프를 보기 편하게 위쪽을 양수로 바꾸겠습니다. 중력의 크기 지는 양수이고, 수직 가속도는 마이너스 지입니다. 이 부호 약속에서 수평 속도는 일정하고 수직 속도는 브이 영 와이 빼기 지 티입니다. 출발점을 원점으로 두면 수평 위치는 처음 수평 속도에 시간을 곱한 값이고, 높이는 처음 수직 속도에 시간을 곱한 값에서 중력 때문에 떨어진 몫, 즉 중력의 크기에 시간의 제곱을 곱한 값의 절반을 빼면 됩니다. 수평 운동과 수직 운동은 같은 시간을 공유하면서 독립적으로 계산됩니다.",
+          "candidate": "mario-jump",
+          "source": "mario",
+          "sourceIn": 1460,
+          "sourceOut": 1483,
+          "concept": "Projectile Motion · 포물선 운동",
+          "question": "같은 순간의 가로와 세로",
+          "ko": [
+            "두 방향을 함께 보려면 실제 점프가 좋습니다.",
+            "마리오는 앞으로 가면서 동시에 위로 올랐다 내려옵니다.",
+            "발판에 닿으려면 같은 순간에 가로와 세로가 모두 맞아야 하죠."
+          ],
+          "en": [
+            "An actual jump helps us examine both directions together.",
+            "Mario moves forward while rising and then falling.",
+            "To reach a platform, both horizontal and vertical positions must agree at the same time."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "temporal strip inspected; final voiced interval and composite require QA",
+          "omitAsAdjacentDuplicate": true,
+          "retainedExistingScene": "018",
+          "reason": "The accepted lesson already plays an appropriate actual-game example after this concept; do not immediately repeat an overlapping demonstration."
+        }
+      ]
+    },
+    {
+      "id": "M26",
+      "slug": "game-math-circular-motion",
+      "title": "원운동",
+      "baselineFiles": {
+        "clean": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-circular-motion\\game-math-circular-motion.clean.mp4",
+          "sha256": "7c2f1624c4998a6bcb19be5f34fb9799ceb8f715e9fa796e162d00ac3e74ae74"
+        },
+        "captioned": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-circular-motion\\game-math-circular-motion.captioned.mp4",
+          "sha256": "eae9dbee82294a19f1909376b7a265d1d18f626bf91cbb0c9d324a8805451268"
+        },
+        "ko": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-circular-motion\\game-math-circular-motion.ko.srt",
+          "sha256": "e09f8188b522f78daafd17c73d7ee2675dee098a1d829d6f58b707d7839fc160"
+        },
+        "en": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-circular-motion\\game-math-circular-motion.en.srt",
+          "sha256": "3f2fcce75b31140f1686a4f9f04f2fac92b5a8651459944c449377a4f90c0c13"
+        }
+      },
+      "baselineFrames": 58697,
+      "inserts": [
+        {
+          "key": "M26-01",
+          "afterScene": "010",
+          "atFrame": 16054,
+          "previousSpeech": "차 안에서 몸이 바깥쪽으로 밀리는 느낌은 중심을 향하는 가속도와 모순되지 않습니다. 지면 기준에서 물체는 관성 때문에 직선으로 계속 가려 하고, 차나 좌석이 안쪽으로 꺾는 힘을 줍니다. 차와 함께 도는 좌표계로 설명하면 바깥쪽 원심력이라는 관성력을 도입할 수 있어요. 어느 좌표계에서 설명하는지 정하지 않은 채 두 화살표를 같은 실제 힘처럼 더하면 안 됩니다.",
+          "followingSpeech": "왕국의 눈물에서는 울트라핸드로 돛을 집어 들고, 누워 있던 돛대를 세워 뗏목에 붙입니다. 어느 쪽 축으로 돌리는지가 물체의 자세를 바꾸죠. 평면에서는 시계 방향인지 반시계 방향인지만 정하면 됐습니다. 삼차원에서는 어느 축을 중심으로 도는지도 필요하죠. 축 방향 단위 벡터를 엔이라고 하고, 회전 속도를 오메가로 두면 둘을 곱해 각속도 벡터를 만들 수 있습니다. 이 벡터는 입자가 달려가는 방향이 아니라 회전축을 가리킵니다. 축과 반지름이 수직일 때, 각속도 벡터와 반지름의 외적이 접선 속도를 줍니다.",
+          "candidate": "kart-turn",
+          "source": "kart",
+          "sourceIn": 40,
+          "sourceOut": 62,
+          "concept": "Centripetal Acceleration · 구심가속도",
+          "question": "방향이 바뀌는 코너",
+          "ko": [
+            "방향이 바뀌는 가속도를 실제 게임에서 보겠습니다.",
+            "카트가 코너를 도는 동안 앞으로 향하는 방향도 계속 꺾입니다.",
+            "속력의 변화와 방향의 변화를 구별해 보세요."
+          ],
+          "en": [
+            "Let us observe acceleration associated with changing direction.",
+            "As the kart rounds a corner, its forward direction keeps turning.",
+            "Distinguish a change in speed from a change in direction."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "aeadf0e7d025e03e87765fd2ef886a7f90f5ed5446ae58c1ea8d9d8b660e6a81"
+        },
+        {
+          "key": "M26-02",
+          "afterScene": "015",
+          "atFrame": 23702,
+          "previousSpeech": "하지만 일반적인 한 점의 속도만으로 모든 회전 성분을 알아낼 수는 없습니다. 반지름과 평행한 축으로 더 돌려도 그 한 점의 속도는 변하지 않기 때문입니다. 식이 되찾는 것은 반지름에 수직인 각속도 성분입니다. 또 속도가 반지름 방향을 향한 성분은 외적에서 사라집니다. 따라서 이 식을 임의의 움직임에 적용하면, 그 기준점을 중심으로 보이는 접선 움직임만 뽑아내는 셈입니다.",
+          "followingSpeech": "일정한 속도로 직선 이동하는 물체를 옆의 고정점에서 바라보겠습니다. 멀리 있을 때는 방향이 조금씩 변하지만, 가까이 지날 때는 시선 방향이 빠르게 돌아갑니다. 선속도가 일정해도 그 점에 대한 각속도는 달라진다는 뜻입니다. 가장 가까운 지점에서 그 크기가 최대가 되고 멀어지면 다시 작아집니다. 원운동의 각속도가 일정하다는 설명도 원의 중심을 기준으로 한 이야기였음을 확인할 수 있습니다.",
+          "candidate": "zelda-turn",
+          "source": "zelda",
+          "sourceIn": 998,
+          "sourceOut": 1014,
+          "concept": "Angular Velocity · 각속도",
+          "question": "판의 중심과 바깥쪽 점",
+          "ko": [
+            "회전하는 물체에서도 확인해 볼게요.",
+            "같은 판에서 중심에 가까운 점과 가장자리를 함께 보세요.",
+            "같은 각도를 돌아도 바깥쪽 점이 더 긴 길을 지나갑니다."
+          ],
+          "en": [
+            "Let us observe a rotating object in an actual game.",
+            "Watch a point near the center and a point near the edge of the same panel.",
+            "For the same angular change, the outer point travels farther."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "aeadf0e7d025e03e87765fd2ef886a7f90f5ed5446ae58c1ea8d9d8b660e6a81"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M27",
+      "slug": "game-math-forces-friction",
+      "title": "힘과 마찰",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-forces-friction\\game-math-forces-friction.clean.mp4",
+          "sha256": "d5a4a75dc3e361288e6ef419a4f52ad053c4ddfeba10e19e1503ac0f96097858"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-forces-friction\\game-math-forces-friction.captioned.mp4",
+          "sha256": "0bf384bc059ca5db460047a6ee6526d8896d9d31ea50d16005d7bfb94c0e7992"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-forces-friction\\game-math-forces-friction.ko.srt",
+          "sha256": "849f9db7da4d47ac06edd31e0f76e9a28e6088d002d70f991fc4501583725c19"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-forces-friction\\game-math-forces-friction.en.srt",
+          "sha256": "c7c2e3dbcf9263a44d25d1fd0b15616e8f25ada790e7630840671a2fb53888bf"
+        }
+      },
+      "baselineFrames": 47398,
+      "inserts": [
+        {
+          "key": "M27-03",
+          "afterScene": "030",
+          "atFrame": 45170,
+          "previousSpeech": "마찰 식에는 겉보기 접촉 면적이 직접 들어가지 않습니다. 같은 무게의 화분을 더 작은 받침에 올려도, 이 모델에서는 수직항력과 계수가 같으면 미끄럼 한도도 같습니다. 같은 힘을 더 작은 면적으로 받치면 평균 압력은 더 커집니다. 압력은 힘을 면적으로 나눈 값이기 때문이죠. 하지만 높고 가느다란 화분은 미끄러지기 전에 넘어질 수도 있습니다. 그것은 회전과 토크의 문제로 이어집니다.",
+          "followingSpeech": "처음의 상자로 돌아오면, 해야 할 일은 하나의 흐름으로 정리됩니다. 누구에게 작용하는 힘인지 정하고, 중력과 접촉력과 마찰을 방향까지 합친 뒤, 질량으로 나누어 가속도를 구합니다. 그리고 그 가속도로 다음 순간의 속도와 위치를 만듭니다. 현실의 법칙을 이해하면 게임에서 바꿀 값을 더 정확히 고를 수 있습니다. 다음에는 목표 위치로 되돌아오려는 용수철의 힘을 더해, 튀고 흔들리다가 부드럽게 멈추는 움직임으로 이어가겠습니다.",
+          "candidate": "beam-climb",
+          "source": "beam",
+          "sourceIn": 30,
+          "sourceOut": 54,
+          "concept": "Contact and Friction · 접촉과 마찰",
+          "question": "타이어와 바위의 접촉",
+          "ko": [
+            "마찰은 실제 게임에서 이동을 돕기도 합니다.",
+            "바퀴가 바위에 닿은 채 차를 밀어 올리는 모습을 보세요.",
+            "접촉을 통해 힘을 전달한다는 뜻을 떠올리면 됩니다."
+          ],
+          "en": [
+            "Friction can also help movement in an actual game.",
+            "Watch the wheels push the vehicle up while touching the rocks.",
+            "Recall that contact allows forces to be transmitted."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "76c895707c9deecb0c5a9206e7633571ed5b09f2b68c30a837f8e8a87508cfbf"
+        }
+      ],
+      "retainedExistingCases": [
+        {
+          "key": "M27-01",
+          "afterScene": "011",
+          "atFrame": 15994,
+          "previousSpeech": "지면에서 보면 샌드위치는 아래로 떨어집니다. 일정한 속도로 지나가는 차나 우주선에서 보면 옆으로도 움직여 포물선처럼 보일 수 있지만, 같은 법칙으로 설명됩니다. 관성 기준계끼리는 서로 회전하지 않고 일정한 속도로 직선 운동합니다. 지구에 붙은 좌표계도 자전과 공전 때문에 완벽한 관성계는 아닙니다. 다만 짧고 작은 실험에서는 그 효과를 무시할 수 있는지 판단해 사용합니다.",
+          "followingSpeech": "대포를 한 발 쏴 볼까요? 포탄은 앞으로 날아가고 대포를 실은 차체는 뒤로 들려 넘어집니다. 서로 영향을 주는 대포와 포탄을 먼저 나누어 보면, 힘의 짝을 이해하기 쉬워집니다. 이제 기준계를 정했으니 물체들이 서로 미는 상황으로 돌아가겠습니다. 물체 에이가 비를 밀면, 비도 에이를 같은 크기와 반대 방향의 힘으로 밉니다. 이것이 작용·반작용입니다. 한 힘이 먼저 생기고 나중에 답장처럼 반작용이 생기는 뜻은 아닙니다. 같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+          "candidate": "cannon",
+          "source": "besiege",
+          "sourceIn": 173,
+          "sourceOut": 191,
+          "concept": "Action and Reaction · 작용과 반작용",
+          "question": "포탄과 발사 장치",
+          "ko": [
+            "힘을 받는 대상을 실제 게임에서 나누어 볼게요.",
+            "포탄이 나가는 순간 발사 장치에도 움직임이 생깁니다.",
+            "서로 다른 물체에 작용하는 힘을 한 물체의 힘처럼 지우면 안 됩니다."
+          ],
+          "en": [
+            "Let us separate the objects in an actual game.",
+            "The launcher also moves as its projectile is fired.",
+            "Forces acting on different objects must not be canceled as if they act on one object."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "temporal strip inspected; final voiced interval and composite require QA",
+          "omitAsAdjacentDuplicate": true,
+          "retainedExistingScene": "012",
+          "reason": "The accepted lesson already plays an appropriate actual-game example after this concept; do not immediately repeat an overlapping demonstration."
+        },
+        {
+          "key": "M27-02",
+          "afterScene": "017",
+          "atFrame": 24936,
+          "previousSpeech": "만유인력은 두 질량의 곱에 비례하고 거리의 제곱에 반비례합니다. 여기서 식의 에프는 힘의 크기이고, 방향은 서로를 향합니다. 거리를 두 배로 늘리면 힘은 사분의 일이 됩니다. 지는 비례상수입니다. 두 물체를 점질량이나 구대칭 분포로 다룰 수 있을 때 이 간단한 식을 직접 쓰며, 가까이 놓인 복잡한 모양까지 질량중심 거리 하나로 정확히 계산하는 식은 아닙니다.",
+          "followingSpeech": "왕국의 눈물에서 링크가 절벽 아래 물로 뛰어내립니다. 발밑의 지지가 사라진 뒤 아래로 내려가는 모습을 보면서, 이제 중력을 단순한 게임 월드의 식으로 옮겨 보죠. 하지만 지표 근처의 작은 게임 월드에서는 지구의 곡률과 고도 차이를 생략할 수 있습니다. 그러면 아래 방향이 일정하고, 중력은 질량에 일정한 벡터 지를 곱한 값이 됩니다. 이를 질량으로 나누면 가속도는 지 자체입니다. 무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+          "candidate": "mario-jump",
+          "source": "mario",
+          "sourceIn": 1460,
+          "sourceOut": 1483,
+          "concept": "Gravity · 중력",
+          "question": "공중에서 오르고 내려오기",
+          "ko": [
+            "중력의 역할은 실제 점프로 확인해 보겠습니다.",
+            "발판을 떠난 마리오는 위로 가다가 아래로 돌아옵니다.",
+            "화면의 움직임과, 우리가 만든 중력 모형을 연결해 보세요."
+          ],
+          "en": [
+            "Let us observe the role of gravity in an actual jump.",
+            "After leaving the platform, Mario rises and then returns downward.",
+            "Connect the visible movement with the gravity model we constructed."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "temporal strip inspected; final voiced interval and composite require QA",
+          "omitAsAdjacentDuplicate": true,
+          "retainedExistingScene": "018",
+          "reason": "The accepted lesson already plays an appropriate actual-game example after this concept; do not immediately repeat an overlapping demonstration."
+        }
+      ]
+    },
+    {
+      "id": "M28",
+      "slug": "game-math-springs-damping",
+      "title": "용수철과 감쇠",
+      "baselineFiles": {
+        "clean": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-springs-damping\\game-math-springs-damping.clean.mp4",
+          "sha256": "65f3391a4e63cc99489dd30b6bdae78c2abf8870ecc0b8e633c3a6ff62814268"
+        },
+        "captioned": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-springs-damping\\game-math-springs-damping.captioned.mp4",
+          "sha256": "83f3335d4d9ec11499c4892c424402c8d350238aa3cb5b0414746628bc1c5b98"
+        },
+        "ko": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-springs-damping\\game-math-springs-damping.ko.srt",
+          "sha256": "48bec14f75d6f2ca4218be8d1d2fcf55cbd2dbdb430d0785881222dc9064f32c"
+        },
+        "en": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-springs-damping\\game-math-springs-damping.en.srt",
+          "sha256": "5cc3400624a6644278f3d8db46520eb7fd43b4cadd9d4c27f52349241dca1f68"
+        }
+      },
+      "baselineFrames": 36485,
+      "inserts": [
+        {
+          "key": "M28-01",
+          "afterScene": "003",
+          "atFrame": 6154,
+          "previousSpeech": "힘이 없는 위치를 엑스 영으로 잡겠습니다. 오른쪽으로 벗어나면 엑스가 양수이고, 힘은 마이너스 케이 엑스입니다. 이를 질량으로 나누면 가속도는 마이너스 케이 나누기 엠, 곱하기 엑스입니다. 같은 용수철이라도 무거운 물체는 덜 가속됩니다. 대문자 케이는 용수철 상수를 질량으로 나눈 값으로 구분해 두겠습니다.",
+          "followingSpeech": "이 식은 현재 위치를 알면 가속도를 알려 줍니다. 하지만 나중의 위치 자체는 아직 없습니다. 위치와 그 미분인 속도, 두 번째 미분인 가속도를 연결한 식을 미분방정식이라고 합니다. 우리가 찾을 것은 이 관계를 만족하는 위치 함수입니다. 복잡한 풀이법 대신 움직임에서 후보를 만든 뒤, 두 번 미분해 맞는지 확인하겠습니다.",
+          "candidate": "chomp",
+          "source": "mario",
+          "sourceIn": 1227,
+          "sourceOut": 1241,
+          "concept": "Restoring Force · 복원력",
+          "question": "당기기와 놓기",
+          "ko": [
+            "되돌아가려는 힘을 실제 게임의 동작에 연결해 볼게요.",
+            "묶인 멍멍이를 당겼다가 놓으면 반대쪽으로 튀어나갑니다.",
+            "게임의 정확한 식이 아니라, 변형과 되돌아가는 움직임을 보세요."
+          ],
+          "en": [
+            "Let us connect a returning force to a visible action in an actual game.",
+            "Pulling and releasing the tethered Chain Chomp sends it back the other way.",
+            "Observe displacement and return; this is not a claim about the game’s exact formula."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "a409c77132f183d8167c2b7217c4b9e4b5c73a6a4c144ae4fe0c08681301f168"
+        },
+        {
+          "key": "M28-02",
+          "afterScene": "015",
+          "atFrame": 23390,
+          "previousSpeech": "진동하지 않는다는 말이 어떤 초기 속도에서도 목표를 한 번도 넘지 않는다는 뜻은 아닙니다. 위치 일, 각진동수 사에서 초기 속도를 마이너스 십으로 주면 식 앞부분은 일 마이너스 육 티입니다. 육분의 일 초 뒤에 부호가 바뀌어 목표를 통과합니다. 반복 진동은 없지만 한 번의 통과는 있는 셈입니다.",
+          "followingSpeech": "라이더스 리퍼블릭에서는 자전거가 길을 돌아도 카메라가 뒤에서 따라오며 선수를 화면에 붙잡아 둡니다. 이런 따라가기 동작을 우리 모형에서 만든다면, 어디까지 따라갈지를 먼저 정해야겠죠. 이번에는 용수철의 목표를 움직여 보겠습니다. 카메라가 따라갈 위치, 적이 조준할 각도, 스틱이 요구하는 속도, 메뉴 표시가 가야 할 위치가 목표값이 될 수 있습니다. 제어에서는 설정값이라고 부릅니다. 입력은 원하는 값이고 출력은 실제 사용할 값입니다. 둘의 차이가 오차입니다. 입력은 힘 자체보다는 용수철의 반대쪽 끝을 옮기는 것에 가깝습니다.",
+          "candidate": "suspension",
+          "source": "beam",
+          "sourceIn": 5,
+          "sourceOut": 27,
+          "concept": "Damping · 감쇠",
+          "question": "충격 뒤의 차체 흔들림",
+          "ko": [
+            "흔들림이 줄어드는 과정은 실제 게임의 서스펜션으로 보겠습니다.",
+            "요철을 지난 뒤 바퀴와 차체의 흔들림이 변하는 모습을 보세요.",
+            "움직임을 만드는 탄성과 흔들림을 줄이는 역할을 구별하면 됩니다."
+          ],
+          "en": [
+            "Let us observe how oscillation subsides through a game suspension.",
+            "Watch how the wheels and body respond after crossing uneven ground.",
+            "Distinguish the elastic response from the role of reducing oscillation."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "a409c77132f183d8167c2b7217c4b9e4b5c73a6a4c144ae4fe0c08681301f168"
+        },
+        {
+          "key": "M28-03",
+          "afterScene": "023",
+          "atFrame": 34819,
+          "previousSpeech": "목표를 일정한 속도로 쫓는 방법도 있고, 이전 값들을 가중해 섞는 필터도 있습니다. 목표가 바뀌자마자 속도가 바뀌어도 되는지, 관성을 남겨야 하는지에 따라 선택은 다릅니다. 용수철과 감쇠는 반응의 빠르기와 흔들림을 따로 조절하기 좋은 도구입니다. 물리적인 비유를 이해하면 위치뿐 아니라 게임의 여러 값에도 같은 구조를 적용할 수 있습니다.",
+          "followingSpeech": "부드러운 움직임을 두 역할로 나눴습니다. 멀어질수록 되돌리는 힘, 그리고 속도를 줄이는 힘입니다. 합쳐서 시간에 따라 갱신하면 숫자가 게임의 반응으로 바뀝니다. 다음에는 힘이 아주 짧게 작용하는 충돌로 가겠습니다. 계속 누르는 힘과 한 번의 충격은 어떻게 연결될까요?",
+          "candidate": "rider-follow",
+          "source": "rider",
+          "sourceIn": 783,
+          "sourceOut": 799,
+          "concept": "Target Following · 목표 추종",
+          "question": "캐릭터와 따라오는 시점",
+          "ko": [
+            "목표를 따라가는 움직임도 실제 게임에서 볼까요?",
+            "라이더가 움직일 때 카메라도 그 뒤를 따라 위치를 바꿉니다.",
+            "방금 만든 추종 모형이 해결하려는 화면의 문제입니다."
+          ],
+          "en": [
+            "Let us also observe target following in an actual game.",
+            "As the rider moves, the camera changes position to follow behind.",
+            "This is the visible problem our following model is intended to address."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "a409c77132f183d8167c2b7217c4b9e4b5c73a6a4c144ae4fe0c08681301f168"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M29",
+      "slug": "game-math-momentum-collisions",
+      "title": "운동량과 충돌",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-momentum-collisions\\game-math-momentum-collisions.clean.mp4",
+          "sha256": "55236c6c222d7beb03849344adda51f3ae081fc3bedd549fad4587c00677972c"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-momentum-collisions\\game-math-momentum-collisions.captioned.mp4",
+          "sha256": "4cd23f7676a18357a9cb58302a901e2c7b141070bed34d59aa97ce256d2c270f"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-momentum-collisions\\game-math-momentum-collisions.ko.srt",
+          "sha256": "c28ace04aa998197ee07e92033b62274f2197fd9b65a498a7d6983deaab958b1"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-momentum-collisions\\game-math-momentum-collisions.en.srt",
+          "sha256": "a827c1fafa3af472efaf7b714377b5c6b354df6cc80b0a726dee5fa2671005ca"
+        }
+      },
+      "baselineFrames": 52611,
+      "inserts": [
+        {
+          "key": "M29-01",
+          "afterScene": "005",
+          "atFrame": 8150,
+          "previousSpeech": "적분 관계를 거꾸로 미분하면 알짜힘은 운동량의 변화율입니다. 같은 운동량을 더 짧은 시간 안에 바꾸려면 더 큰 평균 힘이 필요합니다. 질량이 일정하면 운동량을 미분한 값이 질량 곱하기 가속도가 되므로, 앞에서 배운 뉴턴의 제2법칙과 이어집니다.",
+          "followingSpeech": "사람이 땅을 밀며 상자를 출발시키면 지구도 반대 운동량을 받습니다. 지구가 무거워 속도 변화가 잘 안 보일 뿐입니다. 상자가 나무에 부딪히거나 풀밭에서 마찰로 멈추면, 그 운동량을 다시 땅으로 전달합니다. 다른 상자에 부딪히면 그 상자가 대신 움직일 수 있습니다. 운동량은 내부에서 옮겨 다니며, 어떤 물체들까지 한 계로 묶었는지가 중요합니다.",
+          "candidate": "crash-impact",
+          "source": "crash",
+          "sourceIn": 24,
+          "sourceOut": 42,
+          "concept": "Impulse · 충격량",
+          "question": "충돌 전후의 움직임",
+          "ko": [
+            "짧은 충격은 실제 게임에서 확인해 보겠습니다.",
+            "자동차가 부딪히기 전과 뒤의 움직임을 비교해 보세요.",
+            "힘이 작용한 시간 동안 운동량이 달라진다는 뜻으로 읽으면 됩니다."
+          ],
+          "en": [
+            "Let us observe a short impact in an actual game.",
+            "Compare the car’s movement immediately before and after the collision.",
+            "Interpret this as a change in momentum during the interval of applied force."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "2385edd213ee1b1606bc1bde9326397f39ae98e3a0ad2397e6e135d198017c8f"
+        },
+        {
+          "key": "M29-02",
+          "afterScene": "007",
+          "atFrame": 10838,
+          "previousSpeech": "계 내부에서는 물체들이 서로 움직여도, 알짜 외력이 영이면 전체 운동량은 일정합니다. 내부의 작용·반작용을 합하면 서로 지워지기 때문입니다. 멈춰 보이는 한 물체만 보고 운동량이 사라졌다고 판단하면 안 됩니다. 두 물체의 충돌을 계산할 때도 충돌 시간 동안의 외부 충격량이 작다고 보고 전체 운동량을 보존시킵니다.",
+          "followingSpeech": "여러 부분을 하나로 묶었을 때 대표 위치가 질량중심입니다. 물체 전체의 중력이 거의 균일하면 무게중심과 같습니다. 불규칙한 판을 한 지점에서 매달고 흔들림이 멈추면, 줄의 수직선 아래에 무게중심이 있어야 합니다. 다른 지점에 매달아 선을 하나 더 그리면 교점이 나오죠. 세 번째 지점에서도 같은 교점을 확인할 수 있습니다.",
+          "candidate": "besiege-impact",
+          "source": "besiege",
+          "sourceIn": 293,
+          "sourceOut": 311,
+          "concept": "System Boundary · 계의 경계",
+          "question": "어떤 물체까지 함께 볼까?",
+          "ko": [
+            "이번에는 여러 물체를 함께 보겠습니다.",
+            "발사체가 날아가 대상을 맞히면 양쪽의 움직임을 살펴보세요.",
+            "한 물체만 보는 대신, 무엇을 같은 계로 묶을지 정하는 연습입니다."
+          ],
+          "en": [
+            "Now watch more than one object together.",
+            "Observe both the projectile and the target when they interact.",
+            "Practice deciding which objects belong to the system rather than examining just one."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "2385edd213ee1b1606bc1bde9326397f39ae98e3a0ad2397e6e135d198017c8f"
+        },
+        {
+          "key": "M29-03",
+          "afterScene": "020",
+          "atFrame": 29638,
+          "previousSpeech": "게임의 발차기는 발 모양의 강체가 직접 부딪혀야만 판정되는 것은 아닙니다. 거리 검사나 광선 검사로 맞았다고 정한 뒤, 접촉 위치와 방향을 만들어 반응에 연결할 수도 있습니다. 소리, 파티클, 체력 변화와 밀려나는 동작을 같은 사건으로 묶는 겁니다. 다만 이런 값은 설계한 판정값입니다. 지금부터의 계산은 회전을 빼고 두 물체의 선운동만 다루겠습니다.",
+          "followingSpeech": "충돌 시간의 힘을 하나하나 계산하는 대신, 운동량 변화인 충격량을 구하겠습니다. 한 물체에 준 만큼 다른 물체에는 반대로 줍니다. 마찰 없는 이 모델에서는 접촉 법선 방향의 접근을 막습니다. 표면을 따라가는 접선 방향의 움직임은 그대로 남습니다. 법선 방향으로 들어가는 성분과 옆으로 스치는 성분을 먼저 나누면, 바꿔야 하는 것이 보입니다.",
+          "candidate": "mario-contact",
+          "source": "mario",
+          "sourceIn": 1442,
+          "sourceOut": 1457,
+          "concept": "Collision Response · 충돌 반응",
+          "question": "접촉과 그 뒤의 결과",
+          "ko": [
+            "충돌 판정과 반응도 실제 게임에서 나누어 볼게요.",
+            "조종한 멍멍이가 바위에 부딪히자 바위가 부서집니다.",
+            "닿았는지 찾는 일과 결과를 만드는 일은 별개입니다."
+          ],
+          "en": [
+            "Let us distinguish collision detection from response in an actual game.",
+            "The controlled Chain Chomp hits the rock, which then breaks.",
+            "Finding contact and deciding its consequence are separate tasks."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "2385edd213ee1b1606bc1bde9326397f39ae98e3a0ad2397e6e135d198017c8f"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M30",
+      "slug": "game-math-rigid-body-inertia",
+      "title": "강체와 관성",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-rigid-body-inertia\\game-math-rigid-body-inertia.clean.mp4",
+          "sha256": "941e8174239942ca15c04089467e0551702ae97cfbe2e73937e1fb09db09eaca"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-rigid-body-inertia\\game-math-rigid-body-inertia.captioned.mp4",
+          "sha256": "a9070495f7a71b2b5cee486cd646f363e75aeb49b386cef88b3ba92abff9c428"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-rigid-body-inertia\\game-math-rigid-body-inertia.ko.srt",
+          "sha256": "2d61a7cc4d6152ca4bcb3f7de8e9072331978d38da41713a532d032941988adf"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-rigid-body-inertia\\game-math-rigid-body-inertia.en.srt",
+          "sha256": "e4912342e3fa8d7818612d231df0c97bc5df322d9b8c9bee548d1f51719b6dc8"
+        }
+      },
+      "baselineFrames": 88042,
+      "inserts": [
+        {
+          "key": "M30-01",
+          "afterScene": "013",
+          "atFrame": 19814,
+          "previousSpeech": "삼차원 토크는 지렛팔과 힘의 외적으로 구합니다. 외적에 두 벡터의 길이와 사인이 이미 들어 있고, 결과 방향은 회전 효과의 축을 나타냅니다. 질점의 각운동량도 위치 벡터와 선운동량의 외적입니다. 이제 남은 질문은, 고정축에서 숫자 하나였던 관성모멘트를 삼차원에서 무엇으로 바꾸느냐입니다.",
+          "followingSpeech": "선운동량에 질량 곱하기 속도를 넣고, 회전하는 점의 속도에는 각속도와 위치의 외적을 넣겠습니다. 그러면 위치와, 각속도 외적 위치의 외적이 됩니다. 엑스 성분부터 펼치면 와이 제곱 더하기 제트 제곱이 오메가 엑스에 붙습니다. 나머지 각속도 성분에도 계수를 모읍니다. 세 줄을 행렬로 묶으면, 각운동량은 그 행렬 곱하기 각속도가 됩니다.",
+          "candidate": "cannon",
+          "source": "besiege",
+          "sourceIn": 173,
+          "sourceOut": 189,
+          "concept": "Torque · 토크",
+          "question": "밀림과 회전을 동시에",
+          "ko": [
+            "힘의 회전 효과를 실제 게임에서 보겠습니다.",
+            "발사 장치는 뒤로 밀리면서 기울기도 달라집니다.",
+            "질량중심의 이동과 몸체의 회전을 나누어 보세요."
+          ],
+          "en": [
+            "Let us observe the rotational effect of force in an actual game.",
+            "The launcher recoils while its orientation also changes.",
+            "Separate translation of the center of mass from rotation of the body."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "4a69c021557dc7ef79cc6e7f3428069b0271986d91c9158c0b99a6ef1f9fd4c5"
+        },
+        {
+          "key": "M30-02",
+          "afterScene": "022",
+          "atFrame": 32762,
+          "previousSpeech": "이 계산의 위치, 속도, 법선, 관성 텐서는 같은 좌표계여야 합니다. 몸체 기준 역관성은 고정돼도 월드 기준 값은 자세에 따라 바뀝니다. 열벡터 관례에서는 회전행렬, 몸체 역관성, 회전행렬의 전치 순서로 곱합니다. 행벡터 관례는 전치의 자리가 바뀝니다. 또 지금 법선 약속에서는 내적이 양수일 때만 새 반발을 계산합니다. 이미 멀어지는 물체를 다시 끌어당기면 안 됩니다.",
+          "followingSpeech": "이제 이 계산을 물리 엔진의 데이터와 연결하겠습니다. 핵심은 움직임을 가진 바디, 닿는 모양을 정하는 충돌 형상, 관계를 유지하는 제약입니다. 나무상자는 바디 하나로 충분할 수 있지만, 관절이 움직이는 사람은 여러 강체를 연결합니다. 화면의 그래픽 모델과 충돌 형상도 꼭 같을 필요는 없습니다.",
+          "candidate": "crash-impact",
+          "source": "crash",
+          "sourceIn": 24,
+          "sourceOut": 42,
+          "concept": "Collision and Rotation · 충돌과 회전",
+          "question": "충돌 위치와 회전 변화",
+          "ko": [
+            "접촉점이 중요한 이유를 실제 게임에서 볼게요.",
+            "차가 충돌한 뒤 밀려나는 방향과 돌아가는 모습을 함께 보세요.",
+            "충격량은 이동뿐 아니라 회전에도 영향을 줄 수 있습니다."
+          ],
+          "en": [
+            "Let us observe why the contact point matters in a game.",
+            "Watch both the displacement and rotation following a vehicle collision.",
+            "An impulse can affect rotation as well as translation."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "4a69c021557dc7ef79cc6e7f3428069b0271986d91c9158c0b99a6ef1f9fd4c5"
+        },
+        {
+          "key": "M30-03",
+          "afterScene": "033",
+          "atFrame": 49704,
+          "previousSpeech": "속도 기반 관점에서는 접촉, 관절, 모터를 함께 제약으로 씁니다. 속도가 조금 바뀌면 제약의 변화율이 얼마나 달라지는지 연결하는 행렬이 야코비 행렬입니다. 접촉은 더 빨리 떨어져도 괜찮지만 서로 파고들면 안 되므로, 항상 등식만 생기는 것은 아닙니다. 접촉력이 음수가 되어 끌어당기지 않는 조건까지 묶으면 선형 상보성 문제로 표현할 수 있습니다. 실제 솔버는 이런 접근들을 섞을 수 있습니다.",
+          "followingSpeech": "어떤 솔버를 써도 다음 시각의 위치와 속도를 구해야 합니다. 힘은 위치나 속도에 따라 달라지고, 여러 물체가 서로 연결돼 있을 수도 있습니다. 용수철 네 개가 얽힌 장치의 한 부분만 물속에 들어가면 힘의 변화가 더 복잡해집니다. 매 순간의 힘을 계산할 수 있어도 전체 시간 함수를 한 번에 풀기 어려워, 떨어진 시각의 값으로 진행하는 수치 적분을 사용합니다.",
+          "candidate": "beam-joints",
+          "source": "beam",
+          "sourceIn": 73,
+          "sourceOut": 98,
+          "concept": "Constraints · 구속 조건",
+          "question": "연결되어 함께 움직이는 부품",
+          "ko": [
+            "연결 조건도 실제 게임에서 확인해 보겠습니다.",
+            "요철을 넘을 때 바퀴와 차체는 따로 움직이면서도 연결되어 있습니다.",
+            "여러 부품의 관계를 유지하는 것이 구속 조건의 역할입니다."
+          ],
+          "en": [
+            "Let us observe connection constraints in an actual game.",
+            "Wheels and body move separately over bumps while remaining connected.",
+            "A constraint maintains a relationship between components."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "4a69c021557dc7ef79cc6e7f3428069b0271986d91c9158c0b99a6ef1f9fd4c5"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M31",
+      "slug": "game-math-parametric-hermite",
+      "title": "매개 곡선과 에르미트",
+      "baselineFiles": {
+        "clean": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-parametric-hermite\\game-math-parametric-hermite.clean.mp4",
+          "sha256": "4245b7dae511b037995774359b32a652cfac840eb86afafbf6dfe4096df26312"
+        },
+        "captioned": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-parametric-hermite\\game-math-parametric-hermite.captioned.mp4",
+          "sha256": "b596451106959dfe6c2ff41accf147914ecb6ac83af891df45bce8e2f784998d"
+        },
+        "ko": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-parametric-hermite\\game-math-parametric-hermite.ko.srt",
+          "sha256": "73261d60a0d9f28bdfc032aa039e2afcd45d2c0bb3826f7f6b5afc858bdeac9e"
+        },
+        "en": {
+          "path": "D:\\Github\\VideoEditing\\output\\game-math-direction-overview-20261115\\local-masters\\game-math-parametric-hermite\\game-math-parametric-hermite.en.srt",
+          "sha256": "ca18d3192de754839cdf0b1dfe6daee6b53fe38b7e3b3157ad7fe6a8aeb5cbb9"
+        }
+      },
+      "baselineFrames": 48217,
+      "inserts": [
+        {
+          "key": "M31-01",
+          "afterScene": "011",
+          "atFrame": 15826,
+          "previousSpeech": "직선 피 영 더하기 티 디를 미분하면 속도는 디로 일정하고 가속도는 영입니다. 그런데 티 대신 티 제곱을 넣으면 지나가는 선은 그대로인데 처음에는 천천히, 나중에는 빨라집니다. 같은 시간 간격으로 표시한 점의 간격이 벌어지는 것이 보이죠. 경로의 모양과 그 위를 움직이는 속도는 서로 다른 설계 대상입니다.",
+          "followingSpeech": "마리오 갤럭시에서는 스타를 타고 다음 행성으로 날아갑니다. 휘어진 길을 지나는 동안 나아가는 방향도 달라지죠. 이제 우리가 만드는 곡선에서 그 순간의 방향을 구해 보겠습니다. 일차 도함수는 곡선에 닿아 나아가는 접선 방향을 가리킵니다. 길이가 다른 화살표 중에서 방향만 필요하면 도함수를 그 길이로 나누어 단위 접선 벡터를 만듭니다. 도함수가 영인 지점에서는 이 나눗셈으로 방향을 정할 수 없으니 별도 처리가 필요합니다.",
+          "candidate": "train-curve",
+          "source": "train",
+          "sourceIn": 718,
+          "sourceOut": 742,
+          "concept": "Parametric Path · 매개변수 경로",
+          "question": "지나가는 길과 진행 속도",
+          "ko": [
+            "경로와 속도를 실제 게임에서 나누어 보겠습니다.",
+            "열차가 굽은 선로를 따라 이동합니다.",
+            "선로의 모양과, 그 위를 얼마나 빨리 지나가는지는 서로 다른 질문입니다."
+          ],
+          "en": [
+            "Let us distinguish a path from speed in an actual game.",
+            "A train moves along a curved railway.",
+            "The shape of the route and how quickly it is traversed are separate questions."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "ac7f616ebc362efedee6299716b1e6bac0f3826812171e551d196f7f1941a66f"
+        },
+        {
+          "key": "M31-02",
+          "afterScene": "026",
+          "atFrame": 34692,
+          "previousSpeech": "서로 다른 티 값에 점 네 개를 주면, 그 점들을 지나는 최대 삼차 다항식은 하나뿐입니다. 만약 두 개가 있다면 둘의 차이는 최대 삼차인데 영이 되는 점이 네 개나 있어야 하죠. 그러려면 차이가 전부 영이어야 합니다. 그래서 계산법을 바꾸는 것만으로는 지나침을 고칠 수 없습니다. 이제 곡선에 요구하는 조건 자체를 바꿔 보겠습니다.",
+          "followingSpeech": "새티스팩토리에서 선로를 이을 때는 연결할 끝을 움직이면 미리 보이는 선로의 굽은 모양도 달라집니다. 우리 경로도 도착 위치만 맞추는 데서 한 걸음 더 나아가, 양 끝에서 나아갈 방향까지 정해 보겠습니다. 에르미트 곡선은 중간에 지나야 할 점 두 개 대신, 출발점과 도착점에서의 도함수를 지정합니다. 시작 위치 피 영, 시작 속도 브이 영, 도착 속도 브이 일, 끝 위치 피 일이 네 조건입니다. 손잡이 화살표를 돌리면 방향이, 길게 늘리면 출발하거나 도착하는 변화량이 바뀝니다. 이 화살표는 방향만 가진 단위 벡터가 아닙니다.",
+          "candidate": "maker-path",
+          "source": "maker",
+          "sourceIn": 219,
+          "sourceOut": 235,
+          "concept": "Path Design · 경로 설계",
+          "question": "지나갈 위치를 먼저 정하기",
+          "ko": [
+            "원하는 길을 정하는 문제를 실제 게임에서 볼게요.",
+            "마리오 메이커에서는 트랙의 모양을 편집할 수 있습니다.",
+            "통과할 위치를 고르는 일과, 그 사이를 잇는 모양을 정하는 일을 구별하세요."
+          ],
+          "en": [
+            "Let us observe route design in an actual game.",
+            "Mario Maker allows the track shape to be edited.",
+            "Distinguish choosing locations from deciding how the route should connect them."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "ac7f616ebc362efedee6299716b1e6bac0f3826812171e551d196f7f1941a66f"
+        },
+        {
+          "key": "M31-03",
+          "afterScene": "033",
+          "atFrame": 44011,
+          "previousSpeech": "같은 삼차 곡선을 단항식 계수로도, 에르미트의 위치와 도함수로도 표현할 수 있습니다. 서로 다른 종류의 궤적을 새로 얻은 것이 아니라, 사람이 다루기 편한 입력을 바꾼 것입니다. 경로 편집기에서 출발과 도착 방향을 잡는 일이 계수 네 개를 직접 조절하는 것보다 직관적인 이유죠.",
+          "followingSpeech": "도착 위치의 가중치인 삼 티 제곱 빼기 이 티 세제곱은 다른 곳에서도 유용합니다. 영에서 일로 올라가되 양 끝 기울기가 영이어서, 갑자기 출발하고 멈추는 느낌을 줄일 수 있죠. 이것이 스무스스텝입니다. 양 끝 속도를 영으로 둔 두 위치 사이의 에르미트 보간으로 볼 수 있습니다.",
+          "candidate": "rail-edit",
+          "source": "train",
+          "sourceIn": 236,
+          "sourceOut": 260,
+          "concept": "Endpoint and Tangent · 끝점과 접선",
+          "question": "어디에, 어느 방향으로 이을까?",
+          "ko": [
+            "끝점과 방향의 조건을 실제 게임에 연결해 보겠습니다.",
+            "선로의 끝을 옮기면 연결되는 위치와 곡선의 모양이 함께 달라집니다.",
+            "방금 에르미트 곡선에 준 입력의 의미를 떠올려 보세요."
+          ],
+          "en": [
+            "Let us connect endpoint and direction constraints to an actual game.",
+            "Moving a rail endpoint changes the connection and the visible curve.",
+            "Recall the meaning of the inputs we gave to our Hermite curve."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "ac7f616ebc362efedee6299716b1e6bac0f3826812171e551d196f7f1941a66f"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M32",
+      "slug": "game-math-bezier-subdivision",
+      "title": "베지에와 분할",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-bezier-subdivision\\game-math-bezier-subdivision.clean.mp4",
+          "sha256": "3705d8d919050c892bdf5120883a3fb68663949e335dad5dcaf565ff7878d48f"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-bezier-subdivision\\game-math-bezier-subdivision.captioned.mp4",
+          "sha256": "547ccb8c28e2b4b1b8cba6c5b88fc79966e19c978a544844ec5dfa23ae5fa8ea"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-bezier-subdivision\\game-math-bezier-subdivision.ko.srt",
+          "sha256": "44623d95580c6204b5994f84fd1d62ca8fe80541c8ff2eee107af521c38692db"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-bezier-subdivision\\game-math-bezier-subdivision.en.srt",
+          "sha256": "29d10bbd867207647df7bf6842ef1dceb173abc1e8b5cd01977d2bf37446df82"
+        }
+      },
+      "baselineFrames": 41965,
+      "inserts": [
+        {
+          "key": "M32-01",
+          "afterScene": "016",
+          "atFrame": 21972,
+          "previousSpeech": "아이 번째 제어점의 가중치는 티가 아이 나누기 엔일 때 가장 큽니다. 삼차의 첫 내부점이라면 삼분의 일 부근에서 영향이 가장 강하죠. 여기서 가까움은 매개변수 순서에 대한 말입니다. 공간에서 가장 가까운 제어점이 항상 가장 큰 가중치를 가진다는 뜻은 아닙니다.",
+          "followingSpeech": "마리오 갤럭시에서 스타를 타고 출발할 때를 떠올려 보세요. 도착할 곳뿐 아니라 어떤 방향으로 나아가기 시작하는지도 경로의 모양에 영향을 줍니다. 우리가 만든 베지에 곡선에서는 그 방향을 손잡이로 정할 수 있어요. 손잡이가 모양에 얼마나 영향을 주는지 알았으니, 이제 출발 방향을 계산해 보겠습니다. 단항식 표현을 미분한 뒤 티에 영을 넣으면 시작 도함수는 비 일에서 비 영을 뺀 벡터의 삼 배입니다. 끝 도함수는 비 삼에서 비 이를 뺀 벡터의 삼 배입니다. 시작에서는 첫 내부점 쪽으로 나아가고, 끝에서는 마지막 내부점에서 끝점 쪽으로 나아갑니다.",
+          "candidate": "maker-path",
+          "source": "maker",
+          "sourceIn": 219,
+          "sourceOut": 235,
+          "concept": "Curve Control · 곡선 제어",
+          "question": "입력을 바꾸면 경로가 변한다",
+          "ko": [
+            "곡선을 조절한다는 뜻을 실제 게임에서 볼까요?",
+            "트랙을 편집하면 물체가 지나갈 길의 모양이 달라집니다.",
+            "이 장면이 베지에 구현이라는 뜻은 아니고, 우리가 제어점을 쓰는 목적과 연결됩니다."
+          ],
+          "en": [
+            "Let us observe what it means to control a curve.",
+            "Editing a track changes the visible route objects will follow.",
+            "This does not establish a Bézier implementation; it illustrates the purpose of control points."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "f2e8caa5755b4748149beb840e5716cf5df22bf8b31428edf6a5c0030c3459c1"
+        },
+        {
+          "key": "M32-02",
+          "afterScene": "021",
+          "atFrame": 29414,
+          "previousSpeech": "가속도가 크다고 무조건 많이 휘는 것은 아닙니다. 직선에서도 속력을 올리면 가속도는 있지만 곡률은 영입니다. 반대로 원을 일정한 속력으로 돌아도 방향이 변하므로 가속도가 있죠. 곡률은 속도와 가속도의 외적 길이를 속도 길이의 세제곱으로 나눠 구합니다. 속도가 영인 끝점에는 이 식을 그대로 넣지 않습니다.",
+          "followingSpeech": "새티스팩토리에서는 선로를 한 구간씩 미리 보고 이어 놓습니다. 우리도 긴 곡선 가운데 필요한 부분을 따로 다루고 싶다면, 먼저 그 부분을 독립적인 곡선으로 표현할 수 있어야 하죠. 이제 원하는 모양이 거의 완성됐는데 가운데 일부만 더 조절하고 싶다고 해 보죠. 곡선을 둘로 나누면 필요한 쪽에 손잡이를 더 쓸 수 있습니다. 많이 휘어진 곳만 촘촘히 나눠 선분으로 그리는 적응적 근사에도 유용합니다. 목표는 원래 곡선을 단순히 가리는 것이 아니라, 같은 부분을 독립적으로 표현하는 새 제어점들을 구하는 것입니다.",
+          "candidate": "kart-turn",
+          "source": "kart",
+          "sourceIn": 40,
+          "sourceOut": 58,
+          "concept": "Tangent · 접선",
+          "question": "곡선을 따라 달라지는 진행 방향",
+          "ko": [
+            "접선의 의미는 실제 주행으로 확인해 보겠습니다.",
+            "카트가 휘어진 길을 따라갈 때 진행 방향도 함께 바뀝니다.",
+            "경로의 현재 위치와 그 자리의 방향을 따로 보세요."
+          ],
+          "en": [
+            "Let us observe the meaning of a tangent during actual driving.",
+            "As the kart follows the curved road, its heading changes along the way.",
+            "Observe the current position on the path separately from its local direction."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "QA correction: replace meteor-obscured Galaxy footage with directly inspected continuous kart cornering; tangent is the observable local heading, not a measured game-engine value.",
+          "encodedReviewMasterSha256": "f2e8caa5755b4748149beb840e5716cf5df22bf8b31428edf6a5c0030c3459c1"
+        },
+        {
+          "key": "M32-03",
+          "afterScene": "028",
+          "atFrame": 40188,
+          "previousSpeech": "이제 중점 대신, 시작과 끝을 직접 정한 구간을 잘라 보겠습니다. 시작값을 에이, 끝값을 비라고 부르죠. 삼차 곡선이라 보간을 세 번 합니다. 첫 제어점에서는 세 번 모두 시작값을 씁니다. 둘째 점은 시작값 두 번에 끝값 한 번, 셋째 점은 시작값 한 번에 끝값 두 번이에요. 마지막 제어점에서는 세 번 모두 끝값을 씁니다. 어떤 순서로 쓰느냐보다 각각 몇 번 쓰느냐가 중요합니다. 보간에 쓰는 값들을 이렇게 대칭적으로 나누어 놓는 표현을 블로서밍이라고 부릅니다.",
+          "followingSpeech": "처음에는 곡선의 모양을 쉽게 조절할 입력을 찾았습니다. 반복 보간으로 점을 만들고, 그 계산을 가중치와 도함수로 읽으니 손잡이의 역할이 드러났죠. 같은 중간점들을 모으면 모양을 보존한 채 구간을 나눌 수도 있었습니다. 이제 남은 문제는 그렇게 만든 여러 조각을 어떻게 자연스럽게 이어 붙일지입니다.",
+          "candidate": "rail-edit",
+          "source": "train",
+          "sourceIn": 236,
+          "sourceOut": 260,
+          "concept": "Subcurve · 부분 곡선",
+          "question": "긴 길에서 한 구간 고르기",
+          "ko": [
+            "부분 곡선이 필요한 상황을 실제 게임에 연결해 볼게요.",
+            "긴 선로를 편집할 때도 지금 연결할 구간에 집중합니다.",
+            "우리 계산은 이미 만든 곡선의 일부를 모양 그대로 꺼내는 방법이었죠."
+          ],
+          "en": [
+            "Let us connect subcurves to a practical game situation.",
+            "When editing a long railway, we focus on the section being connected.",
+            "Our calculation extracts part of an existing curve while preserving its shape."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "f2e8caa5755b4748149beb840e5716cf5df22bf8b31428edf6a5c0030c3459c1"
+        }
+      ],
+      "retainedExistingCases": []
+    },
+    {
+      "id": "M33",
+      "slug": "game-math-splines-continuity",
+      "title": "스플라인과 연속성",
+      "baselineFiles": {
+        "clean": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-splines-continuity\\game-math-splines-continuity.clean.mp4",
+          "sha256": "ba783f4a172fbcfc2b92ef76c64256bf862327b6a6f6219a3de570f6268062f8"
+        },
+        "captioned": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-splines-continuity\\game-math-splines-continuity.captioned.mp4",
+          "sha256": "ed8dcbe05342eb6367c50b615a627bf6f6927b5767c82366a351f315d6c993fe"
+        },
+        "ko": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-splines-continuity\\game-math-splines-continuity.ko.srt",
+          "sha256": "41d158f4dc2b8c490dabdfd97539361547b4760a7eb3743252521a484f139046"
+        },
+        "en": {
+          "path": "C:\\Users\\1\\AppData\\Local\\YamyamCoding\\VideoEditingOutputs\\game-math-direction-overview-20261115\\game-math-splines-continuity\\game-math-splines-continuity.en.srt",
+          "sha256": "18c40af08c01634c26f5f85120d405a656591978e054c8fda5f9751280804f69"
+        }
+      },
+      "baselineFrames": 59213,
+      "inserts": [
+        {
+          "key": "M33-01",
+          "afterScene": "016",
+          "atFrame": 23446,
+          "previousSpeech": "더 높은 연속성을 요구할수록 자유도는 줄어듭니다. 삼차 조각 하나를 고정한 뒤 다음 조각의 위치를 맞추면 첫 제어점이, 속도를 맞추면 두 번째가, 가속도를 맞추면 세 번째가 정해집니다. 삼차 도함수까지 맞추면 네 점이 전부 정해져, 같은 다항식을 그대로 이어 간 것이 됩니다. 다른 모양으로 편집할 여지를 남기면서 삼차 조각을 잇는 기준은 보통 씨 이까지입니다.",
+          "followingSpeech": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다. 이런 움직임을 여러 지점을 잇는 우리 경로로 만들어 보겠습니다. 구간을 잇는 조건은 알았지만, 모든 접선을 직접 조절하는 것은 번거롭죠. 지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+          "candidate": "maker-corner",
+          "source": "maker",
+          "sourceIn": 213,
+          "sourceOut": 235,
+          "concept": "Continuity · 연속성",
+          "question": "이어짐과 부드러움은 다르다",
+          "ko": [
+            "연속성의 차이를 실제 게임에서 확인해 보겠습니다.",
+            "트랙의 모서리를 바꾸면 이어진 길도 다르게 꺾입니다.",
+            "위치가 연결된다는 말과 방향까지 부드럽다는 말을 나누어 보세요."
+          ],
+          "en": [
+            "Let us observe the distinction behind continuity in an actual game.",
+            "Changing a track corner alters how the connected route turns.",
+            "Separate positional connection from a smooth continuation of direction."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "2c0e144a5074b4268a0a009dfe84a1d8ce544b9e2f06e525ca32e32c776ea63e"
+        },
+        {
+          "key": "M33-02",
+          "afterScene": "025",
+          "atFrame": 33970,
+          "previousSpeech": "세 기능을 합칠 때는 각 변의 가중치에 장력, 연속성, 편향의 인수를 함께 곱하면 됩니다. 긴 식처럼 보이지만, 방금 본 세 다이얼의 역할을 곱으로 묶은 것입니다. 모든 매듭점에 같은 값을 쓸 필요도 없습니다. 한 구간의 코너만 바꾸고 싶다면 그 매듭점의 값부터 조절해 볼 수 있습니다.",
+          "followingSpeech": "끝점에서는 한쪽 이웃이 없으니 규칙을 정해야 합니다. 시작과 끝에서 쉬게 하고 싶다면 접선을 영으로 둘 수 있습니다. 또는 접선 계산에만 쓰는 가상점을 추가합니다. 첫 접선이 다음 점 빼기 가상점의 절반이므로, 영으로 만들려면 가상점을 시작점이 아니라 다음 점에 겹쳐야 합니다.",
+          "candidate": "rail-local",
+          "source": "train",
+          "sourceIn": 258,
+          "sourceOut": 282,
+          "concept": "Local Editing · 국소 편집",
+          "question": "한 연결부를 바꾸기",
+          "ko": [
+            "한 구간을 조절하는 상황도 실제 게임에서 보겠습니다.",
+            "선로를 이을 위치를 바꾸면 가까운 구간의 모양이 달라집니다.",
+            "우리 곡선에서는 매듭점의 접선을 조절해 이 자유도를 설계했죠."
+          ],
+          "en": [
+            "Let us observe local editing in an actual game.",
+            "Changing a railway connection changes the nearby section’s shape.",
+            "In our curve, tangent controls at the knots provide this kind of design freedom."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "Actual selected source and final encoded before/action/result/return samples checked; original audio/cue continuity passed. User full viewing/listening remains pending.",
+          "sourceSelectionNote": "temporal strip inspected; final voiced interval and composite require QA",
+          "encodedReviewMasterSha256": "2c0e144a5074b4268a0a009dfe84a1d8ce544b9e2f06e525ca32e32c776ea63e"
+        }
+      ],
+      "retainedExistingCases": [
+        {
+          "key": "M33-03",
+          "afterScene": "040",
+          "atFrame": 55529,
+          "previousSpeech": "이번에는 같은 곡선을 가운데에서 나누어 두 조각을 모두 남겨 보죠. 드 카스텔조의 중점들을 모으면 왼쪽의 마지막 점과 오른쪽의 첫 점이 같은 자리에 놓입니다. 조각을 다른 색으로 그려도 원래 경로는 이어집니다. 각각을 영부터 일까지 다시 재생할 때에는 조각별 시간까지 맞춰야 원래 움직임도 이어져요.",
+          "followingSpeech": "제어점을 하나 더 쓰면서 같은 곡선을 유지하는 것이 차수 올리기입니다. 양 끝을 고정하고 새 안쪽 점들을 원래 이웃 점 사이에 놓습니다. 화면에는 제어 다각형 두 개가 보이지만 경로는 하나로 겹쳐요. 그래서 편집기에 보이는 점의 개수와 실제 물체가 지나가는 모양은 구분해서 봐야 합니다.",
+          "candidate": "rail-train",
+          "source": "train",
+          "sourceIn": 816.25,
+          "sourceOut": 840.25,
+          "concept": "Connected Path · 연결된 경로",
+          "question": "여러 조각을 하나의 이동으로",
+          "ko": [
+            "마지막으로 연결된 경로의 결과를 실제 게임에서 보겠습니다.",
+            "열차는 여러 굽이를 끊기지 않고 지나갑니다.",
+            "우리가 맞춘 위치와 방향 조건이 어떤 움직임을 목표로 했는지 떠올려 보세요."
+          ],
+          "en": [
+            "Finally, observe the result of a connected path in an actual game.",
+            "The train passes through successive bends without a gap.",
+            "Recall the movement that our position and direction constraints were designed to achieve."
+          ],
+          "sourceMotionRequired": true,
+          "loop": false,
+          "freezePadding": false,
+          "rate": 1,
+          "gameFormulaClaim": false,
+          "review": "temporal strip inspected; final voiced interval and composite require QA",
+          "omitAsAdjacentDuplicate": true,
+          "retainedExistingScene": "042",
+          "reason": "The accepted lesson already plays an appropriate actual-game example after this concept; do not immediately repeat an overlapping demonstration."
+        }
+      ]
+    }
+  ]
+}

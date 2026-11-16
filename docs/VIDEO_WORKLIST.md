@@ -694,3 +694,25 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 
 Spirit City의 편안한 방 경험을 참고해 자체 3D 게이밍룸을 만든다. 공식 Unity CLI·MCP로 실제 임포트·씬·실행·캡처·빌드를 수행했다. Studio 175크레딧 사용. 사용자 요청으로 WebGL 설치·빌드는 뒤로 미뤘다. 방 세부 장식·앉기·독서와 전체 영상은 남아 있다. [샘플·검사 기록](../projects/ai-3d-lofi-gaming-room/production/unity-sample-delivery.json) · [도구/MCP 실행표](../projects/ai-3d-lofi-gaming-room/planning/mcp-tools.md). 기존 프로젝트와 외부 작업은 보존했다.
 <!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->
+
+<!-- MATH-CONCEPT-EXAMPLES-20261116-START -->
+### 게임수학 M21–M33 · 설명 뒤 실제 게임 예시 보충
+
+[전체 검수표](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/index.html) · 새 관찰 구간 31곳. 적합한 기존 후속 사례 5곳은 중복 삽입 없이 보존.
+
+| 번호 | 강의 | 새 예시 | 전체 길이 | 상태 |
+|---|---|---:|---:|---|
+| M21 | [빛과 셰이딩](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M21/index.html) | 2 | 32:19 | 사용자 검수 대기 |
+| M22 | [스키닝과 노멀 매핑](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M22/index.html) | 2 | 14:53 | 사용자 검수 대기 |
+| M23 | [렌더링 파이프라인](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M23/index.html) | 3 | 27:55 | 사용자 검수 대기 |
+| M24 | [속도와 미분](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M24/index.html) | 2 | 21:02 | 사용자 검수 대기 |
+| M25 | [가속도와 적분](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M25/index.html) | 2 | 17:25 | 사용자 검수 대기 |
+| M26 | [원운동](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M26/index.html) | 2 | 16:52 | 사용자 검수 대기 |
+| M27 | [힘과 마찰](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M27/index.html) | 1 | 13:27 | 사용자 검수 대기 |
+| M28 | [용수철과 감쇠](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M28/index.html) | 3 | 10:56 | 사용자 검수 대기 |
+| M29 | [운동량과 충돌](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M29/index.html) | 3 | 15:27 | 사용자 검수 대기 |
+| M30 | [강체와 관성](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M30/index.html) | 3 | 25:19 | 사용자 검수 대기 |
+| M31 | [매개 곡선과 에르미트](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M31/index.html) | 3 | 14:15 | 사용자 검수 대기 |
+| M32 | [베지에와 분할](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M32/index.html) | 3 | 12:31 | 사용자 검수 대기 |
+| M33 | [스플라인과 연속성](D:/Github/VideoEditing/output/game-math-concept-examples-20261116/M33/index.html) | 2 | 17:02 | 사용자 검수 대기 |
+<!-- MATH-CONCEPT-EXAMPLES-20261116-END -->
