@@ -690,7 +690,7 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 
 | 영상 | 제작 | 검수 | 게시 |
 |---|---|---|---|
-| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | WebGL 최종 실행 확정 · 콘셉트·도구 후보10개·게임/영상 구성 준비 · 웹 빌드 모듈/Tripo 로그인 준비 중 | 전체 영상 미제작 | 미업로드·예약 없음 |
+| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | Tripo 캐릭터·헤드폰 + 기본 걷기·대기 · Unity 첫 샘플/Windows 실행 파일 완성 · 전체 제작 영상은 진행 중 | [36초 FHD60 샘플 보기](http://127.0.0.1:9319/) · 사용자 검수 대기 | 미업로드·예약 없음 |
 
-Spirit City의 음악·방·집중 경험을 참고해 기존 2D 방을 자체 디자인의 3D 게이밍룸으로 확장한다. 실제 실행과 성공 여부는 [제작 계획](../projects/ai-3d-lofi-gaming-room/planning/production-plan.json)에 구분한다. 최종 실행 대상은 브라우저용 Unity WebGL2다. 이전 급한 저장공간 부족은 해소됐으며 계정·모듈 준비 후 대표 소품부터 검증한다. 현재는 로컬 게임/영상 검수까지 제작하며 기존 영상과 타 작업을 보존한다.
+Spirit City의 편안한 방 경험을 참고해 자체 3D 게이밍룸을 만든다. 공식 Unity CLI·MCP로 실제 임포트·씬·실행·캡처·빌드를 수행했다. Studio 175크레딧 사용. 사용자 요청으로 WebGL 설치·빌드는 뒤로 미뤘다. 방 세부 장식·앉기·독서와 전체 영상은 남아 있다. [샘플·검사 기록](../projects/ai-3d-lofi-gaming-room/production/unity-sample-delivery.json) · [도구/MCP 실행표](../projects/ai-3d-lofi-gaming-room/planning/mcp-tools.md). 기존 프로젝트와 외부 작업은 보존했다.
 <!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->

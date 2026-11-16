@@ -1,0 +1,179 @@
+using System.Collections;
+using UnityEngine;
+
+namespace Yamyam.LofiRoom
+{
+    // The actor must be a real rigged asset. Missing clips are never replaced by
+    // hand-authored limb rotations or a stand-in character.
+    public sealed class LofiRoomSample : MonoBehaviour
+    {
+        public Animator actor;
+        public Light deskLight;
+        public Light fillLight;
+        public Camera roomCamera;
+        public AudioSource music;
+        public ParticleSystem rain;
+        public float calibratedWalkSpeed = 1.05f;
+        public bool hasIdle;
+        public bool hasWalk;
+        public bool hasSit;
+        public string assetVersion = "Tripo sample v1";
+        private Coroutine action;
+        private bool night = true;
+        private string state = "Ready";
+        private float distanceTravelled;
+        private Vector3 previousPosition;
+        public int observedFrame;
+        public float groundY;
+        public bool showControls=true;
+        public bool moving;
+        private Vector3 motionTarget;
+        private Font uiFont;
+
+        IEnumerator Start()
+        {
+            Application.targetFrameRate = 60;
+            Application.runInBackground = true;
+            uiFont=Font.CreateDynamicFontFromOSFont("Malgun Gothic",18);
+            if (actor) { actor.applyRootMotion = true; previousPosition = actor.transform.position; }
+            SetNight(PlayerPrefs.GetInt("ai3d-lofi-room-v1-night", 1) == 1);
+            Idle();
+            yield return null;yield return null;
+            CalibrateFloor();
+        }
+
+        void CalibrateFloor()
+        {
+            if(!actor)return;
+            float min=float.PositiveInfinity;
+            foreach(var skin in actor.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                var mesh=new Mesh();skin.BakeMesh(mesh);
+                foreach(var vertex in mesh.vertices)min=Mathf.Min(min,skin.transform.TransformPoint(vertex).y);
+                Destroy(mesh);
+            }
+            if(!float.IsInfinity(min))
+            {
+                var p=actor.transform.position;p.y+=.08f-min;actor.transform.position=p;groundY=p.y;previousPosition=p;
+            }
+        }
+
+        void Update()
+        {
+            observedFrame++;
+#if ENABLE_LEGACY_INPUT_MANAGER
+            if(Input.GetKeyDown(KeyCode.Alpha1))Walk();
+            if(Input.GetKeyDown(KeyCode.Alpha2))Idle();
+#endif
+            if (!actor) return;
+            distanceTravelled += Vector3.Distance(previousPosition, actor.transform.position);
+            previousPosition = actor.transform.position;
+        }
+
+        public void Walk()
+        {
+            if (!actor || !hasWalk) { state = "Native walk clip not loaded"; return; }
+            if (action != null) StopCoroutine(action);
+            action = StartCoroutine(WalkRoute());
+        }
+
+        IEnumerator WalkRoute()
+        {
+            state = "Walking - native clip";
+            var points = new[] { new Vector3(-1.6f, groundY, -1.1f), new Vector3(1.1f, groundY, -1.1f), new Vector3(1.1f, groundY, -.2f), new Vector3(-1.6f, groundY, -.2f) };
+            int i = 0;
+            while (true)
+            {
+                Vector3 target = points[i];
+                motionTarget=target;
+                moving=false;
+                if(hasIdle) actor.CrossFadeInFixedTime("Idle",.18f);
+                Quaternion facing=Quaternion.LookRotation((target-actor.transform.position).normalized);
+                while(Quaternion.Angle(actor.transform.rotation,facing)>2)
+                {actor.transform.rotation=Quaternion.RotateTowards(actor.transform.rotation,facing,180*Time.deltaTime);yield return null;}
+                moving=true;actor.CrossFadeInFixedTime("Walk",.18f);
+                while (Vector3.Distance(actor.transform.position, target) > .11f)
+                {
+                    yield return null;
+                }
+                i = (i + 1) % points.Length;
+            }
+        }
+
+        public void Idle()
+        {
+            moving=false;
+            if (action != null) { StopCoroutine(action); action = null; }
+            if (actor && hasIdle) actor.CrossFade("Idle", .2f);
+            state = actor ? (hasIdle ? "Resting - native clip" : "Native idle clip not loaded") : "Character asset pending";
+        }
+
+        public void ApplyNativeRootMotion(Animator source)
+        {
+            if(!moving)return;
+            Vector3 delta=source.deltaPosition;delta.y=0;
+            // Follow the route using the clip's measured stride distance. Clamp
+            // to the waypoint so tiny lateral mocap drift cannot miss a corner.
+            source.transform.position=Vector3.MoveTowards(source.transform.position,motionTarget,delta.magnitude);
+        }
+
+        public void Sit()
+        {
+            if (!actor || !hasSit) { state = "Native sitting clip not loaded"; return; }
+            if (action != null) { StopCoroutine(action); action = null; }
+            actor.transform.SetPositionAndRotation(new Vector3(.8f, 0, .48f), Quaternion.identity);
+            actor.CrossFade("Sit", .2f);
+            state = "Sitting - native clip; fit review";
+        }
+
+        public void ToggleNight() => SetNight(!night);
+        public void SetNight(bool value)
+        {
+            night = value;
+            if (deskLight) deskLight.intensity = night ? 5.0f : 1.5f;
+            if (fillLight) { fillLight.intensity = night ? .95f : 1.6f; fillLight.color = night ? new Color(.65f, .75f, 1f) : new Color(1f, .92f, .78f); }
+            RenderSettings.ambientLight = night ? new Color(.30f, .31f, .36f) : new Color(.43f, .45f, .49f);
+            if (roomCamera) roomCamera.backgroundColor = night ? new Color(.055f, .075f, .11f) : new Color(.31f, .40f, .48f);
+            PlayerPrefs.SetInt("ai3d-lofi-room-v1-night", night ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        public void ToggleRain()
+        {
+            if (!rain) return;
+            if (rain.isEmitting) rain.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear); else rain.Play();
+        }
+
+        public void ToggleMusic()
+        {
+            if (!music || !music.clip) { state = "Music asset pending"; return; }
+            if (music.isPlaying) music.Pause(); else music.Play();
+        }
+
+        public void SetMemo(string value) { PlayerPrefs.SetString("ai3d-lofi-room-v1-memo", value); PlayerPrefs.Save(); }
+        public string GetMemo() => PlayerPrefs.GetString("ai3d-lofi-room-v1-memo", "");
+        public void CameraDesk() { roomCamera.transform.SetPositionAndRotation(new Vector3(3.7f, 2.35f, -3.9f), Quaternion.LookRotation(new Vector3(.65f, 1.0f, .95f) - new Vector3(3.7f, 2.35f, -3.9f))); roomCamera.orthographicSize = 2.45f; }
+        public void CameraRoom() { roomCamera.transform.SetPositionAndRotation(new Vector3(6.8f, 4.9f, -8.5f), Quaternion.LookRotation(new Vector3(0, 1.05f, .3f) - new Vector3(6.8f, 4.9f, -8.5f))); roomCamera.orthographicSize = 3.55f; }
+        public string GetStateJson() => JsonUtility.ToJson(new SampleState { frame = observedFrame, state = state, actorLoaded = actor != null, idleLoaded = hasIdle, walkLoaded = hasWalk, sitLoaded = hasSit, distance = distanceTravelled, nativeWalkSpeed = calibratedWalkSpeed, night = night });
+
+        [System.Serializable] private sealed class SampleState { public int frame; public string state; public bool actorLoaded, idleLoaded, walkLoaded, sitLoaded, night; public float distance, nativeWalkSpeed; }
+
+        void OnGUI()
+        {
+            // Also usable in Editor/native capture; the Web template provides
+            // accessible Korean HTML controls over the same Unity scene.
+            if (!showControls || Application.platform == RuntimePlatform.WebGLPlayer) return;
+            float scale = Mathf.Max(1, Screen.width / 1400f);
+            GUI.matrix = Matrix4x4.Scale(Vector3.one * scale);
+            GUI.skin.font=uiFont;
+            GUI.skin.button.fontSize=15;GUI.skin.label.fontSize=15;GUI.skin.box.fontSize=18;
+            GUI.backgroundColor=new Color(.13f,.21f,.22f,.92f);
+            GUI.Box(new Rect(20, 20, 350, 94), "얌얌코딩 · LOFI ROOM");
+            GUI.Label(new Rect(36, 54, 320, 30), moving?"산책 중 · Tripo 걷기 애니메이션":"잠깐 쉬어가기 · Tripo 대기 애니메이션");
+            GUI.Label(new Rect(36, 82, 320, 25), "캐릭터·헤드폰 첫 Unity 샘플");
+            string[] labels = { "산책", "쉬기", "낮 / 밤", "비", "책상 보기", "방 전체", "음악" };
+            System.Action[] actions = { Walk, Idle, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic };
+            for (int i = 0; i < labels.Length; i++) if (GUI.Button(new Rect(22 + i * 108, Screen.height / scale - 60, 102, 38), labels[i])) actions[i]();
+        }
+    }
+}

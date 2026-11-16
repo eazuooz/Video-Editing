@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "ai-3d-lofi-gaming-room",
-  "stage": "web-first-preproduction-ready",
+  "stage": "unity-first-sample-ready",
   "createdAtKst": "2026-11-16",
   "authorization": {
     "userRequests": [
@@ -15,7 +15,12 @@
     "publicWebDeployment": false,
     "paidSubscriptionPurchase": false,
     "automaticNextVideo": false,
-    "tripoSubscription": "user-will-purchase-one-month-and-sign-in; payment/login not yet verified"
+    "tripoSubscription": "paid Studio login and credits observed; 175 credits used for authorized sample",
+    "immediatePriority": "Unity moving sample first; WebGL module installation/build deferred by user",
+    "latestUserReplies": [
+      "잠금 해제하고 Tripo 열었어",
+      "웹 빌드는 나중에, Unity 샘플부터 진행"
+    ]
   },
   "creativeDirection": {
     "reference": "Spirit City: Lofi Sessions",
@@ -36,16 +41,16 @@
   "game": {
     "workingName": "얌얌 LOFI 게이밍룸",
     "engine": {
-      "project": "unity/VideoEditing",
+      "project": "unity/LofiGamingRoomWeb",
       "editor": "6000.6.0f1",
       "renderPipeline": "URP 17.6.0",
-      "sceneTarget": "Assets/VideoScenes/ai-3d-lofi-gaming-room/Scenes/LofiGamingRoom.unity",
-      "sceneExists": false,
+      "sceneTarget": "Assets/LofiRoom/Scenes/LofiRoomSample.unity",
+      "sceneExists": true,
       "blenderIncluded": false
     },
     "platform": {
       "primary": "Unity Web (WebGL 2 / WebAssembly); browser-first final delivery",
-      "secondary": "Unity Editor for development and diagnostics only",
+      "secondary": "Unity Editor and Windows executable first sample authorized",
       "browserPriority": [
         "desktop Chrome",
         "desktop Edge"
@@ -57,7 +62,8 @@
       "mobile": "responsive layout and touch input planned; actual performance and compatibility not verified",
       "webBuildComplete": false,
       "publicUrl": null,
-      "buildPlan": "projects/ai-3d-lofi-gaming-room/planning/webgl-build.json"
+      "buildPlan": "projects/ai-3d-lofi-gaming-room/planning/webgl-build.json",
+      "currentReview": "36-second native 1080p60 sample and local Windows player; not browser gameplay"
     },
     "camera": "전체 방 3/4 고정 시점과 책상 근접 프리셋 2개; 자유 카메라보다 행동과 접촉이 잘 보이는 구도",
     "features": [
@@ -108,8 +114,8 @@
       "kind": "AI reference image generation",
       "execution": "built-in image_gen",
       "role": "방 콘셉트와 캐릭터·소품의 동일 디자인 참고 이미지",
-      "visibleOutput": "3D LOFI 게이밍룸 콘셉트 1장",
-      "status": "concept-generated",
+      "visibleOutput": "Original room, neutral A-pose hero and headphones reference images",
+      "status": "room-hero-and-headphones-references-generated",
       "sources": [],
       "note": "이미지 출력은 3D 모델이 아니다. 이미지에 보이는 물건을 각각 모델로 만들어야 한다."
     },
@@ -131,14 +137,15 @@
       "name": "Tripo",
       "kind": "AI 3D generation",
       "execution": "cloud web service",
-      "role": "동일 헤드폰 이미지의 대안 생성과 책상 소품",
-      "visibleOutput": "헤드폰 비교 후보·머그컵",
-      "status": "not-run",
+      "role": "Hero and headphones generation, retopology, rig and native preset motion",
+      "visibleOutput": "Imported hero with native Walk/Idle and 2k-triangle headphones",
+      "status": "actual-generated-retopologized-rigged-exported-and-imported",
       "sources": [
         "https://www.tripo3d.ai/product-doc/getting-started/pricing-credits",
         "https://www.tripo3d.ai/discover/3dgame"
       ],
-      "note": "공식 페이지 간 무료 출력 사용 조건 안내에 차이가 있으므로 실제 생성 시 선택 모델·계정 등급·export/약관을 대조. 무료 상업 이용 가능을 일괄 단정하지 않는다."
+      "note": "공식 페이지 간 무료 출력 사용 조건 안내에 차이가 있으므로 실제 생성 시 선택 모델·계정 등급·export/약관을 대조. 무료 상업 이용 가능을 일괄 단정하지 않는다.",
+      "actualCredits": 175
     },
     {
       "id": "comfy-hunyuan",
@@ -192,7 +199,7 @@
       "sources": [
         "https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html"
       ],
-      "note": "Adobe ID 필요, 별도 Creative Cloud 구독 불필요. 사용자가 원하는 모든 일상 동작이 제공된다고 미리 단정하지 않는다. 실제 native clip 이름·출처·root motion 기록. 고양이는 휴머노이드 자동리깅 대상이 아니다."
+      "note": "Adobe Mixamo website not used. Tripo Mixamo skeleton/export preset selected; native motion is from Tripo presets."
     },
     {
       "id": "deepmotion",
@@ -216,7 +223,7 @@
       "execution": "existing development workspace",
       "role": "클릭 상호작용·상태 전환·날씨·음악·메모·집중 타이머 구현",
       "visibleOutput": "Unity C# 코드와 실제 플레이 결과",
-      "status": "planning-only",
+      "status": "actual-unity-authoring-and-mcp-orchestration",
       "sources": [],
       "note": "이 프로젝트의 기획 문서 작성은 수행, 게임 코드/게임 검증은 미수행. AI 코드 생성과 에디터 수동 배치·검수 작업을 구분."
     },
@@ -226,12 +233,26 @@
       "kind": "game engine",
       "execution": "installed 6000.6.0f1 / URP 17.6.0; module availability pending",
       "role": "씬 조립·조명·Animator/IK·오디오·실제 게임 실행 및 Web 빌드",
-      "visibleOutput": "클릭해서 사용하는 작은 3D 게이밍룸",
-      "status": "project-inventory-only",
+      "visibleOutput": "First Unity room sample and Windows executable",
+      "status": "actual-scene-native-motion-capture-and-windows-build",
       "sources": [
         "https://learn.unity.com/tutorial/getting-started-with-unity-web?version=6.0"
       ],
       "note": "기존 unity/VideoEditing을 사용하되 새 독립 씬·폴더에 한정. Web Build Support 확인 전 브라우저 빌드 완료로 표시하지 않는다."
+    },
+    {
+      "id": "unity-official-mcp",
+      "name": "Unity official CLI + Pipeline MCP",
+      "status": "connected-and-executed",
+      "role": "Scoped import, C# eval, scene build, native Play/state, FHD capture and Windows build",
+      "versions": {
+        "cli": "1.0.0-beta.13",
+        "pipeline": "1.0.0"
+      },
+      "sources": [
+        "https://docs.unity.com/en-us/unity-cli",
+        "https://docs.unity.com/en-us/unity-cli/unity-pipeline/unity-pipeline-package"
+      ]
     }
   ],
   "toolEvidenceContract": {
@@ -313,5 +334,7 @@
     "webBuildSupportInstalled": false,
     "modulePreparation": "WebGLSupport absent in installed 6000.6.0f1. Install before Web build, respecting concurrent unrelated use of this Editor version."
   },
-  "nextAction": "Tripo 로그인 완료 후 계정의 실제 모델·크레딧·내보내기 조건을 확인하고 대표 소품/캐릭터를 생성·검수. WebGL 빌드 모듈 준비 후 브라우저 샘플로 검증."
+  "nextAction": "Tripo 로그인 완료 후 계정의 실제 모델·크레딧·내보내기 조건을 확인하고 대표 소품/캐릭터를 생성·검수. WebGL 빌드 모듈 준비 후 브라우저 샘플로 검증.",
+  "toolExecutionLedger": "planning/mcp-tools.md",
+  "sampleDelivery": "production/unity-sample-delivery.json"
 }
