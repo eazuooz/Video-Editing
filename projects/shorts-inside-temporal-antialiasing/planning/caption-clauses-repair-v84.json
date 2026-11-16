@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": "D:\\Github\\VideoEditing\\projects\\shorts-inside-temporal-antialiasing\\planning\\narration-repair-v84.json",
+    "sha256": "5147aeeb67ea45d8c981190dc8b7a9c6bee1387cc14600fae39f3d9209c41c8e"
+  },
+  "paragraphs": [
+    {
+      "id": "p001",
+      "clauses": [
+        [
+          "인사이드처럼 가느다란 선이 많은 화면은",
+          "Scenes with thin lines, as in INSIDE,"
+        ],
+        [
+          "움직일 때 가장자리가 반짝거리기 쉽습니다.",
+          "can have shimmering edges in motion."
+        ],
+        [
+          "화면을 확대하면",
+          "Zoom into an image"
+        ],
+        [
+          "작은 색 칸들이 모여 있습니다.",
+          "and you find small cells of color."
+        ],
+        [
+          "이 칸이 픽셀이고,",
+          "A cell is a pixel;"
+        ],
+        [
+          "그 칸으로 만든 한 장의 화면이 프레임입니다.",
+          "one complete image is a frame."
+        ],
+        [
+          "개발진은 현재 화면에",
+          "The team adds to the current image"
+        ],
+        [
+          "이전 화면 정보를 더합니다.",
+          "information from the previous image."
+        ],
+        [
+          "단, 예전 화면을 그대로 겹치면",
+          "But simply overlaying the old image"
+        ],
+        [
+          "움직이는 물체에 잔상이 생길 수 있죠.",
+          "can leave ghosts behind moving objects."
+        ],
+        [
+          "얇은 나뭇가지가 칸 사이에 걸리면",
+          "A thin branch can fall between sample positions,"
+        ],
+        [
+          "어떤 화면에서는 잡히고 다음에는 빠집니다.",
+          "appearing in one image and missing the next."
+        ],
+        [
+          "그래서 실제 물체는 그대로인데도",
+          "The object can stay the same"
+        ],
+        [
+          "선이 깜빡이는 것처럼 보일 수 있죠.",
+          "while its thin edge appears to flicker."
+        ]
+      ]
+    },
+    {
+      "id": "p002",
+      "clauses": [
+        [
+          "매번 픽셀 안에서 다른 위치를 검사합니다.",
+          "Each frame samples a different location inside the pixel."
+        ],
+        [
+          "이를 지터라고 합니다.",
+          "This is called jitter."
+        ],
+        [
+          "한 장에서 놓친 가는 선의 정보를",
+          "One image can capture thin-line information"
+        ],
+        [
+          "다른 장에서 얻을 수 있으니,",
+          "that another image missed."
+        ],
+        [
+          "여러 장을 잘 모으면",
+          "Combining those images carefully"
+        ],
+        [
+          "가장자리를 더 안정적으로 표현할 수 있습니다.",
+          "can make the edges more stable."
+        ],
+        [
+          "첫 장에서는 칸의 왼쪽,",
+          "Think of sampling the left side of a cell first,"
+        ],
+        [
+          "다음 장에서는 오른쪽을 보는 식입니다.",
+          "then its right side in the next image."
+        ],
+        [
+          "한 번씩 다르게 살펴본 결과를 모으면",
+          "Combining those different samples"
+        ],
+        [
+          "가는 선의 위치를 더 잘 짐작할 수 있죠.",
+          "gives a better estimate of the thin edge."
+        ]
+      ]
+    },
+    {
+      "id": "p003",
+      "clauses": [
+        [
+          "카메라나 물체가 움직이면 화면 속 위치도 바뀝니다.",
+          "A moving camera or object changes its screen position."
+        ],
+        [
+          "깊이와 움직임 정보를 함께 사용합니다.",
+          "Use depth and motion information together."
+        ],
+        [
+          "같은 점이 이전 화면에서 어디에 있었는지 찾습니다.",
+          "Find where the same point was in the previous frame."
+        ],
+        [
+          "이렇게 과거 화면의 대응 위치를 찾습니다.",
+          "This finds the corresponding position in the old frame."
+        ],
+        [
+          "소년이 오른쪽으로 가는데",
+          "If the boy moves right,"
+        ],
+        [
+          "이전 소년을 왼쪽에 그대로 섞으면 잔상이 생깁니다.",
+          "mixing his old position in place leaves a ghost."
+        ],
+        [
+          "먼저 같은 소년의 위치를 맞춘 뒤",
+          "First align the corresponding position,"
+        ],
+        [
+          "과거 정보를 가져와야 합니다.",
+          "then bring in the earlier information."
+        ]
+      ]
+    },
+    {
+      "id": "p004",
+      "clauses": [
+        [
+          "가려졌던 곳이 드러나면 과거 정보가 틀릴 수 있습니다.",
+          "When a hidden area appears, old information may be wrong."
+        ],
+        [
+          "현재 픽셀 주변의 색 범위를 확인합니다.",
+          "Check the color range around the current pixel."
+        ],
+        [
+          "어울리지 않는 과거 색은 그 범위에 맞춥니다.",
+          "Bring incompatible past colors within that range."
+        ],
+        [
+          "잘못된 흔적이 계속 남지 않게 하는 과정입니다.",
+          "This helps prevent incorrect traces from persisting."
+        ],
+        [
+          "소년이 지나가서 드러난 배경에는",
+          "A background revealed behind the boy"
+        ],
+        [
+          "예전 소년의 색이 필요 없겠죠.",
+          "does not need his old color."
+        ],
+        [
+          "주변은 어두운데 과거 색만 밝다면",
+          "If the current neighborhood is dark,"
+        ],
+        [
+          "그 밝은 색을 그대로 믿지 않는 겁니다.",
+          "a bright historical color should not be trusted unchanged."
+        ]
+      ]
+    },
+    {
+      "id": "p005",
+      "clauses": [
+        [
+          "이렇게 다듬은 과거 정보와 현재 색을 섞어",
+          "Blend the adjusted history with the current color"
+        ],
+        [
+          "다음 장에서도 쓸 화면을 저장합니다.",
+          "and store the result for the next frame."
+        ],
+        [
+          "빠른 움직임에는 모션 블러도 따로 사용합니다.",
+          "Fast motion also uses separate motion blur."
+        ],
+        [
+          "그 흐림은 과거 기록에 계속 쌓지 않습니다.",
+          "That blur is not repeatedly accumulated in history."
+        ],
+        [
+          "가장자리를 안정시키는 일과",
+          "Stabilizing an edge and blurring fast motion"
+        ],
+        [
+          "빠른 움직임을 흐리게 보이는 일은 목적이 다릅니다.",
+          "serve different purposes."
+        ],
+        [
+          "흐린 결과까지 계속 모으면",
+          "Repeatedly accumulating an already blurred result"
+        ],
+        [
+          "다음 화면도 더 흐려질 수 있겠죠.",
+          "could blur later images further."
+        ]
+      ]
+    },
+    {
+      "id": "p006",
+      "clauses": [
+        [
+          "조금 다른 위치에서 화면의 정보를 모읍니다.",
+          "Gather screen information from slightly different positions."
+        ],
+        [
+          "같은 지점을 찾아 과거의 색을 고칩니다.",
+          "Find the same point and correct its past color."
+        ],
+        [
+          "그 정보를 현재 색과 섞습니다.",
+          "Blend that information with the current color."
+        ],
+        [
+          "현재 화면과 맞는 정보만 골라 쓰는 겁니다.",
+          "Choose only information that fits the current image."
+        ],
+        [
+          "시간을 쓴다는 말은",
+          "Using time means"
+        ],
+        [
+          "여러 장에서 얻은 정보를 활용한다는 뜻입니다.",
+          "using information collected across several images."
+        ]
+      ]
+    }
+  ],
+  "actualSpeechTimesAssigned": false,
+  "wordInterpolation": false,
+  "englishUsesSameMeaningClauseInterval": true
+}
