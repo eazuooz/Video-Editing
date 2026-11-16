@@ -28,6 +28,8 @@ namespace Yamyam.LofiRoom
         public bool showControls=true;
         public bool moving;
         public LofiAtmosphere atmosphere;
+        public LofiActivities activities;
+        public LofiHearth hearth;
         public float turnSpeed=145f;
         private Vector3 motionTarget;
         private Font uiFont;
@@ -81,6 +83,9 @@ namespace Yamyam.LofiRoom
                 if(keyboard.digit8Key.wasPressedThisFrame && atmosphere)atmosphere.ToggleBreeze();
                 if(keyboard.digit9Key.wasPressedThisFrame && atmosphere)atmosphere.ToggleShafts();
                 if(keyboard.digit0Key.wasPressedThisFrame)ToggleHair();
+                if(keyboard.cKey.wasPressedThisFrame && activities)activities.Request("computer");
+                if(keyboard.bKey.wasPressedThisFrame && activities)activities.Request("read");
+                if(keyboard.vKey.wasPressedThisFrame)Idle();
             }
 #endif
             if (!actor) return;
@@ -90,10 +95,14 @@ namespace Yamyam.LofiRoom
 
         public void Walk()
         {
+            if(activities && (activities.seated||activities.busy)){activities.Request("idle");StartCoroutine(WalkAfterStanding());return;}
             if (!actor || !hasWalk) { state = "Native walk clip not loaded"; return; }
             if (action != null) StopCoroutine(action);
             action = StartCoroutine(WalkRoute());
         }
+        IEnumerator WalkAfterStanding(){while(activities.busy||activities.seated)yield return null;Walk();}
+        public void HoldNativeMotion(){moving=false;if(action!=null){StopCoroutine(action);action=null;}}
+        public void SetMotionTarget(Vector3 target){motionTarget=target;}
 
         IEnumerator WalkRoute()
         {
@@ -130,6 +139,7 @@ namespace Yamyam.LofiRoom
 
         public void Idle()
         {
+            if(activities && (activities.seated||activities.busy)){activities.Request("idle");return;}
             moving=false;
             if (action != null) { StopCoroutine(action); action = null; }
             if (actor && hasIdle){actor.speed=1;actor.CrossFadeInFixedTime("Idle", .38f);}
@@ -147,6 +157,7 @@ namespace Yamyam.LofiRoom
 
         public void Sit()
         {
+            if(activities){activities.Request("computer");return;}
             if (!actor || !hasSit) { state = "Native sitting clip not loaded"; return; }
             if (action != null) { StopCoroutine(action); action = null; }
             actor.transform.SetPositionAndRotation(new Vector3(.8f, 0, .48f), Quaternion.identity);
@@ -203,11 +214,19 @@ namespace Yamyam.LofiRoom
             GUI.skin.button.fontSize=15;GUI.skin.label.fontSize=15;GUI.skin.box.fontSize=18;
             GUI.backgroundColor=new Color(.13f,.21f,.22f,.92f);
             GUI.Box(new Rect(20, 20, 350, 94), "얌얌코딩 · LOFI ROOM");
-            GUI.Label(new Rect(36, 54, 320, 30), moving?"산책 중 · Tripo 걷기 애니메이션":"잠깐 쉬어가기 · Tripo 대기 애니메이션");
-            GUI.Label(new Rect(36, 82, 320, 25), "PC v3 · 8 바람 / 9 빛줄기");
-            string[] labels = { "산책", "쉬기", "낮 / 밤", "비", "책상 보기", "방 전체", "음악", "바람", "빛줄기", "머리카락" };
-            System.Action[] actions = { Walk, Idle, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic, ()=>{if(atmosphere)atmosphere.ToggleBreeze();}, ()=>{if(atmosphere)atmosphere.ToggleShafts();}, ToggleHair };
+            GUI.Label(new Rect(36, 54, 320, 30), activities && (activities.busy||activities.seated)?activities.phase:moving?"산책 중":"잠깐 쉬어가기");
+            GUI.Label(new Rect(36, 82, 320, 25), "C 아이맥 · B 독서 · V 일어나기");
+            string[] labels = { "산책", "일어나기", "아이맥", "독서", "낮 / 밤", "비", "책상 보기", "방 전체", "음악", "장작 소리" };
+            System.Action[] actions = { Walk, Idle, ()=>{if(activities)activities.Request("computer");}, ()=>{if(activities)activities.Request("read");}, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic, ()=>{if(hearth)hearth.ToggleSound();} };
             for (int i = 0; i < labels.Length; i++) if (GUI.Button(new Rect(22 + i * 108, Screen.height / scale - 60, 102, 38), labels[i])) actions[i]();
+            if(hearth)
+            {
+                GUI.Box(new Rect(Screen.width/scale-250,20,230,118),"방 안의 소리");
+                GUI.Label(new Rect(Screen.width/scale-236,54,60,25),"로파이");
+                if(music)music.volume=GUI.HorizontalSlider(new Rect(Screen.width/scale-165,64,126,22),music.volume,0,.6f);
+                GUI.Label(new Rect(Screen.width/scale-236,88,60,25),"장작");
+                if(hearth.crackle)hearth.crackle.volume=GUI.HorizontalSlider(new Rect(Screen.width/scale-165,98,126,22),hearth.crackle.volume,0,.7f);
+            }
         }
     }
 }

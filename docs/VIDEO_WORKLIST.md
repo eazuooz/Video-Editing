@@ -690,9 +690,9 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 
 | 영상 | 제작 | 검수 | 게시 |
 |---|---|---|---|
-| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v3: 곡선 걷기·머리카락 관성/충돌·잎 흔들림·창가 빛줄기·100% 렌더링 · Windows·48초 FHD60 완료 | [새 PC 검수·전후 비교](http://127.0.0.1:9321/) · v3 사용자 검수 대기 | 미업로드·예약 없음 |
+| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v4: 실제 앉기·일어나기·아이맥·독서, 양옆 2단 책장·벽난로·레코드 플레이어 · 72초 FHD60·Windows 완료 | [새 상호작용·소리 검수](http://127.0.0.1:9322/) · v4 사용자 검수 대기 | 미업로드·예약 없음 |
 
-실제 Tripo 걷기·대기와 4K 색상/PBR 지도는 보존했다. 머리카락에는 길이/각도/충돌 제약, 잎에는 뿌리 고정과 잔잔한 바람을 추가했다. 창가 빛줄기·창틀 무늬 조명·부드러운 그림자·접촉 음영·반사를 구현하고 화면 80% 확대를 100% 렌더링으로 바꿨다. [파일·QA 기록](../projects/ai-3d-lofi-gaming-room/production/atmosphere-v3-delivery.json). 실제 PC에서 걷기·낮밤을 확인했으며 효과별 비교 버튼을 제공한다. 기존 v1/v2 전달 파일은 보존했다. 웹 설치·빌드는 사용자 지시로 계속 보류; 앉기·독서와 전체 제작 영상은 남아 있다.
+기존 걷기·대기·4K 재질·머리카락·잎과 창가 빛을 유지했다. KayKit의 실제 앉기·일어나기와 보유 EmacEArt 독서 모션을 사용하고 의자·손·발을 맞췄다. 듀얼 모니터·본체는 작은 아이맥 책상으로 교체했다. 가운데 벽난로에 불꽃·불티·연기와 CC0 장작 소리를, 창가 작은 탁상에 음악과 동기화되는 레코드 플레이어를 추가했다. 음악·장작 음량은 개별 조절한다. [파일·QA 기록](../projects/ai-3d-lofi-gaming-room/production/hearth-v4-delivery.json) · [에셋·라이선스](../projects/ai-3d-lofi-gaming-room/production/hearth-v4-asset-record.json). v1–v3 검수 파일은 보존했다. 웹 설치·빌드는 사용자 지시로 계속 보류하고 전체 제작 영상은 남아 있다.
 <!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->
 
 <!-- MATH-CONCEPT-EXAMPLES-20261116-START -->
