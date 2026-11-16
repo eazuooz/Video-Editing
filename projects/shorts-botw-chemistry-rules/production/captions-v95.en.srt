@@ -1,0 +1,235 @@
+1
+00:00:00,000 --> 00:00:02,200
+In Breath of the Wild, grass catches fire,
+
+2
+00:00:02,200 --> 00:00:03,760
+and rain puts it out.
+
+3
+00:00:03,760 --> 00:00:07,080
+Were these combinations authored separately for every scene?
+
+4
+00:00:07,080 --> 00:00:10,760
+Motion calculations and state rules such as ignition are distinct.
+
+5
+00:00:10,760 --> 00:00:13,200
+Watch this patch of grass catch fire.
+
+6
+00:00:13,200 --> 00:00:15,460
+The system that handles these shared state changes
+
+7
+00:00:15,460 --> 00:00:16,620
+is the Chemistry Engine.
+
+8
+00:00:16,620 --> 00:00:19,580
+Physics calculates the motion of objects.
+
+9
+00:00:19,580 --> 00:00:21,420
+The chemistry engine handles burning
+
+10
+00:00:21,420 --> 00:00:23,280
+and extinguished states.
+
+11
+00:00:23,280 --> 00:00:24,500
+The state system distinguishes
+
+12
+00:00:24,500 --> 00:00:26,740
+elements from materials.
+
+13
+00:00:26,740 --> 00:00:28,940
+Elements such as fire and materials such as wood
+
+14
+00:00:28,940 --> 00:00:31,280
+are assigned relationships.
+
+15
+00:00:31,280 --> 00:00:33,060
+Although it is called a chemistry engine,
+
+16
+00:00:33,060 --> 00:00:36,400
+it does not simulate all real-world chemistry.
+
+17
+00:00:36,400 --> 00:00:40,020
+The first rule: an element changes a material’s state.
+
+18
+00:00:40,020 --> 00:00:43,260
+Fire touching wood changes it into a burning state.
+
+19
+00:00:43,260 --> 00:00:46,040
+A shared rule can apply in many locations.
+
+20
+00:00:46,040 --> 00:00:48,500
+The actual footage also shows ice
+
+21
+00:00:48,500 --> 00:00:50,380
+shrinking near a fire.
+
+22
+00:00:50,380 --> 00:00:51,900
+Distinguish pushing an object to a new position
+
+23
+00:00:51,900 --> 00:00:55,000
+from changing its state through heat.
+
+24
+00:00:55,000 --> 00:00:55,640
+The second rule:
+
+25
+00:00:55,640 --> 00:00:59,180
+elements can also change other elements’ states.
+
+26
+00:00:59,180 --> 00:01:00,240
+The relationship between water and fire
+
+27
+00:01:00,240 --> 00:01:02,000
+is handled within the same framework.
+
+28
+00:01:02,000 --> 00:01:05,000
+Beyond checking only burning objects,
+
+29
+00:01:05,000 --> 00:01:07,260
+effects themselves can interact.
+
+30
+00:01:07,260 --> 00:01:09,540
+In the explanatory model,
+
+31
+00:01:09,540 --> 00:01:11,120
+bring water into contact with the fire.
+
+32
+00:01:11,120 --> 00:01:12,000
+The fire effect itself
+
+33
+00:01:12,000 --> 00:01:13,920
+is affected by another effect.
+
+34
+00:01:13,920 --> 00:01:16,980
+The third rule concerns relationships between materials.
+
+35
+00:01:16,980 --> 00:01:21,160
+Within these chemistry rules, they do not directly change each other’s states.
+
+36
+00:01:21,160 --> 00:01:23,540
+That does not mean they cannot collide.
+
+37
+00:01:23,540 --> 00:01:27,900
+This distinguishes motion physics from the rules for state changes.
+
+38
+00:01:27,900 --> 00:01:29,780
+Two wooden boxes can collide and move
+
+39
+00:01:29,780 --> 00:01:32,120
+without setting one another on fire.
+
+40
+00:01:32,120 --> 00:01:33,480
+Being pushed by a collision
+
+41
+00:01:33,480 --> 00:01:36,640
+and changing a chemical state are different layers.
+
+42
+00:01:36,640 --> 00:01:38,020
+Treat rain as the water element,
+
+43
+00:01:38,020 --> 00:01:41,420
+and the existing water–fire relationship can be reused.
+
+44
+00:01:41,420 --> 00:01:42,240
+Electricity and wind also belong
+
+45
+00:01:42,240 --> 00:01:45,220
+within the game’s simplified state model.
+
+46
+00:01:45,220 --> 00:01:47,560
+As more rules can be combined,
+
+47
+00:01:47,560 --> 00:01:50,700
+players gain more combinations to try.
+
+48
+00:01:50,700 --> 00:01:52,180
+The same relationship between fire and water
+
+49
+00:01:52,180 --> 00:01:55,320
+can be reused in a different patch of grass.
+
+50
+00:01:55,320 --> 00:01:57,540
+Instead of scripting a separate result for each location,
+
+51
+00:01:57,540 --> 00:02:00,760
+define relationships between materials and effects.
+
+52
+00:02:00,760 --> 00:02:02,060
+Use physics for movement
+
+53
+00:02:02,060 --> 00:02:04,940
+and shared rules for state changes.
+
+54
+00:02:04,940 --> 00:02:07,160
+Setting a fire and extinguishing it with rain
+
+55
+00:02:07,160 --> 00:02:09,620
+feel like consistent rules of one world.
+
+56
+00:02:09,620 --> 00:02:12,540
+The goal is more than producing many events:
+
+57
+00:02:12,540 --> 00:02:15,360
+create relationships that can be recombined.
+
+58
+00:02:15,360 --> 00:02:17,600
+In short, physics handles motion;
+
+59
+00:02:17,600 --> 00:02:19,440
+chemistry handles state changes.
