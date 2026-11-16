@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "slug": "ai-3d-lofi-gaming-room",
+  "requestedOnKst": "2026-11-16T12:21:23.223839+09:00",
+  "target": "Unity Web / WebGL 2 / WebAssembly",
+  "status": "planned-not-built",
+  "primaryDelivery": "browser game",
+  "desktopExecutableRequired": false,
+  "runtime": {
+    "pipeline": "URP 17.6.0",
+    "webGpuRequired": false,
+    "nativeDesktopPlugins": false,
+    "camera": "fixed room + desk preset",
+    "browserFirst": [
+      "Chrome desktop",
+      "Edge desktop"
+    ],
+    "mobileActualQa": "pending",
+    "input": "mouse plus responsive touch controls",
+    "localPersistence": "versioned browser-local notes/settings; no cross-device sync claim"
+  },
+  "performanceTargets": {
+    "purpose": "initial authoring targets; revise from actual browser profiles, not measured results",
+    "initialCompressedDownloadMiB": 40,
+    "frameRateDesktopTarget": 60,
+    "qualityFallbackFrameRate": 30,
+    "textureDefaultMaxPixels": 1024,
+    "heroTextureMaxPixels": 2048,
+    "lodOrRetopology": "inspect silhouettes and deformation before reducing",
+    "lightStrategy": "baked/static lighting where appropriate; restrict real-time shadows; modest bloom",
+    "music": "load selected/next track on demand, avoid predecoding full playlist"
+  },
+  "hosting": {
+    "siteCreated": false,
+    "url": null,
+    "httpsRequired": true,
+    "serveWasmAs": "application/wasm",
+    "compression": "choose host-supported gzip/Brotli with matching Content-Encoding; fallback only when headers unavailable and tested",
+    "assetNames": "versioned build paths; do not reuse stale loader/data mix",
+    "embeds": "test storage and fullscreen on actual host; use standalone page if iframe restrictions interfere"
+  },
+  "ui": [
+    "Play button to unlock audio",
+    "loading progress",
+    "retry/error message",
+    "fullscreen",
+    "mute and separate music/rain levels",
+    "graphics/resolution option",
+    "notes and focus timer"
+  ],
+  "acceptance": [
+    "actual Web build succeeds",
+    "real HTTP(S) served loader/WASM/data load without errors",
+    "Chrome and Edge room renders and clicks work",
+    "first user gesture starts audio, mute/next-volume operate",
+    "notes/settings persist across reload on same origin",
+    "background-tab return does not break action/timer/audio",
+    "representative character approach/sit/stand has no sliding or furniture penetration",
+    "profile memory/loading and reduce assets using measurements",
+    "mobile usability/compatibility reported only after actual device tests"
+  ],
+  "buildSupport": {
+    "editorVersion": "6000.6.0f1",
+    "installed": false,
+    "path": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data/PlaybackEngines/WebGLSupport"
+  },
+  "sources": [
+    "https://docs.unity.com/en-us/engine/6000.0/manual/platform-specific/webgl/intro/browsercompatibility",
+    "https://docs.unity.com/en-us/engine/6000.0/manual/platform-specific/webgl/develop/audio",
+    "https://docs.unity.com/en-us/engine/6000.0/manual/platform-specific/webgl/building-distribution/deploying"
+  ]
+}
