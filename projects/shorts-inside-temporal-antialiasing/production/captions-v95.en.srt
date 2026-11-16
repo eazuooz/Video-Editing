@@ -1,0 +1,215 @@
+1
+00:00:00,000 --> 00:00:02,700
+Scenes with thin lines, as in INSIDE,
+
+2
+00:00:02,700 --> 00:00:06,160
+can have shimmering edges in motion.
+
+3
+00:00:06,160 --> 00:00:08,580
+An image consists of small cells.
+
+4
+00:00:08,580 --> 00:00:11,140
+Each cell contains one color.
+
+5
+00:00:11,140 --> 00:00:12,340
+A cell is a pixel;
+
+6
+00:00:12,340 --> 00:00:15,840
+one complete image is a frame.
+
+7
+00:00:15,840 --> 00:00:17,300
+INSIDE adds information from earlier images
+
+8
+00:00:17,300 --> 00:00:19,220
+to its current image.
+
+9
+00:00:19,220 --> 00:00:21,260
+But simply overlaying the old image
+
+10
+00:00:21,260 --> 00:00:23,900
+can leave ghosts behind moving objects.
+
+11
+00:00:23,900 --> 00:00:26,380
+A thin branch can fall between sample positions,
+
+12
+00:00:26,380 --> 00:00:29,460
+appearing in one image and missing the next.
+
+13
+00:00:29,460 --> 00:00:31,640
+The object can stay the same
+
+14
+00:00:31,640 --> 00:00:33,960
+while its thin edge appears to flicker.
+
+15
+00:00:33,960 --> 00:00:37,060
+Each frame samples a different location inside the pixel.
+
+16
+00:00:37,060 --> 00:00:38,540
+This is called jitter.
+
+17
+00:00:38,540 --> 00:00:40,600
+One image can capture thin-line information
+
+18
+00:00:40,600 --> 00:00:42,360
+that another image missed.
+
+19
+00:00:42,360 --> 00:00:43,540
+Combining those images carefully
+
+20
+00:00:43,540 --> 00:00:46,460
+can make the edges more stable.
+
+21
+00:00:46,460 --> 00:00:48,240
+Think of sampling the left side of a cell first,
+
+22
+00:00:48,240 --> 00:00:50,880
+then its right side in the next image.
+
+23
+00:00:50,880 --> 00:00:53,000
+Combining those different samples
+
+24
+00:00:53,000 --> 00:00:55,760
+gives a better estimate of the thin edge.
+
+25
+00:00:55,760 --> 00:00:59,200
+A moving camera or object changes its screen position.
+
+26
+00:00:59,200 --> 00:01:01,860
+Use depth and motion information together.
+
+27
+00:01:01,860 --> 00:01:05,500
+Find where the same point was in the previous frame.
+
+28
+00:01:05,500 --> 00:01:08,240
+This finds the corresponding position in the old frame.
+
+29
+00:01:08,240 --> 00:01:09,640
+If the boy moves right,
+
+30
+00:01:09,640 --> 00:01:13,780
+mixing his old position in place leaves a ghost.
+
+31
+00:01:13,780 --> 00:01:15,580
+First align the corresponding position,
+
+32
+00:01:15,580 --> 00:01:17,760
+then bring in the earlier information.
+
+33
+00:01:17,760 --> 00:01:21,340
+When a hidden area appears, old information may be wrong.
+
+34
+00:01:21,340 --> 00:01:24,160
+Check the color range around the current pixel.
+
+35
+00:01:24,160 --> 00:01:27,280
+Bring incompatible past colors within that range.
+
+36
+00:01:27,280 --> 00:01:30,460
+This helps prevent incorrect traces from persisting.
+
+37
+00:01:30,460 --> 00:01:32,260
+A background revealed behind the boy
+
+38
+00:01:32,260 --> 00:01:34,480
+does not need his old color.
+
+39
+00:01:34,480 --> 00:01:36,760
+If the current neighborhood is dark,
+
+40
+00:01:36,760 --> 00:01:39,680
+a bright historical color should not be trusted unchanged.
+
+41
+00:01:39,680 --> 00:01:42,520
+Blend the adjusted history with the current color
+
+42
+00:01:42,520 --> 00:01:45,360
+and store the result for the next frame.
+
+43
+00:01:45,360 --> 00:01:48,660
+Fast motion also uses separate motion blur.
+
+44
+00:01:48,660 --> 00:01:51,460
+That blur is not repeatedly accumulated in history.
+
+45
+00:01:51,460 --> 00:01:53,080
+Stabilizing an edge and blurring fast motion
+
+46
+00:01:53,080 --> 00:01:56,660
+serve different purposes.
+
+47
+00:01:56,660 --> 00:01:58,200
+Repeatedly accumulating an already blurred result
+
+48
+00:01:58,200 --> 00:02:00,360
+could blur later images further.
+
+49
+00:02:00,360 --> 00:02:03,100
+Gather screen information from slightly different positions.
+
+50
+00:02:03,100 --> 00:02:06,140
+Find the same point and correct its past color.
+
+51
+00:02:06,140 --> 00:02:08,580
+Blend that information with the current color.
+
+52
+00:02:08,580 --> 00:02:11,960
+Choose only information that fits the current image.
+
+53
+00:02:11,960 --> 00:02:13,120
+Using time means
+
+54
+00:02:13,120 --> 00:02:16,120
+using information collected across several images.

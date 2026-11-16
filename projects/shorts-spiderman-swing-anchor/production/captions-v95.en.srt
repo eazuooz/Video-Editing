@@ -1,0 +1,215 @@
+1
+00:00:00,000 --> 00:00:02,920
+Where Spider-Man’s web attaches
+
+2
+00:00:02,920 --> 00:00:06,240
+changes the depth and path of the swing.
+
+3
+00:00:06,240 --> 00:00:07,340
+Yet the player
+
+4
+00:00:07,340 --> 00:00:09,780
+does not aim at a building point every time.
+
+5
+00:00:09,780 --> 00:00:11,660
+The developers take the intended travel direction
+
+6
+00:00:11,660 --> 00:00:14,180
+and choose a suitable attachment point.
+
+7
+00:00:14,180 --> 00:00:15,660
+First watch the real swing
+
+8
+00:00:15,660 --> 00:00:18,320
+dip and then rise forward.
+
+9
+00:00:18,320 --> 00:00:20,440
+In the model, move only the upper attachment
+
+10
+00:00:20,440 --> 00:00:23,560
+to compare how the arc changes.
+
+11
+00:00:23,560 --> 00:00:24,820
+An early approach cast multiple lines
+
+12
+00:00:24,820 --> 00:00:26,700
+to find places where they meet buildings.
+
+13
+00:00:26,700 --> 00:00:28,940
+This kind of test is called a raycast.
+
+14
+00:00:28,940 --> 00:00:30,380
+But between those test lines,
+
+15
+00:00:30,380 --> 00:00:33,800
+thin structures and corners could be missed.
+
+16
+00:00:33,800 --> 00:00:36,820
+Adding more rays alone was not a convenient fix.
+
+17
+00:00:36,820 --> 00:00:39,820
+Imagine sending out several narrow flashlight beams.
+
+18
+00:00:39,820 --> 00:00:41,780
+A thin post between the test lines
+
+19
+00:00:41,780 --> 00:00:42,840
+can be missed.
+
+20
+00:00:42,840 --> 00:00:46,340
+Buildings were marked with simple box volumes.
+
+21
+00:00:46,340 --> 00:00:47,800
+Choosing candidates on continuous faces
+
+22
+00:00:47,800 --> 00:00:50,520
+helps reduce the gaps between test lines.
+
+23
+00:00:50,520 --> 00:00:53,860
+Production tools automate marking the large city.
+
+24
+00:00:53,860 --> 00:00:56,940
+Finally, check whether the result touches real geometry.
+
+25
+00:00:56,940 --> 00:00:57,900
+Now treat a whole building face
+
+26
+00:00:57,900 --> 00:01:00,860
+as the candidate region instead of isolated lines.
+
+27
+00:01:00,860 --> 00:01:03,640
+The box makes candidate selection easier;
+
+28
+00:01:03,640 --> 00:01:06,360
+the real geometry is still checked afterward.
+
+29
+00:01:06,360 --> 00:01:08,320
+Next, construct an ideal reference.
+
+30
+00:01:08,320 --> 00:01:11,580
+Use stick direction, desired rope length and slope
+
+31
+00:01:11,580 --> 00:01:13,920
+to identify a good starting position.
+
+32
+00:01:13,920 --> 00:01:17,740
+Combine a nearby point on the building with one toward travel.
+
+33
+00:01:17,740 --> 00:01:20,980
+Adjust candidates that would let the player fall too deeply.
+
+34
+00:01:20,980 --> 00:01:21,640
+If you want to move forward,
+
+35
+00:01:21,640 --> 00:01:24,180
+an attachment behind you would pull backward.
+
+36
+00:01:24,180 --> 00:01:25,280
+An attachment that is too low
+
+37
+00:01:25,280 --> 00:01:27,700
+can also send the swing close to the ground.
+
+38
+00:01:27,700 --> 00:01:30,100
+Watch the real line and movement,
+
+39
+00:01:30,100 --> 00:01:33,360
+then compare the model’s higher and lower anchors.
+
+40
+00:01:33,360 --> 00:01:34,220
+When there are several candidates,
+
+41
+00:01:34,220 --> 00:01:37,960
+score factors such as direction, distance and slope.
+
+42
+00:01:37,960 --> 00:01:40,380
+Choose a well-scoring attachment point.
+
+43
+00:01:40,380 --> 00:01:43,040
+Avoid forcing a connection to a poor location.
+
+44
+00:01:43,040 --> 00:01:45,820
+Debug views of selected points and movement history
+
+45
+00:01:45,820 --> 00:01:47,200
+helped the developers tune the behavior.
+
+46
+00:01:47,200 --> 00:01:48,860
+Each candidate is checked for direction
+
+47
+00:01:48,860 --> 00:01:51,620
+and a suitable line length.
+
+48
+00:01:51,620 --> 00:01:53,960
+Those scores are hidden in gameplay,
+
+49
+00:01:53,960 --> 00:01:57,280
+but the resulting swings do not require aiming at every point.
+
+50
+00:01:57,280 --> 00:02:00,440
+Once the web is taut, consider gravity and its direction.
+
+51
+00:02:00,440 --> 00:02:04,020
+A good anchor lets you travel in the intended direction.
+
+52
+00:02:04,020 --> 00:02:07,240
+The game chooses the attachment so we can focus on moving.
+
+53
+00:02:07,240 --> 00:02:09,740
+Choosing a suitable attachment in the same city
+
+54
+00:02:09,740 --> 00:02:12,040
+helps one swing lead naturally into the next.
