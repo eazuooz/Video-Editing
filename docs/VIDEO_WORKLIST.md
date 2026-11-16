@@ -561,4 +561,6 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 최종 로컬 검수본12/12. 실제 독립 FHD 자료, 원자료 설명 순서, 음성·혼합음성, 자체 촬영, 모든 자막 표본 및 최종 인코딩 검사를 완료했다. 사람의 전체 청취·실시간 재생·승인은 아직 하지 않았다.
 
 [12편 최종 검수표](../production/batches/original-tech-twelve-20261115/local-final-review-v1.html) · [파일·버전·해시 manifest](../production/batches/original-tech-twelve-20261115/local-final-review-manifest-v1.json)
+
+락온 사용자 요청 수정본: 교토 닌자 공연 참고 실사와 두 스탈포스의 공격 차례를 추가한 [수정 검수표](../production/batches/original-tech-twelve-20261115/local-final-review-v2.html)를 준비했다. 자막·클린 영상 검사와32개 인코딩 자막 표본 검수를 완료했으며 원음·자막 타이밍과 다른11편은 보존했다. 공연 영상 재사용 허락 미확인으로 수정본은 로컬 검수용이고 공개 채택은 보류한다.
 <!-- ORIGINAL-TECH-TWELVE-20261115-END -->
