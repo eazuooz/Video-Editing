@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[3]
 PROJECT = ROOT / "unity/LofiGamingRoomWeb"
 CLI = Path("C:/Program Files/Unity Hub/resources/unity.exe")
 
-def call(tool, arguments):
+def call(tool, arguments, timeout=55):
     process = subprocess.Popen(
         [str(CLI), "mcp", "--project-path", str(PROJECT), "--no-banner"],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -39,7 +39,7 @@ def call(tool, arguments):
             raise RuntimeError(init["error"])
         send({"jsonrpc":"2.0","method":"notifications/initialized","params":{}})
         send({"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":tool,"arguments":arguments}})
-        result = receive(2)
+        result = receive(2, timeout)
         record = {"transport":"MCP stdio", "server":init["result"].get("serverInfo"),
                   "project":str(PROJECT), "tool":tool, "arguments":arguments, "response":result}
         out = ROOT / "projects/ai-3d-lofi-gaming-room/production/local"

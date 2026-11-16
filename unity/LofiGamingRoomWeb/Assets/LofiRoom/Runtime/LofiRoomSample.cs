@@ -17,7 +17,7 @@ namespace Yamyam.LofiRoom
         public bool hasIdle;
         public bool hasWalk;
         public bool hasSit;
-        public string assetVersion = "Tripo sample v1";
+        public string assetVersion = "Tripo H3.1 · Nature / PBR v2";
         private Coroutine action;
         private bool night = true;
         private string state = "Ready";
@@ -64,6 +64,19 @@ namespace Yamyam.LofiRoom
 #if ENABLE_LEGACY_INPUT_MANAGER
             if(Input.GetKeyDown(KeyCode.Alpha1))Walk();
             if(Input.GetKeyDown(KeyCode.Alpha2))Idle();
+#endif
+#if ENABLE_INPUT_SYSTEM
+            var keyboard=UnityEngine.InputSystem.Keyboard.current;
+            if(keyboard!=null)
+            {
+                if(keyboard.digit1Key.wasPressedThisFrame)Walk();
+                if(keyboard.digit2Key.wasPressedThisFrame)Idle();
+                if(keyboard.digit3Key.wasPressedThisFrame)ToggleNight();
+                if(keyboard.digit4Key.wasPressedThisFrame)ToggleRain();
+                if(keyboard.digit5Key.wasPressedThisFrame)ToggleMusic();
+                if(keyboard.digit6Key.wasPressedThisFrame)CameraDesk();
+                if(keyboard.digit7Key.wasPressedThisFrame)CameraRoom();
+            }
 #endif
             if (!actor) return;
             distanceTravelled += Vector3.Distance(previousPosition, actor.transform.position);
@@ -170,7 +183,7 @@ namespace Yamyam.LofiRoom
             GUI.backgroundColor=new Color(.13f,.21f,.22f,.92f);
             GUI.Box(new Rect(20, 20, 350, 94), "얌얌코딩 · LOFI ROOM");
             GUI.Label(new Rect(36, 54, 320, 30), moving?"산책 중 · Tripo 걷기 애니메이션":"잠깐 쉬어가기 · Tripo 대기 애니메이션");
-            GUI.Label(new Rect(36, 82, 320, 25), "캐릭터·헤드폰 첫 Unity 샘플");
+            GUI.Label(new Rect(36, 82, 320, 25), "PC v2 · 1 산책 / 2 쉬기 / 3 낮밤");
             string[] labels = { "산책", "쉬기", "낮 / 밤", "비", "책상 보기", "방 전체", "음악" };
             System.Action[] actions = { Walk, Idle, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic };
             for (int i = 0; i < labels.Length; i++) if (GUI.Button(new Rect(22 + i * 108, Screen.height / scale - 60, 102, 38), labels[i])) actions[i]();

@@ -9,8 +9,8 @@ using UnityEditor;
 
 public sealed class LofiSampleCapture : MonoBehaviour
 {
-    const int Width=1920,Height=1080,Fps=60,Frames=2160;
-    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/unity-sample-v1");
+    const int Width=1920,Height=1080,Fps=60,Frames=2880;
+    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/nature-v2");
     Process encoder;
     RenderTexture target;
     Texture2D pixels;
@@ -42,12 +42,21 @@ public sealed class LofiSampleCapture : MonoBehaviour
         {
             for(frame=0;frame<Frames;frame++)
             {
-                if(frame==300)sample.Walk();
-                if(frame==1020){sample.Idle();sample.actor.transform.SetPositionAndRotation(new Vector3(-.8f,sample.groundY,-.8f),Quaternion.Euler(0,145,0));}
-                if(frame>=1020 && frame<1440){var p=sample.actor.transform.position+new Vector3(1.7f,1.45f,-2.7f);sample.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(sample.actor.transform.position+Vector3.up*.95f-p));sample.roomCamera.orthographicSize=1.32f;}
-                if(frame==1440){sample.roomCamera.transform.SetPositionAndRotation(new Vector3(-.55f,1.3f,.75f),Quaternion.LookRotation(new Vector3(-.02f,.94f,1.2f)-new Vector3(-.55f,1.3f,.75f)));sample.roomCamera.orthographicSize=.34f;}
-                if(frame==1740){sample.CameraRoom();sample.SetNight(false);}
-                if(frame==1920)sample.SetNight(true);
+                if(frame==360)sample.Walk();
+                if(frame==1080){sample.Idle();sample.actor.transform.SetPositionAndRotation(new Vector3(-.8f,sample.groundY,-.8f),Quaternion.Euler(0,145,0));}
+                if(frame>=1080 && frame<1500){var p=sample.actor.transform.position+new Vector3(1.7f,1.45f,-2.7f);sample.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(sample.actor.transform.position+Vector3.up*.95f-p));sample.roomCamera.orthographicSize=1.32f;}
+                if(frame>=1500 && frame<1920)
+                {
+                    if(frame==1500)sample.actor.transform.rotation=Quaternion.Euler(0,325,0);
+                    float a=(frame-1500)/420f*Mathf.PI*.38f;
+                    Vector3 aim=sample.actor.GetComponent<Yamyam.LofiRoom.LofiHairMotion>().head.position+Vector3.up*.08f;
+                    Vector3 p=aim+new Vector3(1.25f+Mathf.Sin(a)*.35f,.13f,-1.4f+Mathf.Cos(a)*.15f);
+                    sample.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(aim-p));sample.roomCamera.orthographicSize=.38f;
+                }
+                if(frame==1920){sample.roomCamera.transform.SetPositionAndRotation(new Vector3(-.55f,1.3f,.75f),Quaternion.LookRotation(new Vector3(-.02f,.94f,1.2f)-new Vector3(-.55f,1.3f,.75f)));sample.roomCamera.orthographicSize=.34f;}
+                if(frame==2280){Vector3 p=new Vector3(1.25f,1.9f,-.3f);sample.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(2.55f,.78f,1.55f)-p));sample.roomCamera.orthographicSize=1.05f;}
+                if(frame==2580){sample.CameraRoom();sample.SetNight(false);}
+                if(frame==2760)sample.SetNight(true);
                 // EndOfFrame is not emitted by Unity's batch-mode Editor.
                 // Each resume follows one completed native animation frame.
                 yield return null;
