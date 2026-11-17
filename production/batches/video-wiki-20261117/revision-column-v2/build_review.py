@@ -15,4 +15,11 @@ html+=f'<p>전체 {data["scope"]}장 중 <b>{s["savedAndInternallyReviewed"]}장
 html+='<p>영상 요약을 독립적인 개발 방법론 칼럼으로 보강합니다. 구체적인 상황에서 출발해 상태·조건·구현 순서·실패 진단을 설명하고, 글을 위한 과정 그림을 추가합니다. 기존 영상 링크와 유용한 이미지·앞뒤 장 연결은 유지합니다. 공개 웹의 캐시 반영과 Notion 원문 저장은 별도로 확인합니다.</p>'
 html+='<table><thead><tr><th>ID</th><th>글</th><th>현재 상태</th><th>이미지</th><th>로컬</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></html>'
 (ROOT/'index.html').write_text(html,encoding='utf8')
+historical=ROOT.parent/'index-baseline.html'
+old_index=ROOT.parent/'index.html'
+if not historical.exists() and old_index.exists():
+    historical.write_text(old_index.read_text(encoding='utf8'),encoding='utf8')
+root_html=html.replace('href="articles/','href="revision-column-v2/articles/')
+root_html=root_html.replace('<h1>위키 칼럼 보강 검수표</h1>','<h1>위키 칼럼 보강 검수표</h1><p><a href="revision-column-v2/final-qa.json">전체 검수 기록</a> · <a href="index-baseline.html">초기판 기록</a></p>')
+old_index.write_text(root_html,encoding='utf8')
 print(s)
