@@ -2,7 +2,7 @@
 // These are film graphics, not imitated service/editor interfaces.
 const fs=require('fs'),path=require('path');
 const {createCanvas,loadImage,GlobalFonts}=require('C:/Users/1/Videos/YamyamCoding/ai-2d-tools/render-node/node_modules/@napi-rs/canvas');
-const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v2'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
+const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v3'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
 GlobalFonts.registerFromPath('C:/Windows/Fonts/NotoSansKR-VF.ttf','Noto Sans KR');
 const cv=createCanvas(1920,1080),c=cv.getContext('2d'),im={};
 const C={bg:'#0b1311',panel:'#14221e',fg:'#edf1e9',muted:'#afbeb3',gold:'#e1c47d',teal:'#77c8b7',red:'#e99280',line:'#3a5147'};

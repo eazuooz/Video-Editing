@@ -15,7 +15,7 @@ namespace Yamyam.LofiRoom
         public Transform lounge;
         public Material rainTemplate;
         Transform catBody,earL,earR,tail;
-        readonly List<Transform> tailLinks=new();
+        Mesh tailMesh;
         Material rainMaterial;
         Texture2D screen;
         float nextScreen;
@@ -61,34 +61,55 @@ namespace Yamyam.LofiRoom
             var rug=Mat("cat rug warm oat",new Color(.66f,.52f,.38f));Form("separate oval cat rug",root,new Vector3(0,-.005f,0),new Vector3(1.15f,.036f,.84f),rug);
             var white=Mat("calico ivory",Cream);var orange=Mat("calico amber",Orange);var black=Mat("calico dark fur",Black);var pink=Mat("ear and nose pink",new Color(.62f,.31f,.29f));
             catBody=new GameObject("sleep breathing body").transform;catBody.SetParent(root,false);catBody.localPosition=new Vector3(.09f,.17f,.02f);
-            var fur=Form("curled calico torso",catBody,Vector3.zero,new Vector3(.68f,.35f,.44f),white);Calico(fur,white,orange,black);
-            var head=Form("sleeping calico head",catBody,new Vector3(-.30f,.015f,-.13f),new Vector3(.32f,.29f,.29f),white);Calico(head,white,orange,black);
+            var fur=Form("curled calico torso",catBody,Vector3.zero,new Vector3(.68f,.35f,.44f),white);Calico(fur,white,false);
+            var head=Form("sleeping calico head",catBody,new Vector3(-.30f,.015f,-.13f),new Vector3(.32f,.29f,.29f),white);Calico(head,white,true);
             Form("white muzzle",catBody,new Vector3(-.32f,-.035f,-.25f),new Vector3(.22f,.13f,.085f),white);
             Form("tiny pink nose",catBody,new Vector3(-.32f,-.016f,-.298f),new Vector3(.041f,.026f,.022f),pink);
             for(int i=0;i<2;i++)
             {
                 float x=-.38f+i*.14f;var pts=new List<Vector3>();for(int k=0;k<9;k++){float u=k/8f;pts.Add(new Vector3(x+(u-.5f)*.07f, .060f-Mathf.Sin(u*Mathf.PI)*.012f,-.271f));}Line("closed sleeping eyelid",catBody,pts,.009f,black);
                 var ear=new GameObject("twitching ear").transform;ear.SetParent(catBody,false);ear.localPosition=new Vector3(-.405f+i*.19f,.11f,-.09f);ear.localRotation=Quaternion.Euler(0,0,i==0?12:-12);
-                Ear(ear,white);var inner=Ear(ear,pink);inner.localScale=new Vector3(.57f,.66f,.57f);inner.localPosition=new Vector3(0,.018f,-.026f);if(i==0)earL=ear;else earR=ear;
+                Ear(ear,i==0?orange:white);var inner=Ear(ear,pink);inner.localScale=new Vector3(.57f,.66f,.57f);inner.localPosition=new Vector3(0,.018f,-.026f);if(i==0)earL=ear;else earR=ear;
                 Form("tucked white paw",catBody,new Vector3(-.27f+i*.13f,-.105f,-.25f),new Vector3(.12f,.08f,.15f),white);
                 for(int w=0;w<3;w++){float side=i==0?-1:1;Line("sleeping cat whisker",catBody,new List<Vector3>{new Vector3(-.32f+side*.065f,-.03f+w*.015f,-.284f),new Vector3(-.32f+side*.18f,-.04f+w*.026f,-.31f)},.0025f,white);}
             }
             tail=new GameObject("curled breathing tail").transform;tail.SetParent(root,false);tail.localPosition=new Vector3(.29f,.105f,.05f);
-            for(int k=0;k<12;k++)
-            {
-                float a=k*.18f;var link=Form("calico tail segment",tail,new Vector3(.12f*Mathf.Cos(a),0,-.08f-k*.034f),new Vector3(.13f-k*.005f,.105f-k*.003f,.105f),k<4?black:k<9?orange:white);tailLinks.Add(link);
-            }
+            MakeTail(white);
+        }
+        void MakeTail(Material basis)
+        {
+            var o=new GameObject("continuous soft curled tail",typeof(MeshFilter),typeof(MeshRenderer));o.transform.SetParent(tail,false);tailMesh=new Mesh{name="Continuous tapered cat tail"};
+            const int rings=48,sides=16;var tris=new List<int>();var uv=new List<Vector2>();
+            for(int i=0;i<=rings;i++)for(int j=0;j<=sides;j++){uv.Add(new Vector2(j/(float)sides,i/(float)rings));if(i<rings&&j<sides){int k=i*(sides+1)+j;tris.AddRange(new[]{k,k+1,k+sides+1,k+1,k+sides+2,k+sides+1});}}
+            tailMesh.vertices=new Vector3[(rings+1)*(sides+1)];tailMesh.SetUVs(0,uv);tailMesh.SetTriangles(tris,0);o.GetComponent<MeshFilter>().sharedMesh=tailMesh;
+            var tex=new Texture2D(16,128,TextureFormat.RGB24,true);for(int y=0;y<128;y++)for(int x=0;x<16;x++)tex.SetPixel(x,y,Color.Lerp(new Color(.60f,.32f,.15f),Black,Mathf.SmoothStep(0,1,Mathf.InverseLerp(.72f,.96f,y/127f))));tex.Apply();var m=new Material(basis){color=Color.white,mainTexture=tex};m.SetFloat("_Smoothness",.04f);o.GetComponent<Renderer>().sharedMaterial=m;UpdateTail(0);
+        }
+        void UpdateTail(float time)
+        {
+            if(!tailMesh)return;const int rings=48,sides=16;var v=new Vector3[(rings+1)*(sides+1)];
+            for(int i=0;i<=rings;i++){float u=i/(float)rings,angle=u*2.15f;var centre=new Vector3(.12f*Mathf.Cos(angle)+Mathf.Sin(time*.9f-u*3.3f)*.018f*u,0,-.08f-u*.37f);var tangent=new Vector3(-.258f*Mathf.Sin(angle),0,-.37f).normalized;var side=Vector3.Cross(Vector3.up,tangent).normalized;float radius=Mathf.Lerp(.055f,.008f,Mathf.Pow(u,2.2f));for(int j=0;j<=sides;j++){float a=j*Mathf.PI*2/sides;v[i*(sides+1)+j]=centre+radius*(Mathf.Cos(a)*side+Mathf.Sin(a)*Vector3.up);}}
+            tailMesh.vertices=v;tailMesh.RecalculateNormals();tailMesh.RecalculateBounds();
         }
         Transform Ear(Transform parent,Material m)
         {
             var o=new GameObject("soft triangular ear",typeof(MeshFilter),typeof(MeshRenderer));o.transform.SetParent(parent,false);
             var mesh=new Mesh();mesh.vertices=new[]{new Vector3(-.07f,0,-.035f),new Vector3(.07f,0,-.035f),new Vector3(0,.16f,.006f),new Vector3(0,0,.055f)};mesh.triangles=new[]{0,2,1,0,3,2,1,2,3,0,1,3};mesh.RecalculateNormals();o.GetComponent<MeshFilter>().sharedMesh=mesh;o.GetComponent<Renderer>().sharedMaterial=m;return o.transform;
         }
-        void Calico(Transform t,Material white,Material orange,Material black)
+        void Calico(Transform t,Material white,bool head)
         {
-            var texture=new Texture2D(256,128,TextureFormat.RGB24,true);var px=new Color[256*128];
-            for(int y=0;y<128;y++)for(int x=0;x<256;x++){float u=x/255f*Mathf.PI*2,v=y/127f;float n=Mathf.PerlinNoise(8+Mathf.Cos(u)*1.6f,7+Mathf.Sin(u)*1.6f+v*3.2f);Color colour=Color.Lerp(Cream,Orange,Mathf.SmoothStep(0,1,Mathf.InverseLerp(.55f,.59f,n)));colour=Color.Lerp(colour,Black,1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,.39f,n)));px[y*256+x]=Color.Lerp(Cream,colour,Mathf.SmoothStep(0,1,Mathf.InverseLerp(.10f,.24f,v)));}
-            texture.SetPixels(px);texture.Apply(true);var m=new Material(white){mainTexture=texture,color=Color.white};t.GetComponent<Renderer>().sharedMaterial=m;
+            // A few anatomical coat patches, with a white belly and face.
+            // Sample in 3D so the sphere's UV seam does not become a stripe.
+            const int w=1024,h=512;var texture=new Texture2D(w,h,TextureFormat.RGB24,true);var px=new Color[w*h];
+            float Patch(Vector3 p,Vector3 centre,Vector3 radii){var q=p-centre;q=new Vector3(q.x/radii.x,q.y/radii.y,q.z/radii.z);float edge=q.magnitude+(Mathf.PerlinNoise(p.x*9+12,p.z*9+p.y*3+8)-.5f)*.065f;return 1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.94f,1.02f,edge));}
+            for(int y=0;y<h;y++)for(int x=0;x<w;x++)
+            {
+                float a=x/(float)(w-1)*Mathf.PI*2,p=y/(float)(h-1)*Mathf.PI;var q=new Vector3(Mathf.Sin(p)*Mathf.Sin(a),-Mathf.Cos(p),Mathf.Sin(p)*Mathf.Cos(a));
+                float amber=head?Patch(q,new Vector3(-.64f,.69f,.12f),new Vector3(.73f,.70f,.86f)):Mathf.Max(Patch(q,new Vector3(.23f,.87f,.24f),new Vector3(.90f,.70f,.91f)),Patch(q,new Vector3(-.68f,.35f,.48f),new Vector3(.59f,.68f,.63f)));
+                float dark=head?0:Patch(q,new Vector3(.76f,.70f,-.30f),new Vector3(.48f,.42f,.60f));
+                Color colour=Color.Lerp(new Color(.92f,.89f,.82f),new Color(.67f,.37f,.17f),amber);colour=Color.Lerp(colour,new Color(.15f,.135f,.12f),dark);
+                float grain=(Mathf.PerlinNoise(x*.73f,y*.15f)-.5f)*.035f;px[y*w+x]=colour*(1+grain);
+            }
+            texture.SetPixels(px);texture.Apply(true);var m=new Material(white){name=head?"calico soft face coat":"calico natural saddle patches",mainTexture=texture,color=Color.white};m.SetFloat("_Smoothness",.035f);m.SetFloat("_Metallic",0);m.SetFloat("_SpecularHighlights",0);t.GetComponent<Renderer>().sharedMaterial=m;
         }
         void Line(string name,Transform p,List<Vector3> points,float width,Material m)
         {
@@ -130,7 +151,7 @@ namespace Yamyam.LofiRoom
         }
         void Update()
         {
-            float t=Time.time;if(catBody){catBody.localScale=new Vector3(1,1+Mathf.Sin(t*1.25f)*.022f,1+Mathf.Sin(t*1.25f)*.008f);float pulse=Mathf.Pow(Mathf.Max(0,Mathf.Sin(t*.75f)),22);earL.localRotation=Quaternion.Euler(pulse*13,0,12+pulse*10);earR.localRotation=Quaternion.Euler(0,pulse*-12,-12-pulse*6);tail.localRotation=Quaternion.Euler(0,Mathf.Sin(t*.67f)*9,Mathf.Sin(t*.5f)*2);for(int i=0;i<tailLinks.Count;i++){var p=tailLinks[i].localPosition;p.x=.12f*Mathf.Cos(i*.18f)+Mathf.Sin(t*.9f-i*.3f)*.024f*(i/11f);tailLinks[i].localPosition=p;}}
+            float t=Time.time;if(catBody){catBody.localScale=new Vector3(1,1+Mathf.Sin(t*1.25f)*.022f,1+Mathf.Sin(t*1.25f)*.008f);float pulse=Mathf.Pow(Mathf.Max(0,Mathf.Sin(t*.75f)),22);earL.localRotation=Quaternion.Euler(pulse*13,0,12+pulse*10);earR.localRotation=Quaternion.Euler(0,pulse*-12,-12-pulse*6);tail.localRotation=Quaternion.Euler(0,Mathf.Sin(t*.67f)*9,Mathf.Sin(t*.5f)*2);UpdateTail(t);}
             if(t>nextScreen){nextScreen=t+1.1f;screenFrame++;DrawScreen();}
         }
         public IEnumerator EnterLounge()
@@ -155,15 +176,39 @@ namespace Yamyam.LofiRoom
         public void FitLounge()
         {
             var actor=room.actor;var a=room.activities;
-            actor.bodyPosition+=Vector3.up*(.22f*cushionWeight);
+            var bodyShift=Vector3.up*(.22f*cushionWeight);actor.bodyPosition+=bodyShift;
             if(a.book)
             {
-                var chest=actor.GetBoneTransform(HumanBodyBones.Chest);var centre=chest.position+Vector3.up*.25f+lounge.forward*.14f;
-                a.book.position=centre;a.book.rotation=lounge.rotation*Quaternion.Euler(-58,0,0);a.book.gameObject.SetActive(bookWeight>.03f);
+                var chest=actor.GetBoneTransform(HumanBodyBones.Chest);var head=actor.GetBoneTransform(HumanBodyBones.Head);var hips=actor.GetBoneTransform(HumanBodyBones.Hips);
+                var leftShoulder=actor.GetBoneTransform(HumanBodyBones.LeftUpperArm);var rightShoulder=actor.GetBoneTransform(HumanBodyBones.RightUpperArm);
+                var towardHips=Vector3.ProjectOnPlane(hips.position-head.position,Vector3.up).normalized;
+                var centre=chest.position+bodyShift+Vector3.up*.30f+towardHips*.10f;
+                var across=Vector3.ProjectOnPlane(rightShoulder.position-leftShoulder.position,Vector3.up).normalized;
+                var normal=Vector3.ProjectOnPlane(head.position+bodyShift+Vector3.up*.035f-centre,across).normalized;
+                a.book.position=centre;a.book.rotation=Quaternion.LookRotation(Vector3.Cross(across,normal),normal);a.book.localScale=Vector3.one*.88f;a.book.gameObject.SetActive(bookWeight>.03f);
                 if(a.closedBook)a.closedBook.SetActive(bookWeight<=.03f);
-                foreach(var tuple in new[]{(AvatarIKGoal.LeftHand,a.leftPage),(AvatarIKGoal.RightHand,a.rightPage)}){actor.SetIKPositionWeight(tuple.Item1,bookWeight);actor.SetIKPosition(tuple.Item1,tuple.Item2.position);actor.SetIKRotationWeight(tuple.Item1,0);}
+                FitBookHand(AvatarIKGoal.LeftHand,AvatarIKHint.LeftElbow,HumanBodyBones.LeftHand,HumanBodyBones.LeftMiddleProximal,HumanBodyBones.LeftIndexProximal,HumanBodyBones.LeftLittleProximal,leftShoulder,-1,across,towardHips);
+                FitBookHand(AvatarIKGoal.RightHand,AvatarIKHint.RightElbow,HumanBodyBones.RightHand,HumanBodyBones.RightMiddleProximal,HumanBodyBones.RightIndexProximal,HumanBodyBones.RightLittleProximal,rightShoulder,1,across,towardHips);
                 actor.SetLookAtWeight(bookWeight*.4f,.1f,.45f,.3f,.6f);actor.SetLookAtPosition(centre);
             }
+        }
+        void FitBookHand(AvatarIKGoal goal,AvatarIKHint hint,HumanBodyBones handBone,HumanBodyBones middleBone,HumanBodyBones indexBone,HumanBodyBones littleBone,Transform shoulder,float side,Vector3 across,Vector3 towardHips)
+        {
+            var actor=room.actor;var book=room.activities.book;var hand=actor.GetBoneTransform(handBone);var middle=actor.GetBoneTransform(middleBone);var index=actor.GetBoneTransform(indexBone);var little=actor.GetBoneTransform(littleBone);
+            string prefix=side<0?"mixamorig:LeftHand":"mixamorig:RightHand";foreach(var bone in actor.GetComponentsInChildren<Transform>()){if(!middle&&bone.name==prefix+"Middle1")middle=bone;if(!index&&bone.name==prefix+"Index1")index=bone;if(!little&&bone.name==prefix+"Pinky1")little=bone;}
+            // Wrists stay outside the covers. Fingers point inward; elbows stay
+            // out of the torso and away from the two page surfaces.
+            var wrist=book.TransformPoint(new Vector3(side*.20f,-.025f,-.09f));
+            actor.SetIKPositionWeight(goal,bookWeight);actor.SetIKPosition(goal,wrist);
+            if(middle && index && little)
+            {
+                var forward=(middle.position-hand.position).normalized;var palm=Vector3.Cross(forward,index.position-little.position).normalized*(side<0?1:-1);
+                var frame=Quaternion.LookRotation(forward,palm);var target=Quaternion.LookRotation(book.forward,side*book.right);
+                // Humanoid IK goal axes include the Avatar's wrist offset.
+                // Rotate that goal by the measured palm-frame delta.
+                var nativeGoal=actor.GetIKRotation(goal);actor.SetIKRotationWeight(goal,bookWeight);actor.SetIKRotation(goal,target*Quaternion.Inverse(frame)*nativeGoal);
+            }
+            actor.SetIKHintPositionWeight(hint,bookWeight);actor.SetIKHintPosition(hint,shoulder.position+Vector3.up*(.22f*cushionWeight)+across*(side*.32f)+Vector3.up*.14f+towardHips*.19f);
         }
     }
 }

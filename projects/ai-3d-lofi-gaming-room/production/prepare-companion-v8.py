@@ -15,6 +15,6 @@ for f in frames:
  s=f['timestampSeconds'];time=f'{int(s)//60:02d}:{s%60:05.2f}'
  assert f['notionAttachmentId'] and '{{frame:'+f['name']+'}}' in body
  body=body.replace('{{frame:'+f['name']+'}}','<image source="file-upload://'+f['notionAttachmentId']+'">'+f['caption']+' — 영상 '+time+'</image>')
-assert '{{frame:' not in body and body.count('<image ')==10
+assert '{{frame:' not in body and body.count('<image ')==len(frames)
 (H/'companion-article.notion.md').write_text(body,'utf-8')
-print('Prepared 10 exact-frame article images')
+print('Prepared',len(frames),'exact-frame article images')

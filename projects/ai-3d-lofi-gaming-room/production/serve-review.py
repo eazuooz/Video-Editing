@@ -2,7 +2,7 @@
 from http.server import SimpleHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
 import argparse,re,os
-ROOT=Path(__file__).resolve().parent/'local/full-video-v2/final'
+ROOT=Path(__file__).resolve().parent/'local/full-video-v3/final'
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(ROOT),**kwargs)
     def end_headers(self):
@@ -34,5 +34,5 @@ class Handler(SimpleHTTPRequestHandler):
             if not data:break
             output.write(data);self.remaining-=len(data)
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--port',type=int,default=9327);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--port',type=int,default=9329);args=parser.parse_args()
     ThreadingHTTPServer(('127.0.0.1',args.port),Handler).serve_forever()

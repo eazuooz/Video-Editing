@@ -1,9 +1,9 @@
 """Compose narration-paced real captures with film graphics; resumes by input hashes."""
 from pathlib import Path
 import json,hashlib,math,subprocess,time,argparse
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v2';V=L/'visual';V.mkdir(parents=True,exist_ok=True)
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v3';V=L/'visual';V.mkdir(parents=True,exist_ok=True)
 rows=json.loads((P/'script/narration.ko.json').read_text('utf-8'))['scenes']
-MOTION={1: ('living-room-v8', 0, 20), 2: ('living-room-v8', 0, 10), 6: ('living-room-v8', 37, 8), 9: ('living-room-v8', 37, 8), 11: ('living-room-v8', 20, 11), 12: ('living-room-v8', 37, 8), 13: ('living-room-v8', 0, 12), 16: ('living-room-v8', 0, 12), 18: ('living-room-v8', 12, 8), 19: ('web-final-v6', 32, 7), 20: ('living-room-v8', 68, 6), 21: ('final-activities-v7', 26, 7), 22: ('living-room-v8', 61, 7), 25: ('living-room-v8', 20, 11), 28: ('living-room-v8', 68, 6), 29: ('living-room-v8', 53, 8), 30: ('living-room-v8', 45, 8), 31: ('living-room-v8', 0, 20)}
+MOTION={1: ('living-room-v9', 0, 20), 6: ('living-room-v9', 37, 8), 11: ('living-room-v9', 20, 11), 12: ('living-room-v9', 37, 8), 13: ('living-room-v9/walk-source', 0, 12), 16: ('living-room-v9/walk-source', 0, 12), 17: ('living-room-v9', 33, 12), 18: ('living-room-v9', 12, 8), 19: ('web-final-v6', 32, 7), 20: ('living-room-v9', 68, 6), 21: ('final-activities-v7', 26, 7), 22: ('living-room-v9', 61, 7), 28: ('living-room-v9', 68, 6), 29: ('living-room-v9', 53, 8), 30: ('living-room-v9', 45, 8)}
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def run(a):return subprocess.run(list(map(str,a)),check=True,capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
 def render(row):
@@ -13,35 +13,19 @@ def render(row):
  duration=sf.info(f).duration;frames=math.ceil((duration+(.28 if row['id']!='28' else 0))*60)
  if row['id']=='28':frames=max(frames,600)
  seconds=frames/60
- n=int(row['id']);board=L/'boards'/(row['id']+'.png');out=V/('scene-'+row['id']+'.mp4');receipt=out.with_suffix('.json');sig={'narration':sha(f),'board':sha(board),'frames':frames,'renderer':'living-room-compositor-v8'}
+ n=int(row['id']);board=L/'boards'/(row['id']+'.png');out=V/('scene-'+row['id']+'.mp4');receipt=out.with_suffix('.json');sig={'narration':sha(f),'board':sha(board),'frames':frames,'renderer':'ai-tool-tutorial-compositor-v3'}
  if out.exists() and receipt.exists() and json.loads(receipt.read_text())['inputs']==sig:return True
  base=['ffmpeg','-hide_banner','-loglevel','error','-y','-loop','1','-framerate','60','-i',board]
  n=int(row['id']);fil='';source=None
- if n in (30,31):
-  source=P/'production/local/living-room-v8/unity-native-clean.mp4'
-  timeline=json.loads((L/'timeline.json').read_text('utf-8'))['scenes'];sceneStart=next(s['start'] for s in timeline if s['id']==row['id'])
-  cues=json.loads((L/'captions.json').read_text('utf-8'))
-  def boundary(word,default):return min(seconds,max(0,next((c['start']-sceneStart for c in cues if sceneStart<=c['start']<sceneStart+seconds and word in c['ko']),default)))
-  if n==30:
-   cut=boundary('오른쪽',seconds*.43);segments=[(37,8,0,cut),(45,8,cut,seconds)]
-  else:
-   cuts=[0]+[boundary(word,seconds*i/5) for i,word in enumerate(('둘째','셋째','넷째','다섯째'),1)]+[seconds]
-   segments=[(start,length,a,b) for (start,length),a,b in zip(((12,8),(53,8),(37,8),(45,8),(61,7)),cuts,cuts[1:])]
-  filters=[];labels=[]
-  for i,(start,length,a,b) in enumerate(segments,1):
-   cache=L/'clips'/f'living-room-v8-{start}-{length}.mp4';cache.parent.mkdir(exist_ok=True)
-   if not cache.exists():run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',start,'-i',source,'-t',length,'-an','-c:v','libx264','-preset','veryfast','-crf','18','-threads','2',cache])
-   base+=['-stream_loop','-1','-i',cache];filters.append(f'[{i}:v]trim=duration={b-a:.6f},setpts=PTS-STARTPTS[s{i}]');labels.append(f'[s{i}]')
-  fil=';'.join(filters)+';'+''.join(labels)+f'concat=n={len(segments)}:v=1:a=0,scale=1120:630,setsar=1[v];[0:v][v]overlay=76:216:shortest=1,format=yuv420p[out]'
- elif n in MOTION and n not in (23,24,26):
+ if n in MOTION and n not in (23,24,26):
   folder,start,length=MOTION[n];source=P/'production/local'/folder/'unity-native-clean.mp4'
-  cache=L/'clips'/f'{folder}-{start}-{length}.mp4';cache.parent.mkdir(exist_ok=True)
+  cache=L/'clips'/f"{folder.replace('/', '-')}-{start}-{length}.mp4";cache.parent.mkdir(exist_ok=True)
   if not cache.exists():run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',start,'-i',source,'-t',length,'-an','-c:v','libx264','-preset','veryfast','-crf','18','-threads','2',cache])
   base+=['-stream_loop','-1','-i',cache]
   enable=f":enable='gte(t,{seconds*.5})'" if n in (2,6,13) else ''
   fil='[1:v]scale=1120:630,setsar=1[v];[0:v][v]overlay=76:216:shortest=1'+enable+',format=yuv420p[out]'
- elif n in (4,17,27):
-  folder,start,length=('living-room-v8',33,12) if n==17 else ('living-room-v8',0,20);source=P/'production/local'/folder/'unity-native-clean.mp4'
+ elif n==27:
+  folder,start,length=('living-room-v9',33,12) if n==17 else ('living-room-v9',0,20);source=P/'production/local'/folder/'unity-native-clean.mp4'
   cache=L/'clips'/f'pair-{n}.mp4';cache.parent.mkdir(exist_ok=True)
   if not cache.exists():run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',start,'-i',source,'-t',length,'-an','-c:v','libx264','-preset','veryfast','-crf','18','-threads','2',cache])
   base+=['-stream_loop','-1','-i',cache];fil='[1:v]scale=850:478,setsar=1[v];[0:v][v]overlay=994:260:shortest=1,format=yuv420p[out]'

@@ -1,11 +1,22 @@
 """Use exact frames from the final captioned master for the companion article."""
 from pathlib import Path
 import json,hashlib,subprocess
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v2';O=L/'wiki';O.mkdir(exist_ok=True)
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v3';O=L/'wiki';O.mkdir(exist_ok=True)
 d=json.loads((P/'production/full-video-delivery.json').read_text('utf-8'));v=Path(d['outputs'][1]['path']);master=hashlib.file_digest(v.open('rb'),'sha256').hexdigest();assert master==d['outputs'][1]['sha256']
 t={r['id']:r for r in json.loads((L/'timeline.json').read_text('utf-8'))['scenes']}
-items=[('room','01',3,'완성한 방의 실제 실행 화면. 걷기·앉기·음악·기록을 하나의 공간에서 연결한다.'),('model','06',3,'같은 캐릭터의 실제 Tripo 작업 화면. 자체 입력 이미지를 모델로 바꾸고 형상을 확인한 단계다.'),('texture','10',6,'실제 캐릭터의 Base Color·Normal·Roughness·Metallic 맵. 겉모양의 색과 표면 데이터의 역할이 다르다.'),('states','15',7,'대기→걷기→정렬→앉기→생활→일어나기. 실제 동작을 연결하는 상태의 관계를 설명한 완성 영상 프레임이다.'),('sit','17',10,'초기 가구와 수정한 실제 앉기 장면. 낮은 등받이·모니터와 몸의 접촉을 함께 확인한다.'),('window','20',6,'실제 게임의 잎과 창문 풍경. 잎의 기준점은 고정하고 창문에는 자체 숲·달 파노라마를 사용했다.'),('web','26',7,'실제 브라우저로 실행한 방. 로딩과 시작, 생활 동작과 저장 UI를 연결한 결과다.')]
-items += [('rain','29',6,'실제 창문 안에 보이는 비. 숲 배경 앞의 빗줄기·물방울과 창틀의 순서를 확인한다.'),('coding','30',3,'실제 아이맥의 코드 문서와 커서가 바뀌는 화면. 방 안 생활감을 위한 동적 텍스처다.'),('cat','30',17,'오른쪽 카펫에서 잠든 삼색고양이. 감은 눈과 작은 호흡·꼬리·귀 움직임을 연결했다.')]
+items=[
+ ('room','01',4,'완성 게임. 입력 이미지와 모델, 코드가 조작 가능한 같은 방으로 이어진다.'),
+ ('reference','04',4,'캐릭터 생성 입력. 손발이 보이는 전신 중립 자세와 고정할 디자인 조건을 함께 요청한다.'),
+ ('prop','05',4,'헤드폰은 단독 이미지로 분리한다. 구조와 두께를 확인할 수 있는 입력을 만든다.'),
+ ('model','06',4,'실제 Tripo의 자체 캐릭터 작업 화면. Image to 3D에 입력 그림을 넣고 생성 결과를 확인한다.'),
+ ('retopo','08',4,'목표 10K와 실제 9,968개 사각형 면. 생성 원본과 게임용 메시를 구별한다.'),
+ ('texture','10',6,'캐릭터의 실제 Base Color·Normal·Roughness·Metallic 맵과 역할.'),
+ ('mcp','25',5,'Codex의 요청이 프로젝트 범위의 Unity CLI/MCP를 거쳐 Editor 작업과 실제 결과로 이어진다.'),
+ ('states','15',7,'Walk → Align → Enter → Loop → Exit. 자세 사이의 중간 동작을 보존하는 상태 흐름.'),
+ ('reading','18',7,'새 독서 시연. 책이 얼굴을 향하고 손목은 표지 바깥, 팔꿈치는 몸 밖에 놓이도록 함께 맞춘다.'),
+ ('rain','29',6,'창문 영역 안의 비와 배경·유리·창틀 순서를 보여 주는 실제 게임 장면.'),
+ ('cat','30',6,'새 삼색고양이. 넓은 색 무늬·무광 재질·연속된 꼬리와 작은 수면 동작.'),
+ ('web','26',7,'새 WebGL 빌드를 실제 브라우저에서 실행한 화면. 저장·입력·소리의 검증도 게임 제작에 포함한다.')]
 records=[]
 for name,scene,offset,caption in items:
  second=t[scene]['start']+min(offset,t[scene]['duration']*.65);f=O/(name+'.jpg')
