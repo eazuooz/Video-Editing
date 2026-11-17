@@ -7,12 +7,12 @@ HERE=Path(__file__).resolve().parent
 
 def capture(ident,video_id,second):
     target=HERE/'evidence'/f'{ident}-{second:07.2f}'
-    jpg=target.with_suffix('.jpg')
+    jpg=Path(str(target)+'.jpg')
     record=Path(str(jpg)+'.json')
     if jpg.exists() and record.exists():return json.loads(record.read_text(encoding='utf8'))
     template=str(target)+'.%(ext)s'
     result=subprocess.run(['yt-dlp','--quiet','--no-progress','--no-warnings','--no-playlist',
-        '-f','bv[height=1080]/bv[height<=1080]/best[height<=1080]',
+        '-f',('bv[width=1080]/bv[height=1080]/bv[height<=1080]/best[height<=1080]' if ident.startswith('S') else 'bv[height=1080]/bv[height<=1080]/best[height<=1080]'),
         '--download-sections',f'*{second}-{second+.15}', '--force-keyframes-at-cuts',
         '-o',template,'https://www.youtube.com/watch?v='+video_id],cwd=ROOT,capture_output=True)
     if result.returncode:

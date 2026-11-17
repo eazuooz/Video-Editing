@@ -65,7 +65,9 @@ def subtitle(row):
          '-o',str(prefix)+'.%(ext)s','https://www.youtube.com/watch?v='+row['videoId']]
     p=subprocess.run(cmd,cwd=ROOT,capture_output=True)
     files=list(dest.glob(row['id']+'.*.vtt'))
-    return dict(id=row['id'],status='available' if files else 'no-public-transcript',returnCode=p.returncode,files=[str(p) for p in files])
+    error=p.stderr.decode('utf8',errors='replace')
+    status='available' if files else ('rate-limited' if '429' in error else 'subtitle-retrieval-unavailable')
+    return dict(id=row['id'],status=status,returnCode=p.returncode,files=[str(p) for p in files])
 
 def main():
     inv=rd(HERE/'inventory.json')
