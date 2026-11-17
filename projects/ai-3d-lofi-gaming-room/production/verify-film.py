@@ -1,10 +1,12 @@
 """Verify actual final media, speech coverage, captions and local-review delivery."""
 from pathlib import Path
-import json,subprocess,hashlib,re,html,math
+import json,subprocess,hashlib,re,html,math,difflib
 import numpy as np
 from PIL import ImageFont
 P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v1';F=L/'final';Q=L/'qa';Q.mkdir(exist_ok=True)
-def run(a):return subprocess.run(list(map(str,a)),check=True,capture_output=True,creationflags=subprocess.CREATE_NO_WINDOW)
+def run(a):
+ try:return subprocess.run(list(map(str,a)),check=True,capture_output=True,creationflags=subprocess.CREATE_NO_WINDOW)
+ except subprocess.CalledProcessError as e:raise RuntimeError(e.stderr.decode('utf-8','replace')[-4000:]) from e
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def norm(s):return ''.join(c.lower() for c in s if c.isalnum())
 d=json.loads((P/'production/full-video-delivery.json').read_text('utf-8'));t=json.loads((L/'timeline.json').read_text());probes=[];audio=[]
@@ -17,13 +19,20 @@ assert audio[0]==audio[1],audio
 cues=json.loads((L/'captions.json').read_text('utf-8'));font=ImageFont.truetype('C:/Windows/Fonts/NotoSansKR-VF.ttf',48)
 try:font.set_variation_by_name('Medium')
 except ValueError:pass
-samples=[(v,round((v['start']+v['end'])/2*60)) for v in cues];frameNums=sorted(set(n for _,n in samples));sel='+'.join(f'eq(n,{n})' for n in frameNums)
-raw=run(['ffmpeg','-hide_banner','-v','error','-i',F/(P.name+'.captioned.mp4'),'-vf',f"select='{sel}',crop=1920:140:0:910",'-fps_mode','vfr','-f','rawvideo','-pix_fmt','rgb24','-']).stdout
+samples=[(v,round((v['start']+v['end'])/2*60)) for v in cues];frameNums=sorted(set(n for _,n in samples))
+def balanced(items):
+ if len(items)==1:return f'eq(n,{items[0]})'
+ mid=len(items)//2;return '('+balanced(items[:mid])+'+'+balanced(items[mid:])+')'
+sel=balanced(frameNums)
+raw=run(['ffmpeg','-hide_banner','-v','error','-threads','2','-i',F/(P.name+'.captioned.mp4'),'-vf',f"select='{sel}',crop=1920:140:0:910",'-fps_mode','vfr','-threads','2','-f','rawvideo','-pix_fmt','rgb24','-']).stdout
 frames=np.frombuffer(raw,dtype=np.uint8).reshape(-1,140,1920,3);assert len(frames)==len(frameNums);byFrame=dict(zip(frameNums,frames));pixel=[]
 for v,n in samples:
  w=round(font.getlength(v['ko']))+44;x=960-w//2
  patch=byFrame[n][23:28,x+7:x+16];white=float((patch.mean(axis=2)>235).mean());pixel.append({'cue':v['index'],'frame':n,'whiteBoxCornerFraction':white});assert white>.6,(v,white)
-align=json.loads((L/'alignment-review.json').read_text('utf-8'));qa={'probes':probes,'sameEncodedAudioBothMasters':True,'encodedAudioHash':audio[0],'captionSamples':len(pixel),'captionBoxAllCueCentersPassed':True,'minimumNarrationAlignment':min(r['ratio'] for r in align['paragraphs']),'humanFullReview':False,'physicalMobileQa':False,'webQa':'production/web-browser-qa.json'}
+align=json.loads((L/'alignment-review.json').read_text('utf-8'));narrAsr=json.loads((Q/'narration.timestamps.json').read_text('utf-8'));mixAsr=json.loads((Q/'mix.timestamps.json').read_text('utf-8'));assert mixAsr['audio_sha256']==sha(L/'final-mix.m4a') and narrAsr['audio_sha256']==sha(L/'narration-aligned.wav')
+exp,actual=norm(narrAsr['text']),norm(mixAsr['text']);seq=difflib.SequenceMatcher(None,exp,actual,autojunk=False);missing=[exp[a:b] for tag,a,b,c,d in seq.get_opcodes() if tag=='delete' and b-a>=12]
+assert seq.ratio()>.94 and not missing,{'ratio':seq.ratio(),'materialMissingSpans':missing}
+qa={'probes':probes,'sameEncodedAudioBothMasters':True,'encodedAudioHash':audio[0],'captionSamples':len(pixel),'captionBoxAllCueCentersPassed':True,'minimumNarrationAlignment':min(r['ratio'] for r in align['paragraphs']),'finalMixSpeechCoverage':{'ratioAgainstFullNarrationAsr':seq.ratio(),'materialMissingSpans':missing,'encodedMixAsrSha256':mixAsr['audio_sha256'],'narrationAsrSha256':narrAsr['audio_sha256']},'humanFullReview':False,'physicalMobileQa':False,'webQa':'production/web-browser-qa.json'}
 (Q/'caption-pixels.json').write_text(json.dumps(pixel,indent=2)+'\n','utf-8');(P/'production/full-video-qa.json').write_text(json.dumps(qa,ensure_ascii=False,indent=2)+'\n','utf-8')
 def clock(s):return f'{int(s)//60:02}:{int(s)%60:02}'
 chapters=''.join(f'<li><button data-t="{s["start"]}">{clock(s["start"])} · {html.escape(s["title"])}</button></li>' for s in t['scenes'])

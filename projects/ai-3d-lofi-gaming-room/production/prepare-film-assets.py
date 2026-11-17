@@ -4,7 +4,7 @@ import json,subprocess,hashlib,shutil
 P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v1';A=L/'assets';A.mkdir(parents=True,exist_ok=True)
 shots={
  'room':('web-final-v6',1),'sit':('web-final-v6',9.7),'desk':('web-final-v6',14),'window':('web-final-v6',22),'day':('web-final-v6',29),'hair':('web-final-v6',35),
- 'read':('hearth-v4',28),'fire':('hearth-v4',44),'record':('hearth-v4',53),'old':('unity-sample-v1',17),'walk':('nature-v2',3),
+ 'read':('final-activities-v7',16),'fire':('final-activities-v7',29),'record':('final-activities-v7',36),'old':('unity-sample-v1',17),'walk':('web-final-v6',3),
 }
 records=[]
 for name,(folder,second) in shots.items():
@@ -24,6 +24,11 @@ for name,source in {'webMemo':'web-memo-restored.jpg','webTimer':'web-timer-rest
  if source.exists():shutil.copy2(source,A/(name+'.jpg'))
 demo=P/'production/local/web-final-v6/web-memo-demo.jpg'
 if demo.exists():shutil.copy2(demo,A/'webMemo.jpg')
+pixel=R/'projects/ai-2d-game-assets/production/local/room-v4-video/browser-evidence/radio-playing-fhd.png'
+assert pixel.exists();shutil.copy2(pixel,A/'pixelRoom.png')
+from PIL import Image
+records.append({'name':'pixelRoom','source':pixel.relative_to(R).as_posix(),'sourceSha256':hashlib.file_digest(pixel.open('rb'),'sha256').hexdigest(),'decodedDimensions':list(Image.open(pixel).size),'kind':'own previous 2D game still illustration, not moving footage','rights':'Own previous game screenshot; historical 2D-to-3D comparison.'})
+(L/'source-frames.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n','utf-8')
 for name in ('model','animation'):
  source=P/'production/local/web-final-v6'/('tripo-'+name+'-source.jpg')
  if source.exists():

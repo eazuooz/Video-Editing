@@ -17,12 +17,24 @@ def asr_spelling(s):
  for a,b in sorted(display.items(),key=lambda x:-len(x[1])):s=re.sub(re.escape(b),a,s,flags=re.I)
  return s
 def parts(s,limit=29):
- out=[];start=0;last=0
- for w in re.finditer(r'\S+',s):
-  if w.end()-start>limit and last>start:out.append((start,last));start=w.start()
-  last=w.end()
- if last>start:out.append((start,last))
- if len(out)>1 and out[-1][1]-out[-1][0]<7 and out[-1][1]-out[-2][0]<=35:out[-2:]=[(out[-2][0],out[-1][1])]
+ spans=[];a=0
+ for m in re.finditer(r'[고며서면데],\s+',s):
+  if m.end()-a>=12:spans.append((a,m.end()));a=m.end()
+ if a<len(s):spans.append((a,len(s)))
+ out=[]
+ for a,b in spans:
+  start=a;last=a;local=[]
+  for w in re.finditer(r'\S+',s[a:b]):
+   ws,we=a+w.start(),a+w.end()
+   if we-start>limit and last>start:local.append((start,last));start=ws
+   last=we
+  if last>start:local.append((start,last))
+  if len(local)>1 and local[-1][1]-local[-1][0]<=8:
+   if local[-1][1]-local[-2][0]<=35:local[-2:]=[(local[-2][0],local[-1][1])]
+   else:
+    pa,pb=local[-2];word=list(re.finditer(r'\S+',s[pa:pb]))[-1];split=pa+word.start()
+    if split>pa:local[-2:]=[(pa,split),(split,local[-1][1])]
+  out.extend(local)
  return out
 def en_parts(s,weights):
  words=s.split();out=[];start=0;cum=np.cumsum([len(w) for w in words]);targets=np.cumsum(weights)/sum(weights)*cum[-1]
@@ -79,5 +91,10 @@ for v in cues:
  ass+=event(0,v,vector(x+14,y+14,w,h,'323C07'))
  ass+=event(1,v,vector(x-3,y-3,w+6,h+6,'181B16'))
  ass+=event(2,v,vector(x,y,w,h,'FFFFFF'))
- ass+=event(3,v,'{\\an5\\pos(960,970)\\q2}'+v['ko'].replace('{','').replace('}',''))
+ label=v['ko'].replace('{','').replace('}','')
+ term=next((s for s in ('Tripo','Unity','PBR','Normal','Roughness','Metallic','IK','MCP','CLI','JSON') if s in label),None)
+ if term:
+  start=label.index(term);v['emphasis']={'start':start,'end':start+len(term),'role':'term','color':'#0b6b66'}
+  label=label.replace(term,'{\\c&H666B0B&\\b700}'+term+'{\\c&H090B08&\\b500}',1)
+ ass+=event(3,v,'{\\an5\\pos(960,970)\\q2\\b500}'+label)
 (L/'captions.ko.ass').write_text(ass,'utf-8');(L/'captions.json').write_text(json.dumps(cues,ensure_ascii=False,indent=2),'utf-8');(L/'alignment-review.json').write_text(json.dumps({'audioSha256':asr['audio_sha256'],'paragraphs':review,'englishTiming':'Paragraph translation divided over matching KO clause durations; human final review pending','style':'boxed-white-forest-v1'},ensure_ascii=False,indent=2),'utf-8');print('Built',len(cues),'cues; min ASR',min(v['ratio'] for v in review))

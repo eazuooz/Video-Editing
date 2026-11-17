@@ -11,6 +11,7 @@ for i,r in enumerate(rows):
  f=N/(r['id']+'-scene.wav');a,sr=sf.read(f,dtype='float32');assert sr==24000
  if a.ndim>1:a=a.mean(axis=1)
  dur=len(a)/sr;frames=math.ceil((dur+(.28 if i<len(rows)-1 else 0))*60)
+ if r['id']=='28':frames=max(frames,600)
  win=1200;v=np.array([np.sqrt(np.mean(a[j:j+win]**2)+1e-12) for j in range(0,len(a)-win,win)])
  db=20*np.log10(np.maximum(v,1e-8));active=db[db>db.max()-25];median=float(np.median(active));gain=float(np.clip(-22-median,-12,12));a=a*10**(gain/20)
  n=144;a[:n]*=np.linspace(0,1,n);a[-n:]*=np.linspace(1,0,n)
@@ -22,10 +23,22 @@ total=time+10;tm={'fps':60,'intro':2,'outro':10,'duration':total,'frames':round(
 music=R/'sites/yamyam-cartographers-room/dist/music/01-morning-coffee.mp3';mix=L/'final-mix.wav';fire=R/'unity/LofiGamingRoomWeb/Assets/LofiRoom/Audio/fireplace.ogg'
 fireStart=next(s['start'] for s in timeline if s['id']=='21');fireEnd=next(s['speechEnd'] for s in timeline if s['id']=='22');fireDuration=fireEnd-fireStart
 filt=f'[0:a]loudnorm=I=-16:TP=-2:LRA=11,aformat=channel_layouts=stereo[n];[1:a]atrim=duration={total},asetpts=PTS-STARTPTS,loudnorm=I=-31:TP=-6:LRA=6,afade=t=in:d=1,afade=t=out:st={total-2}:d=2[m];[2:a]atrim=duration={fireDuration},asetpts=PTS-STARTPTS,loudnorm=I=-32:TP=-6:LRA=6,afade=t=in:d=0.8,afade=t=out:st={fireDuration-1}:d=1,adelay={round(fireStart*1000)}:all=1[f];[n][m][f]amix=inputs=3:normalize=0,alimiter=limit=0.79:level=false:latency=true[a]'
-run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',raw,'-stream_loop','-1','-i',music,'-stream_loop','-1','-i',fire,'-filter_complex',filt,'-map','[a]','-t',str(total),'-ar','48000','-ac','2','-c:a','pcm_s24le',mix])
-run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',mix,'-c:a','aac','-b:a','192k',L/'final-mix.m4a'])
 def meter(p):
  s=run(['ffmpeg','-hide_banner','-i',p,'-af','loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json','-f','null','-']).stderr;return json.loads(s[s.rfind('{'):s.rfind('}')+1])
-qa={'duration':total,'narrationSha256':sha(raw),'mixSha256':sha(mix),'measuredFinal':meter(mix),'measuredEncoded':meter(L/'final-mix.m4a'),'lineLevels':levels,'bgm':'Morning Coffee / HoliznaCC0 / CC0, same asset used by game, -31 LUFS bed; explicitly requested LOFI scope','fire':{'sourceSha256':sha(fire),'creator':'PaGDev','license':'CC0','start':fireStart,'end':fireEnd,'targetLufs':-32},'speechSpeed':'unaltered','wholeHumanListening':'pending','asr':'pending'}
+report=P/'production/full-video-audio-qa.json'
+old=json.loads(report.read_text('utf-8')) if report.exists() else {}
+reuse=old.get('duration')==total and old.get('narrationSha256')==sha(raw) and mix.exists() and old.get('mixSha256')==sha(mix)
+if not reuse:run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',raw,'-stream_loop','-1','-i',music,'-stream_loop','-1','-i',fire,'-filter_complex',filt,'-map','[a]','-t',str(total),'-ar','48000','-ac','2','-c:a','pcm_s24le',mix])
+fm=meter(mix);gain=0.0
+if abs(float(fm['input_i'])+16)>.2:
+ import shutil
+ base=L/'mix-before-final-level.wav';shutil.copy2(mix,base);gain=-16-float(fm['input_i'])
+ for attempt in range(3):
+  run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',base,'-af',f'volume={gain}dB,alimiter=limit=0.78:level=false:latency=true','-ar','48000','-ac','2','-c:a','pcm_s24le',mix]);fm=meter(mix)
+  if abs(float(fm['input_i'])+16)<.15:break
+  gain+=-16-float(fm['input_i'])
+run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',mix,'-c:a','aac','-b:a','192k','-movflags','+faststart',L/'final-mix.m4a'])
+qa={'duration':total,'narrationSha256':sha(raw),'mixSha256':sha(mix),'measuredFinal':fm,'measuredEncoded':meter(L/'final-mix.m4a'),'globalFinalGainDb':gain,'lineLevels':levels,'bgm':'Morning Coffee / HoliznaCC0 / CC0, same asset used by game, -31 LUFS bed; explicitly requested LOFI scope','fire':{'sourceSha256':sha(fire),'creator':'PaGDev','license':'CC0','start':fireStart,'end':fireEnd,'targetLufs':-32},'speechSpeed':'unaltered','wholeHumanListening':'pending','asr':'pending'}
 assert float(qa['measuredEncoded']['input_tp'])<=-1.5,qa['measuredEncoded']
+assert abs(float(qa['measuredEncoded']['input_i'])+16)<=.3,qa['measuredEncoded']
 (P/'production/full-video-audio-qa.json').write_text(json.dumps(qa,ensure_ascii=False,indent=2)+'\n','utf-8');print('Audio timeline',total,'seconds')

@@ -47,6 +47,7 @@ function draw(r){base(r);const id=+r.id;
  if(id===10){picture('hero',76,236,620,600);const data=[['Base Color','표면의 기본 색','basecolor'],['Normal','작은 요철 방향','normal'],['Roughness','반사의 퍼짐','roughness'],['Metallic','금속인 부분','metallic']];data.forEach((v,i)=>{const x=780+(i%2)*540,y=235+Math.floor(i/2)*280;box(x,y,490,240);text(v[0],x+18,y+32,32,i===0?C.gold:C.teal,650);picture('hero-'+v[2],x+18,y+64,196,155);wrap(v[1],x+237,y+119,235,29);});text('실제 4K 색 원본 + 함께 제공된 데이터 맵을 연결',780,804,30,C.muted);return;}
  if(id===14){picture('walk',76,245,920,518);node(1060,265,755,'Mixamo','캐릭터 리깅·모션 서비스 대안');node(1060,470,755,'DeepMotion','촬영 영상에서 모션을 얻는 대안');wrap('이번 방은 내보낸 Tripo 모션과 기존 라이선스 클립을 연결했습니다.',1085,680,690,34);return;}
  if(id===15){const ns=[['대기','Idle'],['걷기','Walk'],['정렬','Align'],['앉기','Enter'],['생활','Loop'],['일어나기','Exit']];ns.forEach((v,i)=>{const x=76+i*298;node(x,245,268,v[0],v[1],i===3?C.gold:C.teal);if(i<5)arrow(x+270,307,x+293,307);});picture('walk',76,420,550,310);picture('sit',685,420,550,310);picture('read',1294,420,550,310);text('모션 클립의 끝과 다음 행동의 시작을 연결',960,804,38,C.gold,600,'center');return;}
+ if(id===2 && im.pixelRoom){picture('pixelRoom',76,216,1120,630);steps(notes[id]);return;}
  if(id===23 && im.webMemo){two('memo','webMemo',['PC · 로컬 JSON 파일','브라우저 · 같은 주소의 저장 공간']);return;}
  if(id===24 && im.webTimer){picture('webTimer',76,216,1120,630);steps(notes[id]);return;}
  if(id===26 && im.webRoom){picture('webRoom',76,216,1120,630);steps(notes[id]);return;}
