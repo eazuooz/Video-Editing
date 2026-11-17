@@ -1,7 +1,8 @@
 """Finish the selected film after resumable TTS, without advancing other projects."""
 from pathlib import Path
-import json,subprocess,time,hashlib
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v4';PY=R/'qwen3-tts/.venv/Scripts/python.exe';F=L/'final';F.mkdir(parents=True,exist_ok=True)
+import json,subprocess,time,hashlib,os
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v5';PY=R/'qwen3-tts/.venv/Scripts/python.exe';F=L/'final';F.mkdir(parents=True,exist_ok=True)
+CPU_ONLY=os.environ.get('LOFI_TUTORIAL_CPU_ONLY')=='1'
 def run(a):
  print('Running',Path(str(a[0])).name,Path(str(a[1])).name if len(a)>1 else '',flush=True)
  if Path(str(a[0]))==PY:a=[a[0],'-X','utf8','-u',*a[1:]]
@@ -18,7 +19,7 @@ else:run([PY,P/'production/build-film-audio.py'])
 Q=L/'qa';Q.mkdir(exist_ok=True)
 for name,source in [('narration',L/'narration-aligned.wav'),('mix',L/'final-mix.m4a')]:
  out=Q/(name+'.txt');rec=out.with_suffix('.timestamps.json')
- if not rec.exists() or json.loads(rec.read_text('utf-8'))['audio_sha256']!=sha(source):run([PY,R/'qwen3-tts/transcribe_reference.py',source,'--output',out,'--device','cuda','--timestamps','word'])
+ if not rec.exists() or json.loads(rec.read_text('utf-8'))['audio_sha256']!=sha(source):run([PY,R/'qwen3-tts/transcribe_reference.py',source,'--output',out,'--device','cpu' if CPU_ONLY else 'cuda','--timestamps','word'])
 run([PY,P/'production/build-film-captions.py'])
 run([PY,P/'production/render-film.py'])
 t=json.loads((L/'timeline.json').read_text('utf-8'));files=[R/'projects/ai-2d-game-assets/assets/local/intro.mp4']+[L/'visual'/('scene-'+r['id']+'.mp4') for r in t['scenes']]+[R/'projects/ai-2d-game-assets/assets/local/outro.mp4']
@@ -28,7 +29,8 @@ concat=L/'concat.txt';concat.write_text('\n'.join("file '"+p.as_posix()+"'" for 
 clean=F/(P.name+'.clean.mp4');captioned=F/(P.name+'.captioned.mp4')
 run(['ffmpeg','-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',concat,'-i',L/'final-mix.m4a','-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',clean])
 ass=(L/'captions.ko.ass').relative_to(R).as_posix()
-run(['ffmpeg','-hide_banner','-loglevel','error','-y','-reinit_filter','0','-i',clean,'-vf',f"setsar=1,ass='{ass}'",'-c:v','h264_nvenc','-preset','p5','-cq','19','-pix_fmt','yuv420p','-c:a','copy','-movflags','+faststart',captioned])
+encoding=['-c:v','libx264','-preset','veryfast','-crf','18','-threads','4'] if CPU_ONLY else ['-c:v','h264_nvenc','-preset','p5','-cq','19']
+run(['ffmpeg','-hide_banner','-loglevel','error','-y','-reinit_filter','0','-i',clean,'-vf',f"setsar=1,ass='{ass}'",*encoding,'-pix_fmt','yuv420p','-c:a','copy','-movflags','+faststart',captioned])
 import shutil
 for lang in ('ko','en'):shutil.copy2(L/f'captions.{lang}.srt',F/(P.name+f'.{lang}.srt'))
 report={'stage':'rendered-internal-QA-pending','duration':t['duration'],'frames':t['frames'],'outputs':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)} for p in [clean,captioned,*sorted(F.glob('*.srt'))]],'branding':[{'path':str(p),'sha256':sha(p),'preservedOriginalPixelsAndFrameTiming':True} for p in (files[0],files[-1])],'youtubeUploaded':False,'humanReview':False}

@@ -1,11 +1,11 @@
 """Finish local-only verification once this exact tutorial render is available."""
 from pathlib import Path
 import json,time,subprocess
-H=Path(__file__).resolve().parent;R=H.parents[2];L=H/'local/full-video-v4'
+H=Path(__file__).resolve().parent;R=H.parents[2];L=H/'local/full-video-v5'
 receipt=H/'full-video-delivery.json'
 while True:
     d=json.loads(receipt.read_text('utf-8'))
-    if d.get('stage')=='rendered-internal-QA-pending' and '/full-video-v4/' in d['outputs'][1]['path'].replace('\\','/'):
+    if d.get('stage')=='rendered-internal-QA-pending' and '/full-video-v5/' in d['outputs'][1]['path'].replace('\\','/'):
         break
     time.sleep(8)
 while (R/'shared/output/GPU_HANDOFF.json').exists():time.sleep(8)

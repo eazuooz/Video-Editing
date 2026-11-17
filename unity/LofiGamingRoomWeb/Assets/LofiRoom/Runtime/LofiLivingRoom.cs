@@ -14,7 +14,7 @@ namespace Yamyam.LofiRoom
         public float cushionWeight,bookWeight;
         public Transform lounge;
         public Material rainTemplate;
-        public GameObject readingSofaPrefab,sleepingCatPrefab;
+        public GameObject readingSofaPrefab,readingTablePrefab,sleepingCatPrefab;
         LofiSofaReading sofaReading;
         Transform catBody,earL,earR,tail;
         Mesh tailMesh;

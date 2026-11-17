@@ -6,15 +6,22 @@ namespace Yamyam.LofiRoom
     // an Avatar Mask. IK fits the book after that native motion is evaluated.
     public sealed class LofiSofaReading:MonoBehaviour
     {
-        LofiLivingRoom living;LofiRoomSample room;Transform sofa;int armLayer;
-        Vector3 bodyShift;
+        LofiLivingRoom living;LofiRoomSample room;Transform sofa;int armLayer;bool hasWoodTable;
+        Vector3 bodyShift;float feetProgress;
         public void Initialize(LofiLivingRoom owner,GameObject prefab)
         {
             living=owner;room=owner.room;sofa=Instantiate(prefab).transform;sofa.name="Supported reading sofa";sofa.position=new Vector3(-.52f,.085f,-.75f);sofa.rotation=Quaternion.Euler(0,150,0);living.lounge=sofa;
-            armLayer=room.actor.GetLayerIndex("Sofa reading arms");
+            armLayer=room.actor.GetLayerIndex("Sofa reading arms");hasWoodTable=owner.readingTablePrefab;
             var fabric=new Material(Shader.Find("Universal Render Pipeline/Lit")){color=new Color(.71f,.65f,.50f)};fabric.SetFloat("_Smoothness",.08f);
-            Cushion("large supporting back cushion",new Vector3(-.35f,.77f,-.20f),new Vector3(.62f,.63f,.17f),fabric,new Vector3(-18,0,0));
-            Cushion("reading footrest",new Vector3(-.35f,.31f,.92f),new Vector3(.87f,.37f,.58f),fabric,Vector3.zero);
+            if(hasWoodTable)
+            {
+                var table=Instantiate(owner.readingTablePrefab,sofa);table.name="Oak and woven coffee table - feet on top";table.transform.localPosition=new Vector3(-.28f,0,.94f);table.transform.localRotation=Quaternion.identity;
+            }
+            else
+            {
+                Cushion("large supporting back cushion",new Vector3(-.35f,.77f,-.20f),new Vector3(.62f,.63f,.17f),fabric,new Vector3(-18,0,0));
+                Cushion("reading footrest",new Vector3(-.35f,.31f,.92f),new Vector3(.87f,.37f,.58f),fabric,Vector3.zero);
+            }
         }
         void Cushion(string name,Vector3 p,Vector3 scale,Material mat,Vector3 euler)
         {
@@ -38,10 +45,12 @@ namespace Yamyam.LofiRoom
             yield return WalkTo(Point(1.45f,.65f));yield return WalkTo(Point(.45f,.65f));var seat=Point(.45f);yield return WalkTo(seat);
             room.moving=false;actor.speed=1;actor.CrossFadeInFixedTime("Idle",.25f);var rot=actor.transform.rotation;
             for(float t=0;t<.7f;t+=Time.deltaTime){actor.transform.rotation=Quaternion.Slerp(rot,sofa.rotation,Mathf.SmoothStep(0,1,t/.7f));yield return null;}
-            actor.transform.SetPositionAndRotation(seat,sofa.rotation);living.reclined=true;a.seated=true;living.cushionWeight=0;living.bookWeight=0;a.phase="소파에 천천히 앉기";actor.CrossFadeInFixedTime("SofaDown",.42f);
+            actor.transform.SetPositionAndRotation(seat,sofa.rotation);living.reclined=true;a.seated=true;living.cushionWeight=0;living.bookWeight=0;feetProgress=0;a.phase="소파에 천천히 앉기";actor.CrossFadeInFixedTime("SofaDown",.42f);
             float duration=a.sitDuration;
             for(float t=0;t<duration;t+=Time.deltaTime){living.cushionWeight=Mathf.SmoothStep(0,1,t/duration);yield return null;}
-            living.cushionWeight=1;actor.CrossFadeInFixedTime("SofaRead",.8f);a.phase="쿠션에 등을 기대기";yield return new WaitForSeconds(.85f);
+            living.cushionWeight=1;actor.CrossFadeInFixedTime("SofaRead",.8f);
+            if(hasWoodTable){a.phase="등을 기대고 테이블에 발 올리기";for(float t=0;t<1.8f;t+=Time.deltaTime){feetProgress=t/1.8f;yield return null;}feetProgress=1;}
+            else{a.phase="쿠션에 등을 기대기";yield return new WaitForSeconds(.85f);}
             a.phase="책을 펼쳐 들기";
             for(float t=0;t<1.2f;t+=Time.deltaTime){living.bookWeight=Mathf.SmoothStep(0,1,t/1.2f);yield return null;}
             living.bookWeight=1;a.phase="소파에 기대어 책 읽는 중";
@@ -50,6 +59,7 @@ namespace Yamyam.LofiRoom
         {
             var a=room.activities;var actor=room.actor;a.phase="책을 정리하고 소파에서 일어나기";
             for(float t=0;t<.8f;t+=Time.deltaTime){living.bookWeight=1-Mathf.SmoothStep(0,1,t/.8f);yield return null;}living.bookWeight=0;
+            if(hasWoodTable){actor.CrossFadeInFixedTime("SofaIdle",.6f);a.phase="테이블에서 발 내리고 자세 정리";for(float t=0;t<1.8f;t+=Time.deltaTime){feetProgress=1-t/1.8f;yield return null;}feetProgress=0;}
             actor.CrossFadeInFixedTime("SofaUp",.6f);float seconds=a.standDuration;
             for(float t=0;t<seconds;t+=Time.deltaTime){living.cushionWeight=1-Mathf.SmoothStep(0,1,t/seconds);yield return null;}
             living.cushionWeight=0;living.reclined=false;a.seated=false;if(armLayer>=0)actor.SetLayerWeight(armLayer,0);actor.CrossFadeInFixedTime("Idle",.35f);a.phase="소파 앞에서 자세 정리";yield return new WaitForSeconds(.35f);
@@ -59,13 +69,27 @@ namespace Yamyam.LofiRoom
         {
             var actor=room.actor;var a=room.activities;float w=living.cushionWeight,b=living.bookWeight;
             if(armLayer>=0)actor.SetLayerWeight(armLayer,w);
-            var hips=actor.GetBoneTransform(HumanBodyBones.Hips);bodyShift=(sofa.TransformPoint(new Vector3(-.35f,.65f,-.035f))-hips.position)*w;actor.bodyPosition+=bodyShift;
+            var hips=actor.GetBoneTransform(HumanBodyBones.Hips);bodyShift=(sofa.TransformPoint(new Vector3(-.35f,hasWoodTable?.57f:.65f,-.035f))-hips.position)*w;actor.bodyPosition+=bodyShift;
+            if(hasWoodTable)
+            {
+                // Lift the native legs clear of the tabletop before extending,
+                // then lower the heels. Reverse that path before standing.
+                Foot(AvatarIKGoal.LeftFoot,-1,w);Foot(AvatarIKGoal.RightFoot,1,w);
+            }
             if(!a.book)return;
             var chest=actor.GetBoneTransform(HumanBodyBones.Chest);var head=actor.GetBoneTransform(HumanBodyBones.Head);
             var centre=chest.position+bodyShift+sofa.forward*.34f+Vector3.up*.07f;var across=sofa.right;var normal=Vector3.ProjectOnPlane(head.position+bodyShift-centre,across).normalized;
             a.book.position=centre;a.book.rotation=Quaternion.LookRotation(Vector3.Cross(across,normal),normal);a.book.localScale=Vector3.one*.88f;a.book.gameObject.SetActive(b>.035f);if(a.closedBook)a.closedBook.SetActive(b<=.035f);
             Hand(AvatarIKGoal.LeftHand,AvatarIKHint.LeftElbow,HumanBodyBones.LeftHand,HumanBodyBones.LeftUpperArm,-1,b);Hand(AvatarIKGoal.RightHand,AvatarIKHint.RightElbow,HumanBodyBones.RightHand,HumanBodyBones.RightUpperArm,1,b);
             actor.SetLookAtWeight(b*.20f,0,.5f,.15f,.8f);actor.SetLookAtPosition(centre);
+        }
+        void Foot(AvatarIKGoal goal,float side,float weight)
+        {
+            var floor=sofa.TransformPoint(new Vector3(-.35f+side*.13f,0,.34f));floor.y=room.groundY+.075f;
+            var target=sofa.TransformPoint(new Vector3(-.35f+side*.13f,0,.84f));target.y=sofa.position.y+.44f+.075f;
+            var lifted=floor;lifted.y=target.y+.16f;float u=Mathf.Clamp01(feetProgress);
+            var position=u<.5f?Vector3.Lerp(floor,lifted,Mathf.SmoothStep(0,1,u*2)):Vector3.Lerp(lifted,target,Mathf.SmoothStep(0,1,(u-.5f)*2));
+            room.actor.SetIKPositionWeight(goal,weight);room.actor.SetIKPosition(goal,position);
         }
         void Hand(AvatarIKGoal goal,AvatarIKHint hint,HumanBodyBones handBone,HumanBodyBones shoulderBone,float side,float w)
         {

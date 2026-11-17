@@ -10,8 +10,8 @@ using Yamyam.LofiRoom;
 
 public sealed class LofiLivingCapture:MonoBehaviour
 {
-    const int Width=1920,Height=1080,Fps=60,Frames=4440;
-    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v10");
+    const int Width=1920,Height=1080,Fps=60,Frames=5400;
+    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v11");
     Process encoder;RenderTexture target;Texture2D pixels;
     public int frame;public string ffmpeg;
     [CliCommand("lofi_living_record","Record the PC visibility, forest window and wind review at FHD60",MainThreadRequired=true)]
@@ -38,9 +38,9 @@ public sealed class LofiLivingCapture:MonoBehaviour
                 if(frame==1200){s.CameraRoom();s.activities.Request("computer");}
                 if(frame==2220){Vector3 p=new(2.1f,1.55f,.20f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(1,1.1f,1.6f)-p));s.roomCamera.orthographicSize=.65f;}
                 if(frame==2700){Vector3 p=new(3.5f,1.25f,-2f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(2.15f,.26f,-.5f)-p));s.roomCamera.orthographicSize=.62f;}
-                if(frame==3180){s.GetComponent<LofiLivingRoom>().SetRain(true);Vector3 p=new(.35f,2.10f,-.40f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-1.78f,1.85f,2.40f)-p));s.roomCamera.orthographicSize=1.32f;}
-                if(frame==3660){Vector3 p=new(-.25f,1.4f,.35f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-1.8f,.77f,1.86f)-p));s.roomCamera.orthographicSize=.66f;s.GetComponent<LofiPlaylist>().Select(7,true);}
-                if(frame==4080){s.SetNight(false);s.CameraRoom();s.GetComponent<LofiLivingRoom>().SetRain(false);}
+                if(frame==4140){s.GetComponent<LofiLivingRoom>().SetRain(true);Vector3 p=new(.35f,2.10f,-.40f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-1.78f,1.85f,2.40f)-p));s.roomCamera.orthographicSize=1.32f;}
+                if(frame==4620){Vector3 p=new(-.25f,1.4f,.35f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-1.8f,.77f,1.86f)-p));s.roomCamera.orthographicSize=.66f;s.GetComponent<LofiPlaylist>().Select(7,true);}
+                if(frame==5040){s.SetNight(false);s.CameraRoom();s.GetComponent<LofiLivingRoom>().SetRain(false);}
                 yield return null;
                 var camera=s.roomCamera;var previous=camera.targetTexture;var active=RenderTexture.active;
                 camera.targetTexture=target;camera.Render();RenderTexture.active=target;

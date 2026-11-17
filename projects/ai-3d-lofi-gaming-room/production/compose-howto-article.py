@@ -56,7 +56,7 @@ Codex에는 먼저 작업할 프로젝트와 보존할 파일을 지정합니다
 이 명령은 MCP 도구 서버를 여는 예시이며, 그 자체가 방을 생성하는 명령은 아닙니다. 해당 프로젝트의 Unity Editor와 연결한 뒤 AI가 지원되는 도구를 호출합니다. 도구 호출 성공과 게임 동작 성공은 다릅니다. 변경 뒤에는 Play 상태에서 대상이 보이는지, 버튼을 누른 뒤 어떤 상태로 갔는지까지 확인하도록 요청합니다.
 
 {{frame:mcp}}
-'''+request('unity-scope')+request('layout')+request('materials')+'''
+'''+request('unity-scope')+request('sofa-image')+request('table-image')+request('layout')+request('materials')+'''
 ## 모션을 이어 붙일 때 필요한 중간 단계''')
 body=body.replace('처음 수정에서는 의자 등받이가 캐릭터를 가렸습니다. 등받이의 높이를 약 78cm에서 37cm로 줄이고 폭도 좁혔으며, 모니터는 13cm 낮췄습니다. 앉기 접촉점과 발이 놓이는 기준은 유지했습니다. 가구의 크기가 맞아야 움직임도 읽힙니다.','가구는 겉모양보다 접촉 기준을 먼저 정합니다. 이 방의 낮은 등받이는 약 37cm이고 모니터도 낮게 배치했습니다. 의자 좌면, 골반, 발바닥이 놓일 바닥, 키보드에 닿을 손의 기준점을 따로 둡니다. 캐릭터를 기준으로 가구 크기를 맞춘 뒤 같은 기준점으로 접근·회전·착석을 연결해야 합니다.')
 body=body.replace('{{frame:sit}}','')
@@ -170,7 +170,13 @@ Tripo H3.1 생성에는 55크레딧, Smart Mesh P1.0 삼각형 목표 20K 정리
 out=out.replace('웹 버튼에서는 또 다른 문제가 드러났습니다.','웹 입력은 한 번만 상태를 바꾸는지 확인합니다.').replace('입력을 받는 컴포넌트와 실제 비를 바꾸는 컴포넌트의 메서드 이름이 같아서 한 번 클릭할 때 두 번 토글됐습니다. 실제 변경 메서드를 `SwitchWindowRain`으로 나눠 한 번만 바뀌게 했습니다. 버튼의 켜짐 표시와 보이는 비를 함께 확인해야 찾을 수 있는 문제였습니다.','입력 처리와 실제 비 변경 메서드가 같은 이름이면 한 클릭에 두 번 토글될 수 있습니다. 실제 변경 메서드를 별도 이름으로 나누고 버튼 표시와 보이는 비를 함께 확인합니다.')
 out=out.replace('현재 빈백 동작은 KayKit으로 연결했습니다.','현재 소파는 PHILIPP의 휴식 몸과 독서 팔을 Avatar Mask로 조합하고 착석·기립은 KayKit으로 연결했습니다.').replace('초기 의자 독서에 사용한 기존 모션의 출처이며,','휴식·독서 기존 모션의 출처이며,')
 out+='\n- 소파: [Vintage Retro Stylized Pack / RG Poly](https://rg-poly.itch.io/vintage-retro-stylized-pack), CC0 1.0. 기존 사용자 라이브러리의 Sofa FBX와 재질을 가져왔습니다.\n- 고양이 사진: [Calico Cat Asleep / Am9489](https://commons.wikimedia.org/wiki/File:Calico_Cat_Asleep.jpg), CC0 1.0. 이미지 생성으로 배경과 구도를 정리한 뒤 Tripo 모델 입력으로 사용했습니다.\n'
+out=re.sub(r'독서 자리는 기존 라이브러리의 RG Poly.*?조합합니다\.', '독서용 소파와 테이블은 각각의 단독 입력 이미지를 만들어 Tripo H3.1로 생성했습니다. 밝은 목재 프레임과 크림색 라탄/코드 짜임을 맞추고, 소파는 Triangle 목표 20K에서 실제 22,066삼각형, 테이블은 목표 10K에서 9,375삼각형으로 정리했습니다. 두 가구의 생성·정리는 각각 90크레딧, 합계 180크레딧이며 캐릭터·헤드폰 175와 고양이 90은 별도입니다. 기존 붉은 가죽 소파는 이전 검수본에 남기고 현재 장면은 새 가구를 사용합니다.', out, flags=re.S)
+out=out.replace('발받침을 배치합니다.','낮은 우드 테이블을 배치합니다.').replace('발받침을 통과하지 않도록','테이블을 통과하지 않도록').replace('골반·쿠션·발바닥을 같은 가구 좌표에서 확인한 후','골반·등받이·테이블 상판·발바닥을 같은 가구 좌표에서 확인한 후')
+out=out.replace('현재 고양이 재질에는 Base Color와 Normal을 연결하고 금속성을 0, Smoothness를 0.08로 두었습니다.', '현재 고양이 재질에는 Base Color와 Normal을 연결하고 금속성을 0, Smoothness를 0.08로 두었습니다.')
+out=out.replace('작은 수면 호흡은 바닥 접촉을 유지한 미세한 스케일 변화입니다. 별도의 고양이 리깅이나 걷기 모션을 생성한 것은 아닙니다.', '수면 동작은 원래 메시의 몸통과 꼬리에 다른 가중치를 둔 국소 변형입니다. 몸통은 약 4.8초 주기로 최대 약 5mm, 꼬리는 약 7.5초 주기로 작은 움직임을 더합니다. 얼굴과 앞발은 안정적으로 남기고 꼬리 끝은 턱 바깥으로 움직입니다. 실제 표본에서 얼굴의 변위는 부동소수점 오차 범위였고, 몸통·꼬리의 최대 변위는 약 1.4cm였습니다. UV와 텍스처를 유지한 모델별 영역 마스크이며 일반적인 고양이 리깅이나 걷기 모션을 생성한 것은 아닙니다.')
+out=re.sub(r'\n- 소파: \[Vintage Retro Stylized Pack.*?가져왔습니다\.\n', '\n- 현재 소파·테이블: 자체 이미지 입력과 Tripo H3.1 생성·정리 결과. 원본 FBX와 출력별 재질을 함께 보관하며, 과거 라이브러리 가죽 소파와 구분합니다.\n', out)
+
 assert set(re.findall(r'\{\{frame:(.*?)\}\}',out))=={'room','reference','prop','model','retopo','texture','mcp','states','reading','rain','cat','web'}
-assert out.count('### 따라 만들기 요청')==17
+assert out.count('### 따라 만들기 요청')==19
 (H/'companion-article.md').write_text(out,'utf-8')
-print('Prepared independent how-to article',len(out),'characters / 17 requests / 12 final frames')
+print('Prepared independent how-to article',len(out),'characters / 19 requests / 12 final frames')

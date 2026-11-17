@@ -2,10 +2,10 @@
 // These cards never imitate a service UI or claim unrun alternatives were used.
 const fs=require('fs'),path=require('path');
 const {createCanvas,loadImage,GlobalFonts}=require('C:/Users/1/Videos/YamyamCoding/ai-2d-tools/render-node/node_modules/@napi-rs/canvas');
-const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v4'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
+const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v5'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
 GlobalFonts.registerFromPath('C:/Windows/Fonts/NotoSansKR-VF.ttf','Noto Sans KR');
 const rows=JSON.parse(fs.readFileSync(path.join(P,'script/narration.ko.json'))).scenes;
-const recipes=JSON.parse(fs.readFileSync(path.join(P,'script/tutorial-v4.json'))).scenes;
+const recipes=JSON.parse(fs.readFileSync(path.join(P,'script/tutorial-v5.json'))).scenes;
 const cv=createCanvas(1920,1080),c=cv.getContext('2d'),im={};
 const C={bg:'#0b1311',panel:'#14221e',fg:'#edf1e9',muted:'#afbeb3',gold:'#e1c47d',teal:'#77c8b7',red:'#e99280',line:'#3a5147'};
 function box(x,y,w,h,col=C.panel){c.fillStyle=col;c.fillRect(x,y,w,h);}
@@ -19,18 +19,18 @@ const settings={
  6:['이미지 업로드 · Image to 3D','H3.1 · 캐릭터·소품 분리','앞 · 옆 · 뒤를 돌려 확인'],
  8:['Retopo · Quad / 목표 10K','관찰 결과 · 9,968 quad faces','실루엣 · 손가락 · 관절 확인'],
  9:['FBX · PBR 텍스처 · 동작','원본 / 게임용 결과 폴더 분리','계정의 실행 전 차감량 확인'],
- 11:['미터 단위 · 고정 카메라','책상 · 의자 · 독서 소파','캐릭터 키 · 좌판 · 무릎 공간'],
+ 11:['소파·테이블 입력을 분리','Tripo 생성 → 게임용 메시','미터 단위 · 몸과 가구 접촉'],
  12:['나뭇결은 길이 방향으로','천은 무광 · 요철은 약하게','재질 결과를 같은 조명에서 확인'],
  13:['Tripo · Walk / Idle','Unity Rig · Humanoid','KayKit Sit + EmacEArt 휴식'],
  16:['기존 걷기 클립 사용','Root Motion → 경로 이동','발 접촉 · 회전 속도 확인'],
  17:['접근 → 정렬 → 앉기','클립 속도 0.36 · 점진 보정','골반 · 발 · 키보드 손 확인'],
- 18:['휴식 몸 + 독서 팔 Avatar Mask','책은 얼굴 방향 · 양손은 바깥','손목 방향 · 팔꿈치 · 간격 확인'],
+ 18:['휴식 몸 + 독서 팔 Avatar Mask','등은 소파 · 발은 테이블','책·손목·팔꿈치 간격 확인'],
  19:['머리 뿌리 고정 · 영역 마스크','끝부분의 지연 · 길이 제한','머리 · 어깨와 충돌 보정'],
  20:['줄기 아래 고정 · 잎별 위상','숲 · 달 · 별을 레이어로','낮·밤과 실내 조명 연동'],
  29:['창문 영역에만 비·물방울','배경 → 비 → 창틀','날씨 상태를 UI·효과가 공유'],
  21:['불꽃 · 잔불 · 불티','주변의 따뜻한 빛과 연동','별도 장작 음량 · 같은 위치'],
  22:['CC0 완전한 음원 열 곡','선택 / 이전 / 다음 / 순환','재생 상태 → 레코드 회전'],
- 30:['CC0 사진 → 배경 정리 이미지','Tripo H3.1 → Triangle 20K','4K 텍스처 · 실제 모델 · 작은 호흡'],
+ 30:['CC0 사진 → 배경 정리 이미지','Tripo H3.1 → Triangle 20K','4K 텍스처 · 몸통 호흡 · 작은 꼬리'],
  23:['한글 · 줄바꿈 · 자동 저장','입력 중 게임 단축키 분리','같은 주소에서 새로고침 확인'],
  24:['종료 시각 − 현재 시각','일시정지 / 재개 / 시간 선택','탭 전환 후 실제 시간 확인'],
  26:['같은 Unity 버전 · Web 모듈','빌드 씬 지정 · 시작 후 오디오','HTTP 실행 · 독서·저장 확인'],
@@ -43,6 +43,7 @@ function request(title,lines){box(1005,239,839,557);text('따라 만들기 요�
 function draw(r){base(r);const id=+r.id,recipe=recipes.find(s=>s.id===r.id);
  if(id===2){const a=[['ChatGPT 이미지 생성','캐릭터·소품 입력 그림','기본 경로'],['Tripo Studio / H3.1','3D 모델 · 정리 · 리깅','기본 경로'],['Codex','기능별 요청 → 구현 코드','기본 경로'],['Unity 6 URP','조명 · 동작 · 웹 실행','기본 경로'],['Meshy','이미지 → 3D 생성','모델 대안'],['ComfyUI + Hunyuan3D','노드 환경 + 생성 모델','모델 대안'],['Blockbench','분리된 가구 형상 편집','편집 대안'],['Material Maker','노드 기반 표면 제작','재질 대안'],['Mixamo','기존 리깅·모션 서비스','동작 대안'],['DeepMotion','전신 영상 → 동작','동작 대안']];a.forEach((v,i)=>{let x=76+i%2*910,y=215+Math.floor(i/2)*124;box(x,y,858,107);text(v[0],x+22,y+29,31,C.fg,650);text(v[1],x+22,y+76,27,C.muted);text(v[2],x+830,y+29,23,i<4?C.teal:C.gold,600,'right');});return;}
  if(id===3){pic('concept',76,235,860,540);request('방의 용도와 배치',[ '따뜻한 목재 · 청록색 캐릭터','아이맥 한 대 · 편안한 독서 자리','창밖 숲과 달 · 걸어갈 통로','고정된 대각선 카메라 · 방 전체']);return;}
+ if(id===11){pic('sofa-input',76,240,1120,335);pic('table-input',76,585,1120,245);steps(id);return;}
  if(id===4){pic('hero',76,205,850,620);request('같은 캐릭터의 기준 그림',['갈색 머리 · 청록색 재킷','전신 중립 A-pose','팔은 몸통에서 분리 · 손발 노출','단순 배경 · 균일한 조명']);return;}
  if(id===5){pic('headphones',76,220,850,590);request('헤드폰 한 개만 만들기',['무광 어두운 이어컵 · 청록색 장식','연결된 패딩 머리띠 · 실제 두께','전체 윤곽이 보이는 3/4 시점','로고 · 받침대 · 다른 물건 제외']);return;}
  if(id===7){pic('hero',76,235,560,560);node(715,244,1129,'Meshy · Image to 3D','이미지 업로드 → 모델 생성 → 내보내기');node(715,448,1129,'ComfyUI + Hunyuan3D','Image → Shape model → Texture model → Export');node(715,652,1129,'선택 기준','같은 입력과 목표 엔진 · 뼈대 · 재질 형식');return;}
