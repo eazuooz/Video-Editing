@@ -78,17 +78,19 @@ namespace Yamyam.LofiRoom
                     actor.CrossFadeInFixedTime("Idle",.2f);actor.speed=1;
                     Vector3 from=actor.transform.position;Quaternion rot=actor.transform.rotation;
                     var targetRoot=new Vector3(seatRoot.x,room.groundY,seatRoot.z);
-                    for(float t=0;t<.32f;t+=Time.deltaTime)
+                    for(float t=0;t<.50f;t+=Time.deltaTime)
                     {
-                        float u=Mathf.SmoothStep(0,1,t/.32f);
+                        float u=Mathf.SmoothStep(0,1,t/.50f);
                         actor.transform.position=Vector3.Lerp(from,targetRoot,u);
                         actor.transform.rotation=Quaternion.Slerp(rot,Quaternion.identity,u);yield return null;
                     }
                     actor.transform.SetPositionAndRotation(targetRoot,Quaternion.identity);
-                    phase="의자에 앉기";actor.CrossFadeInFixedTime("SitDown",.20f);
-                    for(float t=0;t<sitDuration;t+=Time.deltaTime){seatWeight=Mathf.SmoothStep(0,1,Mathf.InverseLerp(sitDuration*.45f,sitDuration,t));yield return null;}seatWeight=1;
+                    yield return new WaitForSeconds(.18f);
+                    phase="천천히 의자에 앉기";actor.CrossFadeInFixedTime("SitDown",.40f);
+                    for(float t=0;t<sitDuration;t+=Time.deltaTime)
+                    {float u=Mathf.InverseLerp(sitDuration*.35f,sitDuration,t);seatWeight=u*u*u*(u*(u*6-15)+10);yield return null;}seatWeight=1;
                     seated=true;
-                    actor.CrossFadeInFixedTime("Desk",.12f);yield return new WaitForSeconds(.17f);
+                    actor.CrossFadeInFixedTime("Desk",.52f);yield return new WaitForSeconds(.62f);
                 }
                 if(next=="read")
                 {

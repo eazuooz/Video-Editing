@@ -52,14 +52,14 @@ public static class LofiHearthMotion
         var layer=ac.layers[0];layer.iKPass=true;ac.layers=new[]{layer};
         var machine=layer.stateMachine;
         foreach(var pair in new[]{("SitDown","Sit_Chair_Down"),("Desk","Sit_Chair_Idle"),("StandUp","Sit_Chair_StandUp")})
-        {var state=machine.AddState(pair.Item1);state.motion=Clip(pair.Item2);state.iKOnFeet=pair.Item1=="Desk";if(pair.Item1!="Desk")state.speed=.65f;}
+        {var state=machine.AddState(pair.Item1);state.motion=Clip(pair.Item2);state.iKOnFeet=pair.Item1=="Desk";if(pair.Item1!="Desk")state.speed=pair.Item1=="SitDown"?.36f:.65f;}
         var read=AssetDatabase.LoadAssetAtPath<AnimationClip>(Motion+"Tourist_sit_02_Map.anim");
         if(!read || !read.isHumanMotion)throw new Exception("The licensed reading clip must be a native Humanoid animation");
         var reading=machine.AddState("Read");reading.motion=read;reading.iKOnFeet=true;
         var activities=room.gameObject.AddComponent<LofiActivities>();room.activities=activities;
         activities.room=room;activities.actor=room.actor;activities.leftKey=leftKey;activities.rightKey=rightKey;
         activities.book=book;activities.leftPage=leftPage;activities.rightPage=rightPage;
-        activities.sitDuration=Clip("Sit_Chair_Down").length/.65f;activities.standDuration=Clip("Sit_Chair_StandUp").length/.65f;
+        activities.sitDuration=Clip("Sit_Chair_Down").length/.36f;activities.standDuration=Clip("Sit_Chair_StandUp").length/.65f;
         room.actor.gameObject.AddComponent<LofiDeskIK>().activities=activities;room.hasSit=true;
         EditorUtility.SetDirty(ac);
     }

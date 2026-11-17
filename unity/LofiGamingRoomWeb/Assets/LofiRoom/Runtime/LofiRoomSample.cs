@@ -34,11 +34,15 @@ namespace Yamyam.LofiRoom
         public float turnSpeed=145f;
         private Vector3 motionTarget;
         private Font uiFont;
+        bool htmlFocus;
 
         IEnumerator Start()
         {
             Application.targetFrameRate = 60;
             Application.runInBackground = true;
+#if UNITY_WEBGL && !UNITY_EDITOR && ENABLE_LEGACY_INPUT_MANAGER
+            WebGLInput.captureAllKeyboardInput=false;
+#endif
             uiFont=Font.CreateDynamicFontFromOSFont("Malgun Gothic",18);
             if (actor) { actor.applyRootMotion = true; previousPosition = actor.transform.position; }
             SetNight(PlayerPrefs.GetInt("ai3d-lofi-room-v1-night", 1) == 1);
@@ -72,7 +76,7 @@ namespace Yamyam.LofiRoom
 #endif
 #if ENABLE_INPUT_SYSTEM
             var keyboard=UnityEngine.InputSystem.Keyboard.current;
-            if(keyboard!=null && (!memo || !memo.isOpen))
+            if(keyboard!=null && !htmlFocus && (!memo || !memo.isOpen))
             {
                 if(keyboard.digit1Key.wasPressedThisFrame)Walk();
                 if(keyboard.digit2Key.wasPressedThisFrame)Idle();
@@ -87,7 +91,7 @@ namespace Yamyam.LofiRoom
                 if(keyboard.cKey.wasPressedThisFrame && activities)activities.Request("computer");
                 if(keyboard.bKey.wasPressedThisFrame && activities)activities.Request("read");
                 if(keyboard.vKey.wasPressedThisFrame)Idle();
-                if(keyboard.nKey.wasPressedThisFrame && memo)memo.Toggle();
+                if(keyboard.nKey.wasPressedThisFrame && memo && Application.platform!=RuntimePlatform.WebGLPlayer)memo.Toggle();
             }
 #endif
             if (!actor) return;
@@ -196,6 +200,11 @@ namespace Yamyam.LofiRoom
             if(!actor)return;var hair=actor.GetComponent<LofiHairMotion>();
             if(hair)hair.enabledMotion=!hair.enabledMotion;
         }
+        [UnityEngine.Scripting.Preserve]public void ReadBook(){if(activities)activities.Request("read");}
+        [UnityEngine.Scripting.Preserve]public void SetUiFocus(string value){htmlFocus=value=="1";}
+        [UnityEngine.Scripting.Preserve]public void SetMusicVolume(string value){if(float.TryParse(value,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var v)&&music)music.volume=Mathf.Clamp(v,0,.6f);}
+        [UnityEngine.Scripting.Preserve]public void SetFireVolume(string value){if(float.TryParse(value,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var v)&&hearth&&hearth.crackle)hearth.crackle.volume=Mathf.Clamp(v,0,.7f);}
+        [UnityEngine.Scripting.Preserve]public void StartWebAudio(){if(music && !music.isPlaying)music.Play();if(hearth&&hearth.crackle&&!hearth.crackle.isPlaying)hearth.crackle.Play();}
 
         public void SetMemo(string value) { if(memo)memo.SetText(value);else{PlayerPrefs.SetString("ai3d-lofi-room-v1-memo",value);PlayerPrefs.Save();} }
         public string GetMemo() => memo?memo.text:PlayerPrefs.GetString("ai3d-lofi-room-v1-memo", "");

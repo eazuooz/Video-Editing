@@ -40,5 +40,6 @@ public static class LofiGardenArt
         outside.GetComponent<Renderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
         room.atmosphere.outsideMaterial=forest;
         room.memo=room.gameObject.AddComponent<LofiMemo>();
+        room.gameObject.AddComponent<LofiWebBridge>();
     }
 }
