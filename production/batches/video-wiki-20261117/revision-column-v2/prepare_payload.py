@@ -19,10 +19,15 @@ def main():
         navigation='## 이어서 읽기'+old.split('## 이어서 읽기',1)[1]
         original_images=re.findall(r'<image source="[^"]+">[\s\S]*?</image>',old)
         draft=(HERE/'articles'/f'{key}.md').read_text(encoding='utf8')
+        assert not re.search(r'[ぁ-んァ-ヶ]',draft),(key,'unexpected Japanese prose in Korean column')
         for i,image in enumerate(original_images):
             placeholder='{{existing_image_'+str(i)+'}}'
             assert placeholder in draft,(key,'existing image must be preserved',i)
             draft=draft.replace(placeholder,image)
+        for i,diagram in enumerate(re.findall(r'```mermaid[^\n]*\n[\s\S]*?```',old)):
+            placeholder='{{existing_mermaid_'+str(i)+'}}'
+            assert placeholder in draft,(key,'existing diagram must be preserved',i)
+            draft=draft.replace(placeholder,diagram)
         for meta in uploaded:
             if meta['article']!=key:continue
             placeholder='{{'+meta['key']+'}}'

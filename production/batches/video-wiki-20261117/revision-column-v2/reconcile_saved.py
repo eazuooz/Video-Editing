@@ -20,6 +20,8 @@ def main():
         oldbody=re.search(r'<content>\n([\s\S]*?)\n</content>',next(x['data']['text'] for x in json.loads((readback.parent/('before-'+args.batch+'.json')).read_text(encoding='utf8')) if x['id']==key))[1]
         for image in re.findall(r'<image source="[^"]+">[\s\S]*?</image>',oldbody):
             assert image in content,(key,'lost original media')
+        for diagram in re.findall(r'```mermaid[^\n]*\n[\s\S]*?```',oldbody):
+            assert diagram in content,(key,'lost original diagram')
         assert content.count('<video source=')==oldbody.count('<video source='),(key,'video block count changed')
         for video in re.findall(r'<video source="[^"]+"[^>]*>',oldbody):
             assert video in content,(key,'video link changed')
