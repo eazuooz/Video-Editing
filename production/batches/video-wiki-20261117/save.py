@@ -60,7 +60,7 @@ def main():
         paths=git('diff','--cached','--name-only',head,env=ce).decode().splitlines()
         if not paths:print('No wiki changes');return
         tree=git('write-tree',env=ce).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Complete 113 companion wiki chapters with images and learning navigation\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=b'Deepen wiki articles into illustrated development methodology columns\n').decode().strip()
         publish(index,Path(re['GIT_INDEX_FILE']).read_bytes(),original,ref,head,commit)
         print(commit,len(paths),'wiki files; unrelated staging preserved')
     subprocess.run(['git','push','origin',ref],cwd=ROOT,check=True)
