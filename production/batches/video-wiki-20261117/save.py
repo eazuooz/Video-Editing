@@ -12,6 +12,9 @@ def project(path,base,current):
     a,b=base.decode('utf-8-sig'),current.decode('utf-8-sig')
     if path.endswith('.json'):
         a,b=json.loads(a),json.loads(b)
+        if path=='shared/publishing/video-worklist.json':
+            a['videoCompanionWiki20261117']=b['videoCompanionWiki20261117']
+            return (json.dumps(a,ensure_ascii=False,indent=2)+'\n').encode('utf8')
         a['videoCompanionWikiPolicy20261117']=b['videoCompanionWikiPolicy20261117']
         a.setdefault('scopedDocumentationAuthorizations',{})['videoWiki20261117']=b['scopedDocumentationAuthorizations']['videoWiki20261117']
         return (json.dumps(a,ensure_ascii=False,indent=2)+'\n').encode('utf8')
@@ -36,7 +39,7 @@ def main():
     index=Path(git('rev-parse','--path-format=absolute','--git-path','index').decode().strip());original=index.read_bytes()
     direct=[p for p in HERE.rglob('*') if p.is_file() and 'evidence' not in p.relative_to(HERE).parts and '__pycache__' not in p.parts and p.suffix in {'.md','.json','.py','.html'}]
     direct.append(ROOT/'docs/VIDEO_WIKI_WORKFLOW.md')
-    shared=['AGENTS.md','docs/VIDEO_WORKFLOW.md','shared/publishing/video-production-control.json']
+    shared=['AGENTS.md','docs/VIDEO_WORKFLOW.md','shared/publishing/video-production-control.json','shared/publishing/video-worklist.json']
     with tempfile.TemporaryDirectory() as tmp:
         ce=dict(os.environ,GIT_INDEX_FILE=str(Path(tmp)/'commit.index'));re=dict(os.environ,GIT_INDEX_FILE=str(Path(tmp)/'reconcile.index'))
         git('read-tree',head,env=ce);Path(re['GIT_INDEX_FILE']).write_bytes(original)
@@ -57,7 +60,7 @@ def main():
         paths=git('diff','--cached','--name-only',head,env=ce).decode().splitlines()
         if not paths:print('No wiki changes');return
         tree=git('write-tree',env=ce).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Require detailed companion wiki articles and inventory existing video lessons\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=b'Complete 113 companion wiki chapters with images and learning navigation\n').decode().strip()
         publish(index,Path(re['GIT_INDEX_FILE']).read_bytes(),original,ref,head,commit)
         print(commit,len(paths),'wiki files; unrelated staging preserved')
     subprocess.run(['git','push','origin',ref],cwd=ROOT,check=True)

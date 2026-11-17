@@ -47,7 +47,7 @@ for ident,(title,intro,practice) in INFO.items():
         d['sourceCorrection']='Retained 83-second SRT was obsolete; use full 9-scene script matching actual 410-second uploaded lesson and audio review.'
     else:body=d.get('baseBody',d['body'])
     for anchor,h in ANCHORS.get(ident,[]):
-        if anchor in body:body=body.replace(anchor,'## '+h+'\n\n'+anchor,1)
+        if anchor in body:body=body.replace(anchor,'\n\n## '+h+'\n\n'+anchor,1)
     body=clean(body)
     if ident=='D09':
         intro+='\n\n시간을 구하는 식은 **경과 시간 = 눈금 수 ÷ 초당 눈금 수**입니다. 같은 12눈금도 60Hz에서는 0.2초, 30Hz에서는 0.4초입니다. 예시의 준비 12·활성 3·회복 15눈금을 합하면 30눈금이며 60Hz 기준 0.5초입니다. 이는 자체 테스트의 값입니다.'
