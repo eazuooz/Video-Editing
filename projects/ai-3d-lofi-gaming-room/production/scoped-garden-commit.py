@@ -64,7 +64,9 @@ def warm_objects(spec):
     while offset<len(payload):
         end=payload.index(b'\n',offset);identity,kind,size=payload[offset:end].split();assert kind==b'blob';size=int(size);start=end+1;blobs[identity.decode()]=payload[start:start+size];assert payload[start+size:start+size+1]==b'\n';offset=start+size+1
     # Check filter equivalence on text and raster samples before using the cache.
-    for name in [next(p for p in paths if p.endswith('.cs')),next(p for p in paths if p.endswith('.png'))]:assert original('hash-object','--path='+name,'--stdin',data=raw[name]).strip().decode()==ids[name]
+    for suffix in ('.cs','.png'):
+        name=next((p for p in paths if p.endswith(suffix)),None)
+        if name:assert original('hash-object','--path='+name,'--stdin',data=raw[name]).strip().decode()==ids[name]
     def cached(*args,env=None,data=None,optional=False):
         if args[:2]==('hash-object','-w') and len(args)==4 and args[2].startswith('--path='):
             name=args[2][7:]
