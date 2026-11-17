@@ -18,7 +18,7 @@ def main():
         assert '## 이어서 읽기' in content,key
         assert content.count('<image ')==expected['imageCount'],key
         oldbody=re.search(r'<content>\n([\s\S]*?)\n</content>',next(x['data']['text'] for x in json.loads((readback.parent/('before-'+args.batch+'.json')).read_text(encoding='utf8')) if x['id']==key))[1]
-        for image in re.findall(r'<image source="[^"]+">[\s\S]*?</image>',oldbody):
+        for image in re.findall(r'<image source="[^"]+"\s*/>(?:\s*<i>[\s\S]*?</i>)?|<image source="[^"]+">[\s\S]*?</image>',oldbody):
             assert image in content,(key,'lost original media')
         for diagram in re.findall(r'```mermaid[^\n]*\n[\s\S]*?```',oldbody):
             assert diagram in content,(key,'lost original diagram')

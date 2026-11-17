@@ -4,6 +4,7 @@ from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
 EVIDENCE=HERE.parent/'evidence/column-v2'
+IMAGE=r'<image source="[^"]+"\s*/>(?:\s*<i>[\s\S]*?</i>)?|<image source="[^"]+">[\s\S]*?</image>'
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--batch',default='first-four');args=parser.parse_args()
@@ -15,9 +16,11 @@ def main():
         old=re.search(r'<content>\n([\s\S]*?)\n</content>',page['text'])[1]
         baseline=(HERE.parent/'articles'/f'{key}.md').read_text(encoding='utf8').strip()
         assert old.strip()==baseline, (key,'Concurrent article edit: reconcile before replacing')
-        prefix=re.sub(r'<image source="[^"]+">[\s\S]*?</image>','',old.split('\n## ',1)[0]).strip()
+        prefix=re.sub(IMAGE,'',old.split('\n## ',1)[0]).strip()
+        if key in ['DL01','DL02','D01','D03']:
+            prefix='\n\n'.join(re.findall(r'<video source="[^"]+"[^>]*>|<mention url="[^"]+">[\s\S]*?</mention>',prefix))
         navigation='## 이어서 읽기'+old.split('## 이어서 읽기',1)[1]
-        original_images=re.findall(r'<image source="[^"]+">[\s\S]*?</image>',old)
+        original_images=re.findall(IMAGE,old)
         draft=(HERE/'articles'/f'{key}.md').read_text(encoding='utf8')
         assert not re.search(r'[ぁ-んァ-ヶ]',draft),(key,'unexpected Japanese prose in Korean column')
         for i,image in enumerate(original_images):
