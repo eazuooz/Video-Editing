@@ -81,12 +81,12 @@ namespace Yamyam.LofiRoom
             var centre=chest.position+bodyShift+sofa.forward*.34f+Vector3.up*.07f;var across=sofa.right;var normal=Vector3.ProjectOnPlane(head.position+bodyShift-centre,across).normalized;
             a.book.position=centre;a.book.rotation=Quaternion.LookRotation(Vector3.Cross(across,normal),normal);a.book.localScale=Vector3.one*.88f;a.book.gameObject.SetActive(b>.035f);if(a.closedBook)a.closedBook.SetActive(b<=.035f);
             Hand(AvatarIKGoal.LeftHand,AvatarIKHint.LeftElbow,HumanBodyBones.LeftHand,HumanBodyBones.LeftUpperArm,-1,b);Hand(AvatarIKGoal.RightHand,AvatarIKHint.RightElbow,HumanBodyBones.RightHand,HumanBodyBones.RightUpperArm,1,b);
-            actor.SetLookAtWeight(b*.20f,0,.5f,.15f,.8f);actor.SetLookAtPosition(centre);
+            actor.SetLookAtWeight(b*.55f,0,.75f,.35f,.7f);actor.SetLookAtPosition(centre);
         }
         void Foot(AvatarIKGoal goal,float side,float weight)
         {
             var floor=sofa.TransformPoint(new Vector3(-.35f+side*.13f,0,.34f));floor.y=room.groundY+.075f;
-            var target=sofa.TransformPoint(new Vector3(-.35f+side*.13f,0,.84f));target.y=sofa.position.y+.44f+.075f;
+            var target=sofa.TransformPoint(new Vector3(-.35f+side*.13f,0,.73f));target.y=sofa.position.y+.44f+.075f;
             var lifted=floor;lifted.y=target.y+.16f;float u=Mathf.Clamp01(feetProgress);
             var position=u<.5f?Vector3.Lerp(floor,lifted,Mathf.SmoothStep(0,1,u*2)):Vector3.Lerp(lifted,target,Mathf.SmoothStep(0,1,(u-.5f)*2));
             room.actor.SetIKPositionWeight(goal,weight);room.actor.SetIKPosition(goal,position);
