@@ -21,9 +21,9 @@ for name,source in [('narration',L/'narration-aligned.wav'),('mix',L/'final-mix.
  if not rec.exists() or json.loads(rec.read_text('utf-8'))['audio_sha256']!=sha(source):run([PY,R/'qwen3-tts/transcribe_reference.py',source,'--output',out,'--device','cuda','--timestamps','word'])
 run([PY,P/'production/build-film-captions.py'])
 run([PY,P/'production/render-film.py'])
-t=json.loads((L/'timeline.json').read_text());files=[R/'projects/ai-2d-game-assets/assets/local/intro.mp4']+[L/'visual'/('scene-'+r['id']+'.mp4') for r in t['scenes']]+[R/'projects/ai-2d-game-assets/assets/local/outro.mp4']
+t=json.loads((L/'timeline.json').read_text('utf-8'));files=[R/'projects/ai-2d-game-assets/assets/local/intro.mp4']+[L/'visual'/('scene-'+r['id']+'.mp4') for r in t['scenes']]+[R/'projects/ai-2d-game-assets/assets/local/outro.mp4']
 for r in t['scenes']:
- rec=json.loads((L/'visual'/('scene-'+r['id']+'.json')).read_text());assert rec['frames']==r['frames'] and rec['inputs']['narration']==r['sourceSha256']
+ rec=json.loads((L/'visual'/('scene-'+r['id']+'.json')).read_text('utf-8'));assert rec['frames']==r['frames'] and rec['inputs']['narration']==r['sourceSha256']
 concat=L/'concat.txt';concat.write_text('\n'.join("file '"+p.as_posix()+"'" for p in files)+'\n','utf-8')
 clean=F/(P.name+'.clean.mp4');captioned=F/(P.name+'.captioned.mp4')
 run(['ffmpeg','-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',concat,'-i',L/'final-mix.m4a','-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',clean])

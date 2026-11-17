@@ -3,8 +3,8 @@ from pathlib import Path
 import json,subprocess,hashlib,shutil
 P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v2';A=L/'assets';A.mkdir(parents=True,exist_ok=True)
 shots={
- 'room':('living-room-v8',2),'sit':('living-room-v8',31),'desk':('living-room-v8',34),'window':('living-room-v8',50),'day':('living-room-v8',62),'hair':('web-final-v6',35),
- 'read':('living-room-v8',16),'fire':('final-activities-v7',29),'record':('living-room-v8',57),'old':('unity-sample-v1',17),'walk':('living-room-v8',2),'cat':('living-room-v8',42),'coding':('living-room-v8',34),'rain':('living-room-v8',50),
+ 'room':('living-room-v8',2),'sit':('living-room-v8',40),'desk':('living-room-v8',40),'window':('living-room-v8',57),'day':('living-room-v8',70),'hair':('web-final-v6',35),
+ 'read':('living-room-v8',16),'fire':('final-activities-v7',29),'record':('living-room-v8',65),'old':('unity-sample-v1',17),'walk':('living-room-v8',2),'cat':('living-room-v8',49),'coding':('living-room-v8',40),'rain':('living-room-v8',57),
 }
 records=[]
 for name,(folder,second) in shots.items():
@@ -20,9 +20,9 @@ if textures.exists():
   shutil.copy2(f,A/('hero-'+f.name))
 (L/'source-frames.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n','utf-8')
 for name,source in {'webMemo':'web-memo-restored.jpg','webTimer':'web-timer-restored.jpg','webRoom':'web-room.jpg'}.items():
- source=P/'production/local/web-final-v6'/source
+ source=P/'production/local/living-room-v8'/source
  if source.exists():shutil.copy2(source,A/(name+'.jpg'))
-demo=P/'production/local/web-final-v6/web-memo-demo.jpg'
+demo=P/'production/local/living-room-v8/web-memo-demo.jpg'
 if demo.exists():shutil.copy2(demo,A/'webMemo.jpg')
 pixel=R/'projects/ai-2d-game-assets/production/local/room-v4-video/browser-evidence/radio-playing-fhd.png'
 assert pixel.exists();shutil.copy2(pixel,A/'pixelRoom.png')

@@ -6,7 +6,7 @@ GlobalFonts.registerFromPath('C:/Windows/Fonts/NotoSansKR-VF.ttf','Noto Sans KR'
 (async()=>{
  fs.mkdirSync(path.join(L,'final'),{recursive:true});
  const cv=createCanvas(1280,720),c=cv.getContext('2d');
- const room=await loadImage(path.join(L,'assets/room.png'));
+ const room=await loadImage(path.join(L,'assets/thumbnail-room.png'));
  const cat=await loadImage(path.join(root,'shared/assets/branding/cat-reactions-v1/realize.png'));
  c.fillStyle='#fff';c.fillRect(0,0,1280,720);
  c.fillStyle='#ffe13b';c.fillRect(0,0,1280,94);

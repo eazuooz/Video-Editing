@@ -67,7 +67,7 @@ namespace Yamyam.LofiRoom
             Form("tiny pink nose",catBody,new Vector3(-.32f,-.016f,-.298f),new Vector3(.041f,.026f,.022f),pink);
             for(int i=0;i<2;i++)
             {
-                float x=-.38f+i*.14f;var pts=new List<Vector3>();for(int k=0;k<9;k++){float u=k/8f;pts.Add(new Vector3(x+(u-.5f)*.07f,-.002f-Mathf.Sin(u*Mathf.PI)*.016f,-.271f));}Line("closed sleeping eyelid",catBody,pts,.009f,black);
+                float x=-.38f+i*.14f;var pts=new List<Vector3>();for(int k=0;k<9;k++){float u=k/8f;pts.Add(new Vector3(x+(u-.5f)*.07f, .060f-Mathf.Sin(u*Mathf.PI)*.012f,-.271f));}Line("closed sleeping eyelid",catBody,pts,.009f,black);
                 var ear=new GameObject("twitching ear").transform;ear.SetParent(catBody,false);ear.localPosition=new Vector3(-.405f+i*.19f,.11f,-.09f);ear.localRotation=Quaternion.Euler(0,0,i==0?12:-12);
                 Ear(ear,white);var inner=Ear(ear,pink);inner.localScale=new Vector3(.57f,.66f,.57f);inner.localPosition=new Vector3(0,.018f,-.026f);if(i==0)earL=ear;else earR=ear;
                 Form("tucked white paw",catBody,new Vector3(-.27f+i*.13f,-.105f,-.25f),new Vector3(.12f,.08f,.15f),white);
@@ -101,7 +101,7 @@ namespace Yamyam.LofiRoom
             rainMaterial=rainTemplate?new Material(rainTemplate):new Material(Shader.Find("Yamyam/Window Rain"));o.GetComponent<Renderer>().sharedMaterial=rainMaterial;o.GetComponent<Renderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;SetRain(false);
         }
         public void SetRain(bool value){raining=value;if(rainMaterial)rainMaterial.SetFloat("_Rain",value?1:0);}
-        public void ToggleRain()=>SetRain(!raining);
+        public void SwitchWindowRain()=>SetRain(!raining);
         void MakeScreen()
         {
             var display=GameObject.Find("iMac quiet display");if(!display)return;

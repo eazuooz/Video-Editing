@@ -51,7 +51,7 @@ function draw(r){base(r);const id=+r.id;
  if(id===14){picture('walk',76,245,920,518);node(1060,265,755,'Mixamo','캐릭터 리깅·모션 서비스 대안');node(1060,470,755,'DeepMotion','촬영 영상에서 모션을 얻는 대안');wrap('이번 방은 내보낸 Tripo 모션과 기존 라이선스 클립을 연결했습니다.',1085,680,690,34);return;}
  if(id===15){const ns=[['대기','Idle'],['걷기','Walk'],['정렬','Align'],['앉기 / 눕기','Enter'],['생활','Loop'],['일어나기','Exit']];ns.forEach((v,i)=>{const x=76+i*298;node(x,245,268,v[0],v[1],i===3?C.gold:C.teal);if(i<5)arrow(x+270,307,x+293,307);});picture('walk',76,420,550,310);picture('sit',685,420,550,310);picture('read',1294,420,550,310);text('아이맥과 빈백 · 안전한 동작 전환 뒤에 다음 행동 시작',960,804,38,C.gold,600,'center');return;}
  if(id===2 && im.pixelRoom){picture('pixelRoom',76,216,1120,630);steps(notes[id]);return;}
- if(id===23 && im.webMemo){two('memo','webMemo',['PC · 로컬 JSON 파일','브라우저 · 같은 주소의 저장 공간']);return;}
+ if(id===23 && im.webMemo){node(76,260,790,'PC · UTF-8 JSON','메모를 로컬 파일로 저장',C.gold);node(76,445,790,'임시 파일 → 현재 파일','완성한 내용을 교체하고 이전 파일은 백업');node(76,630,790,'다시 열어 확인','같은 메모가 실제로 복원되는지 확인');picture('webMemo',994,230,850,570);text('브라우저 · 같은 주소의 저장 공간',1419,823,31,C.teal,650,'center');return;}
  if(id===24 && im.webTimer){picture('webTimer',76,216,1120,630);steps(notes[id]);return;}
  if(id===26 && im.webRoom){picture('webRoom',76,216,1120,630);steps(notes[id]);return;}
  if([6,13].includes(id) && im['tripo-'+(id===6?'model':'animation')]){picture('tripo-'+(id===6?'model':'animation'),76,216,1120,630);steps(notes[id]);return;}

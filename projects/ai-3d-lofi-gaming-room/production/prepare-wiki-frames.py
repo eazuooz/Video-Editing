@@ -5,6 +5,7 @@ P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-
 d=json.loads((P/'production/full-video-delivery.json').read_text('utf-8'));v=Path(d['outputs'][1]['path']);master=hashlib.file_digest(v.open('rb'),'sha256').hexdigest();assert master==d['outputs'][1]['sha256']
 t={r['id']:r for r in json.loads((L/'timeline.json').read_text('utf-8'))['scenes']}
 items=[('room','01',3,'완성한 방의 실제 실행 화면. 걷기·앉기·음악·기록을 하나의 공간에서 연결한다.'),('model','06',3,'같은 캐릭터의 실제 Tripo 작업 화면. 자체 입력 이미지를 모델로 바꾸고 형상을 확인한 단계다.'),('texture','10',6,'실제 캐릭터의 Base Color·Normal·Roughness·Metallic 맵. 겉모양의 색과 표면 데이터의 역할이 다르다.'),('states','15',7,'대기→걷기→정렬→앉기→생활→일어나기. 실제 동작을 연결하는 상태의 관계를 설명한 완성 영상 프레임이다.'),('sit','17',10,'초기 가구와 수정한 실제 앉기 장면. 낮은 등받이·모니터와 몸의 접촉을 함께 확인한다.'),('window','20',6,'실제 게임의 잎과 창문 풍경. 잎의 기준점은 고정하고 창문에는 자체 숲·달 파노라마를 사용했다.'),('web','26',7,'실제 브라우저로 실행한 방. 로딩과 시작, 생활 동작과 저장 UI를 연결한 결과다.')]
+items += [('rain','29',6,'실제 창문 안에 보이는 비. 숲 배경 앞의 빗줄기·물방울과 창틀의 순서를 확인한다.'),('coding','30',3,'실제 아이맥의 코드 문서와 커서가 바뀌는 화면. 방 안 생활감을 위한 동적 텍스처다.'),('cat','30',17,'오른쪽 카펫에서 잠든 삼색고양이. 감은 눈과 작은 호흡·꼬리·귀 움직임을 연결했다.')]
 records=[]
 for name,scene,offset,caption in items:
  second=t[scene]['start']+min(offset,t[scene]['duration']*.65);f=O/(name+'.jpg')

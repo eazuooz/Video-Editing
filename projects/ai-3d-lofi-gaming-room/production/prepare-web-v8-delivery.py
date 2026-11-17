@@ -8,6 +8,10 @@ def one(pattern):
     files=list((W/'Build').glob(pattern));assert len(files)==1,(pattern,files)
     return 'Build/'+files[0].name
 config={'loader':one('*.loader.js'),'config':{'dataUrl':one('*.data.unityweb'),'frameworkUrl':one('*.framework.js.unityweb'),'codeUrl':one('*.wasm.unityweb'),'streamingAssetsUrl':'StreamingAssets','companyName':'YamyamCoding','productName':'Yamyam Lofi Room','productVersion':'0.8'}}
+config['config']['autoSyncPersistentDataPath']=True
+for name in ('dataUrl','frameworkUrl','codeUrl'):
+    url=config['config'][name];config['config'][name]=url+'?v='+hashlib.file_digest((W/url).open('rb'),'sha256').hexdigest()[:16]
+url=config['loader'];config['loader']=url+'?v='+hashlib.file_digest((W/url).open('rb'),'sha256').hexdigest()[:16]
 for name in ('index.html','room.css','room.js'):
     raw=(P/'game-web'/name).read_text('utf-8')
     if name=='index.html':

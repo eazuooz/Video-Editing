@@ -187,7 +187,7 @@ namespace Yamyam.LofiRoom
 
         [UnityEngine.Scripting.Preserve]public void ToggleRain()
         {
-            var living=GetComponent<LofiLivingRoom>();if(living){living.ToggleRain();return;}
+            var living=GetComponent<LofiLivingRoom>();if(living){living.SwitchWindowRain();return;}
             if (!rain) return;
             if (rain.isEmitting) rain.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear); else rain.Play();
         }
