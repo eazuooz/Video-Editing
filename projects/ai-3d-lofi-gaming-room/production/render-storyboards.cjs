@@ -2,7 +2,7 @@
 // These are film graphics, not imitated service/editor interfaces.
 const fs=require('fs'),path=require('path');
 const {createCanvas,loadImage,GlobalFonts}=require('C:/Users/1/Videos/YamyamCoding/ai-2d-tools/render-node/node_modules/@napi-rs/canvas');
-const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v1'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
+const P=path.resolve(__dirname,'..'),L=path.join(__dirname,'local/full-video-v2'),A=path.join(L,'assets'),O=path.join(L,'boards');fs.mkdirSync(O,{recursive:true});
 GlobalFonts.registerFromPath('C:/Windows/Fonts/NotoSansKR-VF.ttf','Noto Sans KR');
 const cv=createCanvas(1920,1080),c=cv.getContext('2d'),im={};
 const C={bg:'#0b1311',panel:'#14221e',fg:'#edf1e9',muted:'#afbeb3',gold:'#e1c47d',teal:'#77c8b7',red:'#e99280',line:'#3a5147'};
@@ -27,11 +27,14 @@ const notes={
  12:[['표면 규칙','나뭇결 · 천 · 돌의 미세 변화'],['실제 구현','Unity 커스텀 셰이더'],['노드 작업 대안','Material Maker · 미실행 후보']],
  13:[['리깅','뼈와 표면의 연결'],['실제 걷기 · 대기','Tripo 내보내기 모션'],['앉기 · 독서','라이선스 확인한 기존 클립']],
  16:[['이동 거리','클립의 보폭과 경로를 맞춤'],['바닥 접촉','발이 지면 아래로 가지 않게'],['전환 확인','걸음 끝 → 의자 정렬']],
- 18:[['같은 독서 클립','몸의 흐름을 먼저 유지'],['책과 손의 접촉','IK 가중치를 천천히 연결'],['일어나기','책 정리 → 손 해제 → 기립']],
+ 18:[['쉬는 공간으로 이동','가운데 카펫 · 빈백'],['기존 인체 모션','KayKit · 눕기 / 누운 상태 / 기립'],['책과 손의 접촉','쿠션 높이 + IK를 천천히 연결']],
  19:[['끝부분의 지연','머리는 먼저 · 머리 끝은 나중'],['길이 제한','연결 길이를 유지'],['몸 주변 보호','머리 · 어깨와 충돌 보정']],
  20:[['식물의 기준점','줄기 아래쪽은 고정'],['느린 흔들림','잎마다 위상과 각도 차이'],['창밖 숲 · 달','직접 만든 2.5D 파노라마']],
  21:[['창가 빛','빛기둥 + 표면 조명'],['벽난로 불','불꽃 · 잔불 · 스파크'],['공간과 같은 소리','별도 장작 음량 조절']],
- 22:[['레코드','재생 상태에 맞춰 회전'],['음악','Morning Coffee / HoliznaCC0'],['환경음','Fireplace loop / PaGDev']],
+ 22:[['서로 다른 열 곡','HoliznaCC0 · 완전한 CC0 음원'],['선택과 연결','이전 / 다음 / 곡 선택'],['레코드 회전','재생 상태 + 비대칭 표식']],
+ 29:[['가림 문제','기존 비가 배경 뒤에 있었음'],['레이어 수정','배경 → 빗줄기 · 물방울 → 창틀'],['상태 피드백','비 켜짐을 버튼에도 표시']],
+ 30:[['아이맥','코드 문서 · 커서 변화'],['삼색고양이','호흡 · 꼬리 · 간헐적 귀 움직임'],['서로 다른 리듬','방의 조용한 생활감']],
+ 31:[['휴식과 날씨','빈백 독서 → 보이는 비'],['생활의 기척','바뀌는 화면 → 잠자는 고양이'],['오래 머무는 소리','열 곡 선택 → 레코드 회전']],
  23:[['PC','로컬 UTF-8 JSON 파일'],['브라우저','같은 주소의 localStorage'],['저장 확인','다시 열어 실제 메모 확인']],
  24:[['기준','끝나는 시각을 저장'],['표시','종료 시각 − 현재 시각'],['탭을 바꿔도','누락된 프레임 수에 의존 안 함']],
  25:[['Codex','코드 · 상태 · 저장 연결'],['Unity 공식 CLI / MCP','씬 생성 · 실행 확인 · 빌드'],['완료 판단','실행 기록과 실제 화면 대조']],
@@ -46,7 +49,7 @@ function draw(r){base(r);const id=+r.id;
  if(id===8){picture('hero',76,225,600,600);node(750,260,1060,'캐릭터','생성 원본 1,941,784 triangles',C.gold);arrow(1280,410,1280,475);node(750,500,1060,'정리한 메시','9,968 quad faces · 9,428 vertices');text('삼각형 수와 사각형 수는 단위가 다릅니다.',780,700,30,C.muted);text('헤드폰: 1,909,880 triangles → 2,000 triangles',780,776,30,C.teal);return;}
  if(id===10){picture('hero',76,236,620,600);const data=[['Base Color','표면의 기본 색','basecolor'],['Normal','작은 요철 방향','normal'],['Roughness','반사의 퍼짐','roughness'],['Metallic','금속인 부분','metallic']];data.forEach((v,i)=>{const x=780+(i%2)*540,y=235+Math.floor(i/2)*280;box(x,y,490,240);text(v[0],x+18,y+32,32,i===0?C.gold:C.teal,650);picture('hero-'+v[2],x+18,y+64,196,155);wrap(v[1],x+237,y+119,235,29);});text('실제 4K 색 원본 + 함께 제공된 데이터 맵을 연결',780,804,30,C.muted);return;}
  if(id===14){picture('walk',76,245,920,518);node(1060,265,755,'Mixamo','캐릭터 리깅·모션 서비스 대안');node(1060,470,755,'DeepMotion','촬영 영상에서 모션을 얻는 대안');wrap('이번 방은 내보낸 Tripo 모션과 기존 라이선스 클립을 연결했습니다.',1085,680,690,34);return;}
- if(id===15){const ns=[['대기','Idle'],['걷기','Walk'],['정렬','Align'],['앉기','Enter'],['생활','Loop'],['일어나기','Exit']];ns.forEach((v,i)=>{const x=76+i*298;node(x,245,268,v[0],v[1],i===3?C.gold:C.teal);if(i<5)arrow(x+270,307,x+293,307);});picture('walk',76,420,550,310);picture('sit',685,420,550,310);picture('read',1294,420,550,310);text('모션 클립의 끝과 다음 행동의 시작을 연결',960,804,38,C.gold,600,'center');return;}
+ if(id===15){const ns=[['대기','Idle'],['걷기','Walk'],['정렬','Align'],['앉기 / 눕기','Enter'],['생활','Loop'],['일어나기','Exit']];ns.forEach((v,i)=>{const x=76+i*298;node(x,245,268,v[0],v[1],i===3?C.gold:C.teal);if(i<5)arrow(x+270,307,x+293,307);});picture('walk',76,420,550,310);picture('sit',685,420,550,310);picture('read',1294,420,550,310);text('아이맥과 빈백 · 안전한 동작 전환 뒤에 다음 행동 시작',960,804,38,C.gold,600,'center');return;}
  if(id===2 && im.pixelRoom){picture('pixelRoom',76,216,1120,630);steps(notes[id]);return;}
  if(id===23 && im.webMemo){two('memo','webMemo',['PC · 로컬 JSON 파일','브라우저 · 같은 주소의 저장 공간']);return;}
  if(id===24 && im.webTimer){picture('webTimer',76,216,1120,630);steps(notes[id]);return;}

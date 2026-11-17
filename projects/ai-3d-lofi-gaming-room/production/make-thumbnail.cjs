@@ -1,9 +1,10 @@
 // Brand cover composed from the actual final room and the existing mascot.
 const fs=require('fs'),path=require('path');
 const {createCanvas,loadImage,GlobalFonts}=require('C:/Users/1/Videos/YamyamCoding/ai-2d-tools/render-node/node_modules/@napi-rs/canvas');
-const L=path.join(__dirname,'local/full-video-v1'),root=path.resolve(__dirname,'../../..');
+const L=path.join(__dirname,'local/full-video-v2'),root=path.resolve(__dirname,'../../..');
 GlobalFonts.registerFromPath('C:/Windows/Fonts/NotoSansKR-VF.ttf','Noto Sans KR');
 (async()=>{
+ fs.mkdirSync(path.join(L,'final'),{recursive:true});
  const cv=createCanvas(1280,720),c=cv.getContext('2d');
  const room=await loadImage(path.join(L,'assets/room.png'));
  const cat=await loadImage(path.join(root,'shared/assets/branding/cat-reactions-v1/realize.png'));

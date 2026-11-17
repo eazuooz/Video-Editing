@@ -1,10 +1,10 @@
 """Extract real room frames and preserve per-shot source provenance for the making-of."""
 from pathlib import Path
 import json,subprocess,hashlib,shutil
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v1';A=L/'assets';A.mkdir(parents=True,exist_ok=True)
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v2';A=L/'assets';A.mkdir(parents=True,exist_ok=True)
 shots={
- 'room':('web-final-v6',1),'sit':('web-final-v6',9.7),'desk':('web-final-v6',14),'window':('web-final-v6',22),'day':('web-final-v6',29),'hair':('web-final-v6',35),
- 'read':('final-activities-v7',16),'fire':('final-activities-v7',29),'record':('final-activities-v7',36),'old':('unity-sample-v1',17),'walk':('web-final-v6',3),
+ 'room':('living-room-v8',2),'sit':('living-room-v8',31),'desk':('living-room-v8',34),'window':('living-room-v8',50),'day':('living-room-v8',62),'hair':('web-final-v6',35),
+ 'read':('living-room-v8',16),'fire':('final-activities-v7',29),'record':('living-room-v8',57),'old':('unity-sample-v1',17),'walk':('living-room-v8',2),'cat':('living-room-v8',42),'coding':('living-room-v8',34),'rain':('living-room-v8',50),
 }
 records=[]
 for name,(folder,second) in shots.items():

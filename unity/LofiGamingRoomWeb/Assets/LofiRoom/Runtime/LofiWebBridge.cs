@@ -13,9 +13,10 @@ namespace Yamyam.LofiRoom
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             if(Time.unscaledTime<next)return;next=Time.unscaledTime+.5f;
-            LofiReportState(JsonUtility.ToJson(new State{phase=room.activities.phase,music=room.music&&room.music.isPlaying,fire=room.hearth&&room.hearth.crackle&&!room.hearth.crackle.mute,fps=1/Mathf.Max(.001f,Time.unscaledDeltaTime),seated=room.activities.seated,busy=room.activities.busy}));
+            var living=GetComponent<LofiLivingRoom>();var playlist=GetComponent<LofiPlaylist>();
+            LofiReportState(JsonUtility.ToJson(new State{phase=room.activities.phase,music=room.music&&room.music.isPlaying,fire=room.hearth&&room.hearth.crackle&&!room.hearth.crackle.mute,fps=1/Mathf.Max(.001f,Time.unscaledDeltaTime),seated=room.activities.seated,busy=room.activities.busy,rain=living&&living.raining,track=playlist?playlist.index:0,title=playlist?playlist.Title:"Morning Coffee"}));
 #endif
         }
-        [System.Serializable]class State{public string phase;public bool music,fire,seated,busy;public float fps;}
+        [System.Serializable]class State{public string phase,title;public bool music,fire,seated,busy,rain;public float fps;public int track;}
     }
 }

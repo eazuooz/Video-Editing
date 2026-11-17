@@ -19,12 +19,13 @@ $('#memo-open').onclick=()=>openPanel('memo-panel');$('#memo-close').onclick=()=
 $('#timer-open').onclick=()=>openPanel('timer-panel');$('#timer-close').onclick=()=>openPanel('timer-panel');
 for(const b of document.querySelectorAll('[data-action]'))b.onclick=()=>send(b.dataset.action);
 $('#read').onclick=()=>send('ReadBook');
+$('#music-track').onchange=e=>send('SelectTrack',e.target.value);
 for(const [id,method,fallback] of [['music-volume','SetMusicVolume',.18],['fire-volume','SetFireVolume',.42]]){$('#'+id).value=load(id,fallback);$('#'+id).oninput=e=>{send(method,e.target.value);save(id,+e.target.value);};}
 $('#fullscreen').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else $('#stage').requestFullscreen?.();};
 // Keep canvas backing size consistent with Unity's configured devicePixelRatio=1.
 function resize(){const c=$('#unity-canvas');c.width=Math.round(c.clientWidth);c.height=Math.round(c.clientHeight);}
 new ResizeObserver(resize).observe($('#stage'));
-window.addEventListener('lofi-state',e=>{state=e.detail;$('#phase').textContent=state.phase||'잠깐 쉬어가기';$('#audio-state').textContent=entered?(state.music?'로파이 재생 중':'로파이 일시정지'):'소리는 시작 버튼을 누르면 켜져요';$('#performance').textContent=Math.round(state.fps)+' fps';});
+window.addEventListener('lofi-state',e=>{state=e.detail;$('#phase').textContent=state.phase||'잠깐 쉬어가기';$('#audio-state').textContent=entered?(state.music?'재생 중 · '+state.title:'로파이 일시정지'):'소리는 시작 버튼을 누르면 켜져요';$('#music-track').value=String(state.track??0);document.querySelector('[data-action="ToggleRain"]').setAttribute('aria-pressed',String(!!state.rain));$('#performance').textContent=Math.round(state.fps)+' fps';});
 function clock(){const seconds=timerEnd?Math.max(0,Math.ceil((timerEnd-Date.now())/1000)):timerRemaining;$('#timer-clock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');if(timerEnd&&seconds===0){timerEnd=0;timerRemaining=0;$('#timer-toggle').textContent='다시 시작';$('#timer-state').textContent='집중 시간이 끝났어요. 잠깐 쉬어가세요.';save('timer',{end:0,remaining:0});}}
 const savedTimer=load('timer',null);if(savedTimer){timerEnd=savedTimer.end||0;timerRemaining=savedTimer.remaining??1500;$('#timer-length').value=String(savedTimer.length??25);$('#timer-toggle').textContent=timerEnd?'잠시 멈춤':'계속하기';$('#timer-state').textContent=timerEnd?'진행하던 집중 시간을 이어가고 있어요.':'준비되면 다시 이어가세요.';}setInterval(clock,250);clock();
 $('#timer-length').onchange=()=>{timerEnd=0;timerRemaining=+$('#timer-length').value*60;$('#timer-toggle').textContent='시작';save('timer',{end:0,remaining:timerRemaining});clock();};

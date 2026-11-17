@@ -37,7 +37,12 @@ namespace Yamyam.LofiRoom
             while(requested!=current)
             {
                 string next=requested;
-                if(seated && next=="idle")
+                var living=room.GetComponent<LofiLivingRoom>();
+                if(living && living.reclined)
+                {yield return living.LeaveLounge();current="idle";continue;}
+                if(living && next=="read" && !seated)
+                {yield return living.EnterLounge();current="read";continue;}
+                if(seated && (next=="idle" || (living && next=="read")))
                 {
                     phase="책을 내려놓고 일어나기";
                     yield return FadeHands(0,0,.45f);
@@ -120,6 +125,8 @@ namespace Yamyam.LofiRoom
         }
         public void FitHands()
         {
+            var living=room.GetComponent<LofiLivingRoom>();
+            if(living && living.reclined){living.FitLounge();return;}
             if(book){book.position=Vector3.Lerp(new Vector3(1.47f,.85f,1.25f),new Vector3(1,.99f,1.12f),readingWeight);book.rotation=Quaternion.Slerp(Quaternion.identity,Quaternion.Euler(-18,0,0),readingWeight);book.gameObject.SetActive(readingWeight>.04f);}
             if(closedBook)closedBook.SetActive(readingWeight<=.04f);
             if(!actor)return;

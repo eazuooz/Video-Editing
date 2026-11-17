@@ -99,7 +99,7 @@ namespace Yamyam.LofiRoom
             previousPosition = actor.transform.position;
         }
 
-        public void Walk()
+        [UnityEngine.Scripting.Preserve]public void Walk()
         {
             if(activities && (activities.seated||activities.busy)){activities.Request("idle");StartCoroutine(WalkAfterStanding());return;}
             if (!actor || !hasWalk) { state = "Native walk clip not loaded"; return; }
@@ -119,7 +119,8 @@ namespace Yamyam.LofiRoom
             for(int j=0;j<points.Length;j++)
             {
                 float a=j*Mathf.PI*2/points.Length;
-                points[j]=new Vector3(-.25f+1.35f*Mathf.Cos(a),groundY,-.72f+.43f*Mathf.Sin(a));
+                bool furnished=GetComponent<LofiLivingRoom>();
+                points[j]=furnished?new Vector3(.05f+1.75f*Mathf.Cos(a),groundY,-1.98f+.15f*Mathf.Sin(a)):new Vector3(-.25f+1.35f*Mathf.Cos(a),groundY,-.72f+.43f*Mathf.Sin(a));
                 float d=Vector3.Distance(actor.transform.position,points[j]);if(d<nearest){nearest=d;i=j;}
             }
             actor.speed=.82f;moving=true;actor.CrossFadeInFixedTime("Walk",.38f);
@@ -143,7 +144,7 @@ namespace Yamyam.LofiRoom
             }
         }
 
-        public void Idle()
+        [UnityEngine.Scripting.Preserve]public void Idle()
         {
             if(activities && (activities.seated||activities.busy)){activities.Request("idle");return;}
             moving=false;
@@ -161,7 +162,7 @@ namespace Yamyam.LofiRoom
             source.transform.position=Vector3.MoveTowards(source.transform.position,motionTarget,delta.magnitude);
         }
 
-        public void Sit()
+        [UnityEngine.Scripting.Preserve]public void Sit()
         {
             if(activities){activities.Request("computer");return;}
             if (!actor || !hasSit) { state = "Native sitting clip not loaded"; return; }
@@ -171,7 +172,7 @@ namespace Yamyam.LofiRoom
             state = "Sitting - native clip; fit review";
         }
 
-        public void ToggleNight() => SetNight(!night);
+        [UnityEngine.Scripting.Preserve]public void ToggleNight() => SetNight(!night);
         public void SetNight(bool value)
         {
             night = value;
@@ -184,13 +185,14 @@ namespace Yamyam.LofiRoom
             PlayerPrefs.Save();
         }
 
-        public void ToggleRain()
+        [UnityEngine.Scripting.Preserve]public void ToggleRain()
         {
+            var living=GetComponent<LofiLivingRoom>();if(living){living.ToggleRain();return;}
             if (!rain) return;
             if (rain.isEmitting) rain.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear); else rain.Play();
         }
 
-        public void ToggleMusic()
+        [UnityEngine.Scripting.Preserve]public void ToggleMusic()
         {
             if (!music || !music.clip) { state = "Music asset pending"; return; }
             if (music.isPlaying) music.Pause(); else music.Play();
@@ -201,6 +203,12 @@ namespace Yamyam.LofiRoom
             if(hair)hair.enabledMotion=!hair.enabledMotion;
         }
         [UnityEngine.Scripting.Preserve]public void ReadBook(){if(activities)activities.Request("read");}
+        [UnityEngine.Scripting.Preserve]public void SelectTrack(string value){if(int.TryParse(value,out var index))GetComponent<LofiPlaylist>()?.Select(index,true);}
+        [UnityEngine.Scripting.Preserve]public void NextTrack(){GetComponent<LofiPlaylist>()?.Next(1);}
+        [UnityEngine.Scripting.Preserve]public void PreviousTrack(){GetComponent<LofiPlaylist>()?.Next(-1);}
+        [UnityEngine.Scripting.Preserve]public void CameraBeanbag(){var p=new Vector3(2.2f,1.8f,-3.1f);roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-.65f,.65f,-.65f)-p));roomCamera.orthographicSize=1.25f;}
+        [UnityEngine.Scripting.Preserve]public void CameraCat(){var p=new Vector3(3.5f,1.25f,-2f);roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(2.15f,.26f,-.5f)-p));roomCamera.orthographicSize=.65f;}
+        [UnityEngine.Scripting.Preserve]public void CameraRecord(){var p=new Vector3(-.25f,1.4f,.35f);roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-1.8f,.77f,1.86f)-p));roomCamera.orthographicSize=.72f;}
         [UnityEngine.Scripting.Preserve]public void SetUiFocus(string value){htmlFocus=value=="1";}
         [UnityEngine.Scripting.Preserve]public void SetMusicVolume(string value){if(float.TryParse(value,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var v)&&music)music.volume=Mathf.Clamp(v,0,.6f);}
         [UnityEngine.Scripting.Preserve]public void SetFireVolume(string value){if(float.TryParse(value,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var v)&&hearth&&hearth.crackle)hearth.crackle.volume=Mathf.Clamp(v,0,.7f);}
@@ -208,8 +216,8 @@ namespace Yamyam.LofiRoom
 
         public void SetMemo(string value) { if(memo)memo.SetText(value);else{PlayerPrefs.SetString("ai3d-lofi-room-v1-memo",value);PlayerPrefs.Save();} }
         public string GetMemo() => memo?memo.text:PlayerPrefs.GetString("ai3d-lofi-room-v1-memo", "");
-        public void CameraDesk() { roomCamera.transform.SetPositionAndRotation(new Vector3(3.7f, 2.35f, -3.9f), Quaternion.LookRotation(new Vector3(.65f, 1.0f, .95f) - new Vector3(3.7f, 2.35f, -3.9f))); roomCamera.orthographicSize = 2.45f; }
-        public void CameraRoom() { roomCamera.transform.SetPositionAndRotation(new Vector3(6.8f, 4.9f, -8.5f), Quaternion.LookRotation(new Vector3(0, 1.05f, .3f) - new Vector3(6.8f, 4.9f, -8.5f))); roomCamera.orthographicSize = 3.55f; }
+        [UnityEngine.Scripting.Preserve]public void CameraDesk() { roomCamera.transform.SetPositionAndRotation(new Vector3(3.7f, 2.35f, -3.9f), Quaternion.LookRotation(new Vector3(.65f, 1.0f, .95f) - new Vector3(3.7f, 2.35f, -3.9f))); roomCamera.orthographicSize = 2.45f; }
+        [UnityEngine.Scripting.Preserve]public void CameraRoom() { roomCamera.transform.SetPositionAndRotation(new Vector3(6.8f, 4.9f, -8.5f), Quaternion.LookRotation(new Vector3(0, 1.05f, .3f) - new Vector3(6.8f, 4.9f, -8.5f))); roomCamera.orthographicSize = 3.55f; }
         public string GetStateJson() => JsonUtility.ToJson(new SampleState { frame = observedFrame, state = state, actorLoaded = actor != null, idleLoaded = hasIdle, walkLoaded = hasWalk, sitLoaded = hasSit, distance = distanceTravelled, nativeWalkSpeed = calibratedWalkSpeed, night = night });
 
         [System.Serializable] private sealed class SampleState { public int frame; public string state; public bool actorLoaded, idleLoaded, walkLoaded, sitLoaded, night; public float distance, nativeWalkSpeed; }

@@ -3,7 +3,7 @@ from pathlib import Path
 import json,re,difflib,hashlib
 import numpy as np
 from PIL import ImageFont
-P=Path(__file__).resolve().parents[1];L=P/'production/local/full-video-v1'
+P=Path(__file__).resolve().parents[1];L=P/'production/local/full-video-v2'
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def norm(s):return ''.join(c.lower() for c in s if c.isalnum())
 def tc(t,ass=False):

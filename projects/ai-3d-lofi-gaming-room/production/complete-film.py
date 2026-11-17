@@ -1,7 +1,7 @@
 """Finish the selected film after resumable TTS, without advancing other projects."""
 from pathlib import Path
 import json,subprocess,time,hashlib
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v1';PY=R/'qwen3-tts/.venv/Scripts/python.exe';F=L/'final';F.mkdir(parents=True,exist_ok=True)
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v2';PY=R/'qwen3-tts/.venv/Scripts/python.exe';F=L/'final';F.mkdir(parents=True,exist_ok=True)
 def run(a):
  print('Running',Path(str(a[0])).name,Path(str(a[1])).name if len(a)>1 else '',flush=True)
  if Path(str(a[0]))==PY:a=[a[0],'-X','utf8','-u',*a[1:]]
