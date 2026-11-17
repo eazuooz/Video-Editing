@@ -11,7 +11,7 @@ using Yamyam.LofiRoom;
 public sealed class LofiTutorialWalkCapture:MonoBehaviour
 {
     const int Width=1920,Height=1080,Fps=60,Frames=720;
-    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v9/walk-source");
+    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v10/walk-source");
     Process encoder;RenderTexture target;Texture2D pixels;
     public int frame;public string ffmpeg;
     [CliCommand("lofi_tutorial_walk_record","Record the PC visibility, forest window and wind review at FHD60",MainThreadRequired=true)]

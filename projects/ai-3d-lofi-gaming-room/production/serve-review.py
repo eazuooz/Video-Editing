@@ -2,7 +2,7 @@
 from http.server import SimpleHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
 import argparse,re,os
-ROOT=Path(__file__).resolve().parent/'local/full-video-v3/final'
+ROOT=Path(__file__).resolve().parent/'local/full-video-v4/final'
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(ROOT),**kwargs)
     def end_headers(self):

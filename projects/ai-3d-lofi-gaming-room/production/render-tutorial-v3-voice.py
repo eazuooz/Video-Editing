@@ -7,7 +7,10 @@ from pathlib import Path
 import json,subprocess,sys,uuid,time,os,atexit
 import psutil
 R=Path(__file__).resolve().parents[3];H=Path(__file__).resolve().parent
-L=R/'shared/output/GPU_HANDOFF.json';report=H/'local/full-video-v3/display-gpu-handoff.json';report.parent.mkdir(parents=True,exist_ok=True)
+L=R/'shared/output/GPU_HANDOFF.json';report=H/('local/full-video-v4/final-gpu-handoff.json' if '--finish-film' in sys.argv else 'local/full-video-v4/display-gpu-handoff.json');report.parent.mkdir(parents=True,exist_ok=True)
+if '--finish-film' in sys.argv:
+    print('Waiting for this tutorial voice to finish and release its GPU lease.',flush=True)
+    while not (H/'local/full-video-v4/narration/ai-3d-lofi-gaming-room.timing.json').exists() or L.exists():time.sleep(8)
 if L.exists():raise SystemExit('Another GPU lease is active; preserve it.')
 if any((p.info.get('name') or '').lower()=='unity.exe' and 'Unity Hub' not in (p.info.get('exe') or '') for p in psutil.process_iter(['name','exe'])):
     # Only read process identity. Do not close another editor or game.
@@ -18,7 +21,7 @@ allowed={'chatgpt','dwm','claude','chrome','msedgewebview2','msedge','explorer',
 unknown=[a for a in active if a['name'].lower() not in allowed or a['engine'].lower() not in ('3d','copy')]
 raw=subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,utilization.gpu','--format=csv,noheader,nounits'],text=True,creationflags=subprocess.CREATE_NO_WINDOW);free,util=map(int,raw.splitlines()[0].replace(' ','').split(','))
 if unknown or free<8192 or util>45:raise SystemExit('GPU display-only/capacity checks did not pass; other work remains untouched.')
-me=psutil.Process();token=uuid.uuid4().hex;state={'schemaVersion':1,'token':token,'project':'ai-3d-lofi-gaming-room','state':'gpu_granted_to_tts','requestedAt':time.time(),'queueDir':None,'coordinator':{'pid':me.pid,'createTime':me.create_time()},'gpuBeforeTts':{'freeMiB':free,'utilization':util,'minimumFreeMiB':8192},'displayOnlyReview':active,'basis':'Current own web preview and desktop display engines identified; no active compute, game or video-encode engine. User confirmed screen sharing ended and GPU may proceed on 2026-11-17. Only display/copy engines remain; no encode/compute or game. ICanScreen is the existing C:/ICanX/ICanScreen display application. Selected tutorial-v3 uses the same Qwen model and user reference.'}
+me=psutil.Process();token=uuid.uuid4().hex;state={'schemaVersion':1,'purpose':'tutorial-final-asr-and-film' if '--finish-film' in sys.argv else 'tutorial-new-narration','token':token,'project':'ai-3d-lofi-gaming-room','state':'gpu_granted_to_tts','requestedAt':time.time(),'queueDir':None,'coordinator':{'pid':me.pid,'createTime':me.create_time()},'gpuBeforeTts':{'freeMiB':free,'utilization':util,'minimumFreeMiB':8192},'displayOnlyReview':active,'basis':'Current own web preview and desktop display engines identified; no active compute, game or video-encode engine. User confirmed screen sharing ended and GPU may proceed on 2026-11-17. Only display/copy engines remain; no encode/compute or game. ICanScreen is the existing C:/ICanX/ICanScreen display application. Selected tutorial-v3 uses the same Qwen model and user reference.'}
 with L.open('x',encoding='utf-8') as f:json.dump(state,f,ensure_ascii=False,indent=2)
 report.write_text(json.dumps(state,ensure_ascii=False,indent=2)+'\n','utf-8')
 def release():
@@ -26,5 +29,6 @@ def release():
         state['state']='tts_process_exited';state['finishedAt']=time.time();report.write_text(json.dumps(state,ensure_ascii=False,indent=2)+'\n','utf-8');L.unlink()
 atexit.register(release)
 print(json.dumps({'knownDisplayEngines':len(active),'freeMiB':free,'utilization':util,'foreignProcessesChanged':False}),flush=True)
-code=subprocess.call([sys.executable,'-X','utf8','-u',str(R/'qwen3-tts/render_narration.py'),'--project','ai-3d-lofi-gaming-room','--batch-size','1'],cwd=R,creationflags=subprocess.CREATE_NO_WINDOW)
+job=[sys.executable,'-X','utf8','-u',str(H/'complete-film.py')] if '--finish-film' in sys.argv else [sys.executable,'-X','utf8','-u',str(R/'qwen3-tts/render_narration.py'),'--project','ai-3d-lofi-gaming-room','--batch-size','1']
+code=subprocess.call(job,cwd=R,creationflags=subprocess.CREATE_NO_WINDOW)
 sys.exit(code)

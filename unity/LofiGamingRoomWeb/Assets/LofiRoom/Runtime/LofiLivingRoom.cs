@@ -14,6 +14,8 @@ namespace Yamyam.LofiRoom
         public float cushionWeight,bookWeight;
         public Transform lounge;
         public Material rainTemplate;
+        public GameObject readingSofaPrefab,sleepingCatPrefab;
+        LofiSofaReading sofaReading;
         Transform catBody,earL,earR,tail;
         Mesh tailMesh;
         Material rainMaterial;
@@ -24,7 +26,15 @@ namespace Yamyam.LofiRoom
         void Awake()
         {
             if(!room)room=GetComponent<LofiRoomSample>();
-            MakeBeanbag();MakeCat();MakeRain();MakeScreen();EnhanceRecord();
+            if(readingSofaPrefab){sofaReading=gameObject.AddComponent<LofiSofaReading>();sofaReading.Initialize(this,readingSofaPrefab);}else MakeBeanbag();
+            if(sleepingCatPrefab)MakeGeneratedCat();else MakeCat();
+            MakeRain();MakeScreen();EnhanceRecord();
+        }
+        void MakeGeneratedCat()
+        {
+            var root=new GameObject("Tripo sleeping calico - generated from real CC0 photo").transform;root.position=new Vector3(2.15f,.095f,-.50f);root.rotation=Quaternion.Euler(0,-28,0);
+            Form("separate oval cat rug",root,new Vector3(0,-.005f,0),new Vector3(1.15f,.036f,.84f),Mat("cat rug warm oat",new Color(.66f,.52f,.38f)));
+            var model=Instantiate(sleepingCatPrefab,root.transform);model.name="Tripo calico sleeping model";model.transform.localPosition=Vector3.zero;model.AddComponent<LofiSleepingCatBreath>();
         }
         Material Mat(string name,Color c)
         {
@@ -156,6 +166,7 @@ namespace Yamyam.LofiRoom
         }
         public IEnumerator EnterLounge()
         {
+            if(sofaReading){yield return sofaReading.Enter();yield break;}
             var a=room.activities;var actor=room.actor;room.HoldNativeMotion();a.phase="빈백으로 걸어가는 중";actor.speed=.74f;room.moving=true;actor.CrossFadeInFixedTime("Walk",.3f);
             var target=lounge.TransformPoint(new Vector3(0,0,1.08f));target.y=room.groundY;room.SetMotionTarget(target);
             while(Vector3.Distance(actor.transform.position,target)>.06f){var d=target-actor.transform.position;d.y=0;if(d.sqrMagnitude>.001f)actor.transform.rotation=Quaternion.RotateTowards(actor.transform.rotation,Quaternion.LookRotation(d),140*Time.deltaTime);yield return null;}
@@ -169,12 +180,14 @@ namespace Yamyam.LofiRoom
         }
         public IEnumerator LeaveLounge()
         {
+            if(sofaReading){yield return sofaReading.Leave();yield break;}
             var a=room.activities;var actor=room.actor;a.phase="책을 정리하고 일어나기";for(float t=0;t<.6f;t+=Time.deltaTime){bookWeight=1-Mathf.SmoothStep(0,1,t/.6f);yield return null;}bookWeight=0;actor.CrossFadeInFixedTime("LoungeUp",.4f);
             var rest=actor.transform.position;var stand=lounge.TransformPoint(new Vector3(0,0,1.08f));stand.y=room.groundY;
             for(float t=0;t<getUpDuration;t+=Time.deltaTime){float u=t/getUpDuration;cushionWeight=1-Mathf.SmoothStep(0,1,u);actor.transform.position=Vector3.Lerp(rest,stand,Mathf.SmoothStep(0,1,Mathf.InverseLerp(.3f,.9f,u)));yield return null;}actor.transform.position=stand;cushionWeight=0;reclined=false;a.seated=false;actor.speed=1;actor.CrossFadeInFixedTime("Idle",.4f);a.phase="쉬는 중";yield return new WaitForSeconds(.4f);
         }
         public void FitLounge()
         {
+            if(sofaReading){sofaReading.Fit();return;}
             var actor=room.actor;var a=room.activities;
             var bodyShift=Vector3.up*(.22f*cushionWeight);actor.bodyPosition+=bodyShift;
             if(a.book)

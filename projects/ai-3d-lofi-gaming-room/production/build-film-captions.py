@@ -3,13 +3,13 @@ from pathlib import Path
 import json,re,difflib,hashlib
 import numpy as np
 from PIL import ImageFont
-P=Path(__file__).resolve().parents[1];L=P/'production/local/full-video-v3'
+P=Path(__file__).resolve().parents[1];L=P/'production/local/full-video-v4'
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def norm(s):return ''.join(c.lower() for c in s if c.isalnum())
 def tc(t,ass=False):
  n=round(t*(100 if ass else 1000));h,n=divmod(n,360000 if ass else 3600000);m,n=divmod(n,6000 if ass else 60000);s,n=divmod(n,100 if ass else 1000)
  return f'{h}:{m:02}:{s:02}.{n:02}' if ass else f'{h:02}:{m:02}:{s:02},{n:03}'
-display={'트리포':'Tripo','메쉬':'Meshy','컴피유아이':'ComfyUI','혼위안 쓰리디':'Hunyuan3D','블록벤치':'Blockbench','머티리얼 메이커':'Material Maker','믹사모':'Mixamo','딥모션':'DeepMotion','코덱스':'Codex','유니티':'Unity','에이치 삼 점 일':'H3.1','아이케이':'IK','엠씨피':'MCP','씨엘아이':'CLI','피비알':'PBR','제이슨':'JSON','피시':'PC','로파이':'LOFI','유알피':'URP','에프비엑스':'FBX','리토포':'Retopo','로컬스토리지':'localStorage'}
+display={'챗지피티':'ChatGPT','휴머노이드':'Humanoid','케이킷':'KayKit','홀리즈나 씨씨제로':'HoliznaCC0','트리포':'Tripo','메쉬':'Meshy','컴피유아이':'ComfyUI','혼위안 쓰리디':'Hunyuan3D','블록벤치':'Blockbench','머티리얼 메이커':'Material Maker','믹사모':'Mixamo','딥모션':'DeepMotion','코덱스':'Codex','유니티':'Unity','에이치 삼 점 일':'H3.1','아이케이':'IK','엠씨피':'MCP','씨엘아이':'CLI','피비알':'PBR','제이슨':'JSON','피시':'PC','로파이':'LOFI','유알피':'URP','에프비엑스':'FBX','리토포':'Retopo','로컬스토리지':'localStorage'}
 def shown(s):
  for a,b in sorted(display.items(),key=lambda x:-len(x[0])):s=s.replace(a,b)
  return s

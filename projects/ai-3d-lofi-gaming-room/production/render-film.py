@@ -1,9 +1,9 @@
 """Compose narration-paced real captures with film graphics; resumes by input hashes."""
 from pathlib import Path
 import json,hashlib,math,subprocess,time,argparse
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v3';V=L/'visual';V.mkdir(parents=True,exist_ok=True)
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v4';V=L/'visual';V.mkdir(parents=True,exist_ok=True)
 rows=json.loads((P/'script/narration.ko.json').read_text('utf-8'))['scenes']
-MOTION={1: ('living-room-v9', 0, 20), 6: ('living-room-v9', 37, 8), 11: ('living-room-v9', 20, 11), 12: ('living-room-v9', 37, 8), 13: ('living-room-v9/walk-source', 0, 12), 16: ('living-room-v9/walk-source', 0, 12), 17: ('living-room-v9', 33, 12), 18: ('living-room-v9', 12, 8), 19: ('web-final-v6', 32, 7), 20: ('living-room-v9', 68, 6), 21: ('final-activities-v7', 26, 7), 22: ('living-room-v9', 61, 7), 28: ('living-room-v9', 68, 6), 29: ('living-room-v9', 53, 8), 30: ('living-room-v9', 45, 8)}
+MOTION={1: ('living-room-v10', 0, 20), 6: ('living-room-v10', 37, 8), 11: ('living-room-v10', 20, 11), 12: ('living-room-v10', 37, 8), 13: ('living-room-v10/walk-source', 0, 12), 16: ('living-room-v10/walk-source', 0, 12), 17: ('living-room-v10', 26, 19), 18: ('living-room-v10', 12, 8), 19: ('web-final-v6', 32, 7), 20: ('living-room-v10', 68, 6), 21: ('final-activities-v7', 26, 7), 22: ('living-room-v10', 61, 7), 28: ('living-room-v10', 68, 6), 29: ('living-room-v10', 53, 8), 30: ('living-room-v10', 45, 8)}
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def run(a):return subprocess.run(list(map(str,a)),check=True,capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
 def render(row):
@@ -13,7 +13,8 @@ def render(row):
  duration=sf.info(f).duration;frames=math.ceil((duration+(.28 if row['id']!='28' else 0))*60)
  if row['id']=='28':frames=max(frames,600)
  seconds=frames/60
- n=int(row['id']);board=L/'boards'/(row['id']+'.png');out=V/('scene-'+row['id']+'.mp4');receipt=out.with_suffix('.json');sig={'narration':sha(f),'board':sha(board),'frames':frames,'renderer':'ai-tool-tutorial-compositor-v3'}
+ n=int(row['id']);board=L/'boards'/(row['id']+'.png');out=V/('scene-'+row['id']+'.mp4');receipt=out.with_suffix('.json');sig={'narration':sha(f),'board':sha(board),'frames':frames,'renderer':'ai-tool-tutorial-compositor-v4'}
+ if n==17:sig['nativeSitTransition']='v10-26-to45-with-end-observation-hold'
  if out.exists() and receipt.exists() and json.loads(receipt.read_text())['inputs']==sig:return True
  base=['ffmpeg','-hide_banner','-loglevel','error','-y','-loop','1','-framerate','60','-i',board]
  n=int(row['id']);fil='';source=None
@@ -21,11 +22,15 @@ def render(row):
   folder,start,length=MOTION[n];source=P/'production/local'/folder/'unity-native-clean.mp4'
   cache=L/'clips'/f"{folder.replace('/', '-')}-{start}-{length}.mp4";cache.parent.mkdir(exist_ok=True)
   if not cache.exists():run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',start,'-i',source,'-t',length,'-an','-c:v','libx264','-preset','veryfast','-crf','18','-threads','2',cache])
-  base+=['-stream_loop','-1','-i',cache]
-  enable=f":enable='gte(t,{seconds*.5})'" if n in (2,6,13) else ''
-  fil='[1:v]scale=1120:630,setsar=1[v];[0:v][v]overlay=76:216:shortest=1'+enable+',format=yuv420p[out]'
+  base+=['-i',cache] if n==17 else ['-stream_loop','-1','-i',cache]
+  enable=f":enable='gte(t,{seconds*.5})'" if n in (2,6,13,30) else ''
+  padding=f',tpad=stop_mode=clone:stop_duration={seconds}' if n==17 else ''
+  fil='[1:v]scale=1120:630,setsar=1'+padding+'[v];[0:v][v]overlay=76:216:shortest=1'+enable+',format=yuv420p[out]'
+  if n==30:
+   base+=['-loop','1','-framerate','60','-i',L/'assets/tripo-cat.png']
+   fil=f"[2:v]scale=1120:630,setsar=1[tool];[0:v][tool]overlay=76:216:enable='between(t,8,{seconds*.5})'[board];[1:v]scale=1120:630,setsar=1[v];[board][v]overlay=76:216:shortest=1:enable='gte(t,{seconds*.5})',format=yuv420p[out]"
  elif n==27:
-  folder,start,length=('living-room-v9',33,12) if n==17 else ('living-room-v9',0,20);source=P/'production/local'/folder/'unity-native-clean.mp4'
+  folder,start,length=('living-room-v10',33,12) if n==17 else ('living-room-v10',0,20);source=P/'production/local'/folder/'unity-native-clean.mp4'
   cache=L/'clips'/f'pair-{n}.mp4';cache.parent.mkdir(exist_ok=True)
   if not cache.exists():run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',start,'-i',source,'-t',length,'-an','-c:v','libx264','-preset','veryfast','-crf','18','-threads','2',cache])
   base+=['-stream_loop','-1','-i',cache];fil='[1:v]scale=850:478,setsar=1[v];[0:v][v]overlay=994:260:shortest=1,format=yuv420p[out]'

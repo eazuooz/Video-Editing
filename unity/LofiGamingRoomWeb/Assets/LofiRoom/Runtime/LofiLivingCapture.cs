@@ -11,7 +11,7 @@ using Yamyam.LofiRoom;
 public sealed class LofiLivingCapture:MonoBehaviour
 {
     const int Width=1920,Height=1080,Fps=60,Frames=4440;
-    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v9");
+    static string Folder=>Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/living-room-v10");
     Process encoder;RenderTexture target;Texture2D pixels;
     public int frame;public string ffmpeg;
     [CliCommand("lofi_living_record","Record the PC visibility, forest window and wind review at FHD60",MainThreadRequired=true)]
@@ -28,13 +28,13 @@ public sealed class LofiLivingCapture:MonoBehaviour
         var process=new ProcessStartInfo(ffmpeg,"-hide_banner -loglevel error -y -f rawvideo -pixel_format rgb24 -video_size 1920x1080 -framerate 60 -i pipe:0 -vf vflip -an -c:v h264_nvenc -preset p5 -cq 19 -pix_fmt yuv420p -movflags +faststart \""+Path.Combine(Folder,"unity-native-clean.mp4")+"\"");
         process.UseShellExecute=false;process.CreateNoWindow=true;process.RedirectStandardInput=true;process.RedirectStandardError=true;encoder=Process.Start(process);
         var s=FindAnyObjectByType<LofiRoomSample>();s.showControls=false;s.CameraRoom();s.SetNight(true);s.music.Play();s.music.volume=0;if(s.hearth)s.hearth.crackle.volume=0;s.rain.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
-        s.actor.transform.SetPositionAndRotation(new Vector3(.65f,s.groundY,-1.95f),Quaternion.Euler(0,145,0));
+        // Start after the native sofa entry has settled; preserve the supported reading pose.
         try
         {
             for(frame=0;frame<Frames;frame++)
             {
                 if(frame==0){s.activities.Request("read");}
-                if(frame==720){Vector3 p=new(2.2f,1.8f,-3.1f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-.65f,.65f,-.65f)-p));s.roomCamera.orthographicSize=1.15f;}
+                if(frame==720){Vector3 p=new(2.2f,1.8f,-3.1f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(-.52f,.8f,-.75f)-p));s.roomCamera.orthographicSize=1.15f;}
                 if(frame==1200){s.CameraRoom();s.activities.Request("computer");}
                 if(frame==2220){Vector3 p=new(2.1f,1.55f,.20f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(1,1.1f,1.6f)-p));s.roomCamera.orthographicSize=.65f;}
                 if(frame==2700){Vector3 p=new(3.5f,1.25f,-2f);s.roomCamera.transform.SetPositionAndRotation(p,Quaternion.LookRotation(new Vector3(2.15f,.26f,-.5f)-p));s.roomCamera.orthographicSize=.62f;}

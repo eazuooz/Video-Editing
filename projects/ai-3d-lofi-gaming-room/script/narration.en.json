@@ -2,217 +2,217 @@
   "scenes": [
     {
       "id": "01",
-      "title": "AI로 같은 방을 만드는 세 단계",
+      "title": "Three steps to the same AI-built room",
       "lines": [
         "Let's make this lofi room with AI. Create character and prop references with image generation, obtain models and rigs with Tripo, then connect walking, reading, music and notes with Codex and Unity. We will follow the input, output and handoff at each step using this room."
       ]
     },
     {
       "id": "02",
-      "title": "먼저 고를 핵심 도구",
+      "title": "Choose the four core tools",
       "lines": [
         "You do not need all ten tools. The main route uses ChatGPT image generation, Tripo, Codex and Unity for images, models, game code and execution. Meshy and Hunyuan3D are model alternatives; Blockbench and Material Maker edit geometry and materials; Mixamo and DeepMotion provide motion options."
       ]
     },
     {
       "id": "03",
-      "title": "이미지 AI에 방의 기준 요청하기",
+      "title": "Request the room’s visual reference",
       "lines": [
-        "Ask the image model for the room's purpose and layout: warm wood, a teal-clothed character, forest and moon outside, one all-in-one computer and a beanbag. Specify walking clearance and a fixed three-quarter camera. Save the image as the palette and layout reference, then separate the moving assets."
+        "Ask the image model for the room’s purpose and layout: warm wood, a teal-clothed character, forest and moon outside, one all-in-one computer and a comfortable reading area. Specify walking clearance and a fixed three-quarter camera. Save the image as a palette and layout reference, then separate the moving assets."
       ]
     },
     {
       "id": "04",
-      "title": "캐릭터 입력 이미지는 전신으로",
+      "title": "Prepare a full-body character reference",
       "lines": [
         "Keep the brown hair, teal jacket, dark trousers and shoes consistent. Request a full-body neutral pose with visible hands and feet, arms slightly away from the torso, a plain background and even light. Additional views must preserve the design. Inspect limb separation before using the image for 3D generation."
       ]
     },
     {
       "id": "05",
-      "title": "소품도 한 개씩 분리해서 요청하기",
+      "title": "Generate each prop separately",
       "lines": [
         "Generate the headphones separately. Describe matte dark cups, restrained teal accents and a connected padded headband, excluding logos, a stand and other objects. Separate inputs make assets easier to move and scale than one fused room model. Send the character and headphone images to Tripo individually."
       ]
     },
     {
       "id": "06",
-      "title": "Tripo에서 이미지로 모델 생성하기",
+      "title": "Generate a model in Tripo",
       "lines": [
         "Open Image to 3D in Tripo Studio and upload the prepared image. This room's character was generated with H3.1. Rotate the output to inspect the hair, clothing and prop thickness from the sides and back because unseen surfaces are inferred. Once the shape works, prepare topology and motion before export."
       ]
     },
     {
       "id": "07",
-      "title": "모델 생성 도구를 바꾸고 싶다면",
+      "title": "Alternative model-generation routes",
       "lines": [
         "You can instead upload the same image to Meshy's Image to 3D. A node-based alternative uses a Hunyuan3D workflow in ComfyUI, connecting image input, shape generation and texture generation. ComfyUI is the environment; Hunyuan3D is the model. Choose a route that can hand suitable models, materials and rigs to your engine."
       ]
     },
     {
       "id": "08",
-      "title": "Retopo로 게임용 메시 정리하기",
+      "title": "Retopology for a game-ready mesh",
       "lines": [
         "Retopo rebuilds the surface mesh. Start with quads and a target around ten thousand faces for the character, then inspect fingers and hair. This character has 9,968 quad faces; the small headphones use two thousand triangles. Choose a result that preserves the silhouette and joints rather than chasing a face count alone."
       ]
     },
     {
       "id": "09",
-      "title": "모델·텍스처·뼈대를 함께 넘기기",
+      "title": "Keep models, textures and rigs together",
       "lines": [
         "Keep the FBX, textures and animation files together for Unity. After rebuilding topology, ensure the materials match the resulting mesh. Store original and game-ready outputs separately. The character and headphones used 175 credits including generation, cleanup and rigging; check the displayed cost before running your own jobs."
       ]
     },
     {
       "id": "10",
-      "title": "PBR 텍스처를 Unity에 연결하기",
+      "title": "Connect PBR textures in Unity",
       "lines": [
         "In Unity, assign Base Color and Normal maps to their corresponding inputs. Roughness controls reflection spread; Metallic identifies metallic areas. URP Smoothness runs in the opposite direction to Roughness, so do not treat them as identical. Tell Codex each file's role, then inspect the skin and clothing under light."
       ]
     },
     {
       "id": "25",
-      "title": "MCP로 AI와 Unity 연결하기",
+      "title": "Connect AI and Unity through MCP",
       "lines": [
         "Connect Codex to Unity with the explicit project path. MCP lets the AI call tools, while the CLI exposes commands. Request scene creation, execution, state inspection and building in sequence. Specify the scene and preservation scope first, then inspect the actual Unity result."
       ]
     },
     {
       "id": "11",
-      "title": "Codex에 방과 가구 만들기 요청하기",
+      "title": "Ask Codex to arrange the room and sofa",
       "lines": [
-        "Open the Unity project and ask Codex to build the room with a fixed camera, meter-scale units, separate furniture, central beanbag, shelves and fireplace. Specify knee clearance and a seat height grounded to the character. Blockbench is an alternative for editing separate furniture meshes using the same dimensions."
+        "Ask Codex to compose the Unity room with a fixed camera, meter-scale units, separate desk and chair, a reading sofa, shelves and fireplace. This sofa is a free asset from the existing library. Fit the seat, back cushion and footrest to the character and preserve walking clearance. Reuse a suitable existing asset instead of generating every model."
       ]
     },
     {
       "id": "12",
-      "title": "재질은 색과 표면을 나눠 요청하기",
+      "title": "Specify color and surface separately",
       "lines": [
         "Specify surface behavior as well as color: grain follows the wood's length, cloth stays matte, and fine bumps remain subtle. This room uses Codex-authored Unity shaders and materials. Material Maker is an alternative for producing patterns and roughness with editable nodes and exporting textures."
       ]
     },
     {
       "id": "13",
-      "title": "Tripo 리깅과 기존 동작 연결하기",
+      "title": "Connect Tripo rigging and existing motion",
       "lines": [
-        "Rigging connects the skeleton to the surface. Prepare walking and idle in Tripo, then configure the imported rig as Humanoid in Unity. Retarget existing humanoid clips for additional actions such as sitting and lying down. This room uses KayKit clips for entering and leaving those poses."
+        "Rigging connects a skeleton to the surface. Prepare walking and idle in Tripo and configure the Unity rig as Humanoid. Retarget additional existing clips to the same human skeleton. This room combines KayKit sitting and standing with reclining and reading clips from EmacEArt’s character pack. Separating the model from motion makes it easier to expand its actions."
       ]
     },
     {
       "id": "14",
-      "title": "Mixamo와 DeepMotion을 고르는 기준",
+      "title": "When to choose Mixamo or DeepMotion",
       "lines": [
         "Search Mixamo for a suitable existing motion, or send an unobstructed full-body recording to DeepMotion to extract and retarget a performance. They solve different problems. Preview the motion at normal speed first, then fit contact with props inside the game."
       ]
     },
     {
       "id": "15",
-      "title": "행동 전환 요청문을 구체적으로 쓰기",
+      "title": "Specify complete action transitions",
       "lines": [
         "Give Codex an explicit action sequence: walk to the destination, align, enter the seated or lying pose, then loop the activity. A new request should close the book and finish getting up before movement begins. Include the state diagram to avoid teleporting or running two actions simultaneously."
       ]
     },
     {
       "id": "16",
-      "title": "걷기 클립과 실제 이동을 연결하기",
+      "title": "Match walking motion to travel distance",
       "lines": [
         "Ask for the clip's stride to match actual movement. Root motion records displacement in the animation; apply it along the path and ground the feet. Tell Codex to connect the existing walking clip to route movement, then inspect whether the body and feet remain coordinated through turns."
       ]
     },
     {
       "id": "17",
-      "title": "아이맥 앞에 차분하게 앉게 만들기",
+      "title": "Make sitting calm and continuous",
       "lines": [
         "Request separate approach, alignment, sitting and hand-placement stages for the computer action. Slow the existing sit clip and blend pelvic fitting gradually. This room plays an approximately 0.8-second clip at 0.36 speed. Keep the backrest and display low enough to show the torso and inspect keyboard contact."
       ]
     },
     {
       "id": "18",
-      "title": "빈백 독서는 책과 양손을 같이 맞추기",
+      "title": "Support the reading pose and fit the book",
       "lines": [
-        "Connect a native lie-down clip to the beanbag, then raise the book after the body settles. Aim the pages at the face and support the outer edges with the hands. Inverse kinematics solves arm poses from those targets; fit wrist orientation and elbow hints too. Inspect clearance from the front and side."
+        "For reading, request sitting on the sofa, settling against the cushion and then opening the book. Keep a native reclining body clip and blend the arms from a reading clip using an Avatar Mask. Fit the footrest beneath the feet. Aim the pages at the face and support the outer cover with both hands. Inverse kinematics solves arm poses from hand targets; also fit wrist orientation and elbow hints, then inspect clearance from the front and side."
       ]
     },
     {
       "id": "19",
-      "title": "머리카락에 작은 지연 더하기",
+      "title": "Add gentle secondary hair motion",
       "lines": [
         "Ask Codex to anchor the hair roots and add delayed motion toward the tips. Use a region mask with length and bend limits, plus collision correction around the head and shoulders. Add motion gradually while preserving the native body animation."
       ]
     },
     {
       "id": "20",
-      "title": "식물과 창밖 풍경 구성하기",
+      "title": "Build plants and a layered window view",
       "lines": [
         "Anchor the stems and give leaves different slow sway cycles. Layer forest, moon and stars outside the fixed window view. You do not need fully modeled trees for scenery only seen through this window. Link day and night backgrounds with the indoor lighting."
       ]
     },
     {
       "id": "29",
-      "title": "창문 영역에만 비 내리게 하기",
+      "title": "Keep rain within the window",
       "lines": [
         "Specify two rain layers: falling streaks and glass droplets confined to the window. Place them in front of the forest and behind the frame. One weather state should drive both the effect and the button indicator so the UI and scene stay synchronized."
       ]
     },
     {
       "id": "21",
-      "title": "벽난로는 불꽃·빛·소리를 묶기",
+      "title": "Connect fire, light and sound",
       "lines": [
         "Request flames, embers, sparks and nearby warm lighting together. Vary the light subtly with the fire and provide a separate crackle volume. Add restrained window shafts and dust aligned with the lighting direction. Keep the visible fire, light and sound located consistently."
       ]
     },
     {
       "id": "22",
-      "title": "로파이 열 곡과 레코드 연결하기",
+      "title": "Connect ten tracks and the record player",
       "lines": [
         "Prepare music with verified usage terms. This room uses ten complete HoliznaCC0 tracks. Ask Codex for selection, previous/next and last-to-first continuation, releasing the old audio data on track changes. Drive the record from playback state; an asymmetric mark makes its rotation visible."
       ]
     },
     {
       "id": "30",
-      "title": "삼색고양이에 필요한 요청 조건",
+      "title": "From a sleeping calico photograph to a model",
       "lines": [
-        "For a small cat, ask Codex for separate body, head, ears and tail in a sleeping pose. Specify a mostly ivory coat with sparse amber and dark patches and matte fur. Keep breathing small, tail motion slow and ear twitches occasional. This cat uses authored geometry, distinct from the Tripo-generated human model."
+        "Start with a real photo of a sleeping calico curled into a natural pose. Choose a freely usable photograph, clean its background with image AI and upload that derived image to Tripo. Generate with H3.1, retopologize to a target of twenty thousand triangles and export with 4K textures. In Unity, inspect the face, tail and coat, then add only subtle breathing. This cat used ninety credits for generation and retopology."
       ]
     },
     {
       "id": "23",
-      "title": "화면 안 메모와 로컬 저장",
+      "title": "Add notes with local browser storage",
       "lines": [
         "Request an in-scene notes panel supporting Korean input, line breaks and autosave. Use browser storage for the same origin, and disable game shortcuts while typing. Reload to verify actual persistence rather than trusting a save label. Explain that clearing browser data can remove the notes."
       ]
     },
     {
       "id": "24",
-      "title": "집중 타이머는 시각으로 계산하기",
+      "title": "Build a clock-based focus timer",
       "lines": [
         "Store the target finish time rather than subtracting a count every rendered frame. Remaining time is the difference from the current time. Add pause, resume and duration controls, then verify behavior after switching tabs. Integrate focus with the room's music, weather and reading activities."
       ]
     },
     {
       "id": "26",
-      "title": "Unity Web 빌드와 실제 브라우저 확인",
+      "title": "Build for the web and test in a browser",
       "lines": [
         "Install Web Build Support for the same Unity editor version and select the scene. Build browser code and game data, unlock audio after a start-button interaction, and serve the output over HTTP instead of opening a file directly. Test reading, music, rain and notes at the actual address before sharing."
       ]
     },
     {
       "id": "31",
-      "title": "그대로 따라 할 입력과 결과 묶기",
+      "title": "Keep reusable inputs and requests",
       "lines": [
         "Keep the reproducible inputs together: character and headphone references, Tripo outputs, and Codex prompts for layout and behavior. The companion wiki groups prompts, settings and expected results by tool. Start with image-to-model and one working action, then add features such as notes and music."
       ]
     },
     {
       "id": "27",
-      "title": "완성 기준은 직접 조작되는 방",
+      "title": "Define a playable result",
       "lines": [
         "Completion means more than matching an image: the character fits the furniture, the record responds to music and notes reopen. Verify those results as you build. Image and 3D models produce assets; coding AI and the engine turn them into an interactive game."
       ]
     },
     {
       "id": "28",
-      "title": "이미지·모델·게임으로 이어가기",
+      "title": "Connect images, models and the game",
       "lines": [
         "Create consistent images, prepare models and motion, then connect them with AI-assisted code and the game engine. These three steps turn an image into your own playable lofi room."
       ]

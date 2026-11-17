@@ -3,7 +3,7 @@ from pathlib import Path
 import json,math,hashlib,subprocess
 import numpy as np
 import soundfile as sf
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v3';N=L/'narration/chunks'
+P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local/full-video-v4';N=L/'narration/chunks'
 def run(a):return subprocess.run(list(map(str,a)),capture_output=True,text=True,check=True)
 def sha(p):return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 rows=json.loads((P/'script/narration.ko.json').read_text('utf-8'))['scenes'];time=2;parts=[np.zeros(48000,dtype=np.float32)];timeline=[];levels=[]
