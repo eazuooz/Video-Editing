@@ -28,7 +28,7 @@ def canvas(title,sub=''):
     return fig,ax
 
 def text(ax,x,y,s,size=23,color=INK,weight='normal',ha='left',va='center'):
-    return ax.text(x,y,s,fontsize=size,color=color,fontproperties=FONT,weight=weight,ha=ha,va=va,linespacing=1.5)
+    return ax.text(x,y,s.replace('−','-').replace('₀','0'),fontsize=size,color=color,fontproperties=FONT,weight=weight,ha=ha,va=va,linespacing=1.5)
 
 def arrow(ax,x1,y1,x2,y2,color=BLUE,lw=3,style='-|>'):
     ax.add_patch(FancyArrowPatch((x1,y1),(x2,y2),arrowstyle=style,mutation_scale=23,color=color,lw=lw))
