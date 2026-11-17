@@ -31,6 +31,9 @@ def replace_block(path, block):
     p.write_text(old,encoding='utf8')
 
 def main():
+    current_schedule=HERE.parent/'longform-daily-schedule-20261117/final-verification.json'
+    if current_schedule.exists():
+        raise RuntimeError('Historical January upload verifier is frozen after authorized rescheduling. Use longform-daily-schedule-20261117/finish.py for current reservations.')
     now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat()
     batch=read(HERE/'batch.json'); progress=read(HERE/'platform-progress.json')
     table=(HERE/'evidence/saved-schedule-overview.txt').read_text(encoding='utf8')

@@ -70,6 +70,7 @@ def thumbnail(e,data,i,folder):
  return asset
 
 def main():
+ if (H.parent/'longform-daily-schedule-20261117/final-verification.json').exists():raise RuntimeError('Publishing preparation is frozen after saved reservations. Current dates: longform-daily-schedule-20261117/summary.json')
  batch=rd(H/'batch.json');delivery=rd(REV/'delivery.json');inventory={e['id']:e for e in rd(REV.parent/'revision-teaching-sync-20261115/inventory.json')['episodes']};sources=rd(REV/'sources.json');rights=rd(REV/'source-rights.json')['sources'];footer=(R/'shared/publishing/youtube-channel-description.ko.txt').read_text(encoding='utf8').split('📚 수업 노트')[0].strip();defaults=rd(R/'shared/publishing/youtube-defaults.json');review=[]
  for i,(e,data,row) in enumerate(zip(delivery['episodes'],DATA,batch['rows'])):
   folder=H/e['id'];folder.mkdir(exist_ok=True);thumbnail(e,data,i,folder)

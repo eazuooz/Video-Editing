@@ -159,3 +159,17 @@ M14는 완성본을 유지하고 다른17편은 기존 개요 음성과 실제 �
 [업로드 검수표](../production/batches/game-math-upload-20261117/review.html) · [실제 Studio 예약 화면](../production/batches/game-math-upload-20261117/evidence/studio-final-schedule-table.jpg)
 2026-11-17 썸네일 수정: 단순 도형+작은 고양이 구성을 폐기하고, 주제를 직접 관찰·조작하는 큰 고양이 삽화로 13편 모두 교체했다. 서버 저장 완료 응답 후 재열람·실제 새 그림 대조 완료. 제목·설명·영상 ID·예약일 유지. [수정 썸네일 검수표](../production/batches/game-math-upload-20261117/thumbnail-revision-v2/review.html).
 <!-- MATH-PUBLISHING-20261117-END -->
+
+<!-- LONGFORM-DAILY-SCHEDULE-20261117-START -->
+### 일반 영상 예약 변경 완료 · 쇼츠 일정 분리 (2026-11-17)
+
+예약된 일반 영상 43편의 기존 순서를 유지해 **2026-11-17~12-29 매일 19:00 (Asia/Seoul)**로 변경했다. 쇼츠 예약 7편은 기존 날짜를 그대로 유지했다.
+
+- 기존 수학 14편: 11월 17~30일
+- 애니메이션 A03–A18 16편: 12월 1~16일
+- 게임수학 M21–M33 13편: 12월 17~29일
+
+43편 각각 저장 완료 후 페이지를 다시 열어 날짜·오후 7시·GMT+0900을 확인했다. 최종 일반 영상 43개 ID/날짜가 계획과 일치하고 쇼츠 7개 ID/날짜/제목도 변경 전과 일치한다. 이 날짜가 이전 2027년 1월 예약 기록보다 우선하는 현재 일정이다. 영상 본문·썸네일·자막·재생목록은 변경하지 않았다.
+
+[전체 43편 예약표](../production/batches/longform-daily-schedule-20261117/review.html) · [검증 기록](../production/batches/longform-daily-schedule-20261117/summary.json)
+<!-- LONGFORM-DAILY-SCHEDULE-20261117-END -->
