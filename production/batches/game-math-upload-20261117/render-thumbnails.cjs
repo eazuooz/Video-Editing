@@ -1,5 +1,11 @@
+// Validate reviewed illustrated assets; the rejected geometric SVG renderer is retired.
 const fs=require('node:fs'),path=require('node:path');
-const {Resvg}=require('C:/Users/1/AppData/Local/YamyamCoding/VideoEditingWork/game-math-upload-20261117/node_modules/@resvg/resvg-js');
 const batch=JSON.parse(fs.readFileSync(path.join(__dirname,'batch.json'),'utf8'));
-const cat='data:image/png;base64,'+fs.readFileSync('D:/Github/VideoEditing/shared/assets/branding/cat-reactions-v1/realize.png').toString('base64');
-for(const r of batch.rows){const dir=path.join(__dirname,r.id);let svg=fs.readFileSync(path.join(dir,'thumbnail.svg'),'utf8').replace('{{CAT_URI}}',cat);const x=new Resvg(svg,{font:{fontFiles:['C:/Windows/Fonts/malgunbd.ttf','C:/Windows/Fonts/malgun.ttf'],loadSystemFonts:false,defaultFontFamily:'Malgun Gothic'}});fs.writeFileSync(path.join(dir,'thumbnail.png'),x.render().asPng());console.log(r.id,'thumbnail rendered');}
+for(const row of batch.rows){
+ const file=path.join(__dirname,'thumbnail-revision-v2',row.id,'thumbnail.png');
+ const png=fs.readFileSync(file);
+ if(png.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw new Error(row.id+': invalid PNG');
+ const w=png.readUInt32BE(16),h=png.readUInt32BE(20);
+ if(w<1280||Math.abs(w/h-16/9)>.01||png.length>=2097152)throw new Error(row.id+': invalid thumbnail size');
+ console.log(row.id,'reviewed illustrated thumbnail',w,h,png.length);
+}

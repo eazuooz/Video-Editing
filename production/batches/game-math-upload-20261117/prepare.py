@@ -63,10 +63,12 @@ def diagram(i):
   if i==12:b='<path d="M790 430L985 260L1190 430" stroke="#c93632" stroke-width="10"/><path d="M790 480Q985 310 1190 480" stroke="#65a8a6" stroke-width="10"/>'
  return pre+b+'</g>'
 def thumbnail(e,data,i,folder):
- lines=data[2];size=min(99,int(650/max(sum(1 if ord(c)>255 else .55 for c in s) for s in lines)))
- text=''.join(f'<text x="48" y="{240+n*146}" fill="{["#191b19","#c93632","#191b19"][n]}" font-size="{size}" font-weight="700">{html.escape(s)}</text>' for n,s in enumerate(lines))
- svg=f'''<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"><defs><radialGradient id="sphere" cx="35%" cy="25%" r="70%"><stop offset="0" stop-color="#eeffff"/><stop offset=".3" stop-color="#71b1b3"/><stop offset="1" stop-color="#25494b"/></radialGradient><radialGradient id="sphere2" cx="38%" cy="28%" r="60%"><stop offset="0" stop-color="#fff"/><stop offset=".10" stop-color="#b9f5f5"/><stop offset=".30" stop-color="#477c7d"/><stop offset="1" stop-color="#25494b"/></radialGradient></defs><rect width="1280" height="720" fill="#fffdf7"/><rect x="12" y="12" width="1256" height="696" fill="none" stroke="#191b19" stroke-width="10"/><rect x="18" y="18" width="1244" height="82" fill="#ffce3f"/><g font-family="Malgun Gothic" fill="#191b19"><text x="44" y="72" font-size="33" font-weight="700">게임수학 PART 2 · {html.escape(e['title'])}</text><text x="1080" y="72" font-size="29" font-weight="700">얌얌코딩</text>{text}{diagram(i)}<image href="{{{{CAT_URI}}}}" x="1010" y="498" width="220" height="200"/></g></svg>'''
- (folder/'thumbnail.svg').write_text(svg,encoding='utf8')
+ # The original diagram + corner mascot was rejected by the user on 2026-11-17.
+ # Reuse only the individually generated, visually reviewed illustrated asset.
+ asset=H/'thumbnail-revision-v2'/e['id']/'thumbnail.png'
+ if not asset.is_file():raise RuntimeError('Missing reviewed cat-led illustration: '+e['id'])
+ return asset
+
 def main():
  batch=rd(H/'batch.json');delivery=rd(REV/'delivery.json');inventory={e['id']:e for e in rd(REV.parent/'revision-teaching-sync-20261115/inventory.json')['episodes']};sources=rd(REV/'sources.json');rights=rd(REV/'source-rights.json')['sources'];footer=(R/'shared/publishing/youtube-channel-description.ko.txt').read_text(encoding='utf8').split('📚 수업 노트')[0].strip();defaults=rd(R/'shared/publishing/youtube-defaults.json');review=[]
  for i,(e,data,row) in enumerate(zip(delivery['episodes'],DATA,batch['rows'])):
@@ -114,7 +116,7 @@ def main():
   for lang,text in [('ko',ko),('en',en)]: (folder/f'description.{lang}.txt').write_text(text+'\n',encoding='utf8')
   (folder/'pinned-comment.ko.txt').write_text(data[3]+'\n\n프로그래밍 코칭: '+defaults['coaching']['url']+'\n',encoding='utf8')
   schedule=datetime.datetime(2027,1,17,8,tzinfo=datetime.timezone(datetime.timedelta(hours=9)))+datetime.timedelta(days=i)
-  row.update(titleKo=data[0],titleEn=data[1],descriptionKo=ko,descriptionEn=en,chapters=chapters,scheduleKst=schedule.isoformat(),thumbnail=str(folder/'thumbnail.png'),descriptionFiles={l:str(folder/f'description.{l}.txt') for l in ('ko','en')},sourceCredits=credit,playlistId=batch['playlistId'],humanContinuousListeningClaimed=False)
+  row.update(titleKo=data[0],titleEn=data[1],descriptionKo=ko,descriptionEn=en,chapters=chapters,scheduleKst=schedule.isoformat(),thumbnail=str(H/'thumbnail-revision-v2'/e['id']/'thumbnail.png'),descriptionFiles={l:str(folder/f'description.{l}.txt') for l in ('ko','en')},sourceCredits=credit,playlistId=batch['playlistId'],humanContinuousListeningClaimed=False)
   save(folder/'package.json',row);review.append(dict(id=e['id'],title=data[0],chapters=chapters,descriptionChars=dict(ko=len(ko),en=len(en)),sourceIds=sorted(selected)))
  save(H/'batch.json',batch);save(H/'metadata-review.json',dict(status='prepared-for-content-and-render-review',rows=review));print('Prepared13 packages, all descriptions under5000 characters; exact spoken chapter anchors')
 if __name__=='__main__':main()

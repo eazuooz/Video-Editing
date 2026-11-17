@@ -157,4 +157,5 @@ M14는 완성본을 유지하고 다른17편은 기존 개요 음성과 실제 �
 전편 수동 KO/EN SRT·영문 제목/설명·브랜드 썸네일·챕터/출처·00:00 코칭 카드·마지막10초 재생목록/구독/코칭 링크 적용. 수익 사용, 자기평가 제출, 자동 저작권/광고 검사 문제 없음, SD/HD 처리 및 실제 YouTube CCoff·1080p60 재생 확인. 고정 댓글은 공개 후 등록 대기. 기존 영상 삭제·교체·예약 변경 없음.
 
 [업로드 검수표](../production/batches/game-math-upload-20261117/review.html) · [실제 Studio 예약 화면](../production/batches/game-math-upload-20261117/evidence/studio-final-schedule-table.jpg)
+2026-11-17 썸네일 수정: 단순 도형+작은 고양이 구성을 폐기하고, 주제를 직접 관찰·조작하는 큰 고양이 삽화로 13편 모두 교체했다. 서버 저장 완료 응답 후 재열람·실제 새 그림 대조 완료. 제목·설명·영상 ID·예약일 유지. [수정 썸네일 검수표](../production/batches/game-math-upload-20261117/thumbnail-revision-v2/review.html).
 <!-- MATH-PUBLISHING-20261117-END -->
