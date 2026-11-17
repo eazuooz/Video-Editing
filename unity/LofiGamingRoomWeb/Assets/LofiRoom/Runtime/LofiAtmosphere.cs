@@ -28,6 +28,7 @@ namespace Yamyam.LofiRoom
             if(windowLight){windowLight.intensity=Mathf.Lerp(1.4f,7.5f,dayAmount);windowLight.color=Color.Lerp(new Color(.4f,.58f,1f),new Color(1f,.87f,.63f),dayAmount);}
             if(outsideMaterial)
             {
+                if(outsideMaterial.HasProperty("_DayAmount")){outsideMaterial.SetFloat("_DayAmount",dayAmount);return;}
                 Color c=Color.Lerp(new Color(.035f,.10f,.17f),new Color(.35f,.57f,.59f),dayAmount);
                 outsideMaterial.SetColor("_BaseColor",c);outsideMaterial.SetColor("_EmissionColor",c*.6f);
             }

@@ -44,7 +44,7 @@ def call(tool, arguments, timeout=55):
                   "project":str(PROJECT), "tool":tool, "arguments":arguments, "response":result}
         out = ROOT / "projects/ai-3d-lofi-gaming-room/production/local"
         out.mkdir(parents=True, exist_ok=True)
-        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S")
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%f")
         path = out / ("mcp-" + stamp + "-" + tool + ".json")
         path.write_bytes((json.dumps(record, ensure_ascii=False, indent=2) + "\n").encode())
         return path, result

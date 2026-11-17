@@ -14,7 +14,7 @@ using Unity.Pipeline.Commands;
 public static class LofiRoomBuilder
 {
     const string Root = "Assets/LofiRoom";
-    const string G = Root + "/GeneratedHearthV4";
+    const string G = Root + "/GeneratedGardenV5";
     static readonly Dictionary<string, Material> mats = new();
     static readonly Dictionary<string, Mesh> meshes = new();
 
@@ -22,7 +22,7 @@ public static class LofiRoomBuilder
     public static string CreateViaMcp()
     {
         BuildScene();
-        return "Assets/LofiRoom/Scenes/LofiHearthRoom.unity";
+        return "Assets/LofiRoom/Scenes/LofiGardenRoom.unity";
     }
 
     [CliCommand("lofi_state", "Read the running LOFI sample and motion state", MainThreadRequired = true)]
@@ -173,9 +173,10 @@ public static class LofiRoomBuilder
         AttachProp();
         LofiAtmosphereArt.Apply(ctl,G);
         LofiHearthArt.Apply(ctl,G);
+        LofiGardenArt.Apply(ctl,G);
         foreach (var light in UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None)) light.useColorTemperature=false;
-        EditorSceneManager.SaveScene(scene,Root+"/Scenes/LofiHearthRoom.unity");
-        EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"/Scenes/LofiHearthRoom.unity",true)};
+        EditorSceneManager.SaveScene(scene,Root+"/Scenes/LofiGardenRoom.unity");
+        EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"/Scenes/LofiGardenRoom.unity",true)};
         PlayerSettings.companyName="YamyamCoding";PlayerSettings.productName="Yamyam Lofi Room";
         PlayerSettings.defaultScreenWidth=1920;PlayerSettings.defaultScreenHeight=1080;
         PlayerSettings.runInBackground=true;
@@ -184,7 +185,7 @@ public static class LofiRoomBuilder
         PlayerSettings.WebGL.decompressionFallback=true;
         PlayerSettings.WebGL.dataCaching=true;
         AssetDatabase.SaveAssets();
-        File.WriteAllText(Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/scene-build.json"),JsonUtility.ToJson(new SceneReport{scene=Root+"/Scenes/LofiHearthRoom.unity",actorLoaded=ctl.actor!=null,walkLoaded=ctl.hasWalk,idleLoaded=ctl.hasIdle,sitLoaded=ctl.hasSit,walkSpeed=ctl.calibratedWalkSpeed},true));
+        File.WriteAllText(Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/scene-build.json"),JsonUtility.ToJson(new SceneReport{scene=Root+"/Scenes/LofiGardenRoom.unity",actorLoaded=ctl.actor!=null,walkLoaded=ctl.hasWalk,idleLoaded=ctl.hasIdle,sitLoaded=ctl.hasSit,walkSpeed=ctl.calibratedWalkSpeed},true));
         Debug.Log("LOFI_SCENE_READY "+ctl.GetStateJson());
     }
 
@@ -326,12 +327,12 @@ public static class LofiRoomBuilder
     public static string BeginNativeBuild()
     {
         if(EditorApplication.isPlaying)throw new Exception("Stop Play mode before building");
-        string dest=Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/hearth-v4/windows/YamyamLofiRoom.exe");
+        string dest=Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/garden-v5/windows/YamyamLofiRoom.exe");
         Directory.CreateDirectory(Path.GetDirectoryName(dest));
         EditorApplication.delayCall+=()=>{
             PlayerSettings.fullScreenMode=FullScreenMode.Windowed;
             var report=BuildPipeline.BuildPlayer(EditorBuildSettings.scenes,dest,BuildTarget.StandaloneWindows64,BuildOptions.None);
-            File.WriteAllText(Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/hearth-v4/native-build.json"),JsonUtility.ToJson(new NativeReport{result=report.summary.result.ToString(),bytes=(long)report.summary.totalSize,errors=report.summary.totalErrors},true));
+            File.WriteAllText(Path.GetFullPath("../../projects/ai-3d-lofi-gaming-room/production/local/garden-v5/native-build.json"),JsonUtility.ToJson(new NativeReport{result=report.summary.result.ToString(),bytes=(long)report.summary.totalSize,errors=report.summary.totalErrors},true));
         };
         return dest;
     }

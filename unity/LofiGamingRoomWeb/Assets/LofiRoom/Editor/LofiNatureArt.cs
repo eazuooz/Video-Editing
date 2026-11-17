@@ -8,7 +8,7 @@ using Yamyam.LofiRoom;
 
 public static class LofiNatureArt
 {
-    public const string Root="Assets/LofiRoom/GeneratedHearthV4";
+    public const string Root="Assets/LofiRoom/GeneratedGardenV5";
     static System.Random random=new(241106);
     static int number;
     public static int leafCount;

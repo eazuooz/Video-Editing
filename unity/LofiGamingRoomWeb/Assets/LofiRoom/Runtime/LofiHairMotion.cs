@@ -10,6 +10,7 @@ namespace Yamyam.LofiRoom
         public bool enabledMotion=true;
         public float measuredOffset,maximumObservedOffset,maximumLengthError;
         public int collisionCorrections;
+        public float breezeStrength=.65f,restoringStrength=1,maximumSway=.085f,maximumAngle=32;
         const int Count=5;
         const float Length=.060f,Step=1f/120f;
         readonly Vector3[] position=new Vector3[Count],previous=new Vector3[Count];
@@ -39,8 +40,8 @@ namespace Yamyam.LofiRoom
                 {
                     Vector3 p=position[i],inertia=(p-previous[i])*.974f;
                     float t=i/(float)(Count-1);
-                    Vector3 breeze=new Vector3(Mathf.Sin(Time.time*1.15f+i*.42f),.08f*Mathf.Sin(Time.time*.8f),Mathf.Cos(Time.time*.93f+i*.3f))*.65f;
-                    Vector3 acceleration=(Rest(i)-p)*(125f-45*t)+breeze*t+Vector3.down*.12f;
+                    Vector3 breeze=new Vector3(Mathf.Sin(Time.time*1.15f+i*.42f),.08f*Mathf.Sin(Time.time*.8f),Mathf.Cos(Time.time*.93f+i*.3f))*breezeStrength;
+                    Vector3 acceleration=(Rest(i)-p)*(125f-45*t)*restoringStrength+breeze*t+Vector3.down*.12f;
                     position[i]=p+inertia+acceleration*Step*Step;previous[i]=p;
                 }
                 for(int iteration=0;iteration<6;iteration++)
@@ -49,7 +50,7 @@ namespace Yamyam.LofiRoom
                     for(int i=1;i<Count;i++)
                     {
                         Vector3 direction=(position[i]-position[i-1]).normalized;
-                        direction=Vector3.RotateTowards(-head.up,direction,32*Mathf.Deg2Rad,0);
+                        direction=Vector3.RotateTowards(-head.up,direction,maximumAngle*Mathf.Deg2Rad,0);
                         position[i]=position[i-1]+direction*Length;
                         Collide(i,head.position-head.forward*.012f+head.up*.025f,head,.070f,.10f,.074f);
                         Collide(i,head.position-head.up*.245f+head.forward*.015f,head,.105f,.075f,.080f);
@@ -61,7 +62,7 @@ namespace Yamyam.LofiRoom
             skin.GetPropertyBlock(properties);
             for(int i=1;i<Count;i++)
             {
-                Vector3 offset=Vector3.ClampMagnitude(position[i]-Rest(i),.085f);
+                Vector3 offset=Vector3.ClampMagnitude(position[i]-Rest(i),maximumSway);
                 measuredOffset=Mathf.Max(measuredOffset,offset.magnitude);
                 maximumLengthError=Mathf.Max(maximumLengthError,Mathf.Abs(Vector3.Distance(position[i],position[i-1])-Length));
                 properties.SetVector("_HairOffset"+i,enabledMotion?offset:Vector3.zero);

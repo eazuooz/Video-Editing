@@ -14,6 +14,7 @@ namespace Yamyam.LofiRoom
         public void ToggleSound(){if(crackle)crackle.mute=!crackle.mute;}
         void Update()
         {
+            block??=new MaterialPropertyBlock();
             float low=Mathf.PerlinNoise(Time.time*.85f,2.7f),high=Mathf.PerlinNoise(Time.time*4.5f,8.4f);
             flickerIntensity=(.75f+low*.40f+high*.10f)*(lit?1:0);
             if(fireLight)fireLight.intensity=flickerIntensity*3.2f;

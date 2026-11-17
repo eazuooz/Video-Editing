@@ -690,9 +690,9 @@ A06 원본 그대로 보존.나머지15편만 실제 게임/원리 도식/화면
 
 | 영상 | 제작 | 검수 | 게시 |
 |---|---|---|---|
-| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v4: 실제 앉기·일어나기·아이맥·독서, 양옆 2단 책장·벽난로·레코드 플레이어 · 72초 FHD60·Windows 완료 | [새 상호작용·소리 검수](http://127.0.0.1:9322/) · v4 사용자 검수 대기 | 미업로드·예약 없음 |
+| [AI로 만드는 3D LOFI 게이밍룸](../projects/ai-3d-lofi-gaming-room/planning/outline.md) | PC v5: 낮은 등받이·모니터, 창밖 숲·달, 바람 강화와 로컬 자동저장 메모 · 48초 FHD60·Windows 완료 | [수정 PC 검수](http://127.0.0.1:9323/) · v5 사용자 검수 대기 | 미업로드·예약 없음 |
 
-기존 걷기·대기·4K 재질·머리카락·잎과 창가 빛을 유지했다. KayKit의 실제 앉기·일어나기와 보유 EmacEArt 독서 모션을 사용하고 의자·손·발을 맞췄다. 듀얼 모니터·본체는 작은 아이맥 책상으로 교체했다. 가운데 벽난로에 불꽃·불티·연기와 CC0 장작 소리를, 창가 작은 탁상에 음악과 동기화되는 레코드 플레이어를 추가했다. 음악·장작 음량은 개별 조절한다. [파일·QA 기록](../projects/ai-3d-lofi-gaming-room/production/hearth-v4-delivery.json) · [에셋·라이선스](../projects/ai-3d-lofi-gaming-room/production/hearth-v4-asset-record.json). v1–v3 검수 파일은 보존했다. 웹 설치·빌드는 사용자 지시로 계속 보류하고 전체 제작 영상은 남아 있다.
+실제 앉기·독서·일어나기와 벽난로·레코드 소리는 유지했다. 등받이는 높이 78→37cm·폭 48→39cm로 줄이고 모니터는 13cm 낮췄다. 자체 숲·달 파노라마와 약 3배 잎 바람, 더 큰 제한형 머리 움직임을 반영했다. 메모는 UTF-8 파일로 자동 저장되며 백업/복구와 실제 PC 재실행을 검수했다. [파일·QA](../projects/ai-3d-lofi-gaming-room/production/garden-v5-delivery.json). 기존 v1–v4 검수 파일을 보존했고 웹 설치·빌드와 전체 제작 영상은 남아 있다.
 <!-- AI3D-LOFI-GAMING-ROOM-20261116-END -->
 
 <!-- MATH-CONCEPT-EXAMPLES-20261116-START -->

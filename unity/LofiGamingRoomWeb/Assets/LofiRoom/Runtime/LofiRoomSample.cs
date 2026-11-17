@@ -30,6 +30,7 @@ namespace Yamyam.LofiRoom
         public LofiAtmosphere atmosphere;
         public LofiActivities activities;
         public LofiHearth hearth;
+        public LofiMemo memo;
         public float turnSpeed=145f;
         private Vector3 motionTarget;
         private Font uiFont;
@@ -71,7 +72,7 @@ namespace Yamyam.LofiRoom
 #endif
 #if ENABLE_INPUT_SYSTEM
             var keyboard=UnityEngine.InputSystem.Keyboard.current;
-            if(keyboard!=null)
+            if(keyboard!=null && (!memo || !memo.isOpen))
             {
                 if(keyboard.digit1Key.wasPressedThisFrame)Walk();
                 if(keyboard.digit2Key.wasPressedThisFrame)Idle();
@@ -86,6 +87,7 @@ namespace Yamyam.LofiRoom
                 if(keyboard.cKey.wasPressedThisFrame && activities)activities.Request("computer");
                 if(keyboard.bKey.wasPressedThisFrame && activities)activities.Request("read");
                 if(keyboard.vKey.wasPressedThisFrame)Idle();
+                if(keyboard.nKey.wasPressedThisFrame && memo)memo.Toggle();
             }
 #endif
             if (!actor) return;
@@ -195,8 +197,8 @@ namespace Yamyam.LofiRoom
             if(hair)hair.enabledMotion=!hair.enabledMotion;
         }
 
-        public void SetMemo(string value) { PlayerPrefs.SetString("ai3d-lofi-room-v1-memo", value); PlayerPrefs.Save(); }
-        public string GetMemo() => PlayerPrefs.GetString("ai3d-lofi-room-v1-memo", "");
+        public void SetMemo(string value) { if(memo)memo.SetText(value);else{PlayerPrefs.SetString("ai3d-lofi-room-v1-memo",value);PlayerPrefs.Save();} }
+        public string GetMemo() => memo?memo.text:PlayerPrefs.GetString("ai3d-lofi-room-v1-memo", "");
         public void CameraDesk() { roomCamera.transform.SetPositionAndRotation(new Vector3(3.7f, 2.35f, -3.9f), Quaternion.LookRotation(new Vector3(.65f, 1.0f, .95f) - new Vector3(3.7f, 2.35f, -3.9f))); roomCamera.orthographicSize = 2.45f; }
         public void CameraRoom() { roomCamera.transform.SetPositionAndRotation(new Vector3(6.8f, 4.9f, -8.5f), Quaternion.LookRotation(new Vector3(0, 1.05f, .3f) - new Vector3(6.8f, 4.9f, -8.5f))); roomCamera.orthographicSize = 3.55f; }
         public string GetStateJson() => JsonUtility.ToJson(new SampleState { frame = observedFrame, state = state, actorLoaded = actor != null, idleLoaded = hasIdle, walkLoaded = hasWalk, sitLoaded = hasSit, distance = distanceTravelled, nativeWalkSpeed = calibratedWalkSpeed, night = night });
@@ -216,8 +218,8 @@ namespace Yamyam.LofiRoom
             GUI.Box(new Rect(20, 20, 350, 94), "얌얌코딩 · LOFI ROOM");
             GUI.Label(new Rect(36, 54, 320, 30), activities && (activities.busy||activities.seated)?activities.phase:moving?"산책 중":"잠깐 쉬어가기");
             GUI.Label(new Rect(36, 82, 320, 25), "C 아이맥 · B 독서 · V 일어나기");
-            string[] labels = { "산책", "일어나기", "아이맥", "독서", "낮 / 밤", "비", "책상 보기", "방 전체", "음악", "장작 소리" };
-            System.Action[] actions = { Walk, Idle, ()=>{if(activities)activities.Request("computer");}, ()=>{if(activities)activities.Request("read");}, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic, ()=>{if(hearth)hearth.ToggleSound();} };
+            string[] labels = { "산책", "일어나기", "아이맥", "독서", "낮 / 밤", "비", "책상 보기", "방 전체", "음악", "장작 소리", "메모" };
+            System.Action[] actions = { Walk, Idle, ()=>{if(activities)activities.Request("computer");}, ()=>{if(activities)activities.Request("read");}, ToggleNight, ToggleRain, CameraDesk, CameraRoom, ToggleMusic, ()=>{if(hearth)hearth.ToggleSound();},()=>{if(memo)memo.Toggle();} };
             for (int i = 0; i < labels.Length; i++) if (GUI.Button(new Rect(22 + i * 108, Screen.height / scale - 60, 102, 38), labels[i])) actions[i]();
             if(hearth)
             {
