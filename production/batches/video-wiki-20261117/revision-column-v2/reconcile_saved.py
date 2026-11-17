@@ -20,7 +20,9 @@ def main():
         oldbody=re.search(r'<content>\n([\s\S]*?)\n</content>',next(x['data']['text'] for x in json.loads((readback.parent/('before-'+args.batch+'.json')).read_text(encoding='utf8')) if x['id']==key))[1]
         for image in re.findall(r'<image source="[^"]+">[\s\S]*?</image>',oldbody):
             assert image in content,(key,'lost original media')
-        assert '<video source=' in content,key
+        assert content.count('<video source=')==oldbody.count('<video source='),(key,'video block count changed')
+        for video in re.findall(r'<video source="[^"]+"[^>]*>',oldbody):
+            assert video in content,(key,'video link changed')
         r=next(x for x in progress['rows'] if x['id']==key)
         (HERE/'articles'/f'{key}.saved.md').write_text(content+'\n',encoding='utf8')
         r.update(status='column-saved-and-readback-verified',columnArticle=f'articles/{key}.saved.md',imageCount=content.count('<image '),verification='../evidence/column-v2/'+readback.name,savedChars=len(content),bodySha256=hashlib.sha256(content.encode()).hexdigest(),qualityReview={'continuousConcreteCase':True,'intermediateMechanismExplained':True,'relevantProcessFigures':True,'applicationAndFailureDiagnosis':True,'sourcesLinked':True,'humanReview':'pending'})
