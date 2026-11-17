@@ -55,6 +55,8 @@ Current policy: 2026-10-19, `preproduction-first-v1` with `local-final-review-be
 
 ## Verification and delivery without repeated work
 
+- User-directed 2026-11-17 `video-companion-wiki-v1`: finish each selected video with a detailed companion article in the actual Yamyam Coding Notion wiki, one page per video beneath the relevant series hub. Preserve existing pages; teach the full concept with beginner prerequisites, concrete game examples, useful detail, captioned actual-video frames first, sources and application practice. Verify the saved page, images, navigation and actual video availability, recording article status separately. This finite request also selects existing game-design, game-animation and educational Shorts articles; it does not authorize extra video production or platform actions. Follow `docs/VIDEO_WIKI_WORKFLOW.md`.
+
 - Use one design package, one review ledger and one checkpoint, linking existing artifacts instead of duplicating them. Sample the new visual system early, then complete all scene designs before full render. A sample is not whole-video approval.
 - Run current whole narration and current final-mix ASR once each; compare actual full text, use independent complete contexts only for ambiguous passages. Never approve from an ending heuristic alone. Preserve human listening/pronunciation as pending until actually done.
 - Check every caption/cut and moving explanation/annotation once for the current output. Reuse evidence only for identical relevant hashes/timing/settings or verified decoded-equivalent retained ranges. Recheck changed ranges and joins; new encoded outputs still need full decode/PTS/audio integrity checks. No repeat extraction/ASR/render/push on unchanged successful artifacts.
