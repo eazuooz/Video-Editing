@@ -99,6 +99,7 @@ def entry(script,pilot):
    time.sleep(20)
   if not pilot:
    pilotqa=C/items[1]['row']['slug']/'encoded-qa-v184.json';assert read(pilotqa)['allowedForUserReview'],'Review actual pilot concatenation before other eleven'
+   pilotvisual=C/items[1]['row']['slug']/'encoded-visual-review-v184.json';assert read(pilotvisual)['allowedForBatch'],'Inspect actual encoded pilot before other eleven'
   chosen=[items[1]]if pilot else [x for x in items if x['row']['order']!=2];proofs=[render_one(item,worker,lease)for item in chosen];save(base/'complete.json',dict(proofs=proofs,selectedOrders=[x['row']['order']for x in chosen],actualListening=False,humanApproval=False));print(json.dumps(dict(completed=True,count=len(proofs))))
  finally:
   if owned and n.LEASE.exists()and read(n.LEASE).get('token')==owned:n.LEASE.unlink()
