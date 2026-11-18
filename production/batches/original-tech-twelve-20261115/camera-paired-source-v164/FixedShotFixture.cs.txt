@@ -1,0 +1,23 @@
+using System;
+using Yamyam.OriginalTechTwelve.Camera;
+public static class FixedShotFixture {
+ static bool Same(FixedShotState a,FixedShotState b){return a.cameraX==b.cameraX&&a.cameraY==b.cameraY&&a.cameraZ==b.cameraZ&&a.lookX==b.lookX&&a.lookY==b.lookY&&a.lookZ==b.lookZ&&a.fieldOfView==b.fieldOfView;}
+ public static void Main(){
+  int cuts=0;var prev=FixedShotModel.Sample(-2,0);
+  foreach(string mode in CameraModel.Modes){
+   var prior=FixedShotModel.Sample(CameraModel.Sample(mode,0).heroX,0);
+   for(int n=0;n<720;n++){
+    var actor=CameraModel.Sample(mode,n/60f);var shot=FixedShotModel.Sample(actor.heroX,actor.heroZ);
+    if(shot.fieldOfView!=55||shot.lookX!=0||shot.lookY!=1||shot.lookZ!=2)throw new Exception("Fixed lens and fixed aim required");
+    if(shot.zone==prior.zone&&!Same(shot,prior))throw new Exception("Camera moved inside a fixed zone");
+    if(shot.zone!=prior.zone){if(Same(shot,prior))throw new Exception("Zone boundary must cut to the other shot");if(mode!="follow")throw new Exception("Stationary actor cannot cross this boundary");cuts++;}
+    if(mode!="follow"&&(actor.heroX!=0||actor.heroZ!=0))throw new Exception("Look/orbit/pullback actor must remain in place");
+    prior=shot;
+   }
+  }
+  if(cuts!=1)throw new Exception("Expected one actual zone cut in720 follow samples");
+  if(Same(FixedShotModel.Sample(-.01f,0),FixedShotModel.Sample(0,0)))throw new Exception("Boundary shot did not change");
+  bool rejected=false;try{FixedShotModel.Sample(float.NaN,0);}catch(ArgumentException){rejected=true;}if(!rejected)throw new Exception("Nonfinite input accepted");
+  Console.WriteLine("PAIRED_MODEL_CHECKS=6;SAMPLED_STATES=3600;FIXED_ZONE_CUTS=1;ACTUAL_UNITY_CAPTURE=false");
+ }
+}
