@@ -29,7 +29,7 @@ def bundles():
 def finalize():
  rows=read(C/'all-bundles-v186.json')['projects'];delivery=read(H/'mobile-review-delivery-v186.json');assert len(rows)==len(delivery['files'])==12 and delivery['verifiedOwnerOnly']
  for row,f in zip(rows,delivery['files']):
-  assert f['order']==row['order']and f['localSha256']==row['artifacts']['captioned']['sha256']and int(f['remoteBytes'])==row['artifacts']['captioned']['bytes'];row['mobileReviewUrl']=f['url']
+  assert f['order']==row['order']and f['sourceMasterSha256']==row['artifacts']['captioned']['sha256']and int(f['remoteBytes'])==f['uploadedBytes'];row['mobileReviewUrl']=f['url'];row['mobileReviewTranscoded']=f['transcoded'];row['mobileUploadedArtifact']=f['uploadedArtifact']
   for ref in row['artifacts'].values():assert pin(ref['path'])==ref
  manifest=dict(schemaVersion=8,exactProjectCount=12,selectedOrders=list(range(1,13)),previousDeliveredManifest=pin(H/'local-final-review-manifest-v7.json'),request=pin(H/'innovation-opening-plan-v181.json'),projects=rows,allArtifactHashesVerified=True,artifacts=72,totalExactAudioSeconds=sum(x['actualMixSeconds']for x in rows),completedSelectedRevisions=12,pendingSelectedRevisions=0,allTwelveInnovationOpeningsAdded=True,allTwelveAudibleMusicRevised=True,originalRe2ComparisonOrder=2,mobileFolder=delivery['folderUrl'],mobileUnifiedDelivery=pin(H/'mobile-review-delivery-v186.json'),actualRealtimePlayback=False,actualFullListening=False,humanApproval=False,deliveryPostedInChat=False,atUtc=datetime.now(timezone.utc).isoformat(),platformActions=['owner-private Drive review copies only'])
  save(H/'local-final-review-manifest-v8.json',manifest)
