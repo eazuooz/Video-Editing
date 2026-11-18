@@ -9,12 +9,12 @@ def pin(p):
 def main():
  previous=H/'local-final-review-manifest-v4.json';old=read(previous);rows=[];folder='https://drive.google.com/drive/folders/1SsM1tBG-dB-VRWYfd9ZsbDSjYrTZ-DTY'
  for prior in old['projects']:
-  slug=prior['slug'];root=M/slug/'camera-music-v139';bp=root/'local-review-v5/bundle-v5.json'if prior['order']==2 else root/('remux-v152'if prior['order']==1 else'remux-v155')/'local-review-v5/bundle-v5.json';b=read(bp);assert b['localFinalBundleComplete']and not b['humanApproval']and b['slug']==slug
+  slug=prior['slug'];root=M/slug/'camera-music-v139';bp=root/'local-review-v5/bundle-v5.json'if prior['order']==2 else root/('remux-v152'if prior['order']==1 else'remux-v162')/'local-review-v5/bundle-v5.json';b=read(bp);assert b['localFinalBundleComplete']and not b['humanApproval']and b['slug']==slug
   artifacts={}
   for key,source in b['artifacts'].items():
    actual=pin(source['path']);assert actual['sha256']==source['sha256'];artifacts[key]=actual
   assert len(artifacts)==6
-  row=copy.deepcopy(prior);row.update(version=b['version'],bundle=pin(bp),artifacts=artifacts,actualMixSeconds=b['durationSeconds'],checks=dict(priorVisualChecksPreserved=prior['checks'],newTechnicalEvidence=b['evidence'],wholeWordAudioAndTruePeakChecked=True,musicMedianDbBelowVoice=b['musicMedianDbBelowVoice'],actualRealtimePlayback=False,actualFullListening=False,humanApproval=False),selectedRevisionComplete=True);rows.append(row)
+  row=copy.deepcopy(prior);row.update(titleKo=b['titleKo'],version=b['version'],bundle=pin(bp),artifacts=artifacts,actualMixSeconds=b['durationSeconds'],checks=dict(priorVisualChecksPreserved=prior['checks'],newTechnicalEvidence=b['evidence'],wholeWordAudioAndTruePeakChecked=True,musicMedianDbBelowVoice=b['musicMedianDbBelowVoice'],actualRealtimePlayback=False,actualFullListening=False,humanApproval=False),selectedRevisionComplete=True);rows.append(row)
  assert [r['order']for r in rows]==list(range(1,13))and len({r['slug']for r in rows})==12
  manifest=dict(schemaVersion=5,exactProjectCount=12,selectedRevision='camera-comparison-and-audible-bgm',previousDeliveredManifest=pin(previous),projects=rows,allArtifactHashesVerified=True,artifacts=72,totalExactAudioSeconds=sum(x['actualMixSeconds']for x in rows),completedSelectedRevisions=12,pendingSelectedRevisions=0,originalRe2ComparisonOrder=2,allTwelveAudibleMusicRevised=True,actualRealtimePlayback=False,actualFullListening=False,humanApproval=False,deliveryPostedInChat=False,mobileFolder=folder,platformActions=[],request=pin(H/'user-camera-music-revision-v139.json'),atUtc=datetime.datetime.now(datetime.timezone.utc).isoformat())
  mp=H/'local-final-review-manifest-v5.json';assert not mp.exists();mp.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n','utf8')
@@ -25,7 +25,9 @@ def main():
  for r in rows:
   a=r['artifacts'];n=r['order'];parts.append(f'<section id="v{n}"><h2>{n:02}. {E(r["titleKo"])}</h2><p class="tag">{E(r["version"])} · {r["actualMixSeconds"]:.2f}초 · 1080×1920 / 60fps · 사람 검수 대기</p><video controls playsinline preload="none" src="{E(uri(a["captioned"]["path"]))}"></video><p>')
   parts.append(' · '.join(f'<a href="{E(uri(a[k]["path"]))}">{label}</a>'for k,label in labels.items()))
-  parts.append('</p><details><summary>파일 버전·SHA256</summary>')
+  parts.append('</p>')
+  if n==1:parts.append('<p>음성 확인 메모: 새 믹스의 자동 인식에서 ‘숲의 신전’ 고유명사가 다르게 잡혔습니다. 기존 검증 원음은 그대로이며, 이 이름의 발음을 직접 들어 확인해 주세요.</p>')
+  parts.append('<details><summary>파일 버전·SHA256</summary>')
   for k,f in a.items():parts.append(f'<p>{k} · {f["bytes"]:,} bytes<br><code>{f["sha256"]}</code></p>')
   parts.append('</details>')
   if n<12:parts.append(f'<p><a href="#v{n+1}">다음 영상으로</a></p>')
