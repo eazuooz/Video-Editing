@@ -326,7 +326,7 @@ def reviews(output):
     return rows
 
 
-def review_page(output):
+def review_page(output, approved_voice=False):
     rows = reviews(output)
     complete = sum(bool(r["review"]) and not r["review"]["missing"] for r in rows)
     drafts = sum(bool(r["review"]) for r in rows) - complete
@@ -358,6 +358,8 @@ def review_page(output):
                      f'{video_links}{match}<details><summary>대본</summary><ol>{script}</ol></details>'
                      f'<p><a href="{escape(source["url"], quote=True)}">{escape(source["title"])}</a></p></article>')
     navigation = " ".join(f'<a href="#ep{row["id"]}">{row["id"]}</a>' for row in rows)
+    voice_note = ("기존 쇼츠 승인 목소리로 다시 렌더한 버전입니다."
+                  if approved_voice else "사용 음성은 임시 검수 음성입니다.")
     index = f'''<!doctype html><html lang="ko"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>엘든 링 개발 쇼츠 36편 PC 검수</title>
 <style>body{{background:#10171b;color:#fff8ea;font:16px/1.7 "Malgun Gothic",sans-serif;margin:auto;max-width:1240px;padding:24px}}
@@ -368,10 +370,11 @@ main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),
 summary{{cursor:pointer}}footer{{margin-block:25px}}</style>
 <h1>엘든 링 개발 쇼츠 36편 PC 검수</h1><p>실제 플레이를 맞춘 검수본 {complete}편 · 영상 초안 {drafts}편 · 대본만 {36-complete-drafts}편</p>
 <p>실제 플레이가 확보된 구간에서는 설명과 길이를 맞춥니다. 원본이 필요한 구간은 편별로 표시했습니다.
-사용 음성은 임시 검수 음성입니다. 클립의 PC 검수 범위와 출처는 <a href="manifest.json">검수 기록</a>에 있습니다.</p>
+{voice_note} 클립의 PC 검수 범위와 출처는 <a href="manifest.json">검수 기록</a>에 있습니다.</p>
 <nav>{navigation}</nav><main>{''.join(cards)}</main>
 <footer>{ATTRIBUTION} · <a href="https://creativecommons.org/licenses/by/4.0/">음악 이용 조건</a></footer></html>'''
     exact_write(output / "manifest.json", json.dumps({"count": len(rows), "videoReviews": complete,
+                                                     "reviewVersion": "approved-voice-v2" if approved_voice else "temporary-voice-v1",
                                                      "roughCuts": drafts, "episodes": rows}, ensure_ascii=False, indent=2))
     exact_write(output / "index.html", index)
     print(f"PC index: {complete} matched footage, {drafts} rough cuts, {36-complete-drafts} scripts", flush=True)
