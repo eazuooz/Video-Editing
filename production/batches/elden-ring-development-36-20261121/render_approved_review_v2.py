@@ -11,6 +11,7 @@ ORIGINAL = DEFAULT_OUTPUT.with_name("pc-review-v1")
 VOICENAME = "기존 쇼츠 승인 목소리 · Qwen3-TTS 1.7B"
 LEAD_SECONDS = 0.13
 CUE_END_CLEARANCE_SECONDS = 0.20
+MIX_TREATMENT = "matched-active-levels-and-speech-safe-edges-v2"
 
 
 def route_clip(route, source_records, original_record, seconds):
@@ -79,7 +80,10 @@ def narration_audio(takes, lengths, destination):
         shift = -22 - take["review"]["levels"]["activeMedianDbfs"]
         if abs(shift) > 12:
             raise ValueError(f"Active narration level needs review: {take['file']}")
-        edit.ffmpeg("-i", take["path"], "-af", f"volume={shift:.2f}dB,adelay=130:all=1,apad",
+        fade_start = take["samples"] / take["sampleRate"] - .006
+        treatment = (f"volume={shift:.2f}dB,afade=d=0.006,afade=t=out:st={fade_start:.5f}:d=0.006,"
+                     "adelay=130:all=1,apad")
+        edit.ffmpeg("-i", take["path"], "-af", treatment,
                     "-t", frames / edit.FPS, "-ar", 48000, "-ac", 1, target)
         pads.append(target)
     voice = destination / "narration-timed.wav"
@@ -147,9 +151,12 @@ def movie(episode, takes, output, sources, route):
         listing = dest / f"{label}.txt"
         listing.write_text("".join(f"file '{item.as_posix()}'\n" for item in shots), encoding="utf-8")
         target = dest / f"{label}.mp4"
+        staged = dest / f"{label}-staging.mp4"
         edit.ffmpeg("-f", "concat", "-safe", 0, "-i", listing, "-i", sound,
-                    "-map", "0:v", "-map", "1:a", "-c", "copy", "-movflags", "+faststart", target)
-        outputs[label] = edit.validate(target, sum(lengths))
+                    "-map", "0:v", "-map", "1:a", "-c", "copy", "-movflags", "+faststart", staged)
+        outputs[label] = edit.validate(staged, sum(lengths))
+        staged.replace(target)
+        outputs[label]["path"] = target.name
     cuts = []
     for index, frames in enumerate(lengths):
         row = {**prior["cuts"][index], "frames": frames, "picture": picture_modes[index],
@@ -163,7 +170,7 @@ def movie(episode, takes, output, sources, route):
     report = {**outputs, "seconds": sum(lengths) / edit.FPS, "gameplaySeconds": gameplay / edit.FPS,
               "explanationSeconds": gameplay / edit.FPS, "missing": [], "cuts": cuts,
               "narration": VOICENAME, "music": edit.ATTRIBUTION, "priorPictureManifestSha256": sha(original / "verification.json"),
-              "audio": edit.rms_measure(dest / "captioned.mp4"), "humanReview": "pending",
+              "audio": edit.rms_measure(dest / "captioned.mp4"), "mixTreatment": MIX_TREATMENT, "humanReview": "pending",
               "subtitles": {lang: sha(dest / f"{lang}.srt") for lang in ("ko", "en")}}
     save(dest / "verification.json", report)
     print(f"{number}: {report['seconds']:.1f}s, game and explanation {report['gameplaySeconds']:.1f}s each", flush=True)
@@ -188,7 +195,9 @@ def main():
                     continue
                 proof = args.output / number / "verification.json"
                 cached = read(proof) if proof.is_file() else None
-                if not cached or [cut["voiceSha256"] for cut in cached["cuts"]] != [item["sha256"] for item in takes]:
+                voice_ids = [item["sha256"] for item in takes]
+                if (not cached or cached.get("mixTreatment") != MIX_TREATMENT or
+                        [cut["voiceSha256"] for cut in cached["cuts"]] != voice_ids):
                     movie(episode, takes, args.output, sources, route[number])
                 remaining.remove(episode)
                 blocked.pop(number, None)

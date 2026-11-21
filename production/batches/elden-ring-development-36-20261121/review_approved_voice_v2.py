@@ -67,16 +67,19 @@ def listen_to(transcriber, path, expected, kind):
     if kind == "source":
         spoken = transcriber(str(path), generate_kwargs=options, return_timestamps="word")
     else:
-        spoken = transcriber(str(path), generate_kwargs=options, return_timestamps=True, chunk_length_s=28)
+        # Source-take word boundaries have already anchored captions. Checking the
+        # complete final mix needs the independent utterances, not new timing guides.
+        spoken = transcriber(str(path), generate_kwargs={**options, "max_new_tokens": 160},
+                             return_timestamps=False, chunk_length_s=26, stride_length_s=3)
     score, edits = compare(expected, spoken["text"])
     segments = [
         {"text": s["text"], "start": s["timestamp"][0], "end": s["timestamp"][1]}
-        for s in spoken["chunks"] if s["timestamp"][0] is not None and s["timestamp"][1] is not None
+        for s in spoken.get("chunks", []) if s["timestamp"][0] is not None and s["timestamp"][1] is not None
         and s["timestamp"][1] > s["timestamp"][0]
     ]
     result = {"sha256": sha(path), "model": f"whisper-large-v3-turbo/{ASR_REVISION}", "expected": expected,
               "recognized": spoken["text"], "similarity": score, "differences": edits,
-              "timestampType": "positive-whole-word" if kind == "source" else "segment",
+              "timestampType": "positive-whole-word" if kind == "source" else "full-content-readback",
               "timestamped": segments, "humanReview": "pending"}
     if kind == "source":
         result["levels"] = metrics(path)
@@ -105,16 +108,23 @@ def main():
     stop = time.monotonic() + 7200
     transcriber = None
     pending = {(kind, key) for kind, key, _, _ in selection}
+    verified_times = {}
     while pending:
         for kind, key, path, expected in selection:
             job = (kind, key)
-            if job not in pending or not path.is_file():
+            if not path.is_file():
                 continue
+            changed = path.stat().st_mtime_ns
+            if job not in pending:
+                if verified_times.get(job) == changed:
+                    continue
+                pending.add(job)
             if kind == "mix" and not (path.parent / "verification.json").is_file():
                 continue
             proof = args.output / f"voice-qa-{kind}" / f"{key}.json"
             if proof.is_file() and json.loads(proof.read_text(encoding="utf-8"))["sha256"] == sha(path):
                 pending.remove(job)
+                verified_times[job] = changed
                 continue
             if kind == "source":
                 try:
@@ -127,8 +137,11 @@ def main():
             if transcriber is None:
                 transcriber = load_transcriber(args.device)
             result = listen_to(transcriber, path, expected, kind)
+            if path.stat().st_mtime_ns != changed:
+                continue
             save(proof, result)
             pending.remove(job)
+            verified_times[job] = changed
             print(f"{key} {kind} ASR {result['similarity']:.3f}", flush=True)
         if not pending or not args.watch:
             break
