@@ -15,11 +15,12 @@ SCENE_ROOT = PROJECT / "Assets/VideoScenes/EldenRingDevelopment36/AssetLibraryV4
 WORK = Path("D:/YamyamProduction/elden-ring-development-36-library-v4")
 OUT = DEFAULT_OUTPUT.with_name("pc-review-v4")
 ASSET_PLAN = HERE / "asset-plan-v4.json"
+PILOT_ONLY = False
 
 
 def selected_assets():
     assets = read(ASSET_PLAN)["assetRecords"]
-    assert len(assets) == 22 and len({a["role"] for a in assets}) == len(assets)
+    assert len(assets) == 18 and len({a["role"] for a in assets}) == len(assets)
     for asset in assets:
         path = PROJECT / asset["assetPath"]
         meta = path.with_suffix(path.suffix + ".meta")
@@ -53,6 +54,11 @@ def use_main_project():
 
 
 def capture_in_project(guard, worker, lease, fp, rows, folder, pilot):
+    if PILOT_ONLY and not pilot:
+        return
+    if pilot and all((folder / key / "capture.json").is_file() and
+                     read(folder / key / "capture.json")["fingerprint"] == fp for key in rows):
+        return
     folder.mkdir(parents=True, exist_ok=True)
     job = WORK / ("pilot-job.json" if pilot else "capture-job.json")
     save(job, dict(output=str(folder), ffmpeg=shutil.which("ffmpeg"), fingerprint=fp, project=str(PROJECT),
@@ -88,7 +94,7 @@ def configure():
     pipeline.scoped_guard = scoped_guard
     pipeline.stage_project = use_main_project
     pipeline.native_job = capture_in_project
-    pipeline.EXPECTED_PILOTS = {"01-1", "03-3", "07-3", "14-3", "20-1", "29-3"}
+    pipeline.EXPECTED_PILOTS = {"01-1", "12-1", "14-3", "20-1", "26-3", "29-3"}
 
 
 def finish(plan, labels, rows, fp, assets):
@@ -128,16 +134,19 @@ def finish(plan, labels, rows, fp, assets):
 
 
 def main():
+    global PILOT_ONLY
     parser = argparse.ArgumentParser()
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--pilot-only", action="store_true")
     parser.add_argument("--finish-only", action="store_true")
     parser.add_argument("--wait-minutes", type=int, default=140)
     args = parser.parse_args()
+    PILOT_ONLY = args.pilot_only
     configure()
     plan, labels, rows = pipeline.load_plan()
     assets = selected_assets()
     fp = source_id(rows)
-    if not args.execute and not args.finish_only:
+    if not args.execute and not args.finish_only and not args.pilot_only:
         print(json.dumps(dict(project=str(PROJECT), episodes=len(plan), cuts=len(rows),
                               sharedAssets=len(assets), fingerprint=fp, resourceWait=scoped_guard().busy_reason()),
                          ensure_ascii=False))
@@ -146,6 +155,9 @@ def main():
     try:
         if not args.finish_only and len(list(pipeline.CAPTURES.glob("??-?/capture.json"))) != len(rows):
             pipeline.capture(rows, fp, args.wait_minutes)
+        if PILOT_ONLY:
+            pipeline.work_state("pilot-ready", fp, preview=str(pipeline.PILOT / "contact-sheet.jpg"))
+            return
         finish(plan, labels, rows, fp, assets)
     except Exception as error:
         pipeline.work_state("incomplete", fp, reason=str(error))

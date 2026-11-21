@@ -40,8 +40,10 @@ namespace Yamyam.EldenRingLibraryLessons
 
         public static void Run()
         {
+            bool asyncShaders = ShaderUtil.allowAsyncCompilation;
             try
             {
+                ShaderUtil.allowAsyncCompilation = false;
                 var project = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
                 var path = Environment.GetEnvironmentVariable("YAMYAM_ELDEN_LIBRARY_JOB");
                 if (string.IsNullOrEmpty(path)) throw new InvalidOperationException("An explicit capture job is required.");
@@ -55,10 +57,8 @@ namespace Yamyam.EldenRingLibraryLessons
                     if (!source.assetPath.StartsWith("Assets/ThirdParty/YamyamAssetLibrary/", StringComparison.Ordinal) ||
                         AssetDatabase.AssetPathToGUID(source.assetPath) != source.guid)
                         throw new InvalidDataException($"Shared asset identity changed: {source.role}");
-                    if (source.assetPath.EndsWith(".anim", StringComparison.OrdinalIgnoreCase))
-                        source.clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(source.assetPath);
-                    else source.prefab = AssetDatabase.LoadAssetAtPath<GameObject>(source.assetPath);
-                    if (!source.prefab && !source.clip)
+                    source.prefab = AssetDatabase.LoadAssetAtPath<GameObject>(source.assetPath);
+                    if (!source.prefab)
                         throw new InvalidDataException($"Unable to import pinned shared asset: {source.assetPath}");
                 }
                 Directory.CreateDirectory(SceneFolder);
@@ -73,6 +73,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 UnityEngine.Debug.LogException(error);
                 EditorApplication.Exit(1);
             }
+            finally { ShaderUtil.allowAsyncCompilation = asyncShaders; }
         }
 
         static void Capture(Job job, Cut cut)
@@ -119,6 +120,9 @@ namespace Yamyam.EldenRingLibraryLessons
             camera.targetTexture = target;
             try
             {
+                // Warm the scene and compile material variants before the first recorded frame.
+                for (int warmup = 0; warmup < 8; warmup++)
+                    Read(demo, target, pixels, 0);
                 if (job.pilot)
                 {
                     var frames = new[] {cut.speechStartFrame, (cut.speechStartFrame + cut.speechEndFrame) / 2, cut.speechEndFrame};

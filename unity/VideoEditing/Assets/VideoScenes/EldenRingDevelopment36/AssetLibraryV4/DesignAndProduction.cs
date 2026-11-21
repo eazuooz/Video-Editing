@@ -52,7 +52,7 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             FrameCamera(V(0, 3.5f, -12), V(0, 1.1f, 0), 3.6f);
             var fighter = Pawn("Neutral opponent", V(-1.8f, 0, .7f), Gold);
-            fighter.localScale = Vector3.one * 2.08f;
+            fighter.localScale = Vector3.one * 1.48f;
             var arm = fighter.Find("Right sleeve");
             Block("Training blade", V(.02f, -.48f, 0), V(.08f, .75f, .075f), Paper, arm);
             var observer = Pawn("Responding character", V(1.3f, 0, -.4f), Aqua);

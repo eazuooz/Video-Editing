@@ -342,7 +342,9 @@ namespace Yamyam.EldenRingLibraryLessons
         Action<float> MapTrace()
         {
             var probes = new[] { V(-3.9f, .11f, -2), V(2, .11f, -2), V(2, .11f, 1.4f), V(-3, .11f, 1.4f) };
-            Route(Slate, probes);
+            var legs = new Transform[3];
+            for (int i = 0; i < legs.Length; i++)
+                legs[i] = Bar("Recorded traversal", probes[i], probes[i + 1], .14f, Aqua);
             var rover = Orb("Data collection probe", probes[0], .38f, Gold);
             var pin = Ring("Coordinate recorded with event", probes[2], .54f, Red);
             for (int x = -4; x <= 4; x++)
@@ -352,7 +354,14 @@ namespace Yamyam.EldenRingLibraryLessons
             {
                 float phase = t * 3;
                 int leg = Mathf.Min(2, (int)phase);
-                rover.localPosition = Vector3.Lerp(probes[leg], probes[leg + 1], phase - leg) + V(0, .23f, 0);
+                Vector3 position = Vector3.Lerp(probes[leg], probes[leg + 1], phase - leg);
+                rover.localPosition = position + V(0, .23f, 0);
+                for (int i = 0; i < legs.Length; i++)
+                {
+                    legs[i].gameObject.SetActive(i < leg || i == leg && phase > leg + .01f);
+                    Vector3 end = i < leg ? probes[i + 1] : position;
+                    Segment(legs[i], probes[i] + V(0, .08f, 0), end + V(0, .08f, 0), .14f);
+                }
                 pin.gameObject.SetActive(Second || t > .58f);
                 pin.localScale = Vector3.one * (1 + .21f * Pulse(t * 3));
                 if (Second)

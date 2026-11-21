@@ -12,7 +12,6 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             public string role, assetPath, guid;
             public GameObject prefab;
-            public AnimationClip clip;
         }
 
         public LibraryBinding[] library;
@@ -23,12 +22,9 @@ namespace Yamyam.EldenRingLibraryLessons
 
         sealed class Actor
         {
-            public Transform root, rightArm, driver;
+            public Transform root, driver;
             public GameObject body;
-            public AnimationClip idle, walk;
-            public string idleRole, walkRole;
-            public Quaternion restRightArm;
-            public Vector3 lastPosition;
+            public Vector3 lastPosition, origin;
             public float lastTime = -1;
         }
 
@@ -40,9 +36,7 @@ namespace Yamyam.EldenRingLibraryLessons
             return binding;
         }
 
-        public void RecordClipUsage(string role) => Get(role);
-
-        GameObject Attach(string role, Transform target, Vector3 fit, bool ground, float yaw = 0)
+        GameObject Attach(string role, Transform target, Vector3 fit, bool ground, float yaw = 0, bool poseActor = false)
         {
             var binding = Get(role);
             if (!binding.prefab) throw new InvalidOperationException($"Missing shared prefab: {role}");
@@ -56,13 +50,14 @@ namespace Yamyam.EldenRingLibraryLessons
             foreach (var animator in instance.GetComponentsInChildren<Animator>(true)) animator.enabled = false;
             instance.transform.localPosition = Vector3.zero;
             instance.transform.localRotation *= Quaternion.Euler(0, yaw, 0);
+            if (poseActor) BakeActor(instance);
             var renderers = instance.GetComponentsInChildren<Renderer>();
             if (renderers.Length == 0) throw new InvalidOperationException($"Shared prefab has no visible renderer: {role}");
             foreach (var lod in instance.GetComponentsInChildren<LODGroup>()) lod.ForceLOD(0);
             Bounds? combined = null;
             foreach (var renderer in renderers.Where(item => item.enabled))
             {
-                var box = renderer.localBounds;
+                Bounds box = renderer.localBounds;
                 for (int i = 0; i < 8; i++)
                 {
                     Vector3 edge = new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1);
@@ -114,23 +109,54 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             bool partner = name.Contains("Joining") || name.Contains("Explorer B") || name.Contains("Gate approach") ||
                            name.Contains("Responding") || name.Contains("Player target");
-            var body = Attach(partner ? "partner" : "villager", root, V(.87f, 1.41f, .92f), true, 180);
-            var arm = body.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name.EndsWith("upper_arm.R", StringComparison.Ordinal));
+            var body = Attach(partner && episode != 14 ? "partner" : "villager", root, V(1.42f, 1.54f, 1.18f), true, 180, true);
             var handle = new GameObject("Right sleeve").transform;
             handle.SetParent(root, false);
             handle.localPosition = V(.25f, .78f, -.03f);
-            var actor = new Actor {root = root, body = body, rightArm = arm, driver = handle,
-                restRightArm = arm ? arm.localRotation : Quaternion.identity, lastPosition = root.position,
-                idleRole = partner ? "partnerIdle" : "idle", walkRole = partner ? "partnerWalk" : "walk"};
-            actor.idle = Array.Find(library, entry => entry.role == actor.idleRole).clip;
-            actor.walk = Array.Find(library, entry => entry.role == actor.walkRole).clip;
+            var actor = new Actor {root = root, body = body, driver = handle,
+                lastPosition = root.position, origin = body.transform.localPosition};
             actors.Add(actor);
-            var ring = Ring("Actor identifier", pFor(root), .38f, color);
+            var ring = Ring("Actor identifier", root.localPosition, .38f, color);
             ring.SetParent(root, false);
             ring.localPosition = V(0, .035f, 0);
+            if ((episode == 14 || episode == 24 || episode == 35) && !partner)
+            {
+                var gear = new GameObject("Shield mount").transform;
+                gear.SetParent(root, false);
+                gear.localPosition = V(-.30f, .66f, -.14f);
+                Attach("shield", gear, V(.42f, .51f, .28f), false);
+            }
         }
 
-        static Vector3 pFor(Transform root) => root.localPosition;
+        static Transform FindBone(Transform[] bones, string suffix) =>
+            bones.FirstOrDefault(t => t.name.EndsWith(suffix, StringComparison.Ordinal));
+
+        static void AimBone(Transform bone, Vector3 aim)
+        {
+            if (!bone || bone.childCount == 0) return;
+            Vector3 direction = bone.GetChild(0).position - bone.position;
+            if (direction.sqrMagnitude > .000001f)
+                bone.rotation = Quaternion.FromToRotation(direction, aim) * bone.rotation;
+        }
+
+        void BakeActor(GameObject body)
+        {
+            var bones = body.GetComponentsInChildren<Transform>(true);
+            AimBone(FindBone(bones, "upper_arm.R"), body.transform.TransformDirection(V(.27f, -.91f, -.16f)));
+            AimBone(FindBone(bones, "upper_arm.L"), body.transform.TransformDirection(V(-.24f, -.93f, -.07f)));
+            foreach (var skin in body.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                var mesh = new Mesh {name = skin.name + " capture pose"};
+                skin.BakeMesh(mesh, false);
+                if (mesh.vertexCount == 0) throw new InvalidOperationException($"Empty imported mesh: {skin.name}");
+                owned.Add(mesh);
+                var part = new GameObject(skin.name + " pose");
+                part.transform.SetParent(skin.transform, false);
+                part.AddComponent<MeshFilter>().sharedMesh = mesh;
+                part.AddComponent<MeshRenderer>().sharedMaterials = skin.sharedMaterials;
+                skin.enabled = false;
+            }
+        }
 
         void PlayLibraryActors(float time)
         {
@@ -138,18 +164,18 @@ namespace Yamyam.EldenRingLibraryLessons
             {
                 Vector3 shift = actor.root.position - actor.lastPosition;
                 bool moving = time > actor.lastTime && new Vector2(shift.x, shift.z).sqrMagnitude > .000002f;
-                var active = moving ? actor.walk : actor.idle;
-                if (active)
-                {
-                    RecordClipUsage(moving ? actor.walkRole : actor.idleRole);
-                    active.SampleAnimation(actor.body, Mathf.Repeat(time, active.length));
-                }
-                if (actor.rightArm && Quaternion.Angle(actor.driver.localRotation, Quaternion.identity) > .5f)
-                    actor.rightArm.localRotation = actor.restRightArm * actor.driver.localRotation;
-                if (moving && Quaternion.Angle(actor.root.localRotation, Quaternion.identity) < 1f)
+                bool combat = episode == 14 || episode == 26 || episode == 32 || episode == 35;
+                var body = actor.body.transform;
+                if (moving && !combat)
                 {
                     float facing = Mathf.Atan2(shift.x, shift.z) * Mathf.Rad2Deg;
-                    actor.body.transform.localRotation = Quaternion.Euler(0, facing, 0);
+                    body.localRotation = Quaternion.Euler(0, facing, 0);
+                }
+                body.localPosition = actor.origin + Vector3.up * (moving ? .075f * Mathf.Abs(Mathf.Sin(time * 10)) : 0);
+                if (combat)
+                {
+                    float pose = Quaternion.Angle(Quaternion.identity, actor.driver.localRotation);
+                    body.localRotation = Quaternion.Euler(pose * .076f, 180 - pose * .17f, 0);
                 }
                 actor.lastPosition = actor.root.position;
                 actor.lastTime = time;
@@ -191,11 +217,13 @@ namespace Yamyam.EldenRingLibraryLessons
             // These shots keep their authored geometry for the calculation itself.
             // A shared asset grounds each abstract comparison in the subject it represents.
             if (episode == 3)
-                Attach("villager", Group("Library face reference", V(0, 0, 1.45f)), V(.82f, 1.76f, .8f), true, 180);
+                Attach("villager", Group("Library face reference", V(0, 0, 1.45f)), V(.82f, 1.76f, .8f), true, 180, true);
             if (episode == 7)
                 Attach("rock", Group("Natural step reference", V(0, .06f, 2.65f)), V(1.12f, .91f, .9f), true);
             if (episode == 8)
                 Attach("sword", Group("Weapon model context", V(-2.96f, .04f, 1.85f)), V(1.4f, 1.93f, .82f), true);
+            if (episode == 12)
+                Attach("tower", Group("Recorded viewpoint on the world map", V(2, .14f, 1.72f)), V(.86f, 1.42f, .86f), true);
             if (episode == 30)
                 Attach("paving", Group("Movement distance reference", V(0, .04f, 2.03f)), V(7.85f, .72f, 1.6f), true);
             if (episode == 34)
