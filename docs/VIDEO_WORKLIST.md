@@ -603,3 +603,5 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 2026-11-21 사용자 정정에 따라 36편의 설명 구간 72개를 모두 Unity에서 다시 촬영하고 편집했다. 실제 플레이 72구간과 기존 음성 및 자막의 타이밍을 유지했다. 각 편은 실제 플레이와 Unity 설명의 길이가 같다. [Unity 영상과 저장 씬 검수 기록](../production/batches/elden-ring-development-36-20261121/review-receipt-v3.json)
 
 2026-11-21 제작규칙에 맞춰 비디오에디팅 프로젝트에서 공용 캐릭터·환경·소품을 연결해 Unity 시연 72구간을 다시 촬영했다. 36편 모두 실제 플레이와 설명을 50:50으로 배치했고 기존 음성과 자막을 사용했다. [공용 에셋 시연과 PC 검수 기록](../production/batches/elden-ring-development-36-20261121/review-receipt-v4.json)
+
+2026-11-21 후속 수정에서 이미 촬영한 Unity 시연 72구간에 시작 상태, 조작, 결과의 단계 표시와 실제 프레임 비교를 추가했다. 36편 모두 승인 내레이션과 플레이 장면을 유지하고 설명과 플레이를 50:50으로 배치했다. Kevin MacLeod의 Dark Times, The Descent, Unseen Horrors를 CC BY 4.0 조건으로 사용하고 곡별 출처 및 최종 음량을 남겼다. [시연 단계 및 새 배경음악 PC 검수 기록](../production/batches/elden-ring-development-36-20261121/review-receipt-v5.json)
