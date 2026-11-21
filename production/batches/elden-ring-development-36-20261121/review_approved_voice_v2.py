@@ -15,6 +15,7 @@ from make_approved_voice_v2 import DEFAULT_OUTPUT, MIN_FREE, QWEN, busy, pinned_
 
 ASR_REVISION = "41f01f3fe87f28c78e2fbf8b568835947dd65ed9"
 MODEL = Path.home() / ".cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots" / ASR_REVISION
+VERSION_READING = str.maketrans("0123456789.", "영일이삼사오육칠팔구점")
 
 
 def normalize(text):
@@ -22,6 +23,7 @@ def normalize(text):
     # Whisper may write the same proper name in Hangul, Latin, or both.
     text = re.sub(r"(?<![a-z])elden\s*(?:ring(?![a-z])|링)", "엘든 링", text)
     text = re.sub(r"(?<![a-z])from\s*software(?![a-z])", "프롬 소프트웨어", text)
+    text = re.sub(r"[0-9]+(?:\.[0-9]+)+", lambda version: version[0].translate(VERSION_READING), text)
     return re.sub("[^가-힣a-z0-9]", "", text)
 
 

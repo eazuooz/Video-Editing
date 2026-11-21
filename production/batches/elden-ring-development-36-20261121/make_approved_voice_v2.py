@@ -135,7 +135,7 @@ def render(output, limit, only):
             engine.torch.cuda.set_per_process_memory_fraction(min(1.0, ALLOCATOR_LIMIT * 1024 * 1024 / total), 0)
             engine.render_chunks(pending, batch_size=1)
         finally:
-            worker.release()
+            worker.close()
     present = {item.key: pcm(item.path) for item in items if item.path.exists()}
     if len(present) == len(items):
         save(output / "voice-generation-v2.json", {"identity": config, "takes": present})
