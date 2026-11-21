@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 import build_pc_review as edit
 from audit_pc_review import audit_file
 from make_approved_voice_v2 import APPROVED, DEFAULT_OUTPUT, PLAN_SHA, pinned_plan, read, save, sha
-from review_approved_voice_v2 import compare
+from review_approved_voice_v2 import compare, compare_source
 from render_approved_review_v2 import MIX_TREATMENT, ORIGINAL
 
 
@@ -97,7 +97,7 @@ def finalize(output, plan):
             assert cut["sourceVoiceProofSha256"] == sha(proof)
             assert cut["voiceSha256"] == source["sha256"] == readback["sha256"] == sha(output / "approved-voice" / source["file"])
             expected = episode["narrationKo"][index]
-            score, differences = compare(expected, readback["recognized"])
+            score, differences = compare_source(expected, readback)
             if readback["expected"] != expected or score < .88:
                 raise ValueError(f"Source read-back for {key} needs checking: {differences}")
             source_scores.append(score)

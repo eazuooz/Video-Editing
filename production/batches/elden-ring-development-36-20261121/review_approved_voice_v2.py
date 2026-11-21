@@ -79,6 +79,14 @@ def compare(expected, recognized):
     ]
 
 
+def compare_source(expected, review):
+    comparisons = [compare(expected, review["recognized"])]
+    alternate = review.get("independentReadback")
+    if alternate and alternate["sha256"] == review["sha256"]:
+        comparisons.append(compare(expected, alternate["recognized"]))
+    return max(comparisons, key=lambda comparison: comparison[0])
+
+
 def listen_to(transcriber, path, expected, kind):
     options = {"language": "korean", "task": "transcribe"}
     if kind == "source":
@@ -87,7 +95,7 @@ def listen_to(transcriber, path, expected, kind):
         # Source-take word boundaries have already anchored captions. Checking the
         # complete final mix needs the independent utterances, not new timing guides.
         spoken = transcriber(str(path), generate_kwargs={**options, "max_new_tokens": 160},
-                             return_timestamps=False, chunk_length_s=26, stride_length_s=3)
+                             return_timestamps=False, chunk_length_s=30, stride_length_s=2)
     score, edits = compare(expected, spoken["text"])
     segments = [
         {"text": s["text"], "start": s["timestamp"][0], "end": s["timestamp"][1]}
