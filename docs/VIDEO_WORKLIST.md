@@ -591,3 +591,5 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 ## 엘든 링 쇼츠 대본 검토
 
 2026-11-21 요청에 따라 스크린 스페이스 데칼은 [45초 대본](../projects/shorts-elden-ring-screen-space-decals/script-review.md)과 자체 시연 영상으로 만들었다. 지형 제작 방식 변경 일화는 [별도 대본](../projects/shorts-elden-ring-terrain-making/script-review.md)에 정리했다. [엘든 링 개발 자료집](../projects/shorts-elden-ring-screen-space-decals/elden-ring-development-research.md)과 [검토 기록](../projects/shorts-elden-ring-screen-space-decals/review-receipt-v1.json)에서 출처 및 결과를 확인할 수 있다.
+
+2026-11-21 후속 요청에 따라 데칼과 지형 제작 일화 두 편을 로컬 검수본 v2로 만들었다. 데칼 60.25초와 지형 65.75초 모두 실제 플레이와 자체 시연을 교대로 절반씩 배치했다. 전체 자막과 클린 MP4, 한국어·영어 SRT를 각각 검증했다. 임시 한국어 내레이션과 Wholesome을 사용했으며 제3자 플레이 편집의 공개 이용 범위 확인이 남아 있다. [검수 파일과 연결된 기록](../production/batches/elden-ring-shorts-20261121/review-receipt-v2.json) · [엘든 링 개발 자료 36개](../projects/shorts-elden-ring-screen-space-decals/elden-ring-development-research.md)

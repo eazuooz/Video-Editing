@@ -77,3 +77,46 @@
 | [CGWORLD 286호 목차](https://cgworld.jp/magazine/cgw286.html) | 52쪽 메이킹 특집 안내와 인터넷 공개 분량 3편. 지면 전체에 대한 확인은 남아 있다. | 캐릭터의 재질·환경 아트·효과의 실제 제작 과정 |
 
 커뮤니티 글은 직접 캡처, 측정 조건, 버전 또는 원본 발표가 연결된 항목을 먼저 따라갔다. 재게시된 추측만으로 엘든 링의 정확한 엔진 명칭, 데칼 처리의 전체 성능, 셰이더 소스, 지역별 메모리 예산, 네트워크 내부 프로토콜을 확정할 수는 없다. 프레임 분석의 캡처와 발표 슬라이드는 대본의 참고 자료로 사용했고, 영상 시연은 자체 제작했다.
+
+## 엘든 링 개발 출처 찾아보기
+
+2026-11-21 기준 공개 링크 36개입니다. 같은 발표를 다룬 기사에는 ‘현장 기록’을 표시했습니다. 발표 초록은 공식 소개를 확인한 범위입니다. GDC 두 항목의 발표자는 외부 연구자와 디자이너입니다. 온라인 미공개 개발 문서와 발표 전문은 조사 범위에 포함되지 않습니다.
+
+| 번호 | 종류 | 확인한 내용 | 출처 |
+| --- | --- | --- | --- |
+| 1 | 공식 발표 | 오픈 그리드, 데이터 스트리밍, 정보 지도와 자동 점검 | [CEDEC 2022 오픈 필드 엔지니어링](https://cedil.cesa.or.jp/cedil_sessions/view/2542) |
+| 2 | 공식 발표 | 대기·빛·안개를 아트 디렉션에 맞춰 제어한 설계 | [CEDEC 2022 대기 표현](https://cedil.cesa.or.jp/cedil_sessions/view/2567) |
+| 3 | 공식 발표 | 캐릭터 제작 기술과 생물 형태의 사례 | [CEDEC 2022 캐릭터 제작](https://cedec.cesa.or.jp/2022/session/detail/127.html) |
+| 4 | 공식 발표 | 랜드마크를 통한 자유 탐험과 오픈 필드에서의 적 모션 | [CEDEC+KYUSHU 2022 오픈 필드](https://www.cedec-kyushu.jp/2022/session/05.html) |
+| 5 | 공식 발표 · 확장팩 | 구도와 시선 설계. 엘든 링 확장팩 사례만 인용 | [CEDEC 2025 배경 레이아웃](https://cedil.cesa.or.jp/cedil_sessions/view/3156.html) |
+| 6 | 주최자 기록 | 발표자와 발표 순서, 모션과 환경 제작 범위 | [Too 제작 세미나 기록](https://www.too.com/dc/report/elden_ring_220708/) |
+| 7 | 현장 기록 | 라프 지형 높이 수작업, 하이트맵에서 메시로 전환, DCC 도구 | [4Gamer 제작 세미나 취재](https://www.4gamer.net/games/463/G046388/20220715099/) |
+| 8 | 개발 자료와 제작진 취재 | 외형 조절, 얼굴 상처의 법선, 리카드와 플라키두삭스 VAT | [CGWORLD 제작 사례 1](https://cgworld.jp/article/202206-cgw286-eldenring01.html) |
+| 9 | 개발 자료와 제작진 취재 | 기획 지도에서 라프 지형으로, 지역 색과 스톰빌 배경 구성 | [CGWORLD 제작 사례 2](https://cgworld.jp/article/202206-cgw286-eldenring02.html) |
+| 10 | 개발 자료와 제작진 취재 | 효과 편집기, Time Act Editor, 주문 효과와 거리별 품질 | [CGWORLD 제작 사례 3](https://cgworld.jp/article/202206-cgw286-eldenring03.html) |
+| 11 | 현장 기록 | 내비메시, 격자 단위, 자동 순회와 도구 | [패미통 CEDEC 현장 기록](https://www.famitsu.com/news/202208/26273425.html) |
+| 12 | 현장 기록 | 오픈 필드 데이터 로드와 관리 도구 | [덴파미니코 게이머 CEDEC 현장 기록](https://news.denfaminicogamer.jp/kikakuthetower/220825m) |
+| 13 | 현장 기록 | 대기 색, 국소 볼륨, 가까운 레이 마칭과 먼 안개의 분업 | [4Gamer 대기 표현 세션 취재](https://www.4gamer.net/games/463/G046388/20220826111/) |
+| 14 | 현장 기록 | 거리별 랜드마크, 길과 시야 설계, 라단 모션 | [4Gamer CEDEC+KYUSHU 현장 기록](https://www.4gamer.net/games/463/G046388/20221115054/) |
+| 15 | 현장 기록 · 확장팩 | 묘지 평원·청해안·그림자 알터 화면 구성을 비교 | [4Gamer CEDEC 2025 레이아웃](https://www.4gamer.net/games/866/G086614/20250724066/) |
+| 16 | 현장 기록 · 확장팩 | 뷰포인트를 정하고 단조로운 구도를 개선한 과정 | [CGWORLD CEDEC 2025 발표 기록](https://cgworld.jp/article/202508-cedec-eldenring.html) |
+| 17 | 디렉터 인터뷰 | 자유도, 접근 방식, 캐릭터와 네트워크 테스트 피드백 | [PlayStation 일본 미야자키 인터뷰](https://blog.ja.playstation.com/2022/01/29/20220129-eldenring/) |
+| 18 | 디렉터 인터뷰 | 개발 착수, 조지 R. R. 마틴과의 역할 분담 | [Xbox Wire E3 2019](https://news.xbox.com/en-us/2019/06/09/hidetaka-miyazaki-and-george-rr-martin-present-elden-ring/) |
+| 19 | 디렉터 인터뷰 | 오픈 월드의 보스 배치와 개발 과정 변화 | [Xbox Wire 일본 2022](https://news.xbox.com/ja-jp/2022/05/26/elden-ring-interview/) |
+| 20 | 디렉터 인터뷰 | 필드·레거시 던전, 기승·점프, 전투와 탐험의 확장 | [패미통 E3 2021](https://www.famitsu.com/news/202106/14223605.html) |
+| 21 | 디렉터 인터뷰 일부 | 전략·캐릭터 빌드·스토리 진행에서 말한 자유도 | [패미통 Overture 인터뷰 발췌](https://www.famitsu.com/news/202201/27249109.html) |
+| 22 | 디렉터 인터뷰 | 신화가 초기 개발에 준 영향, 플레이를 통한 이야기 전달 | [패미통 출시일 인터뷰](https://www.famitsu.com/news/202202/25252631.html) |
+| 23 | 디렉터 인터뷰 | 마틴과의 작업, 팬데믹에 맞춘 제작과 소통 변화 | [Edge 인터뷰 공개본](https://www.gamesradar.com/elden-ring-fromsoftware-hidetaka-miyazaki-interview/) |
+| 24 | 디렉터 인터뷰 | 난관을 만났을 때 다른 경로를 찾을 자유와 플레이어 신뢰 | [Game Developer D.I.C.E. 문답](https://www.gamedeveloper.com/design/hidetaka-miyazaki-s-advice-for-challenging-game-design-trust-players-) |
+| 25 | 디렉터 인터뷰 · 본편·확장팩 | 프로젝트의 규모 확장과 작업 경험, 팀 인력 성장 | [GameSpot 확장팩 전후 회고](https://www.gamespot.com/articles/hidetaka-miyazaki-on-bringing-elden-ring-to-a-close-and-the-future-of-from-software/1100-6524337/) |
+| 26 | 개발자 인터뷰 | 무기의 무게와 움직임을 전달하는 동작 설계 | [FromSoftware 모션 직군](https://careers.fromsoftware.jp/jp/interview_017.html) |
+| 27 | 개발자 인터뷰 | 환경음·효과음과 잔향 배치 자동화 | [FromSoftware 사운드 직군](https://careers.fromsoftware.jp/jp/interview_018.html) |
+| 28 | 리드 사운드 디자이너 | 디렉터 브리프, 오케스트라 녹음, 라단 축제 합창 결정 | [PlayStation 사이토 쓰카사 기고](https://blog.playstation.com/?p=369262) |
+| 29 | 독립 프레임 분석 | D3D12 캡처의 G-버퍼, 진흙 발자국 데칼, 환경광 처리 | [Behind the Pretty Frames](https://mamoniem.com/behind-the-pretty-frames-elden-ring/) |
+| 30 | 독립 측정 | 출시 초기 PC 프레임타임과 성능, 해당 버전에 한정 | [Digital Foundry PC 출시판](https://www.youtube.com/watch?v=5EtcrUrsl38) |
+| 31 | 독립 측정 | 그래픽 카드·해상도별 초기 성능 자료 | [ComputerBase PC 벤치마크](https://www.computerbase.de/artikel/grafikkarten/elden-ring-benchmark-test.79799/seite-2) |
+| 32 | 공식 변경 기록 | PvP에 별도 적용하는 피해 보정 추가 | [공식 패치 1.07](https://en.bandainamcoent.eu/elden-ring/news/elden-ring-patch-notes-107) |
+| 33 | 공식 변경 기록 | 지원 기종에 레이 트레이싱 옵션 추가 | [공식 패치 1.09](https://en.bandainamcoent.eu/elden-ring/news/elden-ring-patch-notes-version-109) |
+| 34 | 공식 변경 기록 · 확장팩 | 그림자 나무 가호의 성장 단계 조절 | [공식 보정 1.12.2](https://en.bandainamcoent.eu/elden-ring/news/elden-ring-calibration-update-1122) |
+| 35 | 외부 발표 개요 | 게임 설계와 성장 관점을 엘든 링 등 세 작품으로 분석 | [GDC 2023 Promoting Growth Through Games](https://www.gdcvault.com/play/1028842/Fair-Play-Summit-Promoting-Growth) |
+| 36 | 외부 발표 개요 | 친사회적 멀티플레이 사례로 엘든 링을 언급 | [GDC 2024 Kind Games](https://gdcvault.com/play/1034865/Fair-Play-Summit-Kind-Games) |
