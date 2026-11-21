@@ -597,3 +597,5 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 ## 엘든 링 개발 쇼츠 36편 PC 검수
 
 2026-11-21 후속 요청으로 개발 자료집의 01~36 순서에 맞춰 각기 다른 질문을 다룬 PC 검수본 36편을 만들었다. 전체 26분 38초이며 각 편은 40~50초다. 실제 엘든 링 화면과 자체 설명을 같은 길이로 교차 편집했다. 자막 포함·클린 MP4와 한·영 SRT, 음량과 타임코드를 확인했다. 임시 한국어 내레이션과 CC BY 4.0 Wholesome을 사용했다. [대본과 구성](../production/batches/elden-ring-development-36-20261121/episodes-v1.json) · [원본별 장면 기록](../production/batches/elden-ring-development-36-20261121/footage-map-v1.json) · [PC 검수 결과](../production/batches/elden-ring-development-36-20261121/review-receipt-v1.json)
+
+2026-11-21 요청에 따라 36편을 기존 쇼츠의 승인 목소리로 다시 렌더했다. 실제 플레이와 설명의 길이는 편마다 50:50이다. 한국어·영어 자막을 새 발화에 맞췄으며, 전체 자막·클린 MP4 72개와 음량, 최종 믹스 음성인식 및 검수 링크를 확인했다. [승인 음성 PC 검수 기록](../production/batches/elden-ring-development-36-20261121/review-receipt-v2.json) · [개발 사례 쇼츠 제작규칙](VIDEO_WORKFLOW.md#개발-사례-쇼츠의-실제-화면과-설명)
