@@ -587,3 +587,7 @@ A03–A18만 선택. v6 전체 음성·본문·10초 정리 보존. 업로드된
 
 2026-11-18 사용자가 선택한2번만 추가 수정했다. 제목은 ‘3D 게임의 판도를 바꾼 마리오64’이며 실제 두 게임 비교와 동일 캐릭터·상태의 Unity 고정 구도/시점 조작을 좌우에 함께 보여 준다. 새 고정 카메라5모드×720프레임은 실제 Unity 촬영·RGB 왕복 검증과 기존 조작 시연3600상태 대조를 마쳤고, 구역 경계의 실제329/330/331프레임을 확인했다. 기존93.2초 음성·음악 AAC와 한영 자막은 보존했다. [검수표 v6](../production/batches/original-tech-twelve-20261115/local-final-review-v6.html)는2번만 새 파일로 교체하고 나머지11편의 경로·버전·SHA를 그대로 유지한다. [폰 검수용 새2번](https://drive.google.com/file/d/1XNShrw57mupJdOf_flYVaZEkfQ3ew9zB/view?usp=drivesdk)은 본인 계정만 접근하는 새 파일이며 이전12편 폴더와 파일은 보존했다. 실제 폰 재생·전체 청취·사용자 승인은 아직이고 YouTube/다른111편/자동화는 변경하지 않았다. 이번 한 편의 유한 수정 제작만 완료했다.
 <!-- ORIGINAL-TECH-TWELVE-20261115-END -->
+
+## 엘든 링 쇼츠 대본 검토
+
+2026-11-21 요청에 따라 스크린 스페이스 데칼은 [45초 대본](../projects/shorts-elden-ring-screen-space-decals/script-review.md)과 자체 시연 영상으로 만들었다. 지형 제작 방식 변경 일화는 [별도 대본](../projects/shorts-elden-ring-terrain-making/script-review.md)에 정리했다. [엘든 링 개발 자료집](../projects/shorts-elden-ring-screen-space-decals/elden-ring-development-research.md)과 [검토 기록](../projects/shorts-elden-ring-screen-space-decals/review-receipt-v1.json)에서 출처 및 결과를 확인할 수 있다.
