@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 import build_pc_review as edit
 from audit_pc_review import audit_file
 from make_approved_voice_v2 import APPROVED, DEFAULT_OUTPUT, PLAN_SHA, pinned_plan, read, save, sha
-from review_approved_voice_v2 import compare, compare_source
+from review_approved_voice_v2 import compare_mixed, compare_source
 from render_approved_review_v2 import MIX_TREATMENT, ORIGINAL
 
 
@@ -53,8 +53,10 @@ def missing(output, plan):
             waiting.append(number)
             continue
         details = read(record)
+        readback = read(mixed)
         if (details.get("mixTreatment") != MIX_TREATMENT or
-                read(mixed)["sha256"] != details["captioned"]["sha256"]):
+                readback["sha256"] != details["captioned"]["sha256"] or
+                not compare_mixed(episode, details, readback)[1]):
             waiting.append(number)
     return waiting
 
@@ -81,10 +83,9 @@ def finalize(output, plan):
         mixed = read(output / "voice-qa-mix" / f"{number}.json")
         if mixed["sha256"] != report["captioned"]["sha256"]:
             raise ValueError(f"Mixed audio proof changed for {number}")
-        expected_mix = " ".join(episode["narrationKo"])
-        actual_score, differences = compare(expected_mix, mixed["recognized"])
-        if mixed["expected"] != expected_mix or actual_score < .88:
-            raise ValueError(f"Mixed read-back for {number} needs checking: {differences}")
+        actual_score, complete_readback = compare_mixed(episode, report, mixed)
+        if not complete_readback:
+            raise ValueError(f"Mixed read-back for {number} needs checking")
         cuts = report["cuts"]
         assert [cut["type"] for cut in cuts] == ["gameplay", "explanation"] * 2
         assert cuts[0]["frames"] == cuts[1]["frames"] and cuts[2]["frames"] == cuts[3]["frames"]

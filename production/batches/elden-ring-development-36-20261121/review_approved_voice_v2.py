@@ -4,6 +4,7 @@ import difflib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import time
 import unicodedata
@@ -89,6 +90,52 @@ def compare_source(expected, review):
     return max(comparisons, key=lambda comparison: comparison[0])
 
 
+def needs_scene_readback(comparison):
+    score, differences = comparison
+    return score < .88 or any(kind == "delete" and len(removed) >= 15 for kind, removed, _ in differences)
+
+
+def compare_mixed(episode, report, review):
+    script = episode["narrationKo"]
+    expected = " ".join(script)
+    if review["expected"] != expected:
+        raise ValueError(f"Mixed read-back script changed: {episode['id']}")
+    primary = compare(expected, review["recognized"])
+    if not needs_scene_readback(primary):
+        return primary[0], True
+    segments = review.get("independentSceneReadbacks", [])
+    if len(segments) != len(script):
+        return primary[0], False
+    start = 0
+    for take, cut, segment in zip(script, report["cuts"], segments, strict=True):
+        if (segment["startFrame"], segment["frames"], segment["expected"]) != (start, cut["frames"], take):
+            return primary[0], False
+        if needs_scene_readback(compare(take, segment["recognized"])):
+            return primary[0], False
+        start += cut["frames"]
+    alternative = compare(expected, " ".join(segment["recognized"] for segment in segments))
+    return alternative[0], not needs_scene_readback(alternative)
+
+
+def read_back_final_scenes(transcriber, episode, report, path):
+    options = {"language": "korean", "task": "transcribe"}
+    segments = []
+    start = 0
+    for line, cut in zip(episode["narrationKo"], report["cuts"], strict=True):
+        end = start + cut["frames"]
+        # The final 60 fps movie has a 48 kHz audio track, so every edit frame
+        # corresponds to exactly 800 decoded samples.
+        trim = f"atrim=start_sample={800 * start}:end_sample={800 * end},asetpts=PTS-STARTPTS"
+        audio = subprocess.check_output(["ffmpeg", "-v", "error", "-nostdin", "-i", str(path),
+                                         "-map", "0:a:0", "-af", trim, "-ac", "1", "-ar", "16000",
+                                         "-c:a", "pcm_s16le", "-f", "wav", "pipe:1"])
+        recognized = transcriber(audio, generate_kwargs=options, return_timestamps=False)["text"]
+        segments.append({"startFrame": start, "frames": cut["frames"], "expected": line, "recognized": recognized})
+        print(f"{episode['id']} final scene {len(segments)}: {compare(line, recognized)[0]:.3f}", flush=True)
+        start = end
+    return segments
+
+
 def listen_to(transcriber, path, expected, kind):
     options = {"language": "korean", "task": "transcribe"}
     if kind == "source":
@@ -120,8 +167,35 @@ def main():
     parser.add_argument("--device", choices=("cpu", "cuda:0"), default="cpu")
     parser.add_argument("--watch", action="store_true")
     parser.add_argument("--only", nargs="*", default=[])
+    parser.add_argument("--scene-check", action="store_true")
     args = parser.parse_args()
     plan = pinned_plan()
+    if args.scene_check:
+        transcriber = None
+        for episode in plan:
+            number = episode["id"]
+            if args.only and number not in args.only:
+                continue
+            folder = args.output / number
+            path = folder / "captioned.mp4"
+            record = args.output / "voice-qa-mix" / f"{number}.json"
+            report = json.loads((folder / "verification.json").read_bytes())
+            review = json.loads(record.read_bytes())
+            if review["sha256"] != report["captioned"]["sha256"] or review["sha256"] != sha(path):
+                raise ValueError(f"Final audio changed before the scene read-back: {number}")
+            if compare_mixed(episode, report, review)[1]:
+                continue
+            if transcriber is None:
+                if args.device == "cuda:0":
+                    reserve_asr()
+                transcriber = load_transcriber(args.device)
+            review["independentSceneReadbacks"] = read_back_final_scenes(transcriber, episode, report, path)
+            if review["sha256"] != sha(path):
+                raise ValueError(f"Final audio changed during the scene read-back: {number}")
+            save(record, review)
+            if not compare_mixed(episode, report, review)[1]:
+                print(f"{number} still needs audio review", flush=True)
+        return
     selection = []
     if args.mode in {"source", "both"}:
         selection += [("source", f"{ep['id']}-{n}", args.output / "approved-voice" / f"{ep['id']}-{n}.wav", utterance)
