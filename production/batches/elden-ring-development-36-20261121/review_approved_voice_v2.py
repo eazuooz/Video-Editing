@@ -4,13 +4,14 @@ import difflib
 import json
 from pathlib import Path
 import re
+import sys
 import time
 import unicodedata
 import wave
 
 import numpy as np
 
-from make_approved_voice_v2 import DEFAULT_OUTPUT, pinned_plan, save, sha
+from make_approved_voice_v2 import DEFAULT_OUTPUT, MIN_FREE, QWEN, busy, pinned_plan, resource_guard, save, sha
 
 ASR_REVISION = "41f01f3fe87f28c78e2fbf8b568835947dd65ed9"
 MODEL = Path.home() / ".cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots" / ASR_REVISION
@@ -18,7 +19,9 @@ MODEL = Path.home() / ".cache/huggingface/hub/models--openai--whisper-large-v3-t
 
 def normalize(text):
     text = unicodedata.normalize("NFKC", text).lower()
-    text = re.sub(r"\belden\s*(?:ring|링)", "엘든 링", text)
+    # Whisper may write the same proper name in Hangul, Latin, or both.
+    text = re.sub(r"(?<![a-z])elden\s*(?:ring(?![a-z])|링)", "엘든 링", text)
+    text = re.sub(r"(?<![a-z])from\s*software(?![a-z])", "프롬 소프트웨어", text)
     return re.sub("[^가-힣a-z0-9]", "", text)
 
 
@@ -46,12 +49,26 @@ def load_transcriber(device):
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
     torch.set_num_threads(4)
+    if device == "cuda:0":
+        total = torch.cuda.get_device_properties(0).total_memory
+        torch.cuda.set_per_process_memory_fraction(min(1.0, 6 * 1024 ** 3 / total), 0)
     dtype = torch.float32 if device == "cpu" else torch.float16
     model = AutoModelForSpeechSeq2Seq.from_pretrained(str(MODEL), dtype=dtype, low_cpu_mem_usage=True,
                                                      local_files_only=True, attn_implementation="sdpa").to(device)
     processor = AutoProcessor.from_pretrained(str(MODEL), local_files_only=True)
     return pipeline("automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
                     feature_extractor=processor.feature_extractor, dtype=dtype, device=device)
+
+
+def reserve_asr():
+    guard = resource_guard()
+    if reason := busy(guard, MIN_FREE):
+        raise RuntimeError(f"Local Whisper resources are busy: {reason}")
+    sys.path.insert(0, str(QWEN))
+    from gpu_handoff_guard import schedule_gpu_handoff
+
+    schedule_gpu_handoff("elden-ring-development-36-approved-voice-qa", "cuda:0",
+                         minimum_free_mib=MIN_FREE)
 
 
 def compare(expected, recognized):
@@ -108,8 +125,10 @@ def main():
     stop = time.monotonic() + 7200
     transcriber = None
     pending = {(kind, key) for kind, key, _, _ in selection}
+    source_paths = {key: path for kind, key, path, _ in selection if kind == "source"}
     verified_times = {}
     while pending:
+        source_round = False
         for kind, key, path, expected in selection:
             job = (kind, key)
             if not path.is_file():
@@ -119,6 +138,9 @@ def main():
                 if verified_times.get(job) == changed:
                     continue
                 pending.add(job)
+            if kind == "mix" and any(k == "source" and source_paths[n].is_file() for k, n in pending):
+                source_round = True
+                break
             if kind == "mix" and not (path.parent / "verification.json").is_file():
                 continue
             proof = args.output / f"voice-qa-{kind}" / f"{key}.json"
@@ -135,6 +157,8 @@ def main():
                 if not completed:
                     continue
             if transcriber is None:
+                if args.device == "cuda:0":
+                    reserve_asr()
                 transcriber = load_transcriber(args.device)
             result = listen_to(transcriber, path, expected, kind)
             if path.stat().st_mtime_ns != changed:
@@ -147,7 +171,7 @@ def main():
             break
         if time.monotonic() >= stop:
             raise RuntimeError("Audio review timed out waiting for remaining files")
-        time.sleep(12)
+        time.sleep(1 if source_round else 12)
     print(f"{len(selection) - len(pending)}/{len(selection)} {args.mode} files reviewed.", flush=True)
 
 

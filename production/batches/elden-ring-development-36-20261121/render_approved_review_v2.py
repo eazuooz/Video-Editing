@@ -6,6 +6,7 @@ import time
 
 import build_pc_review as edit
 from make_approved_voice_v2 import DEFAULT_OUTPUT, pcm, pinned_plan, read, save, sha
+from review_approved_voice_v2 import compare
 
 ORIGINAL = DEFAULT_OUTPUT.with_name("pc-review-v1")
 VOICENAME = "기존 쇼츠 승인 목소리 · Qwen3-TTS 1.7B"
@@ -36,8 +37,10 @@ def collect_takes(episode, output):
         receipt = pcm(source)
         if review["sha256"] != receipt["sha256"]:
             return None
-        if not review["timestamped"] or review["similarity"] < .88:
-            raise ValueError(f"Scene {key} needs audio review: similarity {review['similarity']:.3f}")
+        expected = episode["narrationKo"][index]
+        score, _ = compare(expected, review["recognized"])
+        if review["expected"] != expected or not review["timestamped"] or score < .88:
+            raise ValueError(f"Scene {key} needs audio review: similarity {score:.3f}")
         takes.append({"path": source, "proof": proof, "review": review, **receipt})
     return takes
 

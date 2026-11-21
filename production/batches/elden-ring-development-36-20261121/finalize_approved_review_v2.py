@@ -7,8 +7,9 @@ from urllib.parse import urlsplit
 
 import build_pc_review as edit
 from audit_pc_review import audit_file
-from make_approved_voice_v2 import DEFAULT_OUTPUT, pinned_plan, read, save, sha
+from make_approved_voice_v2 import APPROVED, DEFAULT_OUTPUT, PLAN_SHA, pinned_plan, read, save, sha
 from review_approved_voice_v2 import compare
+from render_approved_review_v2 import MIX_TREATMENT, ORIGINAL
 
 
 class ReviewLinks(HTMLParser):
@@ -43,16 +44,35 @@ def sub_matches(path, takes, cuts):
 
 
 def missing(output, plan):
-    return [ep["id"] for ep in plan if not
-            (output / ep["id"] / "verification.json").is_file() or not
-            (output / "voice-qa-mix" / f"{ep['id']}.json").is_file()]
+    waiting = []
+    for episode in plan:
+        number = episode["id"]
+        record = output / number / "verification.json"
+        mixed = output / "voice-qa-mix" / f"{number}.json"
+        if not record.is_file() or not mixed.is_file():
+            waiting.append(number)
+            continue
+        details = read(record)
+        if (details.get("mixTreatment") != MIX_TREATMENT or
+                read(mixed)["sha256"] != details["captioned"]["sha256"]):
+            waiting.append(number)
+    return waiting
+
+
+def picture_sha(path):
+    return edit.run("ffmpeg", "-v", "error", "-i", path, "-map", "0:v:0", "-an",
+                    "-c:v", "copy", "-f", "hash", "-hash", "sha256", "-").decode().strip()
 
 
 def finalize(output, plan):
     generation_path = output / "voice-generation-v2.json"
     generation = read(generation_path)
-    if len(generation["takes"]) != 144:
-        raise ValueError("The approved voice proof needs 144 takes")
+    approved_inputs = read(APPROVED)["inputs"]
+    identity = generation["identity"]
+    if (len(generation["takes"]) != 144 or identity != read(output / "voice-identity-v2.json") or
+            identity["planSha256"] != PLAN_SHA or identity["referenceSha256"] != approved_inputs["reference"] or
+            identity["referenceTextSha256"] != approved_inputs["referenceText"]):
+        raise ValueError("The narration proof does not match the 144 approved voice inputs")
     durations, results, reuse_count = [], [], 0
     for episode in plan:
         number = episode["id"]
@@ -61,8 +81,9 @@ def finalize(output, plan):
         mixed = read(output / "voice-qa-mix" / f"{number}.json")
         if mixed["sha256"] != report["captioned"]["sha256"]:
             raise ValueError(f"Mixed audio proof changed for {number}")
-        actual_score, differences = compare(mixed["expected"], mixed["recognized"])
-        if actual_score < .88:
+        expected_mix = " ".join(episode["narrationKo"])
+        actual_score, differences = compare(expected_mix, mixed["recognized"])
+        if mixed["expected"] != expected_mix or actual_score < .88:
             raise ValueError(f"Mixed read-back for {number} needs checking: {differences}")
         cuts = report["cuts"]
         assert [cut["type"] for cut in cuts] == ["gameplay", "explanation"] * 2
@@ -75,7 +96,10 @@ def finalize(output, plan):
             source = generation["takes"][key]
             assert cut["sourceVoiceProofSha256"] == sha(proof)
             assert cut["voiceSha256"] == source["sha256"] == readback["sha256"] == sha(output / "approved-voice" / source["file"])
-            score, _ = compare(readback["expected"], readback["recognized"])
+            expected = episode["narrationKo"][index]
+            score, differences = compare(expected, readback["recognized"])
+            if readback["expected"] != expected or score < .88:
+                raise ValueError(f"Source read-back for {key} needs checking: {differences}")
             source_scores.append(score)
             active_drops.append(readback["levels"]["speechHalfMedianChangeDb"])
         frames = sum(cut["frames"] for cut in cuts)
@@ -86,6 +110,8 @@ def finalize(output, plan):
             artifact = folder / report[label]["path"]
             assert sha(artifact) == report[label]["sha256"]
             audit_file(artifact, frames)
+            if packets_reused == len(cuts):
+                assert picture_sha(artifact) == picture_sha(ORIGINAL / number / artifact.name)
         for language, script in (("ko", episode["narrationKo"]), ("en", episode["captionsEn"])):
             subs = folder / f"{language}.srt"
             assert sha(subs) == report["subtitles"][language]

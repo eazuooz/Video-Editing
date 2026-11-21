@@ -358,8 +358,13 @@ def review_page(output, approved_voice=False):
                      f'{video_links}{match}<details><summary>대본</summary><ol>{script}</ol></details>'
                      f'<p><a href="{escape(source["url"], quote=True)}">{escape(source["title"])}</a></p></article>')
     navigation = " ".join(f'<a href="#ep{row["id"]}">{row["id"]}</a>' for row in rows)
-    voice_note = ("기존 쇼츠 승인 목소리로 다시 렌더한 버전입니다."
-                  if approved_voice else "사용 음성은 임시 검수 음성입니다.")
+    if approved_voice:
+        status_note = f"PC 검수본 {complete}편 · 실제 플레이 50% · 설명 50%"
+        review_note = "기존 쇼츠 승인 목소리로 다시 렌더했습니다. 번호를 누르면 해당 편으로 이동합니다."
+    else:
+        status_note = f"실제 플레이를 맞춘 검수본 {complete}편 · 영상 초안 {drafts}편 · 대본만 {36-complete-drafts}편"
+        review_note = ("실제 플레이가 확보된 구간에서는 설명과 길이를 맞춥니다. 원본이 필요한 구간은 편별로 표시했습니다. "
+                       "사용 음성은 임시 검수 음성입니다.")
     index = f'''<!doctype html><html lang="ko"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>엘든 링 개발 쇼츠 36편 PC 검수</title>
 <style>body{{background:#10171b;color:#fff8ea;font:16px/1.7 "Malgun Gothic",sans-serif;margin:auto;max-width:1240px;padding:24px}}
@@ -368,9 +373,8 @@ h1,h2{{line-height:1.3;color:#ffd68a}}h2{{font-size:22px}}a{{color:#81e2d5}}nav 
 main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}}
 .flag{{font-weight:bold;color:#81e2d5}}video{{display:block;width:min(100%,280px);margin:auto;aspect-ratio:9/16;background:black}}
 summary{{cursor:pointer}}footer{{margin-block:25px}}</style>
-<h1>엘든 링 개발 쇼츠 36편 PC 검수</h1><p>실제 플레이를 맞춘 검수본 {complete}편 · 영상 초안 {drafts}편 · 대본만 {36-complete-drafts}편</p>
-<p>실제 플레이가 확보된 구간에서는 설명과 길이를 맞춥니다. 원본이 필요한 구간은 편별로 표시했습니다.
-{voice_note} 클립의 PC 검수 범위와 출처는 <a href="manifest.json">검수 기록</a>에 있습니다.</p>
+<h1>엘든 링 개발 쇼츠 36편 PC 검수</h1><p>{status_note}</p>
+<p>{review_note} 클립의 PC 검수 범위와 출처는 <a href="manifest.json">검수 기록</a>에 있습니다.</p>
 <nav>{navigation}</nav><main>{''.join(cards)}</main>
 <footer>{ATTRIBUTION} · <a href="https://creativecommons.org/licenses/by/4.0/">음악 이용 조건</a></footer></html>'''
     exact_write(output / "manifest.json", json.dumps({"count": len(rows), "videoReviews": complete,
