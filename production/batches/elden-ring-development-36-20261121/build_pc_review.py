@@ -326,7 +326,7 @@ def reviews(output):
     return rows
 
 
-def review_page(output, approved_voice=False, native_unity=False):
+def review_page(output, approved_voice=False, native_unity=False, asset_library=False):
     rows = reviews(output)
     complete = sum(bool(r["review"]) and not r["review"]["missing"] for r in rows)
     drafts = sum(bool(r["review"]) for r in rows) - complete
@@ -358,7 +358,11 @@ def review_page(output, approved_voice=False, native_unity=False):
                      f'{video_links}{match}<details><summary>대본</summary><ol>{script}</ol></details>'
                      f'<p><a href="{escape(source["url"], quote=True)}">{escape(source["title"])}</a></p></article>')
     navigation = " ".join(f'<a href="#ep{row["id"]}">{row["id"]}</a>' for row in rows)
-    if native_unity:
+    if asset_library:
+        status_note = f"PC 검수본 {complete}편 · 실제 플레이 50% · Unity 원리 시연 50%"
+        review_note = ("비디오에디팅 프로젝트의 공용 캐릭터·환경·소품을 연결해 Unity 시연 72개를 새로 촬영했습니다. "
+                       "기존 쇼츠 목소리를 사용했습니다. 번호를 누르면 해당 편으로 이동합니다.")
+    elif native_unity:
         status_note = f"PC 검수본 {complete}편 · 실제 플레이 50% · Unity 원리 시연 50%"
         review_note = "기존 쇼츠 목소리를 사용했습니다. 36편에 Unity 시연 72개를 넣었습니다. 번호를 누르면 해당 편으로 이동합니다."
     elif approved_voice:
@@ -380,7 +384,10 @@ summary{{cursor:pointer}}footer{{margin-block:25px}}</style>
 <p>{review_note} 클립의 PC 검수 범위와 출처는 <a href="manifest.json">검수 기록</a>에 있습니다.</p>
 <nav>{navigation}</nav><main>{''.join(cards)}</main>
 <footer>{ATTRIBUTION} · <a href="https://creativecommons.org/licenses/by/4.0/">음악 이용 조건</a></footer></html>'''
-    version = "unity-principles-v3" if native_unity else "approved-voice-v2" if approved_voice else "temporary-voice-v1"
+    if asset_library:
+        version = "unity-shared-assets-v4"
+    else:
+        version = "unity-principles-v3" if native_unity else "approved-voice-v2" if approved_voice else "temporary-voice-v1"
     exact_write(output / "manifest.json", json.dumps({"count": len(rows), "videoReviews": complete,
                                                      "reviewVersion": version,
                                                      "roughCuts": drafts, "episodes": rows}, ensure_ascii=False, indent=2))
