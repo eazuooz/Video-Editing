@@ -1,0 +1,938 @@
+[
+  {
+    "id": "01",
+    "title": "달리는 동안 다음 지역은 어떻게 준비될까?",
+    "topic": "월드 스트리밍",
+    "requiredGameplay": [
+      "기승 상태로 장소를 넘나드는 긴 이동",
+      "경관이 달라져서 이전 지형이 멀어지는 이동"
+    ],
+    "diagram": [
+      "현재 지역",
+      "주변 구역 읽기",
+      "다음 지역 이동"
+    ],
+    "narrationKo": [
+      "넓은 들판을 달릴 때 화면에서는 길 하나가 이어지죠. 그런데 게임은 멀리 있는 장소까지 전부 올려 두지 않아도 됩니다.",
+      "엘든 링의 제작 발표에서는 필드를 격자로 나누고 이동에 맞춰 주변 구역의 데이터를 읽는 방법을 설명합니다.",
+      "말을 타면 걸을 때보다 금방 다음 구역에 닿습니다. 빠른 이동과 큰 적은 한 구역만 보고 처리하기 어렵죠.",
+      "그래서 보는 화면과 데이터를 나누는 기준을 구분했습니다. 격자는 화면 속 경계선이 아니라, 필요한 다음 구역을 다루는 단위입니다."
+    ],
+    "captionsEn": [
+      "As you ride, the field looks continuous. The game does not have to load every distant place at once.",
+      "The developers divided open fields into grid regions and loaded nearby data as the player moved.",
+      "Mounted travel crosses regions faster. Large enemies can also extend beyond one region.",
+      "The grid is a unit for managing data, while the visible landscape continues across it."
+    ]
+  },
+  {
+    "id": "02",
+    "title": "가까운 안개와 먼 안개를 왜 다르게 그렸을까?",
+    "topic": "대기 렌더링",
+    "requiredGameplay": [
+      "앞쪽 장애물과 먼 안개가 함께 보이는 야외",
+      "같은 공간에서 가까운 안개 볼륨을 옆으로 바라보는 컷"
+    ],
+    "diagram": [
+      "가까운 광선 샘플",
+      "먼 대기 계산",
+      "두 결과 연결"
+    ],
+    "narrationKo": [
+      "같은 화면에서도 발밑의 안개와 먼 산을 덮는 안개의 모습은 다릅니다. 화면 전체에서 같은 계산을 반복할 필요가 있을까요?",
+      "가까운 구간은 광선이 지나는 여러 점에서 안개의 밀도와 빛을 읽습니다. 이 방식을 레이 마칭이라고 합니다.",
+      "먼 산 너머까지 같은 간격으로 계속 샘플을 찍으면 거리가 늘수록 계산도 늘어납니다.",
+      "엘든 링은 먼 구간을 더 단순한 대기 계산으로 이어 붙였습니다. 가까운 안개에는 형태를, 먼 안개에는 풍경의 깊이를 남겼죠."
+    ],
+    "captionsEn": [
+      "Near fog shapes and distant haze do not need the same calculation across the whole view.",
+      "Ray marching samples fog density and light at multiple points along the near view ray.",
+      "Keeping that level of sampling all the way to distant hills would increase the cost.",
+      "Elden Ring combined the detailed near region with a simpler distant atmosphere."
+    ]
+  },
+  {
+    "id": "03",
+    "title": "얼굴에 새긴 상처는 왜 빛을 받으면 움푹해 보일까?",
+    "topic": "캐릭터 재질",
+    "requiredGameplay": [
+      "캐릭터 생성에서 상처 옵션 변경 전후",
+      "같은 얼굴·조명에서 얼굴 회전, 상처 측면"
+    ],
+    "diagram": [
+      "피부 표면",
+      "상처 마스크",
+      "법선 방향"
+    ],
+    "narrationKo": [
+      "캐릭터 생성에서 상처를 고르면 피부 위의 색뿐 아니라 빛에 반응하는 모양도 달라집니다.",
+      "제작 사례에서 마스크는 상처를 추가할 부분을 정합니다. 법선 텍스처는 그 부분의 표면이 어느 쪽을 향하는지 바꿔 줍니다.",
+      "조명이 비스듬히 닿으면 같은 색으로 보였던 부분에 밝고 어두운 쪽이 생깁니다. 이 명암이 패인 느낌을 만들죠.",
+      "마스크는 상처의 범위, 법선은 요철의 방향을 담당합니다. 두 입력을 함께 써서 피부 재질 위에 상처를 얹을 수 있습니다."
+    ],
+    "captionsEn": [
+      "A selected character scar can change how light responds on the skin as well as its color.",
+      "A mask selects the scar region. A normal texture changes the apparent direction of the surface there.",
+      "With angled lighting, the apparent relief develops a bright side and a dark side.",
+      "The mask controls where the scar goes, while normals supply the relief."
+    ]
+  },
+  {
+    "id": "04",
+    "title": "멀리 보이는 성을 향하다가 왜 옆길로 새게 될까?",
+    "topic": "랜드마크",
+    "requiredGameplay": [
+      "림그레이브에서 먼 성 또는 황금 나무를 향해 이동",
+      "이동 도중 가까운 폐허·교회나 입구로 시점이 전환"
+    ],
+    "diagram": [
+      "먼 성",
+      "중간 교회",
+      "가까운 입구"
+    ],
+    "narrationKo": [
+      "멀리 성을 보고 걷기 시작했는데, 중간에 교회나 폐허가 보이면 발길이 바뀝니다. 엘든 링은 이런 선택을 어떻게 만들까요?",
+      "먼 성은 대략적인 방향을 줍니다. 그쪽으로 움직이는 동안 중간 거리의 교회나 요새가 새 목적지로 들어옵니다.",
+      "가까이 다가가면 문, 불빛, 작은 길처럼 멀리서는 보이지 않던 단서가 눈에 들어옵니다.",
+      "거리마다 다른 크기의 단서를 두면, 앞의 목표를 잊지 않아도 새로운 길을 직접 선택할 수 있습니다."
+    ],
+    "captionsEn": [
+      "A far castle gives a direction, but a church or ruin can change your route on the way.",
+      "Major landmarks point you across the field. Medium ones create another destination while you travel.",
+      "At close range, an entrance, light, or path offers a new local choice.",
+      "The game layers landmarks at different scales so detours can coexist with the larger journey."
+    ]
+  },
+  {
+    "id": "05",
+    "title": "넓은 첫 풍경에는 왜 가까운 나무 대신 먼 구조물을 뒀을까?",
+    "topic": "확장팩 배경 구도",
+    "requiredGameplay": [
+      "묘지 평원 진입에서 시야가 탁 트이는 실제 컷",
+      "평원 앞자리에서 먼 베일·원경 구조가 보이는 이동"
+    ],
+    "diagram": [
+      "근경 비우기",
+      "원경 실루엣",
+      "넓은 첫인상"
+    ],
+    "narrationKo": [
+      "확장팩의 묘지 평원에 들어서면 시야가 앞으로 길게 열립니다. 여기에 큰 나무가 가까이 늘어서면 어떤 장면이 될까요?",
+      "제작진은 근경에 큰 나무를 더하는 안도 비교했습니다. 그러면 단조로움은 줄지만, 넓게 열린 첫인상도 가려질 수 있습니다.",
+      "완성 장면의 먼 구조물은 낮은 들판 위에서도 윤곽이 읽힙니다. 눈길은 잡되 앞으로 열린 공간을 막지 않습니다.",
+      "가까운 층과 먼 층의 역할을 바꾼 선택입니다. 들판의 폭은 앞쪽에서, 방향과 인상은 멀리서 만듭니다."
+    ],
+    "captionsEn": [
+      "The Gravesite Plain needs a broad first view when the player arrives.",
+      "Large nearby trees were considered, but they would also interrupt the open view.",
+      "A distant silhouette catches the eye while preserving the foreground's breadth.",
+      "The foreground provides openness, and the background provides a readable direction."
+    ]
+  },
+  {
+    "id": "06",
+    "title": "넓은 필드를 만들기 전에 왜 임시 맵부터 연결했을까?",
+    "topic": "프로토타입",
+    "requiredGameplay": [
+      "게임 속 필드에서 동굴 또는 던전 쪽으로 이동",
+      "필드·전투의 이동 동작이 이어지는 실제 화면"
+    ],
+    "diagram": [
+      "임시 에셋",
+      "이동과 연결 시험",
+      "양산"
+    ],
+    "narrationKo": [
+      "완성된 엘든 링에서는 넓은 필드와 던전을 연달아 만납니다. 하지만 처음부터 모든 지역을 완성해 놓고 시험할 수는 없죠.",
+      "제작진은 기존 에셋을 써서 필요한 땅의 규모와 작업량을 먼저 가늠했습니다. 실제로 움직일 수 있는 버전에서 점프와 기승도 시험했습니다.",
+      "평평한 길을 달리는 것과 좁은 입구를 지나 다른 공간으로 들어가는 건 요구 조건이 다릅니다. 여러 장소를 연결해 시험하는 이유입니다.",
+      "임시 맵을 이어 메모리 구성이 성립하는지도 확인했습니다. 구조와 제작비를 먼저 검토하고 세부 에셋을 양산한 겁니다."
+    ],
+    "captionsEn": [
+      "The finished game connects fields and dungeons, but the team could not wait for every location to be finished before testing.",
+      "Existing assets helped estimate the world scale and workload. A playable build tested jumps and riding.",
+      "Moving in a field and entering a narrow dungeon impose different requirements.",
+      "A connected prototype also tested memory constraints before detailed production scaled up."
+    ]
+  },
+  {
+    "id": "07",
+    "title": "왜 엘든 링은 땅을 만드는 방식을 바꿨을까?",
+    "topic": "지형 제작 일화",
+    "requiredGameplay": [
+      "바닥 높이와 단차가 보이는 이동·스톰빌 진입",
+      "길의 좁은 경사 또는 다른 높이가 보이는 실제 플레이"
+    ],
+    "diagram": [
+      "높이 값 격자",
+      "같은 단차 비교",
+      "점과 면 편집"
+    ],
+    "narrationKo": [
+      "엘든 링은 넓은 필드를 만들다가 땅을 편집하는 방법을 바꿨습니다. 풍경뿐 아니라 플레이에 필요한 단차 때문이었습니다.",
+      "처음에는 하이트맵을 썼습니다. 지도에 깔린 격자점에 높이 값을 넣어서 언덕과 골짜기를 만드는 방법입니다.",
+      "길과 발판에는 높이가 바뀌는 위치도 중요합니다. 제작진은 이런 단차를 디렉터와 설계 요구대로 다듬기 어려웠다고 설명했습니다.",
+      "그래서 폴리곤 메시로 옮겨 필요한 점과 면을 직접 움직였습니다. 격자와 메시를 같은 단차에 맞춰 보면 조정 방식이 보입니다."
+    ],
+    "captionsEn": [
+      "Elden Ring also had to build terrain elevation changes precisely where gameplay required them.",
+      "The first approach used height values at fixed grid samples to form terrain.",
+      "The team reported difficulty refining numerous gameplay-sensitive steps to match design requests.",
+      "They switched to editing polygon mesh vertices and faces directly, as shown in this controlled comparison."
+    ]
+  },
+  {
+    "id": "08",
+    "title": "리카드의 검에 붙은 팔은 어떻게 제각각 움직일까?",
+    "topic": "Vertex Animation Texture",
+    "requiredGameplay": [
+      "리카드 2페이즈에서 검을 꺼내 팔이 보이는 장면",
+      "검의 팔들이 움직이는 실제 전투 중 근접 장면"
+    ],
+    "diagram": [
+      "팔의 점들",
+      "프레임별 위치 저장",
+      "검 위에서 재생"
+    ],
+    "narrationKo": [
+      "리카드의 검에는 팔이 여럿 달려 있습니다. 검이 크게 움직일 때도 표면의 팔들이 따로 움직이는 모습이 보입니다.",
+      "제작진은 프레임마다 달라지는 점의 위치를 그림 파일 같은 텍스처에 썼습니다. 이것이 버텍스 애니메이션 텍스처입니다.",
+      "검을 들어 올리는 큰 움직임과 팔이 꿈틀거리는 작은 움직임을 함께 보세요. 겹쳐 보여도 변화의 크기가 다릅니다.",
+      "재생할 때는 프레임에 해당하는 값을 읽어 각 점을 움직입니다. 이 작업에 공개된 자료는 위치뿐 아니라 법선도 보여 줍니다."
+    ],
+    "captionsEn": [
+      "Rykard's sword carries many moving arms even when the whole weapon moves.",
+      "The developers stored mesh vertex positions by animation frame in a texture, known as VAT.",
+      "Separate the large motion of the sword from the small motion of its arms.",
+      "The animation reads back frame-specific positions. The making-of also shows a normals texture."
+    ]
+  },
+  {
+    "id": "09",
+    "title": "스톰빌 성은 같은 장소에서 왜 길의 느낌이 다를까?",
+    "topic": "환경 아트",
+    "requiredGameplay": [
+      "스톰빌 바깥과 성벽을 지나 입구에 접근",
+      "성의 좁은 통로·수직 경로 또는 다른 시야의 이동"
+    ],
+    "diagram": [
+      "전체 지도",
+      "지역 콘셉트",
+      "시야와 동선"
+    ],
+    "narrationKo": [
+      "스톰빌은 멀리서 볼 때는 큰 성 하나지만, 안으로 들어서면 시야가 좁아지고 이동할 높이도 달라집니다.",
+      "환경 제작 자료를 보면, 먼저 전체 기획 지도를 합쳐 거친 지형을 만듭니다. 그 다음 지역별로 콘셉트를 구체화합니다.",
+      "넓은 접근로와 좁은 통로를 비교해 보세요. 어디가 보이는지에 따라 같은 성에서도 다음 행동이 달라집니다.",
+      "월드의 큰 인상과 방금 지나갈 길의 인상을 따로 다듬었습니다. 그래서 장소가 이어지면서도 구간별로 경험이 달라집니다."
+    ],
+    "captionsEn": [
+      "Stormveil looks like a single broad landmark from outside, but it changes scale once you enter.",
+      "The team combined planning maps into a rough model, then developed location-specific concepts.",
+      "Compare an open approach with an enclosed route: what you can see changes your next move.",
+      "The large identity of the place and the small journey through it were worked on at different scales."
+    ]
+  },
+  {
+    "id": "10",
+    "title": "주문 이펙트는 왜 손을 뻗는 순간에 맞춰 나올까?",
+    "topic": "Time Act Editor",
+    "requiredGameplay": [
+      "플레이어가 지팡이로 돌팔매 등 주문을 처음 발사",
+      "같은 주문의 발사 순간 손·지팡이와 투사체가 연속 촬영"
+    ],
+    "diagram": [
+      "준비 동작",
+      "발사 이벤트",
+      "투사체"
+    ],
+    "narrationKo": [
+      "주문은 버튼을 누르자마자 화면에 달라붙는 장식처럼 보이지 않습니다. 손과 지팡이가 움직인 뒤, 맞는 순간에 발사됩니다.",
+      "제작 사례는 움직임 초안을 보면서 이펙트와 사운드를 만들고, 타임 액트 에디터로 발생하는 시각을 연결했다고 설명합니다.",
+      "지팡이가 앞으로 나오는 준비 동작과 빛이 떨어져 나오는 순간을 따라가 보세요. 시점이 이어져 하나의 행동으로 읽힙니다.",
+      "효과의 모양은 이펙트에서, 효과가 작동할 때는 동작의 시간표에서 조절합니다. 그래서 같은 주문을 반복해서 다듬을 수 있습니다."
+    ],
+    "captionsEn": [
+      "Casting reads as one action because its effect follows the staff motion at the right time.",
+      "The developers built from motion drafts and linked effect events to animation with the Time Act Editor.",
+      "Watch the spell separate from the staff after the preparation movement.",
+      "Effect appearance and event timing can be adjusted separately and then tested together."
+    ]
+  },
+  {
+    "id": "11",
+    "title": "적은 어디서 점프하고 어디서 돌아갈지 어떻게 알까?",
+    "topic": "NavMesh",
+    "requiredGameplay": [
+      "지형 단차 주변에서 크기가 다른 적이 접근하는 모습",
+      "도약 또는 우회가 실제 관찰되는 짧은 구간"
+    ],
+    "diagram": [
+      "보행 가능한 면",
+      "점프·낙하 연결",
+      "몸집별 경로"
+    ],
+    "narrationKo": [
+      "바닥이 이어진 것처럼 보여도, 모든 적이 같은 좁은 틈이나 단차를 통과할 수 있는 건 아닙니다.",
+      "엘든 링은 걸어 다닐 수 있는 영역을 내비메시로 만들었습니다. 단차로 끊긴 구간에는 점프나 낙하 연결이 추가될 수 있습니다.",
+      "눈앞의 큰 적과 작은 적은 폭과 높이 요구가 다릅니다. 따라서 같은 맵에서도 쓸 수 있는 길이 다를 수 있습니다.",
+      "걸을 면, 건널 연결, 몸집에 맞는 조건을 차례로 따집니다. 공격 선택과는 다른, 목표까지 가는 길의 설계입니다."
+    ],
+    "captionsEn": [
+      "A route that looks continuous need not be usable by every enemy.",
+      "A navigation mesh identifies walkable surfaces, and jump or drop links can reconnect separated areas.",
+      "Enemy size affects what openings and steps are usable.",
+      "Walkable surface, special link, and body clearance make up navigation, separate from attack decisions."
+    ]
+  },
+  {
+    "id": "12",
+    "title": "큰 월드에서 문제가 생긴 자리를 개발자가 어떻게 다시 찾았을까?",
+    "topic": "정보 지도와 자동 순회",
+    "requiredGameplay": [
+      "야외에서 야전과 좁은 공간 사이로 이동하는 장면",
+      "경관과 오브젝트 구성이 달라지는 실제 이동"
+    ],
+    "diagram": [
+      "자동 이동",
+      "위치와 오류 저장",
+      "지도에서 다시 열기"
+    ],
+    "narrationKo": [
+      "넓은 필드를 사람이 매번 전부 돌아다니면서 문제 위치를 기억하기는 어렵습니다. 같은 자리를 다시 찾는 일부터 부담이죠.",
+      "발표에서는 자동으로 맵을 순회하며 오류와 부하를 모으고, 그 결과를 개발용 정보 지도에 연결한 사례를 보여 줬습니다.",
+      "필드와 입구를 잇는 짧은 길에도 서로 다른 에셋이 나옵니다. 기록에 위치가 붙으면 어느 구간인지 빠르게 좁힐 수 있습니다.",
+      "정보 지도에서 위치를 선택해 문제를 살펴볼 수 있었습니다. 플레이 화면을 검사 자료로 바꾸는 핵심은 결과와 위치를 같이 남기는 것입니다."
+    ],
+    "captionsEn": [
+      "Manually revisiting every place in a huge world makes failures hard to locate.",
+      "Automated traversal gathered errors and load data linked to a development map.",
+      "A short route can cross very different asset groups. Position data narrows down a report.",
+      "The map makes a problem inspectable by keeping its measurement bound to a place."
+    ]
+  },
+  {
+    "id": "13",
+    "title": "하늘이 바뀔 때 안개 색도 왜 따라 바뀔까?",
+    "topic": "시간대와 대기색",
+    "requiredGameplay": [
+      "같은 본편 장소의 색이 달라지는 시간대 또는 날씨 변화",
+      "빛줄기나 그늘색이 또렷한 실제 환경"
+    ],
+    "diagram": [
+      "시간대 기준색",
+      "사이 상태 연결",
+      "지역 분위기"
+    ],
+    "narrationKo": [
+      "한 장소도 빛이 달라지면 먼 산과 그늘이 전혀 다르게 보입니다. 하늘과 안개의 색을 함께 설계했기 때문입니다.",
+      "발표에서는 시간대마다 대표 상태를 만들고 그 사이를 이어, 하늘과 여러 구름 층의 변화를 관리했다고 설명합니다.",
+      "빛이 닿는 곳과 그늘을 나란히 보세요. 전체 색을 하나로 바꾸는 것만으로는 이처럼 다른 인상을 만들기 어렵습니다.",
+      "직접 들어오는 빛과 환경광의 색을 따로 조절하면, 지형은 그대로 두고도 시간대와 장소의 느낌을 다듬을 수 있습니다."
+    ],
+    "captionsEn": [
+      "A place changes its appearance when its light, sky, and atmospheric color change together.",
+      "The team authored key times of day and blended between them to drive sky and cloud layers.",
+      "Look at the lit area and the shadow. A single global tint cannot express all of that contrast.",
+      "Direct light and ambient light colors let artists tune different times and places without rebuilding terrain."
+    ]
+  },
+  {
+    "id": "14",
+    "title": "라단이 움직이기 전에도 왜 공격이 올 것처럼 느껴질까?",
+    "topic": "전투 모션과 예고",
+    "requiredGameplay": [
+      "별 부수는 라단이 몸을 움직여 준비 자세가 보이는 장면",
+      "같은 공격의 예고와 실제 시작이 이어지는 장면"
+    ],
+    "diagram": [
+      "대기 자세",
+      "예고 동작",
+      "발동과 반응"
+    ],
+    "narrationKo": [
+      "라단과 싸울 때는 공격이 닿고 나서야 몸짓을 보면 늦습니다. 그 전에 어디를 볼지 알 수 있어야 합니다.",
+      "제작 발표는 공격의 예고 동작과, 대기 중에도 큰 적의 위압감을 주는 자세를 각각 다룹니다.",
+      "공격이 시작되기 전에 자세가 달라지는 부분을 따라가 보세요. 몸이 전환되는 순간에 플레이어는 다음 행동을 고릅니다.",
+      "대기 자세는 적의 인상을 만들고, 예고는 대응할 시간을 만듭니다. 같은 몸짓이 화면의 분위기와 조작 판단을 이어 줍니다."
+    ],
+    "captionsEn": [
+      "Watch the boss's body before the hit. The move has to be readable while you can still react.",
+      "The development talk discusses both threatening idle poses and wind-ups that announce an attack.",
+      "Follow the pose transition ahead of the strike. That is when the player chooses a response.",
+      "Idle posture establishes presence, and the wind-up gives the player information to act on."
+    ]
+  },
+  {
+    "id": "15",
+    "title": "청해안의 빛나는 꽃은 왜 전부 자동으로 뿌리지 않았을까?",
+    "topic": "확장팩 청해안",
+    "requiredGameplay": [
+      "청해안에서 빛나는 꽃과 길이 함께 보이는 이동",
+      "꽃밭 가까운 뷰와 멀리 꽃밭 보이는 시점"
+    ],
+    "diagram": [
+      "자동 배치",
+      "중요 시점은 직접 배치",
+      "원거리 표현"
+    ],
+    "narrationKo": [
+      "청해안에 들어가면 빛나는 꽃이 길의 방향을 보여 주는 풍경을 만납니다. 넓은 꽃밭을 전부 손으로 놓는다면 작업이 커지겠죠.",
+      "제작진은 일반 식생을 자동으로 놓으면서, 중요하게 보여 줄 시점 주변의 꽃은 손으로 두었습니다.",
+      "가까운 꽃은 어디에 놓이느냐에 따라 길과 겹쳐 보이는 모양이 달라집니다. 멀리 있는 꽃은 큰 밝기와 색의 덩어리로 읽힙니다.",
+      "중요한 구도에서는 개별 배치를, 먼 꽃밭에는 텍스처를 활용했습니다. 플레이어가 보는 거리마다 필요한 정밀도가 다르기 때문입니다."
+    ],
+    "captionsEn": [
+      "Glowing flowers shape the view and path in the Cerulean Coast, but an entire field is costly to place by hand.",
+      "General vegetation could be distributed automatically, while flowers in key views were arranged manually.",
+      "The placement of individual nearby flowers matters. Distant flowers read more as a mass of color and light.",
+      "The team used precise local placement and texture at a distance, matching effort to what the player sees."
+    ]
+  },
+  {
+    "id": "16",
+    "title": "같은 계곡도 어느 자리에서 보느냐가 왜 중요할까?",
+    "topic": "확장팩 뷰포인트",
+    "requiredGameplay": [
+      "확장팩 묘지 평원·청해안·그림자 알터 중 확인한 장소의 첫 진입",
+      "같은 지역의 걷는 방향과 시야가 달라지는 실제 화면"
+    ],
+    "diagram": [
+      "플레이어 시선",
+      "반복과 밝기 점검",
+      "목표 가시성"
+    ],
+    "narrationKo": [
+      "오픈 필드는 어디서나 볼 수 있지만, 첫 진입과 길이 갈라지는 자리는 특히 많이 보게 됩니다. 그곳에 무엇이 보여야 할까요?",
+      "확장팩 배경 발표는 대표 시점을 정해 반복되는 형태, 좌우로 치우친 인상, 목적지의 가시성을 점검하는 흐름을 다룹니다.",
+      "같은 장소를 계속 걸으면 앞의 바위나 나무가 배경과 겹칩니다. 중요한 순간에 무엇이 먼저 보이는지 확인할 수 있습니다.",
+      "대표 시점에 개선을 집중하면 반복되는 풍경을 줄이고, 다음 목적지를 읽기 쉽게 만들 수 있습니다."
+    ],
+    "captionsEn": [
+      "An open environment can be seen from anywhere, but entry points and forks have especially important views.",
+      "The expansion's environment talk checks repetition, composition, brightness, and destination visibility from selected viewpoints.",
+      "As you move, nearby shapes overlap the background, changing what catches the eye first.",
+      "Focusing adjustments on important views can improve variety and make the next destination easier to read."
+    ]
+  },
+  {
+    "id": "17",
+    "title": "넓은 필드와 좁은 성을 왜 한 게임에 함께 넣었을까?",
+    "topic": "오픈 필드와 레거시 던전",
+    "requiredGameplay": [
+      "자유롭게 방향을 고를 수 있는 림그레이브나 외곽",
+      "스톰빌 좁은 길, 진입로 또는 전투에서 선택이 좁아지는 모습"
+    ],
+    "diagram": [
+      "필드에서 목적 선택",
+      "던전에서 길 읽기",
+      "두 리듬 연결"
+    ],
+    "narrationKo": [
+      "필드에서는 산과 폐허 중 어느 쪽으로 가도 되지만, 성 안에서는 눈앞의 통로와 적부터 읽어야 합니다.",
+      "미야자키는 자유롭게 탐험하는 필드와, 길이 입체적으로 이어지는 레거시 던전을 함께 만드는 구성을 설명했습니다.",
+      "성 안에서는 갑자기 시야가 막히거나 위아래로 길이 갈라집니다. 넓은 필드와 같은 선택을 그대로 반복하지 않습니다.",
+      "필드가 여행의 방향과 순서를 열어 준다면, 던전은 눈앞의 움직임을 세밀하게 만듭니다. 두 리듬을 넘나드는 구조입니다."
+    ],
+    "captionsEn": [
+      "Fields let you choose a destination, while a castle makes you read the next corridor and opponent.",
+      "Miyazaki explained the combination of free exploration and intricate legacy dungeons.",
+      "Inside a castle, the view may close off and routes change vertically.",
+      "Fields open up the order of travel; dungeons focus the decisions immediately ahead."
+    ]
+  },
+  {
+    "id": "18",
+    "title": "조지 R. R. 마틴이 쓴 이야기는 게임의 어디에 들어갔을까?",
+    "topic": "세계관 공동 제작",
+    "requiredGameplay": [
+      "고드릭 또는 반신의 배경이 직접 읽히는 게임 화면",
+      "그 인물의 현 상황과 옛 모습의 흔적이 연결되는 화면"
+    ],
+    "diagram": [
+      "과거의 신화",
+      "제작진의 해석",
+      "현재의 인물과 장소"
+    ],
+    "narrationKo": [
+      "엘든 링에서 우리가 만나는 인물들은 이미 큰 사건이 지나간 세계에 살고 있습니다. 이 세계의 과거를 누가 만들었을까요?",
+      "인터뷰에 따르면 마틴은 플레이어가 도착하기 이전의 신화와 역사, 인물의 바탕을 썼습니다.",
+      "플레이할 때 만나는 장소와 인물에는 과거의 흔적이 남아 있습니다. 그 과거가 지금의 장소와 인물을 해석하는 실마리가 됩니다.",
+      "프롬 소프트웨어는 그 설정을 현재의 인물, 환경, 사건으로 발전시켰습니다. 제작 역할을 알면 이야기와 플레이가 연결되는 방식이 보입니다."
+    ],
+    "captionsEn": [
+      "The player arrives after much of the world's history has already happened.",
+      "Martin helped create the older mythos, history, and foundations for its people.",
+      "Places and encounters preserve traces of that earlier world for the player to interpret.",
+      "FromSoftware developed those foundations into the people, locations, and events that the player encounters."
+    ]
+  },
+  {
+    "id": "19",
+    "title": "필드 보스와 던전 보스의 만남이 왜 다르게 느껴질까?",
+    "topic": "오픈월드 보스 배치",
+    "requiredGameplay": [
+      "필드 보스와 조우한 뒤 시점 또는 이동 방향을 바꾸는 플레이",
+      "길이 좁아지는 보스 입구와 전투가 이어지는 플레이"
+    ],
+    "diagram": [
+      "열린 접근",
+      "만남을 배치",
+      "다음 선택"
+    ],
+    "narrationKo": [
+      "열린 들판에서 보스를 만날 때와 성 입구에서 마주칠 때는 움직일 수 있는 공간부터 다릅니다.",
+      "오픈 월드를 만들면서 제작진은 플레이어가 어떤 방향으로 오고 보스를 어느 시점에 만날지 더 다양하게 고려해야 했습니다.",
+      "들판에서는 접근 방향을 바꾸거나 다른 곳으로 갈 수 있지만, 좁은 쪽에서는 길의 흐름이 만남을 더 강하게 몰아줍니다.",
+      "보스를 어디에 놓을지는 전투 자체뿐 아니라, 거기까지 오는 길과 만난 뒤의 선택까지 설계하는 일입니다."
+    ],
+    "captionsEn": [
+      "A field encounter and a castle encounter offer different space and approaches.",
+      "Open-world development made the team's assumptions about encounter direction and timing more flexible.",
+      "A field allows detours; a narrow approach makes the encounter more strongly part of the route.",
+      "Boss placement designs the approach and the decisions around the fight as well as the battle itself."
+    ]
+  },
+  {
+    "id": "20",
+    "title": "점프와 기승은 넓은 필드에서 어떤 차이를 만들까?",
+    "topic": "이동과 탐험",
+    "requiredGameplay": [
+      "영마 기승으로 필드를 가로지르는 플레이",
+      "육상 점프로 작은 장애물 또는 단차를 넘는 플레이"
+    ],
+    "diagram": [
+      "가로 거리",
+      "세로 단차",
+      "경로 선택"
+    ],
+    "narrationKo": [
+      "들판에서는 멀리 움직이는 시간과, 바로 앞의 단차를 넘을 수 있는지가 모두 중요합니다.",
+      "개발 인터뷰가 소개한 기승은 먼 거리를 이동하는 수단입니다. 걸어갈 때보다 먼 목표를 빠르게 시도할 수 있습니다.",
+      "점프는 짧은 거리에서도 길을 바꿉니다. 높이를 넘을 수 있으면 눈앞의 발판이나 장애물이 다른 선택지가 됩니다.",
+      "기승은 이동의 규모를, 점프는 가까운 경로를 바꿉니다. 넓은 필드에 두 조작이 함께 들어간 이유를 이렇게 이해할 수 있습니다."
+    ],
+    "captionsEn": [
+      "In a broad field, both travel time and the small step directly ahead matter.",
+      "Riding opens up longer routes and makes distant destinations easier to try.",
+      "Jumping changes the local route when a ledge or obstacle becomes traversable.",
+      "Riding changes the scale of travel; jumping changes the reachable path nearby."
+    ]
+  },
+  {
+    "id": "21",
+    "title": "엘든 링이 말한 자유도는 맵을 마음대로 걷는 것뿐일까?",
+    "topic": "자유도와 빌드",
+    "requiredGameplay": [
+      "다른 조작 또는 장비·마술을 쓰는 본편 전투",
+      "비슷한 상대를 다른 전략이나 이동으로 상대"
+    ],
+    "diagram": [
+      "탐험 순서",
+      "전투 전술",
+      "캐릭터 빌드"
+    ],
+    "narrationKo": [
+      "엘든 링에서 자유롭다는 건 막힌 곳에 다른 길이 있다는 뜻만은 아닙니다. 같은 적 앞에서도 다른 방법을 고를 수 있죠.",
+      "개발 인터뷰는 진행 순서, 전투 전술, 캐릭터를 키우는 방식 모두를 자유도의 일부로 설명합니다.",
+      "한 캐릭터는 가까이 붙고 다른 캐릭터는 거리를 두어 효과를 씁니다. 전투가 같아도 준비와 움직임은 달라집니다.",
+      "어디로 갈지, 무엇을 준비할지, 그 자리에서 어떻게 싸울지가 연결됩니다. 선택권이 행동으로 드러나는 구조입니다."
+    ],
+    "captionsEn": [
+      "Freedom means more than choosing a route. The same fight can be approached differently.",
+      "The director discussed freedom in progress, tactics, and character builds.",
+      "Close combat and ranged effects can demand different positions and preparation.",
+      "Route, build, and moment-to-moment tactics reinforce one another."
+    ]
+  },
+  {
+    "id": "22",
+    "title": "플레이한 순서가 왜 각자의 이야기가 될까?",
+    "topic": "플레이 중심 서사",
+    "requiredGameplay": [
+      "플레이어가 길을 고르고 장소에 도착하며 환경의 단서를 만나는 장면",
+      "같은 본편에서 지역을 떠나 다른 사건이나 장소로 연결"
+    ],
+    "diagram": [
+      "발견",
+      "경로 선택",
+      "서로 다른 기억"
+    ],
+    "narrationKo": [
+      "엘든 링에서는 모두가 같은 순서로 장소를 발견하지 않습니다. 먼저 어디로 갔는지가 기억에 남는 이야기를 바꿉니다.",
+      "미야자키는 마틴의 신화가 개발 초기부터 바탕이 됐고, 플레이 경험 자체가 유저의 이야기가 되길 바란다고 설명했습니다.",
+      "문, 멀리 보이는 구조물, 거기에서 만난 적이 기억을 연결합니다. 설명을 먼저 듣지 않아도 이동의 순서가 맥락을 만듭니다.",
+      "개발진은 세계에 공통의 과거를 두고, 그 흔적을 발견하는 순서는 플레이어에게 맡겼습니다."
+    ],
+    "captionsEn": [
+      "Players do not discover the same places in the same order, so their remembered journeys differ.",
+      "Miyazaki described Martin's myth as an early foundation and wanted play itself to become the player's story.",
+      "Doors, landmarks, and enemies connect memories through the path taken.",
+      "The world shares a history while players choose the order in which they uncover its traces."
+    ]
+  },
+  {
+    "id": "23",
+    "title": "큰 오픈 월드를 만들 때 팀의 소통은 왜 달라졌을까?",
+    "topic": "개발 협업",
+    "requiredGameplay": [
+      "실제 플레이에서 먼 풍경과 가까운 길이 함께 보이는 장면",
+      "같은 지형을 이동하며 시야·오브젝트·전투가 교차"
+    ],
+    "diagram": [
+      "공간 작업",
+      "교차 검토",
+      "소통 조정"
+    ],
+    "narrationKo": [
+      "넓은 들판에는 지형, 조명, 적, 이동 경로가 한 화면에 함께 나타납니다. 한 파트의 변경이 다른 파트에도 영향을 줄 수 있죠.",
+      "엣지 인터뷰에서 미야자키는 팬데믹 초기, 제작 과정과 소통 방식도 조정해야 했다고 설명했습니다.",
+      "큰 경관에서 좁은 길로 들어가는 장면을 보면 여러 분야의 결과가 끊김 없이 합쳐져야 하는 이유가 드러납니다.",
+      "플레이 영상으로 팀의 도구를 알 수는 없습니다. 공개된 일화의 핵심은 큰 제품을 만드는 동안 협업 방식도 함께 바꿨다는 점입니다."
+    ],
+    "captionsEn": [
+      "A broad field combines terrain, lighting, enemies, and traversal. Changing one can affect the others.",
+      "In the Edge interview, Miyazaki said the team had to adapt aspects of production and communication during the pandemic.",
+      "Moving from a broad view to a tight path illustrates how work across disciplines meets in one sequence.",
+      "The interview documents adjustments in collaboration; the gameplay illustrates the breadth of the work."
+    ]
+  },
+  {
+    "id": "24",
+    "title": "너무 강한 적도 다음 길을 알려 줄 수 있을까?",
+    "topic": "난관과 플레이어 신뢰",
+    "requiredGameplay": [
+      "초반 필드 보스 또는 난관에 접근하는 실제 플레이",
+      "보스에서 이탈·다른 방법으로 도전하는 실제 플레이"
+    ],
+    "diagram": [
+      "난관",
+      "판단과 대안",
+      "재도전"
+    ],
+    "narrationKo": [
+      "처음 만난 적이 너무 강하면, 그 자리를 꼭 지금 통과해야 할까요? 엘든 링은 다른 선택을 남겨 둡니다.",
+      "미야자키는 충분히 어려운 적도 플레이어가 다른 길을 찾게 하는 단서가 될 수 있다고 설명했습니다.",
+      "보스를 지나쳐 탐험하거나 영체 같은 보조 수단을 준비할 수 있습니다. 어떻게 풀어낼지 선택하는 과정도 플레이입니다.",
+      "난도는 닫힌 문 하나로 끝나지 않습니다. 다른 경로와 재도전을 고를 수 있을 때, 어려움도 진행을 안내합니다."
+    ],
+    "captionsEn": [
+      "If an opponent is too strong, does that encounter have to be solved now?",
+      "Miyazaki said a hard encounter can signal that the player should explore another route.",
+      "A player can detour or prepare other tools, such as a Spirit Ash, before trying again.",
+      "A challenge guides progress when other ways forward and another attempt remain possible."
+    ]
+  },
+  {
+    "id": "25",
+    "title": "확장팩은 어떻게 더 큰 모험을 이어갈 수 있었을까?",
+    "topic": "본편 제작 회고",
+    "requiredGameplay": [
+      "본편의 필드·전투 또는 라단 격파 맥락",
+      "황금 나무의 그림자 실제 필드 또는 전투"
+    ],
+    "diagram": [
+      "본편에서 새 규모 경험",
+      "팀의 성장",
+      "확장팩 제작"
+    ],
+    "narrationKo": [
+      "본편과 확장팩 모두에서 넓은 지형과 큰 전투를 만납니다. 이런 규모의 프로젝트를 한 번 만드는 경험이 다음 제작에 어떤 영향을 줄까요?",
+      "확장팩 출시에 맞춘 인터뷰에서 미야자키는 엘든 링을 만들며 여러 디렉터, 디자이너와 기획자들이 성장했다고 회고합니다.",
+      "확장팩에서는 새 지형과 새로운 동선을 다시 만들어야 합니다. 본편의 결과를 그대로 복사해서 해결할 수는 없습니다.",
+      "이 일화의 핵심은 규모를 감당해 본 경험이 팀에 남았다는 것입니다. 완성된 게임과 함께 다음 제작의 기반도 만들어졌습니다."
+    ],
+    "captionsEn": [
+      "Both the base game and the expansion require a team to handle large environments and encounters.",
+      "Miyazaki described the development of Elden Ring as a foundation for growth among directors, designers, and planners.",
+      "The expansion still needed original terrain and routes of its own.",
+      "The process left the studio with experience and people able to tackle the next challenge."
+    ]
+  },
+  {
+    "id": "26",
+    "title": "큰 무기의 무게는 숫자 없이 어떻게 보여줄까?",
+    "topic": "무기 모션",
+    "requiredGameplay": [
+      "큰 무기의 준비와 휘두름이 끊기지 않는 플레이",
+      "다른 무기로 백스윙과 회복을 확인할 수 있는 플레이"
+    ],
+    "diagram": [
+      "준비 자세",
+      "타격 동작",
+      "회복"
+    ],
+    "narrationKo": [
+      "큰 무기를 휘두를 때 손만 보지 말고 몸 전체를 보세요. 휘두르기 전에 힘을 모으고, 휘두른 뒤에 자세를 회복합니다.",
+      "모션 담당자는 무기의 길이와 무게, 쓰는 방법이 보이도록 움직임을 다듬는다고 설명했습니다.",
+      "작은 동작과 큰 준비 동작을 비교하면, 손에 든 물체가 달라졌을 때 몸 전체의 속도와 자세도 달라진다는 걸 볼 수 있습니다.",
+      "준비, 타격, 회복을 나누어 보면 화면에서 무게를 읽을 수 있습니다. 무게감은 흔들림 하나보다 동작 전체에서 전달됩니다."
+    ],
+    "captionsEn": [
+      "Watch the whole body as a large weapon is lifted, swung, and brought back under control.",
+      "FromSoftware's animator discussed conveying weapon length, weight, and use through movement.",
+      "Different weapons change the body's preparation, speed, and pose.",
+      "Wind-up, impact, and recovery together communicate weight without a numeric label."
+    ]
+  },
+  {
+    "id": "27",
+    "title": "동굴과 들판의 소리를 어떻게 장소에 맞춰 놓을까?",
+    "topic": "환경음과 잔향",
+    "requiredGameplay": [
+      "본편 넓은 공간에서 닫힌 구간으로 이동",
+      "동굴 또는 성 내부와 야외의 균형을 보여 주는 컷"
+    ],
+    "diagram": [
+      "공간 구분",
+      "효과음과 잔향",
+      "엔지니어링 자동화"
+    ],
+    "narrationKo": [
+      "발걸음은 같은 동작이어도, 천장이 있는 공간과 열린 들판에서는 다르게 들릴 수 있습니다. 여기서는 공간부터 비교합니다.",
+      "사운드 담당자는 엘든 링에서 환경음과 효과음, 잔향 설정의 배치를 도와 줄 자동화 작업을 엔지니어와 했다고 설명했습니다.",
+      "복도와 바깥 필드는 공간이 바뀌는 곳입니다. 음향을 얹을 때도 어떤 설정이 어디까지 적용되는지 다뤄야 합니다.",
+      "넓은 게임의 사운드는 소리 파일을 만드는 것과, 그 파일이 맞는 공간에서 들리도록 배치하는 일이 함께 필요합니다."
+    ],
+    "captionsEn": [
+      "Footsteps can feel different in enclosed and open spaces. This sequence focuses on the spaces themselves.",
+      "FromSoftware described working with engineers on automation for placing sounds and reverb settings.",
+      "A corridor-to-field transition shows why spatial boundaries matter for sound placement.",
+      "Open-world sound depends on authoring audio and reliably assigning it to the right places."
+    ]
+  },
+  {
+    "id": "28",
+    "title": "라단 축제 노래는 왜 매끈한 합창처럼 만들지 않았을까?",
+    "topic": "라단 축제와 음악 제작",
+    "requiredGameplay": [
+      "라단 축제 현장 또는 붉은 사자성의 모인 전사들",
+      "별 부수는 라단 본편 맥락 또는 실제 축제 시작"
+    ],
+    "diagram": [
+      "장면의 인물",
+      "보컬 질감",
+      "다시 녹음"
+    ],
+    "narrationKo": [
+      "라단 축제는 완벽한 공연을 관람하는 곳보다, 전투를 앞둔 사람들이 모인 장소에 가깝습니다. 제작진은 그 인상을 음악에도 옮겼습니다.",
+      "리드 사운드 디자이너는 전문가다운 매끈한 합창에서 벗어나려고, 금관 연주자들이 노래하는 버전을 사용했다고 설명했습니다.",
+      "축제에 모인 전사들과 전장으로 향하는 흐름을 보면, 왜 보컬의 질감이 장면 속 사람들에게 어울려야 하는지 이해할 수 있습니다.",
+      "곡의 음정뿐 아니라 누가 부르는 것처럼 들리는지도 편곡과 녹음의 선택입니다. 이 사례가 라단 축제의 인상을 만들었습니다."
+    ],
+    "captionsEn": [
+      "The festival feels like people gathering before a battle, and the sound team wanted the music to reflect that.",
+      "The lead sound designer said brass players sang a version that sounded less like a polished choir.",
+      "The warriors and the route toward the battle suggest why the voices needed to fit the people in the scene.",
+      "Arrangement and recording can change who the music sounds like it belongs to."
+    ]
+  },
+  {
+    "id": "29",
+    "title": "카메라를 돌려도 발자국이 왜 바닥에 붙어 있을까?",
+    "topic": "Screen-space Decal",
+    "requiredGameplay": [
+      "바닥에 생기는 흔적을 읽을 수 있는 실제 플레이 또는 바닥 문맥",
+      "카메라·바닥·벽의 방향을 읽는 엘든 링 화면"
+    ],
+    "diagram": [
+      "화면의 깊이",
+      "공간 위치 복원",
+      "범위 안에 투영"
+    ],
+    "narrationKo": [
+      "카메라를 움직이면 화면에 보이는 위치는 달라지지만, 바닥에 생긴 흔적은 같은 자리에 남아야 합니다.",
+      "엘든 링의 독립 PC 프레임 분석에는 진흙 발자국을 그리는 데칼 단계가 보입니다. 화면의 깊이와 좌표를 이용하면 공간 속 위치를 계산할 수 있습니다.",
+      "돌바닥과 벽처럼 같은 화면에 서로 다른 방향의 표면이 들어올 수 있습니다. 어느 부분에 흔적을 더할지 판단해야 하죠.",
+      "우리 시연은 위치가 투영 범위에 들어오고 바닥 쪽을 향할 때만 무늬를 더합니다. 그래서 카메라를 돌려도 바닥에 붙어 보입니다."
+    ],
+    "captionsEn": [
+      "A mark should stay on the ground even as its position on the screen changes.",
+      "A PC frame analysis of Elden Ring observed a muddy footprint pass. Screen coordinates and depth can reconstruct a position in space.",
+      "Walls and floors can appear in the same projection area with different directions.",
+      "Our demonstration filters by volume and surface direction so the mark stays on the floor."
+    ]
+  },
+  {
+    "id": "30",
+    "title": "평균 프레임 수가 괜찮아도 왜 움직임이 끊겨 보일까?",
+    "topic": "출시판 PC 프레임타임",
+    "requiredGameplay": [
+      "독립 PC 출시판의 연속 카메라 이동과 실제 끊김을 확인한 화면",
+      "같은 환경에서 프레임 사이의 간격을 비교할 수 있는 연속 클립"
+    ],
+    "diagram": [
+      "프레임 표시 간격",
+      "한 번 길어진 간격",
+      "움직임 끊김"
+    ],
+    "narrationKo": [
+      "프레임이 많이 나오는 것과 화면이 고르게 움직이는 것은 서로 다른 이야기입니다. 카메라를 돌릴 때도 한 장이 늦으면 눈에 띕니다.",
+      "디지털 파운드리의 출시판 PC 측정은 평균 숫자만으로 설명되지 않는 프레임 시간의 튀는 구간을 관찰했습니다.",
+      "같은 움직임이라도 그림이 고르게 도착할 때와 하나가 늦을 때는 체감이 다릅니다. 한 번의 긴 간격이 이동을 순간적으로 멈춰 보이게 합니다.",
+      "그래서 성능을 볼 때는 평균과 프레임 사이의 시간 그래프를 함께 봐야 합니다. 출시판의 이 측정을 다른 패치까지 일반화할 수는 없습니다."
+    ],
+    "captionsEn": [
+      "A good average frame rate does not guarantee evenly timed motion.",
+      "Digital Foundry observed frame-time spikes in the launch PC release.",
+      "An unusually late frame can make a moving image appear to pause even if surrounding frames arrive quickly.",
+      "Look at both average frame rate and frame times, and keep the game version in view."
+    ]
+  },
+  {
+    "id": "31",
+    "title": "그래픽 카드가 바뀌면 뭐가 달라졌는지 어떻게 제대로 비교할까?",
+    "topic": "PC 벤치마크 설계",
+    "requiredGameplay": [
+      "같은 장소·동작을 다른 PC 조건에서 기록한 실제 게임",
+      "같은 해상도·게임 버전 표기가 확인되는 두 번째 조건"
+    ],
+    "diagram": [
+      "같은 장면",
+      "한 조건만 변경",
+      "여러 지표 비교"
+    ],
+    "narrationKo": [
+      "서로 다른 영상 두 개만 놓고 빠른 그래픽 카드를 고를 수 있을까요? 장면이 다르면 카드가 처리한 일부터 달라집니다.",
+      "컴퓨터베이스의 초기 벤치마크처럼 장면, 설정과 해상도를 제시하고 어떤 그래픽 카드를 썼는지 확인해야 합니다.",
+      "카메라가 보는 대상과 옵션을 맞추면 결과 차이를 해석하기 쉬워집니다. 평균과 순간적인 느려짐도 서로 다른 정보입니다.",
+      "같은 조건에서 비교하려는 항목만 바꾸는 게 핵심입니다. 한 대의 수치를 모든 컴퓨터에서의 결과로 읽으면 곤란합니다."
+    ],
+    "captionsEn": [
+      "Different scenes create different workloads, so two arbitrary clips cannot rank GPUs.",
+      "The launch benchmark records the scene, settings, resolution, and graphics cards used.",
+      "Matching the view and settings makes results interpretable. Average rate and momentary delays measure different things.",
+      "Change one comparison factor at a time and keep the test conditions attached to the results."
+    ]
+  },
+  {
+    "id": "32",
+    "title": "같은 무기를 써도 대인전 피해를 따로 조정하는 이유는?",
+    "topic": "1.07 PvP 피해 보정",
+    "requiredGameplay": [
+      "다른 플레이어와 싸우는 엘든 링 결투 실제 클립",
+      "유사 무기·기술로 본편 몬스터를 상대하는 실제 클립"
+    ],
+    "diagram": [
+      "기술 입력",
+      "대상 종류 확인",
+      "대인전 별도 보정"
+    ],
+    "narrationKo": [
+      "다른 플레이어와 싸울 때 좋은 기술이, 몬스터를 상대할 때도 같은 정도로 강해야 할까요? 두 전투의 목적이 다릅니다.",
+      "공식 일 점 영칠 업데이트는 다른 플레이어에게 주는 피해에 별도 보정을 적용할 수 있게 했습니다.",
+      "플레이어끼리는 쌍방이 반응하고 서로의 빌드가 경쟁합니다. 몬스터와 싸울 때는 전투의 흐름을 다른 조건으로 조절하죠.",
+      "기술 하나를 통째로 바꾸지 않아도 됩니다. 상대가 플레이어일 때만 조정하면 대인전과 일반 전투를 따로 다듬을 수 있습니다."
+    ],
+    "captionsEn": [
+      "Should a skill be equally strong against a player and against a monster?",
+      "Patch 1.07 added the ability to scale damage separately for PvP.",
+      "Player-versus-player encounters and monster encounters impose different balance needs.",
+      "A separate PvP adjustment changes player combat while leaving room to tune PvE independently."
+    ]
+  },
+  {
+    "id": "33",
+    "title": "레이 트레이싱은 출시판부터 쓸 수 있었을까?",
+    "topic": "1.09 그래픽 변경",
+    "requiredGameplay": [
+      "엘든 링에서 옵션을 확인하고 같은 장면을 끈 상태로 기록",
+      "같은 시점의 옵션 켠 상태 또는 실제 해당 버전 설정 화면"
+    ],
+    "diagram": [
+      "이전 버전",
+      "1.09에서 옵션 추가",
+      "같은 조건 비교"
+    ],
+    "narrationKo": [
+      "같은 엘든 링 영상처럼 보여도, 버전이나 그래픽 설정이 다르면 렌더링 조건이 달라집니다.",
+      "공식 일 점 영구 업데이트에서 지원 기종에 레이 트레이싱 옵션이 추가됐습니다. 비교하기 전에 게임 버전부터 맞춰야 합니다.",
+      "화질 차이를 보고 싶다면 같은 자리, 같은 시간대와 같은 카메라로 옵션만 바꿔야 합니다.",
+      "중요한 건 출시판 분석과 패치로 생긴 설정을 섞지 않는 것입니다. 이 그래픽 옵션 하나로 게임 전체의 렌더링을 설명할 수는 없습니다."
+    ],
+    "captionsEn": [
+      "Two Elden Ring clips can look similar while running different versions and settings.",
+      "Patch 1.09 added an optional ray-tracing mode on supported platforms.",
+      "To compare it, keep scene, time of day, and camera matched while changing only the option.",
+      "Identify the game version first. One optional feature does not describe the entire renderer."
+    ]
+  },
+  {
+    "id": "34",
+    "title": "그림자 나무의 가호는 왜 초반 상승폭을 키웠을까?",
+    "topic": "확장팩 1.12.2 보정",
+    "requiredGameplay": [
+      "확장팩에서 그림자 나무 파편 획득 또는 가호 메뉴",
+      "가호 적용을 확인할 수 있는 실제 확장팩 플레이"
+    ],
+    "diagram": [
+      "가호 단계",
+      "초반 증가 폭 확대",
+      "후반 완만한 변화"
+    ],
+    "narrationKo": [
+      "그림자 땅에서 가호를 얻으면 싸울 때 공격과 피해 경감 조건이 달라집니다. 어느 단계에서 효과가 얼마나 오르느냐가 중요하죠.",
+      "공식 보정 일 점 일이 점 이는 가호의 앞쪽 단계 상승을 더 크게, 뒤쪽 단계의 증가는 완만하게 바꿨다고 설명합니다.",
+      "같은 파편을 얻어도 초반 단계에서 오르는 폭이 더 크면, 탐험으로 처음 만나는 전투를 준비하는 감각이 달라집니다.",
+      "그래프는 조정의 방향을 보여 주는 개념도입니다. 핵심은 가호 효과의 단계별 배분을 바꿨다는 점입니다."
+    ],
+    "captionsEn": [
+      "Scadutree Blessing changes offensive power and damage negation in the expansion.",
+      "Calibration 1.12.2 made earlier increases stronger and later increases more gradual.",
+      "A larger early gain changes how exploration prepares you for early fights.",
+      "The diagram illustrates the direction of the curve adjustment, without inventing its values."
+    ]
+  },
+  {
+    "id": "35",
+    "title": "엘든 링의 재도전은 왜 같은 싸움을 그대로 반복하는 게 아닐까?",
+    "topic": "외부 GDC 2023 사례 분석",
+    "requiredGameplay": [
+      "같은 엘든 링 전투에서 첫 시도와 다른 대응이 보이는 클립",
+      "회피나 거리 조절 등 이전과 다른 선택이 보이는 실제 후속 플레이"
+    ],
+    "diagram": [
+      "실패에서 관찰",
+      "행동 바꾸기",
+      "다시 시도"
+    ],
+    "narrationKo": [
+      "보스에게 한 번 졌더라도, 두 번째에 똑같이 움직일 필요는 없습니다. 첫 시도가 다음 행동을 바꾸는 힌트가 되죠.",
+      "게임 개발자 콘퍼런스의 외부 발표에서는 엘든 링을 포함한 사례로, 실패에서 배우고 계속 시도하게 하는 설계를 살펴봤습니다.",
+      "공격이 언제 나오는지 보고 거리나 회피 시점을 바꿀 수 있습니다. 같은 적이라도 내가 바꾼 행동에 따라 다음 결과가 달라집니다.",
+      "재도전이 배움이 되려면 이전 시도가 기억에 남고, 다음 시도에서 다른 선택을 해 볼 수 있어야 합니다."
+    ],
+    "captionsEn": [
+      "A second attempt can use information learned from the first instead of repeating it unchanged.",
+      "An external GDC talk included Elden Ring while discussing games that support persistence and a growth mindset.",
+      "A player can observe an attack, then adjust spacing or dodge timing on the next try.",
+      "Retries can support learning when earlier results inform a new choice."
+    ]
+  },
+  {
+    "id": "36",
+    "title": "거친 세계에서도 다른 플레이어와 어떻게 협력할까?",
+    "topic": "외부 GDC 2024 사례 분석",
+    "requiredGameplay": [
+      "소환 표식·메시지 또는 실시간 협력 중 범위가 뚜렷한 실제 플레이",
+      "소환 뒤 함께 싸우는 장면 또는 메시지 읽기와 이동"
+    ],
+    "diagram": [
+      "도움의 신호",
+      "참여 방식 선택",
+      "함께 진행"
+    ],
+    "narrationKo": [
+      "엘든 링은 어두운 세계지만 모든 어려움을 혼자 해결하도록 만들지는 않았습니다. 화면에는 다른 플레이어의 도움을 받을 선택지가 있습니다.",
+      "외부 게임 개발자 콘퍼런스 발표는 친사회적 멀티플레이를 여러 게임에서 비교하며 엘든 링을 사례로 언급했습니다.",
+      "도움을 나타내는 표식에서 다른 플레이어의 참여로 이어지는 과정을 보면, 협력이 시작되기 전에도 누군가의 의사가 화면에 드러납니다.",
+      "이 사례에서는 세계의 분위기와 협력할 수 있는 규칙이 공존합니다. 협력의 시작과 참여를 구체적으로 설계할 수 있다는 뜻입니다."
+    ],
+    "captionsEn": [
+      "Elden Ring is a harsh world that still makes help from other players possible.",
+      "An external GDC talk mentioned it in a cross-game discussion of prosocial multiplayer.",
+      "A summon sign can show willingness to help before another player actually joins.",
+      "A setting's atmosphere can coexist with game rules that create opportunities for cooperation."
+    ]
+  }
+]
