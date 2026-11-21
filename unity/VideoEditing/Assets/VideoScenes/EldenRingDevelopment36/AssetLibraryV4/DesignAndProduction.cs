@@ -73,6 +73,9 @@ namespace Yamyam.EldenRingLibraryLessons
         Action<float> FlowerPlacement()
         {
             FrameCamera(V(4, 8, -10), V(0, 0, 0), 4.15f);
+            Block("Hand-authored flower bed", V(-.55f, -.032f, -.85f), V(7.65f, .075f, 1.47f), Slate);
+            Block("Procedural planting area", V(0, -.04f, 1.79f), V(9.25f, .065f, 3.55f), Slate);
+            Bar("Separation between planting areas", V(-4.55f, .025f, .10f), V(4.55f, .025f, .10f), .17f, Paper);
             var random = new System.Random(152);
             var distant = new Transform[38];
             for (int i = 0; i < distant.Length; i++)
