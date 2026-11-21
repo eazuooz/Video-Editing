@@ -12,7 +12,7 @@ ORIGINAL = DEFAULT_OUTPUT.with_name("pc-review-v1")
 VOICENAME = "기존 쇼츠 승인 목소리 · Qwen3-TTS 1.7B"
 LEAD_SECONDS = 0.13
 CUE_END_CLEARANCE_SECONDS = 0.20
-MIX_TREATMENT = "matched-active-levels-and-speech-safe-edges-v2"
+MIX_TREATMENT = "matched-active-levels-and-true-peak-v3"
 
 
 def route_clip(route, source_records, original_record, seconds):
@@ -97,17 +97,31 @@ def narration_audio(takes, lengths, destination):
 
 def mix(episode, voice, seconds, destination):
     target = destination / "mix.m4a"
-    voice_gain = -16.75 - edit.rms_measure(voice)["integratedLUFS"]
+    unmastered = destination / "mix-unmastered.wav"
     filters = (
-        f"[0:a]volume={voice_gain:.3f}dB,aformat=sample_rates=48000:channel_layouts=stereo,asplit[voice][key];"
+        "[0:a]aformat=sample_rates=48000:channel_layouts=stereo,asplit[voice][key];"
         f"[1:a]volume=-13dB,afade=d=0.4,afade=t=out:st={seconds - 1}:d=1,"
         "aformat=sample_rates=48000:channel_layouts=stereo[bed];"
         "[bed][key]sidechaincompress=threshold=0.035:ratio=3:attack=25:release=240[ducked];"
-        "[voice][ducked]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.79:level=false:latency=true[a]"
+        "[voice][ducked]amix=inputs=2:duration=first:normalize=0[a]"
     )
     edit.ffmpeg("-i", voice, "-ss", 14 + int(episode["id"]) % 12 * 7, "-i", edit.MUSIC,
-                "-filter_complex", filters, "-map", "[a]", "-t", seconds, "-c:a", "aac", "-b:a", "192k", target)
-    return target
+                "-filter_complex", filters, "-map", "[a]", "-t", seconds, "-c:a", "pcm_f32le", unmastered)
+    gain = -16.6 - edit.rms_measure(unmastered)["integratedLUFS"]
+    ceiling = -2.7
+    for _ in range(3):
+        peak = 10 ** (ceiling / 20)
+        master = (f"volume={gain:.3f}dB,aresample=192000,"
+                  f"alimiter=limit={peak:.6f}:level=false:latency=true,aresample=48000")
+        edit.ffmpeg("-i", unmastered, "-af", master, "-c:a", "aac", "-b:a", "192k", target)
+        measured = edit.rms_measure(target)
+        lufs, true_peak = measured["integratedLUFS"], measured["truePeakDbTP"]
+        if -18 <= lufs <= -15 and true_peak < -1:
+            unmastered.unlink()
+            return target
+        gain += -16.6 - lufs
+        ceiling -= max(0, true_peak + 1.6)
+    raise ValueError(f"Episode {episode['id']} mix failed loudness/peak checks: {measured}")
 
 
 def srt(episode, takes, lengths, destination):

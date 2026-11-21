@@ -59,9 +59,9 @@ def missing(output, plan):
     return waiting
 
 
-def picture_sha(path):
-    return edit.run("ffmpeg", "-v", "error", "-i", path, "-map", "0:v:0", "-an",
-                    "-c:v", "copy", "-f", "hash", "-hash", "sha256", "-").decode().strip()
+def track_sha(path, kind):
+    return edit.run("ffmpeg", "-v", "error", "-i", path, "-map", f"0:{kind}:0",
+                    "-c", "copy", "-f", "hash", "-hash", "sha256", "-").decode().strip()
 
 
 def finalize(output, plan):
@@ -111,7 +111,8 @@ def finalize(output, plan):
             assert sha(artifact) == report[label]["sha256"]
             audit_file(artifact, frames)
             if packets_reused == len(cuts):
-                assert picture_sha(artifact) == picture_sha(ORIGINAL / number / artifact.name)
+                assert track_sha(artifact, "v") == track_sha(ORIGINAL / number / artifact.name, "v")
+        assert track_sha(folder / report["captioned"]["path"], "a") == track_sha(folder / report["clean"]["path"], "a")
         for language, script in (("ko", episode["narrationKo"]), ("en", episode["captionsEn"])):
             subs = folder / f"{language}.srt"
             assert sha(subs) == report["subtitles"][language]
