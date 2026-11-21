@@ -81,10 +81,12 @@ namespace Yamyam.EldenRingLibraryLessons
                 distant[i] = Orb("Procedurally placed plant", p, .12f + (float)random.NextDouble() * .12f, Aqua);
             }
             var blossoms = new Transform[7];
+            var placements = new Transform[blossoms.Length];
             for (int i = 0; i < blossoms.Length; i++)
             {
                 var p = V(-3.5f + .96f * i, .30f, -.9f + Mathf.Sin(i * .82f) * .65f);
-                blossoms[i] = Orb("Individually positioned bloom", p, .28f, Gold);
+                blossoms[i] = Orb("Individually positioned bloom", p, .49f, Gold);
+                placements[i] = Ring("Individually authored placement", V(p.x, .035f, p.z), .37f, Gold);
                 Block("Stem", p - V(0, .16f, 0), V(.055f, .32f, .055f), Aqua);
             }
             var farProxy = Block("Distant cover proxy", V(0, .012f, 2.08f), V(8.9f, .11f, 2.15f), Blue);
@@ -94,14 +96,24 @@ namespace Yamyam.EldenRingLibraryLessons
                 for (int x = 0; x < 32; x++)
                     cover.SetPixel(x, y, (x + y * 7) % 11 < 2 ? Aqua : Blue * .5f);
             cover.Apply();
-            var coverMaterial = new Material(Shader.Find("Standard")) { mainTexture = cover };
+            var coverMaterial = new Material(Paint(Paper)) { color = Color.white, mainTexture = cover };
             owned.Add(coverMaterial);
             farProxy.GetComponent<Renderer>().sharedMaterial = coverMaterial;
             return t =>
             {
                 for (int i = 0; i < distant.Length; i++)
                     distant[i].gameObject.SetActive((Second || t > .06f + (i % 8) * .052f) && (!Second || t < .54f));
-                for (int i = 0; i < blossoms.Length; i++) blossoms[i].gameObject.SetActive(Second || t > .43f + i * .052f);
+                for (int i = 0; i < blossoms.Length; i++)
+                {
+                    bool placed = Second || t > .43f + i * .052f;
+                    blossoms[i].gameObject.SetActive(placed);
+                    placements[i].gameObject.SetActive(placed);
+                }
+                if (!Second)
+                {
+                    float focus = Range(t, .38f, .89f);
+                    FrameCamera(V(4, 8, -10), V(0, 0, -.60f * focus), Mathf.Lerp(4.15f, 2.95f, focus));
+                }
                 farProxy.gameObject.SetActive(Second && t >= .53f);
             };
         }

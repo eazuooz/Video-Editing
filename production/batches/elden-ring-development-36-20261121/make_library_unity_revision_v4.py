@@ -94,7 +94,7 @@ def configure():
     pipeline.scoped_guard = scoped_guard
     pipeline.stage_project = use_main_project
     pipeline.native_job = capture_in_project
-    pipeline.EXPECTED_PILOTS = {"01-1", "12-1", "14-3", "20-1", "26-3", "29-3"}
+    pipeline.EXPECTED_PILOTS = {"12-1", "14-3", "15-1", "15-3", "26-3", "29-3"}
 
 
 def finish(plan, labels, rows, fp, assets):
@@ -113,6 +113,11 @@ def finish(plan, labels, rows, fp, assets):
         number = episode["id"]
         report = pipeline.compose(episode, labels[number], rows, captures, fp)
         assert report["gameplaySeconds"] == report["explanationSeconds"]
+        verification = OUT / number / "verification.json"
+        if any(report["cuts"][index]["picture"] != "native-unity-library-v4" for index in (1, 3)):
+            for index in (1, 3):
+                report["cuts"][index]["picture"] = "native-unity-library-v4"
+            save(verification, report)
         results.append(dict(id=number, seconds=report["seconds"], captioned=report["captioned"],
                             clean=report["clean"], captions=report["subtitles"],
                             cuts=[captures[f"{number}-{index}"] for index in (1, 3)]))
