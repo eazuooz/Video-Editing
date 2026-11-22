@@ -200,24 +200,27 @@ namespace Yamyam.EldenRingLibraryLessons
             Floor("Neutral training court", 0, .15f, 11, 8.0f, 0, new Color32(115, 106, 86, 255));
             Stone11("cliff", V(2.9f, 0, 3.35f), V(4.1f, 2.55f, 2.19f));
             Stone11("rock", V(-3.8f, 0, .22f), V(1.25f, .85f, 1.35f));
-            var fighter = Pawn("Original larger opponent", V(-.62f, 0, 1.0f), Gold);
+            const float footing = .36f;
+            Floor("Raised stone footing for the opponent", -.62f, 1.0f, 2.15f, 1.97f, footing, WallStone11);
+            var fighter = Pawn("Original opponent on raised footing", V(-.62f, footing, 1.0f), Gold);
             var attacker = walkthroughActors[walkthroughActors.Count - 1];
-            fighter.localScale *= 1.55f;
             attacker.FixedFacing = true;
             var player = Pawn("Original reacting player", V(.6f, 0, -1.33f), Aqua);
             var defender = walkthroughActors[walkthroughActors.Count - 1];
             var weapon = Block("Original wrist-bound practice club", Vector3.zero, V(.08f, 1.8f, .08f), Paper);
             var end = Orb("Practice club striking end", Vector3.zero, .31f, Gold);
-            var windup = Ring("Cue before swing", V(-.62f, .045f, 1), .79f, Gold);
+            var windup = Ring("Cue before swing", V(-.62f, footing + .041f, 1), .61f, Gold);
             var impact = Ring("Swing passing the approach route", V(.22f, .045f, -.7f), .77f, Red);
             float bladeArc = 0f;
             attacker.AfterPose = () =>
             {
                 var wrist = stage.InverseTransformPoint(attacker.Arms[1].End.position);
-                var angle = Mathf.Lerp(-.87f, 1.3f, bladeArc);
-                Vector3 direction = V(Mathf.Sin(angle), Mathf.Lerp(.96f, .18f, bladeArc), -.51f).normalized;
-                Segment(weapon, wrist - direction * .13f, wrist + direction * 1.39f, .092f);
-                end.localPosition = wrist + direction * 1.29f;
+                var forward = stage.InverseTransformDirection(fighter.forward);
+                var right = stage.InverseTransformDirection(fighter.right);
+                var direction = (Vector3.up * Mathf.Lerp(.90f, .20f, bladeArc) +
+                    forward * .66f + right * Mathf.Lerp(-.18f, .45f, bladeArc)).normalized;
+                Segment(weapon, wrist - direction * .09f, wrist + direction * .89f, .082f);
+                end.localPosition = wrist + direction * .84f;
             };
             return t =>
             {
@@ -233,8 +236,8 @@ namespace Yamyam.EldenRingLibraryLessons
                 windup.gameObject.SetActive(t > .22f && t < .61f);
                 impact.gameObject.SetActive(t >= .615f && t < .83f);
                 float close = Range(t, .10f, .56f);
-                ObserverCamera11(V(Mathf.Lerp(4.0f, 3.0f, close + .20f * evade), 3.38f + .56f * evade, -6.9f),
-                    V(.0f + 1.01f * evade, 1.24f, 0), Mathf.Lerp(48, 45, close));
+                ObserverCamera11(V(Mathf.Lerp(3.30f, 2.70f, close + .20f * evade), 3.03f + .45f * evade, -5.8f),
+                    V(.0f + .84f * evade, 1.14f, 0), Mathf.Lerp(47, 45, close));
             };
         }
 
@@ -383,7 +386,9 @@ namespace Yamyam.EldenRingLibraryLessons
                     p = Travel11(V(0, .02f, -4.1f), V(0, .02f, .4f), V(-2.87f, 0, 4.10f), t, .42f);
                 }
                 player.localPosition = p;
-                FollowObserver11(p, V(Second ? .39f : .75f, 1.94f, -3.2f), V(p.x * .96f, .96f, p.z + 2.52f),
+                float reveal = Second ? Range(t, .72f, .95f) : 0;
+                float cameraSide = Second ? Mathf.Lerp(.39f, -.31f, reveal) : .75f;
+                FollowObserver11(p, V(cameraSide, 1.94f, -3.2f + .72f * reveal), V(p.x * .96f, .96f, p.z + 2.52f),
                     Second ? 51 : Mathf.Lerp(48, 61, Range(t, .33f, .86f)));
             };
         }

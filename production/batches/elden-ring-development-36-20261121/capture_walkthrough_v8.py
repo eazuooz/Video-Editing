@@ -88,7 +88,8 @@ def editor_active(project=None):
     return ((target or PROJECT) / "Temp/UnityLockfile").exists()
 
 
-def software_job(worker, work, fp, rows, folder, pilot, verified_rig, *, observed_v10=False):
+def software_job(worker, work, fp, rows, folder, pilot, verified_rig, *,
+                 observed_v10=False, observed_pickup=False):
     if all((folder / key / "capture.json").is_file() and
            read(folder / key / "capture.json")["fingerprint"] == fp for key in rows):
         return
@@ -100,7 +101,7 @@ def software_job(worker, work, fp, rows, folder, pilot, verified_rig, *, observe
     job = work / ("pilot-job.json" if pilot else "capture-job.json")
     save(job, dict(output=str(folder), ffmpeg=shutil.which("ffmpeg"), fingerprint=fp, project=str(PROJECT),
                    pilot=pilot, walkthroughV8=not observed_v10, requireSoftwareAdapter=True,
-                   verifiedRig=verified_rig, observedV10=observed_v10,
+                   verifiedRig=verified_rig, observedV10=observed_v10, observedPickup=observed_pickup,
                    cuts=list(rows.values()), assets=list(library.selected_assets().values())))
     command = [str(pipeline.EDITOR), "-batchmode", "-force-d3d11", "-force-driver-type-warp",
                "-job-worker-count", "3", "-projectPath", str(PROJECT), "-executeMethod",

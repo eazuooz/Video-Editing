@@ -20,13 +20,14 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             public string id;
             public int episode, shot, frames, speechStartFrame, speechEndFrame;
+            public int[] pilotFrames;
         }
 
         [Serializable] sealed class Job
         {
             public string output, ffmpeg, fingerprint, project;
             public PrincipleDemo.LibraryBinding[] assets;
-            public bool pilot, walkthroughV8, requireSoftwareAdapter, verifiedRig, observedV10;
+            public bool pilot, walkthroughV8, requireSoftwareAdapter, verifiedRig, observedV10, observedPickup;
             public Cut[] cuts;
         }
 
@@ -80,6 +81,7 @@ namespace Yamyam.EldenRingLibraryLessons
 
         static string Scenes(Job job)
         {
+            if (job.observedV10 && job.observedPickup) return SceneFolder + "V10Pickups";
             if (job.observedV10) return SceneFolder + "V10";
             if (job.verifiedRig) return SceneFolder + "V8Rig";
             return job.walkthroughV8 ? SceneFolder + "V8" : SceneFolder;
@@ -145,7 +147,11 @@ namespace Yamyam.EldenRingLibraryLessons
                     Read(demo, target, pixels, 0);
                 if (job.pilot)
                 {
-                    var frames = new[] {cut.speechStartFrame, (cut.speechStartFrame + cut.speechEndFrame) / 2, cut.speechEndFrame};
+                    var frames = cut.pilotFrames != null && cut.pilotFrames.Length != 0 ? cut.pilotFrames :
+                        new[] {cut.speechStartFrame, (cut.speechStartFrame + cut.speechEndFrame) / 2, cut.speechEndFrame};
+                    if (frames.Length != 3 || !(0 <= frames[0] && frames[0] < frames[1] &&
+                                                frames[1] < frames[2] && frames[2] < cut.frames))
+                        throw new InvalidDataException("Expected three ordered pilot frames inside the shot.");
                     foreach (var frame in frames)
                     {
                         Read(demo, target, pixels, frame);

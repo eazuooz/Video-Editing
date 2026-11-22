@@ -249,9 +249,9 @@ def card_for(page, number):
     return card.group()
 
 
-def revised_card(page, number, row, record):
+def revised_card(page, number, row, record, folder):
     card = card_for(page, number)
-    card = card.replace(f"../pc-review-v6/{number}/", f"{number}/")
+    card = card.replace(f"../pc-review-v6/{number}/", folder.relative_to(OUT).as_posix() + "/")
     note = "<p>" + escape(row["unityApplication"]) + "</p>"
     card = card.replace("</h2>", "</h2>" + note, 1)
     details = ['<details><summary>시연 장면과 편집 가능한 Unity 씬</summary>']
@@ -291,6 +291,9 @@ def combine_review(observations, work, fingerprint, sources):
     prior = (render.V7 / "index.html").read_text(encoding="utf-8")
     captures = read(work / "capture-receipt.json")
     assert captures["fingerprint"] == fingerprint and len(captures["cuts"]) == 52
+    pickup_file = work / "pickups.json"
+    pickups = read(pickup_file) if pickup_file.is_file() else {}
+    assert set(pickups) <= set(observations)
     records, cards, proof = {}, [], []
     for number in IDS:
         if number not in observations:
@@ -302,15 +305,19 @@ def combine_review(observations, work, fingerprint, sources):
             card = re.sub(r'(href|src)="((?:\d\d(?:-final)?/|09-walkthrough-sample\.mp4)[^"]*)"',
                           r'\1="../pc-review-v9/\2"', card_for(source, number))
         else:
-            folder = OUT / number
+            pickup = pickups.get(number)
+            folder = OUT / (pickup["folder"] if pickup else number)
             record = read(folder / "verification.json")
             decoded = read(folder / "decode-check.json")
-            assert decoded["fingerprint"] == fingerprint
+            assert decoded["fingerprint"] == (pickup["fingerprint"] if pickup else fingerprint)
             assert decoded["verificationSha256"] == sha(folder / "verification.json")
             assert decoded["cleanSha256"] == record["clean"]["sha256"]
             assert decoded["captionedSha256"] == record["captioned"]["sha256"]
             verify_media(folder, record, decode=False)
-            card = revised_card(prior, number, observations[number], record)
+            if pickup:
+                assert all(Path(record["cuts"][i]["unity"]["scenePath"]).parent.name == "ScenesV10Pickups"
+                           for i in (1, 3))
+            card = revised_card(prior, number, observations[number], record, folder)
         cards.append(card)
         records[number] = {"localFolder": folder.as_posix(), "record": record}
         proof.append({"id": number, "durationSeconds": record["seconds"],
@@ -336,12 +343,12 @@ def combine_review(observations, work, fingerprint, sources):
     draft.replace(page)
     manifest = OUT / "manifest.json"
     save(manifest, {"reviewVersion": VERSION, "episodes": records, "observations": observations,
-                    "reviewPageSha256": sha(page)})
+                    "reviewPageSha256": sha(page), "pickups": pickups})
     summary = {"reviewVersion": VERSION, "episodeCount": 36, "preservedFirstTen": 10,
                "newUnityCuts": 52, "observedGameplayCuts": 52, "newMastersDecoded": 52,
                "totalSeconds": sum(item["durationSeconds"] for item in proof),
                "reviewPage": page.as_posix(), "reviewPageSha256": sha(page), "manifestSha256": sha(manifest),
-               "unityFingerprint": fingerprint, "analysisSources": sources, "episodes": proof,
+               "unityFingerprint": fingerprint, "analysisSources": sources, "episodes": proof, "pickups": pickups,
                "humanReview": "pending", "publicationAuthorized": False}
     save(OUT / "audit.json", summary)
     save(HERE / "review-receipt-v10.json", summary)
@@ -354,8 +361,19 @@ def main():
     parser.add_argument("--wait-minutes", type=int, default=180)
     parser.add_argument("--follow", action="store_true")
     parser.add_argument("--pilot-take", help="Verify one corrected shot before recapturing the full pilot set")
+    parser.add_argument("--base-work", type=Path, help="Combine a completed base capture with verified pickup scenes")
     args = parser.parse_args()
     psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+    if args.base_work:
+        if args.stage != "review":
+            parser.error("--base-work requires the review stage")
+        work = args.base_work.resolve()
+        assert work.parent == WORK.resolve()
+        bundle = read(work / "capture-receipt.json")
+        fingerprint = bundle["fingerprint"]
+        assert work.name == fingerprint[:12]
+        combine_review(load_observations(), work, fingerprint, {path.name: sha(path) for path in ANALYSIS})
+        return
     rows, observations, work, fingerprint, sources = production_inputs()
     if args.pilot_take and (args.stage != "pilot" or args.pilot_take not in rows):
         parser.error("--pilot-take requires the pilot stage and a selected cut ID")
