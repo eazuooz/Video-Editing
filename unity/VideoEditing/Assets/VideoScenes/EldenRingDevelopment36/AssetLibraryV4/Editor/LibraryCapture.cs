@@ -26,15 +26,15 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             public string output, ffmpeg, fingerprint, project;
             public PrincipleDemo.LibraryBinding[] assets;
-            public bool pilot;
+            public bool pilot, walkthroughV8, requireSoftwareAdapter;
             public Cut[] cuts;
         }
 
         [Serializable] sealed class Receipt
         {
-            public string id, scene, unity, renderPipeline, backend, fingerprint;
+            public string id, scene, unity, renderPipeline, backend, fingerprint, adapter;
             public int frames, width, height, fps;
-            public bool pilot;
+            public bool pilot, softwareAdapter;
             public string[] libraryRoles;
         }
 
@@ -52,6 +52,8 @@ namespace Yamyam.EldenRingLibraryLessons
                     !Directory.Exists("Assets/ThirdParty/YamyamAssetLibrary") ||
                     SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                     throw new InvalidOperationException("Use the configured VideoEditing project, shared library, and a graphics device.");
+                if (job.requireSoftwareAdapter && !SoftwareAdapter())
+                    throw new InvalidOperationException("CPU capture did not select the Microsoft software adapter.");
                 foreach (var source in job.assets)
                 {
                     if (!source.assetPath.StartsWith("Assets/ThirdParty/YamyamAssetLibrary/", StringComparison.Ordinal) ||
@@ -61,7 +63,7 @@ namespace Yamyam.EldenRingLibraryLessons
                     if (!source.prefab)
                         throw new InvalidDataException($"Unable to import pinned shared asset: {source.assetPath}");
                 }
-                Directory.CreateDirectory(SceneFolder);
+                Directory.CreateDirectory(Scenes(job));
                 Directory.CreateDirectory(job.output);
                 AssetDatabase.Refresh();
                 foreach (var cut in job.cuts)
@@ -76,6 +78,12 @@ namespace Yamyam.EldenRingLibraryLessons
             finally { ShaderUtil.allowAsyncCompilation = asyncShaders; }
         }
 
+        static string Scenes(Job job) => job.walkthroughV8 ? SceneFolder + "V8" : SceneFolder;
+
+        static bool SoftwareAdapter() =>
+            SystemInfo.graphicsDeviceVendorID == 0x1414 &&
+            SystemInfo.graphicsDeviceName.IndexOf("Basic Render Driver", StringComparison.OrdinalIgnoreCase) >= 0;
+
         static void Capture(Job job, Cut cut)
         {
             if (cut.episode < 1 || cut.episode > 36 || (cut.shot != 1 && cut.shot != 3) ||
@@ -83,13 +91,16 @@ namespace Yamyam.EldenRingLibraryLessons
                 cut.speechStartFrame < 0 || cut.speechStartFrame >= cut.speechEndFrame || cut.speechEndFrame >= cut.frames)
                 throw new InvalidDataException("Unexpected cut identity or approved cue window.");
             var folder = Path.Combine(job.output, cut.id);
-            var scenePath = $"{SceneFolder}/{cut.id}.unity";
+            if (job.walkthroughV8 && cut.episode > 10)
+                throw new InvalidDataException("The walkthrough revision covers episodes 01 through 10.");
+            var scenePath = $"{Scenes(job)}/{cut.id}.unity";
             var receiptPath = Path.Combine(folder, "capture.json");
             if (File.Exists(receiptPath))
             {
                 var existing = JsonUtility.FromJson<Receipt>(File.ReadAllText(receiptPath));
                 if (existing.fingerprint != job.fingerprint || existing.frames != cut.frames ||
                     existing.id != cut.id || existing.scene != scenePath || existing.pilot != job.pilot ||
+                    (job.requireSoftwareAdapter && !existing.softwareAdapter) ||
                     !File.Exists(scenePath) || (job.pilot ? Directory.GetFiles(folder, "*.png").Length != 3 :
                     !File.Exists(Path.Combine(folder, "unity.mp4"))))
                     throw new InvalidDataException("Existing scope changed. Its capture has been preserved.");
@@ -102,6 +113,7 @@ namespace Yamyam.EldenRingLibraryLessons
             camera.transform.SetParent(demo.transform, false);
             demo.episode = cut.episode;
             demo.shot = cut.shot;
+            demo.walkthroughV8 = job.walkthroughV8;
             demo.seconds = cut.frames / (float)Fps;
             demo.speechStart = cut.speechStartFrame / (float)Fps;
             demo.speechEnd = cut.speechEndFrame / (float)Fps;
@@ -148,6 +160,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 renderPipeline = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline ? "URP" : "Built-in",
                 libraryRoles = demo.UsedLibraryRoles,
                 backend = SystemInfo.graphicsDeviceType.ToString(), fingerprint = job.fingerprint,
+                adapter = SystemInfo.graphicsDeviceName, softwareAdapter = SoftwareAdapter(),
                 frames = cut.frames, fps = Fps, width = Width, height = Height, pilot = job.pilot
             };
             File.WriteAllText(receiptPath + ".tmp", JsonUtility.ToJson(receipt, true));

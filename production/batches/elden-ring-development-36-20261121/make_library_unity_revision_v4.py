@@ -32,7 +32,7 @@ def selected_assets():
 
 def source_id(rows):
     scripts = {p.relative_to(PROJECT).as_posix(): sha(p) for p in SCENE_ROOT.rglob("*")
-               if p.is_file() and p.suffix in (".cs", ".shader")}
+               if p.is_file() and p.suffix in (".cs", ".shader") and not p.stem.endswith("V8")}
     assert len(scripts) == 8
     inputs = dict(cuts=rows, scripts=scripts, assetPlan=sha(ASSET_PLAN),
                   editor=sha(PROJECT / "ProjectSettings/ProjectVersion.txt"),
@@ -53,16 +53,17 @@ def use_main_project():
     selected_assets()
 
 
-def capture_in_project(guard, worker, lease, fp, rows, folder, pilot):
+def capture_in_project(guard, worker, lease, fp, rows, folder, pilot, *, work=None, walkthrough=False):
     if PILOT_ONLY and not pilot:
         return
     if pilot and all((folder / key / "capture.json").is_file() and
                      read(folder / key / "capture.json")["fingerprint"] == fp for key in rows):
         return
     folder.mkdir(parents=True, exist_ok=True)
-    job = WORK / ("pilot-job.json" if pilot else "capture-job.json")
+    job = (work or WORK) / ("pilot-job.json" if pilot else "capture-job.json")
     save(job, dict(output=str(folder), ffmpeg=shutil.which("ffmpeg"), fingerprint=fp, project=str(PROJECT),
-                   pilot=pilot, cuts=list(rows.values()), assets=list(selected_assets().values())))
+                   pilot=pilot, walkthroughV8=walkthrough, cuts=list(rows.values()),
+                   assets=list(selected_assets().values())))
     current = read(guard.LEASE)
     assert guard.ours(current) and current["token"] == lease
     current.update(phase="launching", child=None, output=str(folder))

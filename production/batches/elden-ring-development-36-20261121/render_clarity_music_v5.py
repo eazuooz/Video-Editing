@@ -208,8 +208,9 @@ def exact_voice(number, frames):
     return wav
 
 
-def mixed_sound(number, track, frames, dest):
-    voice = exact_voice(number, frames)
+def mixed_sound(number, track, frames, dest, *, voice=None):
+    if voice is None:
+        voice = exact_voice(number, frames)
     seconds = sum(frames)/60
     offset = 13 + int(number) % 14 * 6
     source = WORK / track["file"]
