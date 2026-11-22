@@ -26,7 +26,7 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             public string output, ffmpeg, fingerprint, project;
             public PrincipleDemo.LibraryBinding[] assets;
-            public bool pilot, walkthroughV8, requireSoftwareAdapter;
+            public bool pilot, walkthroughV8, requireSoftwareAdapter, verifiedRig;
             public Cut[] cuts;
         }
 
@@ -78,7 +78,11 @@ namespace Yamyam.EldenRingLibraryLessons
             finally { ShaderUtil.allowAsyncCompilation = asyncShaders; }
         }
 
-        static string Scenes(Job job) => job.walkthroughV8 ? SceneFolder + "V8" : SceneFolder;
+        static string Scenes(Job job)
+        {
+            if (job.verifiedRig) return SceneFolder + "V8Rig";
+            return job.walkthroughV8 ? SceneFolder + "V8" : SceneFolder;
+        }
 
         static bool SoftwareAdapter() =>
             SystemInfo.graphicsDeviceVendorID == 0x1414 &&

@@ -18,6 +18,8 @@ from make_approved_voice_v2 import HERE, read, save, sha
 V6 = capture.OUT.with_name("pc-review-v6")
 V7 = capture.OUT.with_name("pc-review-v7")
 OUT = capture.OUT
+PRIOR_BATCH = capture.OUT
+VERSION = "walkthrough-v8"
 GUIDES = {
     "01-1": ("어느 칸에 있나", "캐릭터와 가까운 칸을 불러오기", "먼 칸은 비워 두기"),
     "01-3": ("이동 시작", "캐릭터를 따라 로딩 범위 이동", "새로 가까워진 칸을 불러오기"),
@@ -234,7 +236,7 @@ def render_episode(number, rows, captures, contract, paragraphs, scratch):
     else:
         (destination / "en.srt").write_text(english, encoding="utf-8")
     record["subtitles"] = {lang: sha(destination / f"{lang}.srt") for lang in ("ko", "en")}
-    record.update(reviewStatus="pending", reviewVersion="walkthrough-v8", scope="native")
+    record.update(reviewStatus="pending", reviewVersion=VERSION, scope="native")
     save(receipt, record)
     print(f"{number}: {destination} ({frames / 60:.2f}s)", flush=True)
     return destination
@@ -310,7 +312,7 @@ def review_page():
     temporary = OUT / "index.html.tmp"
     temporary.write_text(page, encoding="utf-8")
     temporary.replace(OUT / "index.html")
-    save(OUT / "manifest.json", {"reviewVersion": "walkthrough-v8", "episodes": index,
+    save(OUT / "manifest.json", {"reviewVersion": VERSION, "episodes": index,
          "gameplayObservationsSha256": sha(HERE / "gameplay-observations-v8.json"),
          "reviewPageSha256": sha(OUT / "index.html")})
 
@@ -327,25 +329,53 @@ def capture_records(number, rows, fingerprint, await_captures):
         time.sleep(3)
 
 
+def preserve_non_actor_episode(number):
+    local = "08-final" if number == "08" else number
+    source = PRIOR_BATCH / local
+    record = read(source / "verification.json")
+    assert record["scope"] == "native" and record["reviewVersion"] == "walkthrough-v8"
+    destination = OUT / local
+    destination.mkdir(parents=True, exist_ok=True)
+    for name, expected in [(record[k]["path"], record[k]["sha256"]) for k in ("clean", "captioned")] + [
+                           (f"{lang}.srt", record["subtitles"][lang]) for lang in ("ko", "en")]:
+        assert sha(source / name) == expected
+        if not (destination / name).is_file():
+            shutil.copyfile(source / name, destination / name)
+        assert sha(destination / name) == expected
+    save(destination / "verification.json", record | {"reviewVersion": VERSION, "mediaReusedFrom": "walkthrough-v8"})
+
+
 def main():
+    global OUT, VERSION
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--software", action="store_true")
     parser.add_argument("--page-only", action="store_true")
     parser.add_argument("--await-captures", action="store_true")
+    parser.add_argument("--verified-rig", action="store_true")
     args = parser.parse_args()
     psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+    if args.verified_rig:
+        OUT = PRIOR_BATCH.with_name("pc-review-v9")
+        VERSION = "walkthrough-v9"
     if args.page_only:
         review_page()
         return
     _, _, rows = capture.selection()
+    if args.verified_rig:
+        rows = {key: cut for key, cut in rows.items() if key[:2] in capture.RIG_EPISODES}
     fingerprint = capture.source_id(rows, args.software)
-    work = capture.configure(args.software, fingerprint)
+    work = capture.configure(args.software, fingerprint, args.verified_rig)
     contract = read(film.FORMAT)
     paragraphs = read(film.CAPTIONS)["paragraphs"]
     scratch = work / "composition"
     if args.await_captures and not args.software:
         parser.error("--await-captures is available for the software capture worker")
-    for number in capture.IDS:
+    ordered = ("03", "07", "08", "09", "10", "01", "02", "04", "05", "06") if args.verified_rig else capture.IDS
+    for number in ordered:
+        if args.verified_rig and number not in capture.RIG_EPISODES:
+            preserve_non_actor_episode(number)
+            review_page()
+            continue
         captures = capture_records(number, rows, fingerprint, args.await_captures)
         folder = render_episode(number, rows, captures, contract, paragraphs, scratch)
         if number == "08" and not (OUT / "08-final/verification.json").is_file():

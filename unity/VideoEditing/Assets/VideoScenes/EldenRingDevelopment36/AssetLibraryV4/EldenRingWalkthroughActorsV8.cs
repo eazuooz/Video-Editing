@@ -20,6 +20,13 @@ namespace Yamyam.EldenRingLibraryLessons
             public bool FixedFacing;
             public Func<Vector3, float> GroundHeight;
             public Action AfterPose;
+            public readonly List<SkinnedPart> Parts = new List<SkinnedPart>();
+        }
+
+        sealed class SkinnedPart
+        {
+            public SkinnedMeshRenderer Source;
+            public Mesh PosedMesh;
         }
 
         sealed class Limb
@@ -32,7 +39,6 @@ namespace Yamyam.EldenRingLibraryLessons
         void AddWalkthroughActor(Transform root, Color marker)
         {
             var body = Attach("villager", root, V(1.65f, 1.85f, 1.45f), true);
-            var bones = body.GetComponentsInChildren<Transform>(true);
             var actor = new WalkthroughActor
             {
                 Root = root, RigAnchor = body.transform.parent,
@@ -40,7 +46,7 @@ namespace Yamyam.EldenRingLibraryLessons
             };
             var skins = body.GetComponentsInChildren<SkinnedMeshRenderer>().Where(skin => skin.enabled).ToArray();
             if (skins.Length == 0) throw new InvalidOperationException("The shared actor needs a visible skinned rig.");
-            foreach (var skin in skins) skin.updateWhenOffscreen = true;
+            var bones = skins.SelectMany(skin => skin.bones).Where(bone => bone).Distinct().ToArray();
             actor.Pelvis = FindBone(bones, "hips") ?? FindBone(bones, "pelvis");
             actor.Chest = FindBone(bones, "spine");
             if (actor.Chest) actor.BaseChest = actor.Chest.localRotation;
@@ -54,12 +60,18 @@ namespace Yamyam.EldenRingLibraryLessons
             float bottom = float.PositiveInfinity;
             foreach (var skin in skins)
             {
-                var pose = new Mesh();
+                var pose = new Mesh { name = skin.name + " live frame deformation" };
+                pose.MarkDynamic();
                 skin.BakeMesh(pose, false);
                 foreach (var vertex in pose.vertices)
                     bottom = Mathf.Min(bottom, root.InverseTransformPoint(skin.transform.TransformPoint(vertex)).y);
-                if (Application.isPlaying) Destroy(pose);
-                else DestroyImmediate(pose);
+                owned.Add(pose);
+                var visible = new GameObject(skin.name + " posed mesh").transform;
+                visible.SetParent(skin.transform, false);
+                visible.gameObject.AddComponent<MeshFilter>().sharedMesh = pose;
+                visible.gameObject.AddComponent<MeshRenderer>().sharedMaterials = skin.sharedMaterials;
+                actor.Parts.Add(new SkinnedPart { Source = skin, PosedMesh = pose });
+                skin.forceRenderingOff = true;
             }
             if (float.IsInfinity(bottom)) throw new InvalidOperationException("The shared actor has no rendered vertices.");
             actor.RigAnchor.localPosition -= V(0, bottom, 0);
@@ -151,6 +163,8 @@ namespace Yamyam.EldenRingLibraryLessons
                     PoseLimb(arm, actor.Root.TransformPoint(Vector3.Lerp(hand, raised, actor.Cast)),
                         actor.Root.TransformDirection(V(outward, -.36f, -.28f)));
                 }
+                // Manual camera renders do not run the player loop's skinning update.
+                foreach (var part in actor.Parts) part.Source.BakeMesh(part.PosedMesh, false);
                 actor.AfterPose?.Invoke();
                 actor.Previous = actor.Root.position;
                 actor.PreviousTime = time;
