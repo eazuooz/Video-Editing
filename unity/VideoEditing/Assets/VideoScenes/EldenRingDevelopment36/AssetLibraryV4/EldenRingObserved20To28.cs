@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace Yamyam.EldenRingLibraryLessons
@@ -50,38 +49,65 @@ namespace Yamyam.EldenRingLibraryLessons
             Attach(role, anchor, fit, true, yaw);
         }
 
-        Action<float, float> HorseLegs20(GameObject model)
+        Action<float, float> ArticulatedMount20(Transform root)
         {
-            var skins = model.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var bones = skins.SelectMany(skin => skin.bones).Where(bone => bone).Distinct().ToArray();
-            var hips = new[] { FindBone(bones, "Collarbone_L"), FindBone(bones, "Collarbone_R"),
-                FindBone(bones, "LegB_L"), FindBone(bones, "LegB_R") };
-            var rest = hips.Select(hip => hip ? hip.localRotation : Quaternion.identity).ToArray();
-            var meshes = new Mesh[skins.Length];
-            for (int i = 0; i < meshes.Length; i++)
+            var coat = new Color32(159, 101, 67, 255);
+            var lightCoat = new Color32(189, 135, 91, 255);
+            var mane = new Color32(55, 42, 36, 255);
+
+            Transform Joint(string name, Vector3 local, Transform parent)
             {
-                var skin = skins[i];
-                var mesh = meshes[i] = new Mesh { name = "Posed horse surface" };
-                mesh.MarkDynamic();
-                skin.BakeMesh(mesh, false);
-                owned.Add(mesh);
-                var visible = new GameObject("Horse pose for frame capture");
-                visible.transform.SetParent(skin.transform, false);
-                visible.AddComponent<MeshFilter>().sharedMesh = mesh;
-                visible.AddComponent<MeshRenderer>().sharedMaterials = skin.sharedMaterials;
-                skin.forceRenderingOff = true;
+                var joint = Group(name, local);
+                joint.SetParent(parent, false);
+                return joint;
             }
+
+            Shape(PrimitiveType.Sphere, "Horse torso", V(-.08f, .84f, 0), V(1.65f, .60f, .63f), coat, root);
+            Shape(PrimitiveType.Sphere, "Front shoulder", V(.46f, .77f, 0), V(.72f, .65f, .62f), lightCoat, root);
+            Shape(PrimitiveType.Sphere, "Round hindquarters", V(-.62f, .76f, 0), V(.69f, .65f, .65f), coat, root);
+            Block("Saddle blanket", V(-.24f, 1.09f, 0), V(.48f, .09f, .61f), Aqua, root);
+            Shape(PrimitiveType.Sphere, "Saddle seat", V(-.25f, 1.14f, 0), V(.54f, .15f, .49f), mane, root);
+
+            var neck = Joint("Neck pivot", V(.43f, .92f, 0), root);
+            var neckShape = Shape(PrimitiveType.Capsule, "Rising neck", V(.22f, .24f, 0), V(.32f, .35f, .33f), coat, neck);
+            neckShape.localRotation = Quaternion.Euler(0, 0, -37f);
+            var crest = Block("Dark raised mane", V(.07f, .29f, 0), V(.11f, .59f, .17f), mane, neck);
+            crest.localRotation = Quaternion.Euler(0, 0, -37f);
+            Shape(PrimitiveType.Sphere, "Horse head", V(.41f, .43f, 0), V(.59f, .32f, .34f), lightCoat, neck);
+            Shape(PrimitiveType.Sphere, "Long muzzle", V(.64f, .33f, 0), V(.38f, .22f, .28f), lightCoat, neck);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Block("Ear", V(.25f, .62f, .105f * side), V(.11f, .21f, .07f), coat, neck).localRotation = Quaternion.Euler(0, 0, -11f);
+                Orb("Eye", V(.47f, .48f, .149f * side), .075f, mane, neck);
+                Block("Stirrup", V(-.30f, .76f, .35f * side), V(.13f, .07f, .11f), mane, root);
+            }
+
+            var tail = Joint("Swishing tail pivot", V(-.81f, .88f, 0), root);
+            var tailShape = Shape(PrimitiveType.Capsule, "Dark tail", V(-.11f, -.22f, 0), V(.12f, .33f, .14f), mane, tail);
+            tailShape.localRotation = Quaternion.Euler(0, 0, -28f);
+            var upper = new Transform[4];
+            var lower = new Transform[4];
+            for (int i = 0; i < upper.Length; i++)
+            {
+                bool front = i < 2;
+                float side = i % 2 == 0 ? -.232f : .232f;
+                upper[i] = Joint("Horse upper leg", V(front ? .48f : -.64f, .69f, side), root);
+                lower[i] = Joint("Horse lower leg and hoof", V(0, -.30f, 0), upper[i]);
+                Shape(PrimitiveType.Capsule, "Upper leg muscle", V(0, -.12f, 0), V(.20f, .20f, .17f), coat, upper[i]);
+                Shape(PrimitiveType.Capsule, "Articulated lower leg", V(0, -.13f, 0), V(.13f, .16f, .12f), coat, lower[i]);
+                Block("Hoof", V(.029f, -.323f, 0), V(.19f, .122f, .15f), mane, lower[i]);
+            }
+
             return (phase, strength) =>
             {
-                for (int i = 0; i < hips.Length; i++)
+                for (int i = 0; i < upper.Length; i++)
                 {
-                    var hip = hips[i];
-                    if (!hip) continue;
-                    hip.localRotation = rest[i];
-                    float direction = i == 0 || i == 3 ? 1f : -1f;
-                    hip.rotation = Quaternion.AngleAxis(direction * Mathf.Sin(phase) * 18f * strength, model.transform.right) * hip.rotation;
+                    float distance = Mathf.Sin(phase + (i == 0 || i == 3 ? 0 : Mathf.PI));
+                    upper[i].localRotation = Quaternion.Euler(0, 0, 26f * strength * distance);
+                    lower[i].localRotation = Quaternion.Euler(0, 0, -33f * strength * Mathf.Max(0, distance));
                 }
-                for (int i = 0; i < meshes.Length; i++) skins[i].BakeMesh(meshes[i], false);
+                neck.localRotation = Quaternion.Euler(0, 0, 7f * strength * Mathf.Sin(phase + .4f));
+                tail.localRotation = Quaternion.Euler(0, Mathf.Sin(phase * .53f) * 16f * strength, 3f * strength);
             };
         }
 
@@ -103,7 +129,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 riding.FixedFacing = true;
                 rider.localRotation = Quaternion.Euler(0, 90, 0);
                 var horse = Group("Horse follows the longer line through the meadow", V(-4.8f, .035f, 1.0f));
-                var horsePose = HorseLegs20(Attach("horse", horse, V(2.45f, 1.3f, 1.05f), true, 90));
+                var horsePose = ArticulatedMount20(horse);
                 riding.AfterPose = () =>
                 {
                     for (int side = 0; side < 2; side++)
@@ -128,7 +154,7 @@ namespace Yamyam.EldenRingLibraryLessons
                     horse.localPosition = V(x, .035f + .095f * Mathf.Abs(trot), 1f);
                     horse.localRotation = Quaternion.Euler(0, 0, 3.5f * trot);
                     horsePose(phase, gaitStrength);
-                    rider.localPosition = V(x - .27f, .57f + .095f * Mathf.Abs(trot), 1f);
+                    rider.localPosition = V(x - .27f, .43f + .095f * Mathf.Abs(trot), 1f);
                     riding.Cast = .26f;
                     start.gameObject.SetActive(t < .32f);
                     cadence.localScale = Vector3.one * (.95f + .20f * Range(t, .70f, .86f));

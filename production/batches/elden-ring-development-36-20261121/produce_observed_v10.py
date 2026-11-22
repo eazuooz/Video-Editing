@@ -85,7 +85,8 @@ def wait_for_editor(timeout_minutes):
     deadline = time.monotonic() + 60 * timeout_minutes
     previous = None
     while True:
-        reason = ("another Unity session is active" if capture.editor_active() else
+        reason = ("the VideoEditing Unity project is locked or another Unity project is unidentified"
+                  if capture.editor_active(capture.PROJECT) else
                   "less than 12 GiB of physical memory available" if
                   psutil.virtual_memory().available < 12 * 1024**3 else None)
         if reason is None:
@@ -122,7 +123,7 @@ def make_contact_sheets(folder, keys, fingerprint):
         sheet.save(folder / f"sheet-{group // 8 + 1:02d}.jpg", quality=90)
 
 
-def capture_observed(rows, work, fingerprint, pilot_only, wait_minutes):
+def capture_observed(rows, work, fingerprint, pilot_only, wait_minutes, pilot_take=None):
     capture.library.use_main_project()
     guard = capture.gpu_guard()
     worker = guard.SingleWorker(path=WORKER)
@@ -130,9 +131,10 @@ def capture_observed(rows, work, fingerprint, pilot_only, wait_minutes):
     try:
         work.mkdir(parents=True, exist_ok=True)
         wait_for_editor(wait_minutes)
-        capture.software_job(worker, work, fingerprint, rows, capture.pipeline.PILOT, True,
+        pilot_rows = {pilot_take: rows[pilot_take]} if pilot_take else rows
+        capture.software_job(worker, work, fingerprint, pilot_rows, capture.pipeline.PILOT, True,
                              False, observed_v10=True)
-        make_contact_sheets(capture.pipeline.PILOT, tuple(rows), fingerprint)
+        make_contact_sheets(capture.pipeline.PILOT, tuple(pilot_rows), fingerprint)
         if pilot_only:
             print(f"Pilot verified: {capture.pipeline.PILOT}", flush=True)
             return
@@ -351,14 +353,17 @@ def main():
     parser.add_argument("stage", choices=("status", "pilot", "capture", "compose", "review"))
     parser.add_argument("--wait-minutes", type=int, default=180)
     parser.add_argument("--follow", action="store_true")
+    parser.add_argument("--pilot-take", help="Verify one corrected shot before recapturing the full pilot set")
     args = parser.parse_args()
     psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
     rows, observations, work, fingerprint, sources = production_inputs()
+    if args.pilot_take and (args.stage != "pilot" or args.pilot_take not in rows):
+        parser.error("--pilot-take requires the pilot stage and a selected cut ID")
     if args.stage == "status":
         print(json.dumps({"episodes": len(observations), "cuts": len(rows), "fingerprint": fingerprint,
-                          "editorBusy": capture.editor_active(), "work": str(work)}, ensure_ascii=False))
+                          "editorBusy": capture.editor_active(capture.PROJECT), "work": str(work)}, ensure_ascii=False))
     elif args.stage in ("pilot", "capture"):
-        capture_observed(rows, work, fingerprint, args.stage == "pilot", args.wait_minutes)
+        capture_observed(rows, work, fingerprint, args.stage == "pilot", args.wait_minutes, args.pilot_take)
     elif args.stage == "compose":
         compose(rows, observations, work, fingerprint, args.follow)
     else:

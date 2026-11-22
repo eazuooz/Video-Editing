@@ -63,24 +63,36 @@ def gpu_guard():
     return guard
 
 
-def editor_active():
+def editor_active(project=None):
+    target = project.resolve() if project else None
     for process in psutil.process_iter(["name", "exe", "cmdline"]):
         try:
             if (process.info["name"] or "").lower() != "unity.exe":
                 continue
-            if "unity hub" in (process.info["exe"] or "").lower() and "serve" in (process.info["cmdline"] or []):
+            args = process.info["cmdline"] or []
+            if "unity hub" in (process.info["exe"] or "").lower() and "serve" in args:
                 continue
+            if target:
+                flags = [arg.lower() for arg in args]
+                if "-projectpath" in flags and (i := flags.index("-projectpath") + 1) < len(args):
+                    other = Path(args[i])
+                    if other.is_absolute():
+                        other = other.resolve()
+                        if not target.is_relative_to(other) and not other.is_relative_to(target):
+                            continue
             return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+        except psutil.NoSuchProcess:
             continue
-    return (PROJECT / "Temp/UnityLockfile").exists()
+        except (psutil.AccessDenied, OSError):
+            return True
+    return ((target or PROJECT) / "Temp/UnityLockfile").exists()
 
 
 def software_job(worker, work, fp, rows, folder, pilot, verified_rig, *, observed_v10=False):
     if all((folder / key / "capture.json").is_file() and
            read(folder / key / "capture.json")["fingerprint"] == fp for key in rows):
         return
-    if editor_active():
+    if editor_active(PROJECT if observed_v10 else None):
         raise RuntimeError("Another Unity editor is using the project or running a capture.")
     if psutil.virtual_memory().available < 12 * 1024**3:
         raise RuntimeError("Insufficient system memory to capture with the software renderer.")
