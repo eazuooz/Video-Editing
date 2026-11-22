@@ -12,6 +12,7 @@ namespace Yamyam.EldenRingLibraryLessons
         public float speechStart, speechEnd = 8;
         public Camera view;
         public bool walkthroughV8;
+        public bool observedV10;
 
         static readonly Color Ink = new Color32(13, 25, 34, 255);
         static readonly Color Slate = new Color32(65, 91, 107, 255);
@@ -126,7 +127,7 @@ namespace Yamyam.EldenRingLibraryLessons
         Transform Pawn(string name, Vector3 p, Color color)
         {
             var root = Group(name, p);
-            if (walkthroughV8) AddWalkthroughActor(root, color);
+            if (walkthroughV8 || observedV10) AddWalkthroughActor(root, color);
             else AddLibraryActor(root, name, color);
             return root;
         }
@@ -187,7 +188,8 @@ namespace Yamyam.EldenRingLibraryLessons
             light.intensity = 1.18f;
             Block("Model table", V(0, -.22f, 0), V(11.1f, .30f, 7.6f), Ink);
 
-            animate = walkthroughV8 ? BuildWalkthroughV8() : episode <= 12 ? BuildRenderingAndWorld() :
+            animate = observedV10 ? BuildObservedEpisodes() :
+                walkthroughV8 ? BuildWalkthroughV8() : episode <= 12 ? BuildRenderingAndWorld() :
                 episode <= 24 ? BuildDesignAndProduction() : BuildPresentationAndTesting();
             AddSupportingAssets();
             Evaluate(0);
@@ -197,8 +199,16 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             float t = Mathf.Clamp01((time - speechStart) / Mathf.Max(.5f, speechEnd - speechStart));
             animate?.Invoke(t);
-            if (walkthroughV8) PlayWalkthroughActors(time);
+            if (walkthroughV8 || observedV10) PlayWalkthroughActors(time);
             else PlayLibraryActors(time);
+        }
+
+        Action<float> BuildObservedEpisodes()
+        {
+            if (episode < 11 || episode > 36) throw new ArgumentOutOfRangeException(nameof(episode));
+            if (episode <= 19) return BuildObserved11To19();
+            if (episode <= 28) return BuildObserved20To28();
+            return BuildObserved29To36();
         }
     }
 }

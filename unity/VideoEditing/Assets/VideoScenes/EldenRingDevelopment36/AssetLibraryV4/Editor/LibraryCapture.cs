@@ -26,7 +26,7 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             public string output, ffmpeg, fingerprint, project;
             public PrincipleDemo.LibraryBinding[] assets;
-            public bool pilot, walkthroughV8, requireSoftwareAdapter, verifiedRig;
+            public bool pilot, walkthroughV8, requireSoftwareAdapter, verifiedRig, observedV10;
             public Cut[] cuts;
         }
 
@@ -80,6 +80,7 @@ namespace Yamyam.EldenRingLibraryLessons
 
         static string Scenes(Job job)
         {
+            if (job.observedV10) return SceneFolder + "V10";
             if (job.verifiedRig) return SceneFolder + "V8Rig";
             return job.walkthroughV8 ? SceneFolder + "V8" : SceneFolder;
         }
@@ -97,6 +98,8 @@ namespace Yamyam.EldenRingLibraryLessons
             var folder = Path.Combine(job.output, cut.id);
             if (job.walkthroughV8 && cut.episode > 10)
                 throw new InvalidDataException("The walkthrough revision covers episodes 01 through 10.");
+            if (job.observedV10 && cut.episode < 11)
+                throw new InvalidDataException("The observed revision covers episodes 11 through 36.");
             var scenePath = $"{Scenes(job)}/{cut.id}.unity";
             var receiptPath = Path.Combine(folder, "capture.json");
             if (File.Exists(receiptPath))
@@ -118,6 +121,7 @@ namespace Yamyam.EldenRingLibraryLessons
             demo.episode = cut.episode;
             demo.shot = cut.shot;
             demo.walkthroughV8 = job.walkthroughV8;
+            demo.observedV10 = job.observedV10;
             demo.seconds = cut.frames / (float)Fps;
             demo.speechStart = cut.speechStartFrame / (float)Fps;
             demo.speechEnd = cut.speechEndFrame / (float)Fps;

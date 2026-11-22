@@ -140,9 +140,8 @@ def audit_native(record, capture_map, number, assets):
             demonstration=entry["path"], sha256=entry["sha256"], picture="walkthrough-v8")
 
 
-def alternate_play(number, record, painter, contract, work):
-    index = 2
-    start, observed = PLAY_WINDOWS[number]
+def alternate_play(number, index, window, record, painter, contract, work):
+    start, observed = window
     cut = record["cuts"][index]
     original = record["formatSources"][index]
     source = Path(original["source"])
@@ -154,22 +153,22 @@ def alternate_play(number, record, painter, contract, work):
     return work / f"{index}-clean.mp4"
 
 
-def check_playback(record, assembled, previous, parts, replacement):
+def check_playback(record, assembled, previous, parts, replacements):
     actual = film.native.packet_fingerprints(assembled)
     earlier = film.native.packet_fingerprints(previous)
     assert len(actual) == len(earlier) == sum(cut["frames"] for cut in record["cuts"])
     cursor = 0
     for i, cut in enumerate(record["cuts"]):
         stop = cursor + cut["frames"]
-        expected = film.native.packet_fingerprints(parts[i]) if replacement and i == 2 else earlier[cursor:stop]
+        expected = film.native.packet_fingerprints(parts[i]) if i in replacements else earlier[cursor:stop]
         if i in (0, 2) and actual[cursor:stop] != expected:
-            source, first = (parts[i], 0) if replacement and i == 2 else (previous, cursor)
+            source, first = (parts[i], 0) if i in replacements else (previous, cursor)
             assert film.native.decoded_range(assembled, cursor, cut["frames"]) == (
                 film.native.decoded_range(source, first, cut["frames"]))
         cursor = stop
 
 
-def render_episode(number, rows, captures, contract, paragraphs, scratch):
+def render_episode(number, rows, captures, contract, paragraphs, scratch, *, gameplay_windows=None):
     source = V6 / number
     base = read(source / "verification.json")
     record = deepcopy(base)
@@ -204,8 +203,11 @@ def render_episode(number, rows, captures, contract, paragraphs, scratch):
         }
         parts[index] = clip
     record["unityFingerprint"] = captures[f"{number}-1"]["fingerprint"]
-    if number in PLAY_WINDOWS:
-        parts[2] = alternate_play(number, record, painter, contract, work)
+    windows = gameplay_windows if gameplay_windows is not None else (
+        {2: PLAY_WINDOWS[number]} if number in PLAY_WINDOWS else {})
+    for index, window in windows.items():
+        assert index in (0, 2)
+        parts[index] = alternate_play(number, index, window, record, painter, contract, work)
     audio = prior
     english = None
     if number == "07":
@@ -228,7 +230,7 @@ def render_episode(number, rows, captures, contract, paragraphs, scratch):
     record["captioned"] = film.edit.validate(captioned, frames)
     assert film.native.track_sha(captioned, "a") == film.native.track_sha(clean, "a")
     record["captionPixelReview"] = film.caption_pixels(captioned, cues, work)
-    check_playback(record, clean, prior, parts, number in PLAY_WINDOWS)
+    check_playback(record, clean, prior, parts, windows)
     shutil.copyfile(work / "ko.srt", destination / "ko.srt")
     if english is None:
         shutil.copyfile(source / "en.srt", destination / "en.srt")

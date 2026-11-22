@@ -32,7 +32,8 @@ def selected_assets():
 
 def source_id(rows):
     scripts = {p.relative_to(PROJECT).as_posix(): sha(p) for p in SCENE_ROOT.rglob("*")
-               if p.is_file() and p.suffix in (".cs", ".shader") and not p.stem.endswith("V8")}
+               if p.is_file() and p.suffix in (".cs", ".shader") and not p.stem.endswith("V8")
+               and not p.stem.startswith("EldenRingObserved")}
     assert len(scripts) == 8
     inputs = dict(cuts=rows, scripts=scripts, assetPlan=sha(ASSET_PLAN),
                   editor=sha(PROJECT / "ProjectSettings/ProjectVersion.txt"),
