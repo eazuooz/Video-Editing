@@ -14,6 +14,7 @@ namespace Yamyam.EldenRingLibraryLessons
         public bool walkthroughV8;
         public bool observedV10;
         public bool causalV11;
+        public float[] causalCueSeconds, causalCueProgress;
 
         static readonly Color Ink = new Color32(13, 25, 34, 255);
         static readonly Color Slate = new Color32(65, 91, 107, 255);
@@ -199,6 +200,18 @@ namespace Yamyam.EldenRingLibraryLessons
         public void Evaluate(float time)
         {
             float t = Mathf.Clamp01((time - speechStart) / Mathf.Max(.5f, speechEnd - speechStart));
+            if (causalV11 && causalCueSeconds != null && causalCueSeconds.Length > 1)
+            {
+                t = causalCueProgress[0];
+                for (int i = 1; i < causalCueSeconds.Length; i++)
+                {
+                    if (time >= causalCueSeconds[i]) { t = causalCueProgress[i]; continue; }
+                    if (time >= causalCueSeconds[i-1])
+                        t = Mathf.Lerp(causalCueProgress[i-1], causalCueProgress[i],
+                            Mathf.InverseLerp(causalCueSeconds[i-1], causalCueSeconds[i], time));
+                    break;
+                }
+            }
             animate?.Invoke(t);
             if (walkthroughV8 || observedV10 || causalV11) PlayWalkthroughActors(time);
             else PlayLibraryActors(time);

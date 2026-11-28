@@ -9,13 +9,45 @@ namespace Yamyam.EldenRingLibraryLessons
         // A separate revision: unfinished lessons fail rather than silently using an old demonstration.
         Action<float> BuildCausalV11()
         {
+            RenderSettings.fog = false;
             switch (episode)
             {
+                case 1: return Streaming();
                 case 2: return CausalFog();
+                case 3: return FaceLayersV8();
+                case 4: return Landmarks();
+                case 5: return VistaV8();
+                case 6: return CausalPrototype();
                 case 7: return CausalTerrain();
                 case 8: return CausalVertexTexture();
+                case 9: return PassageV8();
+                case 10: return CastV8();
                 case 11: return CausalNavigation();
                 case 12: return CausalPlaytest();
+                case 13: return CausalAtmosphere();
+                case 14: return ObservedTelegraph14();
+                case 15: return CausalFlowers();
+                case 16: return CausalLandmark();
+                case 17: return ObservedDungeon17();
+                case 18: return CausalHistory();
+                case 19: return ObservedBoss19();
+                case 20: return ObservedTraversal20();
+                case 21: return ObservedTactics21();
+                case 22: return ObservedDiscovery22();
+                case 23: return CausalHandoff(false);
+                case 24: return CausalDetour();
+                case 25: return CausalExperience();
+                case 26: return CausalWeight();
+                case 27: return ObservedAcoustics27();
+                case 28: return CausalChoir();
+                case 29: return CausalProjection();
+                case 30: return ObservedFramePacing();
+                case 31: return ObservedComparison();
+                case 32: return ObservedTargetModifier();
+                case 33: return ObservedVisibilityOption();
+                case 34: return ObservedProgressCurve();
+                case 35: return ObservedRetry();
+                case 36: return CausalCooperation();
                 default: throw new InvalidOperationException("Causal scene not yet authored: " + episode);
             }
         }
@@ -102,10 +134,10 @@ namespace Yamyam.EldenRingLibraryLessons
 
         Action<float> CausalVertexTexture()
         {
-            FrameCamera(V(7, 7, -11), V(0, .5f, 0), 4.15f);
+            FrameCamera(V(2, 5, -10), V(-.2f, 1.1f, 0), 2.9f);
             var mesh = new Mesh { name = "Three-pose vertex texture demonstration" };
             owned.Add(mesh);
-            const int arms = 5, points = 12, sides = 8, frames = 32;
+            const int arms = 5, points = 12, sides = 8, frames = 3;
             int vertices = arms * points * sides;
             var data = new Texture2D(vertices, frames, TextureFormat.RGBAFloat, false, true);
             data.name = "Actual stored xyz by vertex and time"; data.filterMode = FilterMode.Point;
@@ -115,7 +147,7 @@ namespace Yamyam.EldenRingLibraryLessons
             for (int p = 0; p < points; p++)
             {
                 float h = p / (float)(points - 1);
-                float phase = f / (float)(frames - 1) * Mathf.PI * 2;
+                float phase = f * Mathf.PI * .66f;
                 float x = -3.3f + arm * .62f + Mathf.Sin(phase + arm * .8f + h) * h * .36f;
                 float y = .3f + h * 2.2f;
                 float radius = p >= 9 ? .16f : Mathf.Lerp(.18f,.105f,h);
@@ -140,9 +172,12 @@ namespace Yamyam.EldenRingLibraryLessons
             obj.gameObject.AddComponent<MeshRenderer>().sharedMaterial=Paint(new Color(.72f,.43f,.34f));
             var positions=new Vector3[vertices]; mesh.vertices=positions;mesh.triangles=tris.ToArray();
             var cells=new Transform[3,8];
+            int[] representedVertices={88,0,160,248,320,408,440,479};
             for(int row=0;row<3;row++) for(int col=0;col<8;col++)
                 cells[row,col]=Block("Data cell " + row + " " + col,V(.75f+col*.35f,.25f,1.25f-row*.5f),V(.28f,.18f,.35f),Slate);
             var tracked=Orb("One reconstructed vertex",Vector3.zero,.16f,Gold);
+            var readLink=Bar("Read selected point position from current texture row",Vector3.zero,Vector3.one,.035f,Gold);
+            var rowMarker=Ring("Currently read texture position",V(.75f,.4f,1.25f),.23f,Gold);
             var fingers=new Transform[arms,5];
             for(int a=0;a<arms;a++)for(int f=0;f<5;f++)
                 fingers[a,f]=Shape(PrimitiveType.Capsule,"Hand finger",Vector3.zero,V(.055f,.16f,.055f),new Color(.72f,.43f,.34f));
@@ -153,7 +188,12 @@ namespace Yamyam.EldenRingLibraryLessons
             {
                 float clock=Range(t,.18f,.9f)*(frames-1);
                 int frame=Mathf.Min(frames-1,Mathf.FloorToInt(clock));
-                for(int i=0;i<vertices;i++){Color v=data.GetPixel(i,frame);positions[i]=V(v.r,v.g,v.b);}
+                int next=Mathf.Min(frames-1,frame+1);
+                for(int i=0;i<vertices;i++){
+                    Color v=Color.Lerp(data.GetPixel(i,frame),data.GetPixel(i,next),clock-frame);
+                    positions[i]=V(v.r,v.g,v.b);
+                }
+                mesh.triangles=(!Second && t<.18f)?tris.GetRange(0,tris.Count/arms).ToArray():tris.ToArray();
                 mesh.vertices=positions;mesh.RecalculateNormals();mesh.RecalculateBounds();
                 tracked.position=positions[(points-1)*sides];
                 for(int a=0;a<arms;a++)for(int f=0;f<5;f++)
@@ -162,9 +202,18 @@ namespace Yamyam.EldenRingLibraryLessons
                     Vector3 palm=(positions[v]+positions[v+4])*.5f;
                     fingers[a,f].position=palm+V((f-2)*.065f,.16f-(f==0?.09f:0),0);
                     fingers[a,f].rotation=Quaternion.Euler(0,0,(2-f)*6);
+                    fingers[a,f].gameObject.SetActive(Second || t>=.18f || a==0);
                 }
                 int active=Mathf.Min(2,frame*3/frames);
-                for(int row=0;row<3;row++)for(int col=0;col<8;col++)Tint(cells[row,col],row==active?Aqua:Slate);
+                for(int row=0;row<3;row++)for(int col=0;col<8;col++){
+                    Color value=data.GetPixel(representedVertices[col],row);
+                    Color encoded=new Color((value.r+4)/8,value.g/3,(value.b+1)/2);
+                    Tint(cells[row,col],row==active?encoded:Color.Lerp(Slate,encoded,.25f));
+                }
+                rowMarker.position=V(.75f,.4f,1.25f-active*.5f);
+                bool reading=Second&&t>=.18f;
+                readLink.gameObject.SetActive(reading);rowMarker.gameObject.SetActive(reading);
+                Segment(readLink,rowMarker.position,tracked.position,.035f);
                 for(int i=0;i<boneBars.Length;i++)boneBars[i].gameObject.SetActive(!Second && t<.48f && (t>.18f||i<3));
             };
         }

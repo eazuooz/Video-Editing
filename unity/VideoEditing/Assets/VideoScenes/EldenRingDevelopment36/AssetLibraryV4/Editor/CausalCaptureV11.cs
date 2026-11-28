@@ -21,6 +21,7 @@ namespace Yamyam.EldenRingLibraryLessons
             public string id;
             public int episode, shot, frames, speechStartFrame, speechEndFrame;
             public int[] pilotFrames;
+            public float[] cueSeconds, cueProgress;
         }
 
         [Serializable] sealed class Job
@@ -128,6 +129,16 @@ namespace Yamyam.EldenRingLibraryLessons
             demo.seconds = cut.frames / (float)Fps;
             demo.speechStart = cut.speechStartFrame / (float)Fps;
             demo.speechEnd = cut.speechEndFrame / (float)Fps;
+            if (cut.cueSeconds != null && cut.cueSeconds.Length > 0)
+            {
+                if (cut.cueProgress == null || cut.cueSeconds.Length != cut.cueProgress.Length || cut.cueSeconds.Length < 2)
+                    throw new InvalidDataException("Causal cue arrays differ.");
+                for (int i=0;i<cut.cueSeconds.Length;i++)
+                    if (cut.cueSeconds[i]<0 || cut.cueSeconds[i]>=demo.seconds || cut.cueProgress[i]<0 || cut.cueProgress[i]>1 ||
+                        (i>0 && (cut.cueSeconds[i]<=cut.cueSeconds[i-1] || cut.cueProgress[i]<cut.cueProgress[i-1])))
+                        throw new InvalidDataException("Causal cues must preserve chronological speech order.");
+                demo.causalCueSeconds=cut.cueSeconds;demo.causalCueProgress=cut.cueProgress;
+            }
             demo.view = camera;
             demo.library = job.assets;
             if (!EditorSceneManager.SaveScene(scene, scenePath)) throw new IOException($"Failed to save {scenePath}");

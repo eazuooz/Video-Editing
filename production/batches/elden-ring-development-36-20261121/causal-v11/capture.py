@@ -16,7 +16,7 @@ import make_library_unity_revision_v4 as library
 from make_unity_revision_v3 import EDITOR
 
 WORK = Path('D:/YamyamProduction/elden-ring-development-36-causal-v11')
-READY = (2, 7, 8, 11, 12)
+READY = tuple(range(1, 37))
 
 def inputs():
     plan = read(HERE / 'plan.json')
@@ -27,12 +27,29 @@ def inputs():
     return dict(sources=sources, assetPlanSha256=sha(library.ASSET_PLAN),
                 planSha256=sha(HERE / 'plan.json'), launcherSha256=sha(Path(__file__)))
 
-def run(execute, selected):
+def run(execute, selected, timing_path=None, full=False):
     assert selected and all(i in READY for i in selected)
     cuts = [dict(id=f'{i:02}-{shot}', episode=i, shot=shot, frames=600,
                  speechStartFrame=5, speechEndFrame=590, pilotFrames=[90, 330, 550])
             for i in selected for shot in (1, 3)]
-    identity = dict(inputs=inputs(), cuts=cuts, pilot=True, stage='design-pilot-before-voice-timing')
+    pins=inputs()
+    if timing_path:
+        timing=read(timing_path)
+        assert timing['version']=='causal-v11' and timing['voiceBoundariesVerified']
+        assert sorted(set(c['episode'] for c in timing['cuts']))==sorted(selected)
+        for source in timing['inputs']:
+            assert sha(Path(source['path']))==source['sha256'],source['path']
+        cuts=timing['cuts']
+        assert len(cuts)==2*len(selected)
+        for c in cuts:
+            assert c['id']==f"{c['episode']:02}-{c['shot']}" and c['shot'] in (1,3)
+            assert 150<=c['frames']<=3600 and 0<=c['speechStartFrame']<c['speechEndFrame']<c['frames']
+        pins['timingSha256']=sha(timing_path)
+    elif full:
+        raise ValueError('Full capture requires verified narration timing.')
+    pilot=not full
+    stage='voice-timed-native-capture' if full else ('voice-timed-pilot' if timing_path else 'design-pilot-before-voice-timing')
+    identity = dict(inputs=pins, cuts=cuts, pilot=pilot, stage=stage)
     fp = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
     dest = WORK / fp[:12]
     guard = resource_guard()
@@ -42,12 +59,14 @@ def run(execute, selected):
     print(json.dumps(dict(fingerprint=fp, cuts=len(cuts), guard=reason, output=str(dest)), ensure_ascii=False), flush=True)
     if not execute or reason:
         return
-    if (dest / 'pilot-complete.json').exists():
-        proof = read(dest / 'pilot-complete.json')
+    complete=dest/('capture-complete.json' if full else 'pilot-complete.json')
+    if complete.exists():
+        proof = read(complete)
         assert proof['fingerprint'] == fp
         for row in proof['captures']:
             assert sha(Path(row['receipt'])) == row['sha256']
-        print('Exact completed pilot preserved; no rerun.', flush=True)
+            if full: assert sha(Path(row['video']))==row['videoSha256']
+        print('Exact completed capture preserved; no rerun.', flush=True)
         return
     dest.mkdir(parents=True, exist_ok=True)
     save(dest / 'inputs.json', identity)
@@ -66,8 +85,9 @@ def run(execute, selected):
             json.dump(record, handle)
         lease = True
         worker.update(leaseToken=token)
-        job = dict(output=str(dest / 'pilot'), ffmpeg=shutil.which('ffmpeg'), fingerprint=fp,
-                   project=str(library.PROJECT), pilot=True, cuts=cuts,
+        media=dest/('capture' if full else 'pilot')
+        job = dict(output=str(media), ffmpeg=shutil.which('ffmpeg'), fingerprint=fp,
+                   project=str(library.PROJECT), pilot=pilot, cuts=cuts,
                    assets=list(library.selected_assets().values()))
         save(dest / 'job.json', job)
         if reason := guard.busy_reason(own_token=token):
@@ -89,17 +109,25 @@ def run(execute, selected):
             raise RuntimeError(f'Unity design pilot failed; inspect {log}')
         rows=[]
         for cut in cuts:
-            receipt=dest/'pilot'/cut['id']/'capture.json'
+            receipt=media/cut['id']/'capture.json'
             r=read(receipt)
-            assert r['fingerprint']==fp and r['pilot'] and r['frames']==cut['frames']
+            assert r['fingerprint']==fp and r['pilot']==pilot and r['frames']==cut['frames']
             assert r['scene'].startswith('Assets/VideoScenes/EldenRingDevelopment36/AssetLibraryV4/ScenesCausalV11/')
-            images=sorted(receipt.parent.glob('frame-*.png'))
-            assert len(images)==3
-            rows.append(dict(id=cut['id'],receipt=str(receipt),sha256=sha(receipt),
-                             images=[dict(path=str(p),sha256=sha(p)) for p in images]))
-        save(dest/'pilot-complete.json', dict(fingerprint=fp,captures=rows,stage='design-pilot',
-                                             finalTimedCapture=False,visualReview='pending'))
-        print(f'Native pilot captured: {dest}',flush=True)
+            row=dict(id=cut['id'],receipt=str(receipt),sha256=sha(receipt))
+            if full:
+                video=receipt.parent/'unity.mp4'
+                probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_streams','-of','json',str(video)]))
+                stream=probe['streams'][0]
+                assert len(probe['streams'])==1 and stream['codec_type']=='video'
+                assert (stream['width'],stream['height'],stream['r_frame_rate'],int(stream['nb_read_frames']))==(950,650,'60/1',cut['frames'])
+                row.update(video=str(video),videoSha256=sha(video),decodedFrames=int(stream['nb_read_frames']))
+            else:
+                images=sorted(receipt.parent.glob('frame-*.png'));assert len(images)==3
+                row['images']=[dict(path=str(p),sha256=sha(p)) for p in images]
+            rows.append(row)
+        save(complete, dict(fingerprint=fp,captures=rows,stage=stage,
+                            finalTimedCapture=full,visualReview='pending',finalEpisodeComplete=False))
+        print(f'Native capture completed: {dest}',flush=True)
     finally:
         if child is None or child.poll() is not None:
             worker.update(child=None)
@@ -113,5 +141,7 @@ if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--execute',action='store_true')
     p.add_argument('--episodes',nargs='+',type=int,default=list(READY))
+    p.add_argument('--timing',type=Path)
+    p.add_argument('--full',action='store_true')
     a=p.parse_args()
-    run(a.execute,a.episodes)
+    run(a.execute,a.episodes,a.timing,a.full)
