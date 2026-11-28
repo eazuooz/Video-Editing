@@ -20,7 +20,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 case 6: return CausalPrototype();
                 case 7: return CausalTerrain();
                 case 8: return CausalVertexTexture();
-                case 9: return PassageV8();
+                case 9: return CausalCornerWalk();
                 case 10: return CastV8();
                 case 11: return CausalNavigation();
                 case 12: return CausalPlaytest();
@@ -272,12 +272,52 @@ namespace Yamyam.EldenRingLibraryLessons
             };
         }
 
+        Action<float> CausalCornerWalk()
+        {
+            var stone=new Color32(151,143,121,255);
+            Floor("Open approach courtyard",0,-4.2f,8,4.4f,0,Slate);
+            Floor("First narrow corridor",0,-.5f,2.2f,3.3f,0,stone);
+            Floor("Corner and ascending corridor",2,1,4.4f,2.2f,0,stone);
+            for(int i=0;i<20;i++)
+                Block("Ascending corner paving",V(.1f+i*.2f,(i+1)*.045f,1),V(.22f,(i+1)*.09f,2.2f),stone);
+            Floor("High viewing terrace",5.2f,1,2.8f,4,1.8f,stone);
+            Floor("Visible lower landing",7.7f,1,2,3,-.25f,Aqua);
+            Floor("Ground below",3,1,14,12,-1,Slate);
+            Block("Left opaque corridor wall",V(-1.22f,1.3f,-.45f),V(.24f,2.6f,3.8f),stone);
+            Block("Right approach wall",V(1.22f,1.3f,-1.55f),V(.24f,2.6f,1.5f),stone);
+            Block("Blind corner wall hides next space",V(1.35f,1.8f,2.22f),V(5.4f,3.6f,.24f),stone);
+            Block("Inner wall after right turn",V(2.6f,1.8f,-.22f),V(2.8f,3.6f,.24f),stone);
+            Attach("house",Group("Distant destination visible in courtyard",V(-3.8f,0,-.5f)),V(2,2.7f,2),true);
+            var player=Pawn("Grounded actor following a ninety degree corner",V(0,0,-5.5f),Gold);
+            var actor=walkthroughActors[walkthroughActors.Count-1];
+            actor.GroundHeight=point=>Mathf.Clamp(point.x,0,4)*.45f;
+            Vector3 At(float t)
+            {
+                if(t<.55f)return V(0,0,Mathf.Lerp(-5.5f,1,Range(t,0,.55f)));
+                float x=Mathf.Lerp(0,6,Range(t,.55f,.96f));
+                return V(x,Mathf.Clamp(x,0,4)*.45f,1);
+            }
+            return t=>
+            {
+                var p=At(t);player.position=p;
+                var behind=At(Mathf.Max(0,t-.12f));
+                if((p-behind).sqrMagnitude<.05f)behind=p+V(0,0,-1.6f);
+                var look=At(Mathf.Min(.96f,t+.10f))+V(0,.85f,0);
+                look=Vector3.Lerp(look,V(7.7f,-.25f,1),Range(t,.85f,.99f));
+                var cameraPoint=behind+V(0,1.8f,0);
+                view.orthographic=false;view.fieldOfView=62;
+                view.transform.SetPositionAndRotation(cameraPoint,Quaternion.LookRotation(look-cameraPoint));
+            };
+        }
+
         Action<float> CausalPlaytest()
         {
             Floor("Courtyard",0,0,10,7,0,Slate);
             for(int i=0;i<2;i++){var tower=Group("Test tower " + i,V(i==0?-2.8f:2.8f,0,1));Attach("tower",tower,V(2,2,2),true);}
             var bridge=Block("Proposed playable connection",V(0,1.65f,1),V(4,.24f,1),Aqua);
             var player=Pawn("Human test-play actor",V(-2.8f,1.8f,1),Gold);
+            for(int i=0;i<9;i++)
+                Block("Visible tower approach step " + i,V(-4.7f+i*.22f,(i+1)*.10f,1),V(.24f,(i+1)*.20f,1),Slate);
             var desire=Bar("Proposed destination",V(-2.8f,2.2f,1),V(2.8f,2.2f,1),.07f,Gold);
             var problem=Ring("Recorded problem location",V(2.8f,.05f,-1.5f),.4f,Red);
             return t=>
@@ -285,7 +325,9 @@ namespace Yamyam.EldenRingLibraryLessons
                 if(!Second)
                 {
                     bridge.gameObject.SetActive(t>.48f);desire.gameObject.SetActive(t>.16f&&t<.55f);problem.gameObject.SetActive(false);
-                    player.position=V(Mathf.Lerp(-2.8f,2.8f,Range(t,.57f,.92f)),1.8f,1);
+                    float climb=Range(t,0,.16f);
+                    player.position=t<.16f ? V(Mathf.Lerp(-4.8f,-2.8f,climb),Mathf.Ceil(climb*9)*.2f,1) :
+                        V(Mathf.Lerp(-2.8f,2.8f,Range(t,.57f,.92f)),1.8f,1);
                 }
                 else
                 {

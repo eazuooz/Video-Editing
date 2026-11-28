@@ -160,13 +160,13 @@ namespace Yamyam.EldenRingLibraryLessons
             var grass = new Color32(73, 98, 72, 255);
             view.backgroundColor = new Color32(126, 155, 161, 255);
             Floor("Landscape below the structure", 2.7f, 7.3f, 17.5f, 16.3f, -.48f, grass);
-            Floor("Lower enclosed approach", 0, -3.07f, 4.16f, 3.38f, 0, lower);
+            Floor("Lower enclosed approach", 0, -3.07f, causalV11 ? 9f : 4.16f, 3.38f, 0, lower);
             PassageRamp(limestone);
             Floor("Upper terrace with distant view", 0, 4.78f, 7.8f, 4.64f, PassageTop, limestone);
             Floor("Connected upper side path", 3.74f, 5.83f, 2.3f, 2.52f, PassageTop, grass);
             for (int side = -1; side <= 1; side += 2)
             {
-                Block("Approach courtyard retaining wall", V(side * 2.04f, .84f, -3.08f), V(.32f, 1.68f, 3.34f), wall);
+                Block("Approach courtyard retaining wall", V(side * (causalV11 ? 4.45f : 2.04f), .84f, -3.08f), V(.32f, 1.68f, 3.34f), wall);
                 for (int i = 0; i < 6; i++)
                 {
                     float z = Mathf.Lerp(-1.2f, 2.35f, i / 5f);
@@ -206,6 +206,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 player.localPosition = p;
                 var rear = p + V(Second ? .76f : .58f, 1.79f, -3.16f);
                 var look = V(p.x * .89f + .08f, p.y + .98f, z + 2.47f);
+                if(causalV11) look.y=Mathf.Lerp(look.y,-.15f,Range(t,.83f,.97f));
                 view.fieldOfView = Mathf.Lerp(55, 58, Range(t, .62f, .9f));
                 view.orthographic = false;
                 view.transform.SetPositionAndRotation(rear, Quaternion.LookRotation(look - rear));
@@ -249,6 +250,17 @@ namespace Yamyam.EldenRingLibraryLessons
             };
             return t =>
             {
+                if(causalV11)
+                {
+                    if(Second)keyAt=Mathf.Lerp(.37f,motionRelease,Range(t,0,.22f));
+                    else
+                    {
+                        bool aligned=t>=.52f;
+                        keyAt=aligned?motionRelease:.37f;
+                        t=aligned?Range(t,.52f,1):Range(t,0,.52f);
+                    }
+                    key.localPosition=V(CastMarker(keyAt),.23f,-1.54f);
+                }
                 actor.PosePhase = t;
                 actor.Cast = Range(t, .08f, motionRelease) * (1 - Range(t, .69f, .95f));
                 playhead.localPosition = V(CastMarker(t), .39f, -1.54f);

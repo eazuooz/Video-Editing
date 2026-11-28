@@ -57,7 +57,7 @@ def compose_cut(painter,index,frames,source,offset,phase,dest,native=False):
         picture=painter.base(label)
         if native:
             draw=ImageDraw.Draw(picture)
-            draw.text((492,1410),'독립 원리 모형 · 저장된 위치 → 표면 재생' if index==3 else '독립 원리 모형 · 설정할 대상 비교',
+            draw.text((492,1410),phase.get('description','독립 원리 모형 · 저장된 위치 → 표면 재생' if index==3 else '독립 원리 모형 · 설정할 대상 비교'),
                       font=painter.label.font_variant(size=30),anchor='mm',fill='#f5f5f5')
         picture.save(plate);inputs.extend(['-loop',1,'-framerate',60,'-i',plate])
     raw_index=len(labels)
@@ -113,19 +113,20 @@ def run(plan_path,capture_path,execute):
         for paragraph in plan['paragraphs']:
             for cue in paragraph['cues']:painter.captioned(Image.new('RGBA',(1080,1920)),cue['text'])
         rows=[];game={r['index']:r for r in plan['gameplay']}
-        for i,count in enumerate(lengths+[plan['appendixFrames']]):
+        cut_lengths=lengths+([plan['appendixFrames']] if plan['appendixFrames'] else [])
+        for i,count in enumerate(cut_lengths):
             if i%2:
                 source=Path(native[f'{number}-{i}']['video']);offset=0;phase=plan['phases'][str(i)]
             else:
                 source=Path(game[i]['path']);offset=game[i]['start']
-                phase=dict(seconds=[0],labels=['실제 리카드 전투 · 검과 몸의 움직임' if i==4 else '엘든 링 실제 영상 · 검에 붙은 팔'])
+                phase=dict(seconds=[0],labels=[game[i].get('label','실제 리카드 전투 · 검과 몸의 움직임' if i==4 else '엘든 링 실제 영상 · 검에 붙은 팔')])
             rows.append(compose_cut(painter,i,count,source,offset,phase,output,i%2==1))
             print(f'{number} visual cut {i} complete',flush=True)
         narration=voice.narration_audio(takes,lengths,output)
         padded=output/'narration-with-appendix.wav'
         edit.ffmpeg('-i',narration,'-af','apad','-t',frames/60,'-ar',48000,'-ac',1,padded)
         track=music_plan['music'][1]
-        sound,mix=music.mixed_sound(number,track,lengths+[plan['appendixFrames']],output,voice=padded)
+        sound,mix=music.mixed_sound(number,track,cut_lengths,output,voice=padded)
         listing=output/'visual.ffconcat'
         listing.write_text(''.join(f"file '{Path(r['path']).as_posix()}'\n" for r in rows),encoding='utf8')
         clean=output/'clean.mp4'
