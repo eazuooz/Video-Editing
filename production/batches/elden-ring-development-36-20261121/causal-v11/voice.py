@@ -14,7 +14,7 @@ def run(episode, execute, lock_path=None):
     path = lock_path or HERE / 'locked' / f'{episode}.json'
     lock = approved.read(path)
     assert lock['id'] == episode and lock['scriptLockedForVoice']
-    assert len(lock['narrationKo']) == 4
+    assert lock['narrationKo'] and len(lock['narrationKo']) == len(lock['narrationEn'])
     for source in lock['inputs']:
         assert approved.sha(Path(source['path'])) == source['sha256'], source['path']
     fingerprint = approved.sha(path)

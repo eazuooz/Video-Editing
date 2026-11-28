@@ -12,9 +12,9 @@ namespace Yamyam.EldenRingLibraryLessons
             RenderSettings.fog = false;
             switch (episode)
             {
-                case 1: return Streaming();
+                case 1: return CausalStreamingReference();
                 case 2: return CausalFog();
-                case 3: return FaceLayersV8();
+                case 3: return CausalFaceReference();
                 case 4: return Landmarks();
                 case 5: return VistaV8();
                 case 6: return CausalPrototype();
@@ -45,7 +45,7 @@ namespace Yamyam.EldenRingLibraryLessons
                 case 31: return ObservedComparison();
                 case 32: return ObservedTargetModifier();
                 case 33: return ObservedVisibilityOption();
-                case 34: return ObservedProgressCurve();
+                case 34: return CausalBlessingCurve();
                 case 35: return ObservedRetry();
                 case 36: return CausalCooperation();
                 default: throw new InvalidOperationException("Causal scene not yet authored: " + episode);
@@ -107,6 +107,8 @@ namespace Yamyam.EldenRingLibraryLessons
             Vector3[] edges = {V(.1f,.49f,-.9f),V(2.7f,.49f,-.9f),V(2.7f,.49f,.9f),V(.1f,.49f,.9f)};
             for (int i = 0; i < 4; i++) outline[i] = Bar("Desired surface edge", edges[i], edges[(i+1)%4], .045f, Paper);
             var landing = Ring("Foot landing cue", V(.20f, .52f, 0), .18f, Aqua);
+            var missA = Bar("Missing landing support cross A", V(-.05f,.50f,-.25f), V(.45f,.50f,.25f), .075f, new Color(1,.18f,.12f));
+            var missB = Bar("Missing landing support cross B", V(-.05f,.50f,.25f), V(.45f,.50f,-.25f), .075f, new Color(1,.18f,.12f));
             return t =>
             {
                 float edit = Second ? Range(t, .40f, .57f) : Range(t, .12f, .46f);
@@ -126,9 +128,11 @@ namespace Yamyam.EldenRingLibraryLessons
                 float xPos = Mathf.Lerp(-3.8f, .20f, u);
                 float flight = Mathf.Clamp01((u - .36f) / .64f);
                 float y = u < .36f ? .02f : .02f + .45f * flight + Mathf.Sin(flight * Mathf.PI) * 1.35f;
-                if ((!Second || !afterEdit) && u > .96f) y -= .4f * Mathf.Clamp01((u-.96f)/.04f);
+                bool missed = (!Second || !afterEdit) && u > .96f;
+                if (missed) y -= .7f * Mathf.Clamp01((u-.96f)/.04f);
                 player.position = V(xPos, y, 0);
                 landing.gameObject.SetActive(Second && afterEdit && t > .90f);
+                missA.gameObject.SetActive(missed);missB.gameObject.SetActive(missed);
             };
         }
 
