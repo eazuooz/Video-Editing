@@ -13,6 +13,7 @@ namespace Yamyam.EldenRingLibraryLessons
         public Camera view;
         public bool walkthroughV8;
         public bool observedV10;
+        public bool causalV11;
 
         static readonly Color Ink = new Color32(13, 25, 34, 255);
         static readonly Color Slate = new Color32(65, 91, 107, 255);
@@ -127,7 +128,7 @@ namespace Yamyam.EldenRingLibraryLessons
         Transform Pawn(string name, Vector3 p, Color color)
         {
             var root = Group(name, p);
-            if (walkthroughV8 || observedV10) AddWalkthroughActor(root, color);
+            if (walkthroughV8 || observedV10 || causalV11) AddWalkthroughActor(root, color);
             else AddLibraryActor(root, name, color);
             return root;
         }
@@ -188,7 +189,7 @@ namespace Yamyam.EldenRingLibraryLessons
             light.intensity = 1.18f;
             Block("Model table", V(0, -.22f, 0), V(11.1f, .30f, 7.6f), Ink);
 
-            animate = observedV10 ? BuildObservedEpisodes() :
+            animate = causalV11 ? BuildCausalV11() : observedV10 ? BuildObservedEpisodes() :
                 walkthroughV8 ? BuildWalkthroughV8() : episode <= 12 ? BuildRenderingAndWorld() :
                 episode <= 24 ? BuildDesignAndProduction() : BuildPresentationAndTesting();
             AddSupportingAssets();
@@ -199,7 +200,7 @@ namespace Yamyam.EldenRingLibraryLessons
         {
             float t = Mathf.Clamp01((time - speechStart) / Mathf.Max(.5f, speechEnd - speechStart));
             animate?.Invoke(t);
-            if (walkthroughV8 || observedV10) PlayWalkthroughActors(time);
+            if (walkthroughV8 || observedV10 || causalV11) PlayWalkthroughActors(time);
             else PlayLibraryActors(time);
         }
 
